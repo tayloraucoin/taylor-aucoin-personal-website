@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────────
+   Palette D · Gilt
+   Every color in the site resolves here. Nothing hardcodes a hex.
+   To switch to palette E (Reliquary), replace the five values in
+   the "Ground" and "Accents" blocks. Nothing else changes.
+   ───────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Ground */
+  --color-ground-a: #060b1e;
+  --color-ground-b: #151033;
+
+  /* Accents — c1 structure (violet), c2 gold, c3 light (warm white) */
+  --color-c1: #8b7be8;
+  --color-c2: #e8b961;
+  --color-c3: #fff6e3;
+
+  /* Text */
+  --color-ink: #f1effa;
+  --color-body: #9c99bc;
+  --color-dim: #7e7ca0;
+  --color-faint: rgb(200 190 240 / 0.11);
+
+  /* Surfaces */
+  --color-card: rgb(9 12 34 / 0.9);
+  --color-card-hover: rgb(14 17 44 / 0.94);
+
+  /* Type */
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-body: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 300ms;
+  --dur-base: 450ms;
+  --dur-slow: 550ms;
+
+  /* Geometry — sharp, not rounded. Deliberate. */
+  --radius: 3px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* The animated ring writes --angle in JS. The conic gradient lives on a
+   ::before pseudo-element. `inherits: true` is what lets the pseudo see it.
+   With `inherits: false` the ring silently freezes at 0deg. This is not
+   a style preference. Do not change it. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--color-body);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(105% 55% at 84% 8%, rgb(232 185 97 / 0.1) 0%, transparent 55%),
+    radial-gradient(70% 40% at 4% 62%, rgb(140 120 230 / 0.09) 0%, transparent 60%),
+    linear-gradient(172deg, var(--color-ground-a) 0%, var(--color-ground-b) 100%);
+  background-attachment: fixed;
+}
+
+/* Grain. Without it the gradients band. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-c2);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-c2);
+  color: #0a0714;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
