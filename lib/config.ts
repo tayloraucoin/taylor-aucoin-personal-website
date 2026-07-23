@@ -33,4 +33,41 @@ export const SITE = {
 } as const;
 
 /** 0→1 builds without a full case study on the site. */
-export const OTHER_BUILDS = ["Photos", "Hivemind", "Marketplace"] as const;
+export const OTHER_BUILDS = [
+  "Social Photography Hub",
+  "Artist Hivemind Hub",
+  "Crypto Alerts",
+  "GIS Drone Imagery Reporting Suite",
+] as const;
+
+/**
+ * The core-stack line under the Capabilities cards. Curated, not exhaustive —
+ * the full taxonomy lives in the résumé PDF, and the deep claims live inside
+ * the case studies. Taylor owns the final cut of this list.
+ */
+export const CORE_STACK = [
+  "TypeScript",
+  "React",
+  "Next.js",
+  "Node.js",
+  "Tailwind",
+  "shadcn/ui",
+  "tRPC",
+  "TanStack Query",
+  "Zod",
+  "Drizzle",
+  "Postgres",
+  "Supabase",
+  "Sanity",
+  "Cursor",
+  "Claude Code",
+  "Claude API",
+  "Turborepo",
+  "Git",
+  "Linear",
+  "agent-orchestrated development",
+  "engineering conventions as artifacts",
+  "Stripe",
+  "Resend",
+  "Vercel",
+] as const;

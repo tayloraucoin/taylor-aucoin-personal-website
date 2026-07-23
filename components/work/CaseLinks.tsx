@@ -17,7 +17,7 @@ export default function CaseLinks({ links }: { links?: CaseLink[] }) {
   if (!links || links.length === 0) return null;
 
   return (
-    <div className="mb-12 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[.18em] text-[--color-dim]">
+    <div className="mb-12 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
       {links.map((link) => {
         const note = link.note && (
           <span className="opacity-60"> · {link.note}</span>
@@ -39,7 +39,7 @@ export default function CaseLinks({ links }: { links?: CaseLink[] }) {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="border-b border-b-[--color-faint] pb-0.5 text-[--color-dim] transition-colors duration-[--dur-fast] ease-[--ease-out] hover:border-b-[--color-c2] hover:text-[--color-ink]"
+            className="border-b border-b-(--color-faint) pb-0.5 text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-b-(--color-c2) hover:text-(--color-ink)"
           >
             {link.label}
             {note}

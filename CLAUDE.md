@@ -41,7 +41,9 @@ These are laws. They were each learned by breaking them.
 7. **`prefers-reduced-motion` is respected everywhere.** The field freezes to a static frame; rings stop; transitions collapse.
 8. **LCP must not wait on the canvas.** The field mounts after paint and fades in. Hero text renders server-side.
 
-## Known trap (this bug already happened once)
+## Known traps (these bugs already happened once)
+
+**Tailwind v4 CSS-var syntax.** `text-[--color-c2]` is Tailwind **v3** idiom — v4 drops it silently and the class becomes a no-op (gold renders as inherited body color, hairlines inherit text color, radii collapse to 0, and nothing errors). The v4 syntax is `text-(--color-c2)`. This shipped broken across the whole site once and was invisible until a human asked why nothing was gold. Never write `-[--` in a class.
 
 `@property --angle` must be declared **`inherits: true`**. `GradientRing` writes `--angle` to the element in JS, but the conic-gradient lives on the `::before` pseudo-element. With `inherits: false`, the pseudo never sees the value and the ring silently freezes at 0deg. It looks like nothing is wrong. It is wrong.
 

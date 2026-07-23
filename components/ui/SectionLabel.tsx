@@ -5,7 +5,7 @@
  */
 export default function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="border-b border-[--color-faint] pb-4 font-mono text-[10px] uppercase tracking-[.28em] text-[--color-dim]">
+    <div className="border-b border-(--color-faint) pb-4 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
       {children}
     </div>
   );

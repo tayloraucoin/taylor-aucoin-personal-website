@@ -15,6 +15,8 @@ Everything else is subordinate to that.
 | `/`                      | Home. Hero → Capabilities → Selected work → Signal → Footer              | **v1** |
 | `/work/[slug]`           | Full case study page. Real URL, SEO-indexed, shareable.                  | **v1** |
 | `/@modal/(.)work/[slug]` | The same case study **intercepted** as an overlay when clicked from `/`. | **v1** |
+| `/stack`                 | Full skills taxonomy, eight categories. Content in `content/stack.ts`.   | **v1** |
+| `/@modal/(.)stack`       | The same page **intercepted** as an overlay from the home stack line.    | **v1** |
 | `/ventures`              | Reserved. Not built.                                                     | v2     |
 | `/writing`               | Reserved. Not built.                                                     | v2     |
 | `/media`                 | Reserved. Not built (podcast).                                           | v2     |
@@ -51,6 +53,12 @@ Overlay closes on: backdrop click, `Escape`, close button. All call `router.back
 Two `GradientRing` cards. This is the section Taylor wanted after seeing `danielsantos.co`'s "what I can do for you" — but tuned for a hiring manager, not a client.
 
 `01 / Architecture` · `02 / Product`. Copy is placeholder; Taylor is writing it.
+
+Below the cards: a **core-stack line** — one mono, wide-tracked, dim line in the same register as Selected Work's "Also built ·" line (`10px`, uppercase, `.18em`, `--color-dim`), items separated by `·`, prefixed `Core stack ·`. Curated to ~14 items, defined in `lib/config.ts` as `CORE_STACK`; Taylor owns the final cut. **Not** chips, **not** logos, **not** a grid, **no** toggle.
+
+The line ends with a gold `Full stack →` link to `/stack` — the complete eight-category taxonomy (content in `content/stack.ts`). From `/` it opens as the same intercepted overlay as the case studies (shared shell: `components/ui/Overlay.tsx`); pasted or refreshed it is a full page. Categories render as **`GradientRing` cards** (the Capabilities idiom, two-column): gold mono category label, items joined by `·` in body type. Items flagged `core` in `content/stack.ts` render **bold + ink** — they are the `CORE_STACK` curation — and a mono legend under the `h1` reads `Bold · core stack`.
+
+The impressive specifics (RLS at 150+ tables, 200+ model schemas, the Keras recommender, etc.) should **also** land inside case-study **Decisions** sections as proof — the `/stack` page states them; the case studies substantiate them.
 
 ### 3. Selected work
 

@@ -70,7 +70,7 @@ export default function GradientRing({
     <div
       ref={ref}
       data-interactive
-      className={`group relative rounded-[--radius] backdrop-blur-[10px] transition-[background,transform,box-shadow] duration-[--dur-base] ease-[--ease-out] ${className}`}
+      className={`group relative rounded-(--radius) backdrop-blur-[10px] transition-[background,transform,box-shadow] duration-(--dur-base) ease-(--ease-out) ${className}`}
       style={{
         background:
           "linear-gradient(158deg, rgb(255 255 255 / .05), rgb(255 255 255 / .01)), var(--color-card)",
@@ -92,7 +92,7 @@ export default function GradientRing({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-[.82] transition-opacity duration-[--dur-base] group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-[.82] transition-opacity duration-(--dur-base) group-hover:opacity-100"
         style={{
           padding: "1.5px",
           background:

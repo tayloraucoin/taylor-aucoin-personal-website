@@ -12,6 +12,7 @@ Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job 
 - **FND-02** [SCAFFOLDED] `app/layout.tsx` — fonts via `next/font/google` (Space Grotesk, Manrope, JetBrains Mono), `{children}` + `{modal}` slots, metadata base.
 - **FND-03** Verify `npm run dev` boots clean and `npx tsc --noEmit` passes.
 - **FND-04** Add `.gitignore`, `eslint.config.mjs`, `prettier`. Commit.
+- **FND-05** ✅ Site-wide fix: every `-[--token]` arbitrary class was Tailwind v3 syntax that v4 silently drops (gold, hairlines, radii, durations were all no-ops). Converted to v4's `-(--token)`. See CLAUDE.md § Known traps.
 
 ## ATM — Atmosphere
 
@@ -39,6 +40,8 @@ Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job 
 
 - **CAP-01** [SCAFFOLDED] `components/sections/Capabilities.tsx` — two `GradientRing` cards.
 - **CAP-02** Card hover: bg warms toward gold, `translateY(-2px)`, ring brightens and accelerates. Verify the ring **does not restart**.
+- **CAP-03** ✅ Core-stack line under the cards — `CORE_STACK` from `lib/config.ts`, rendered in the same mono register as Selected Work's "Also built ·" line. See `docs/SITE-SPEC.md` § Capabilities. Item cut is Taylor's to finalize.
+- **CAP-04** ✅ `/stack` — full eight-category taxonomy (`content/stack.ts`), reached via the gold `Full stack →` link at the end of the core-stack line. Intercepted as an overlay from `/` (`app/@modal/(.)stack/`), full page on direct load. The dialog shell was extracted from `CaseOverlay` into the shared `components/ui/Overlay.tsx` — behavior unchanged.
 
 ## WORK
 
