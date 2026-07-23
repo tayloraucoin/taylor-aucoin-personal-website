@@ -29,7 +29,7 @@ export const SITE = {
   linkedin: "https://www.linkedin.com/in/taylor-aucoin/",
   resume: "/taylor-aucoin-resume.pdf",
   tagline:
-    "Twelve products taken from zero to one — some to market, some to beta, one to a deliberate stop.",
+    "Twelve products taken from zero to one — healthtech, AI platforms, consumer marketplaces, and accommodation booking.",
 } as const;
 
 /** 0→1 builds without a full case study on the site. */
