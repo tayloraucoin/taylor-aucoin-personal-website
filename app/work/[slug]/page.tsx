@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import RootField from "@/components/field/RootField";
+import PageDismiss from "@/components/ui/PageDismiss";
 import CaseBody from "@/components/work/CaseBody";
 import { bySlug, publishedWork } from "@/content/work";
 
@@ -16,7 +17,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const c = bySlug(slug);
   if (!c) return {};
-  return { title: c.title, description: c.constraint };
+  const brief = typeof c.brief === "string" ? c.brief : c.brief?.intro;
+  return {
+    title: c.title,
+    description: brief ?? c.constraint ?? c.tagline,
+  };
 }
 
 export default async function WorkPage({
@@ -30,6 +35,7 @@ export default async function WorkPage({
   return (
     <main className="relative">
       <RootField />
+      <PageDismiss />
       <CaseBody c={c} />
     </main>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RootField from "@/components/field/RootField";
 import StackBody from "@/components/stack/StackBody";
+import PageDismiss from "@/components/ui/PageDismiss";
 
 export const metadata: Metadata = {
   title: "Full stack",
@@ -12,6 +13,7 @@ export default function StackPage() {
   return (
     <main className="relative">
       <RootField />
+      <PageDismiss />
       <StackBody />
     </main>
   );

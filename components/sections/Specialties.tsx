@@ -1,4 +1,5 @@
 import SectionLabel from "@/components/ui/SectionLabel";
+import LabelCard from "@/components/ui/LabelCard";
 
 /**
  * v3 — flat cards. Same label/body register as the Capabilities cards
@@ -39,17 +40,9 @@ export default function Specialties() {
       <SectionLabel>Specialties</SectionLabel>
       <div className="mt-[26px] grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2">
         {specialties.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-6"
-          >
-            <span className="mb-2.5 block font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
-              {s.label}
-            </span>
-            <p className="text-[13.5px] font-light leading-[1.64] text-(--color-body)">
-              {s.body}
-            </p>
-          </div>
+          <LabelCard key={s.label} label={s.label} padding="default">
+            {s.body}
+          </LabelCard>
         ))}
       </div>
     </section>
