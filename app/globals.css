@@ -22,10 +22,19 @@
   --color-body: #9c99bc;
   --color-dim: #7e7ca0;
   --color-faint: rgb(200 190 240 / 0.11);
+  /* Mono footer lines (Core stack / Also built prefixes) — ink white, not full glare */
+  --color-meta-label: rgb(255 255 255 / 0.85);
+  /* Selected Work role line — --color-dim at ~55%, quieter than the tags above it */
+  --color-role-label: rgb(126 124 160 / 0.55);
 
   /* Surfaces */
   --color-card: rgb(9 12 34 / 0.9);
   --color-card-hover: rgb(14 17 44 / 0.94);
+
+  /* Specialties cards — deliberately flatter than --color-card. Static,
+     no ring, no hover. Quieter than the Capabilities cards above them. */
+  --color-spec-bg: rgba(9, 12, 34, 0.45);
+  --color-spec-border: rgba(255, 255, 255, 0.085);
 
   /* Type */
   --font-display: var(--font-space-grotesk), sans-serif;
@@ -56,6 +65,15 @@ html {
   color-scheme: dark;
 }
 
+/* Specialties cards read too transparent on mobile — full-width cards sit
+   directly over the densest root-field trace areas. Darken the fill below
+   `md` only; desktop keeps --color-spec-bg at .45. */
+@media (max-width: 767px) {
+  :root {
+    --color-spec-bg: rgba(9, 12, 34, 0.62);
+  }
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
@@ -63,9 +81,21 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   background:
-    radial-gradient(105% 55% at 84% 8%, rgb(232 185 97 / 0.1) 0%, transparent 55%),
-    radial-gradient(70% 40% at 4% 62%, rgb(140 120 230 / 0.09) 0%, transparent 60%),
-    linear-gradient(172deg, var(--color-ground-a) 0%, var(--color-ground-b) 100%);
+    radial-gradient(
+      105% 55% at 84% 8%,
+      rgb(232 185 97 / 0.1) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      70% 40% at 4% 62%,
+      rgb(140 120 230 / 0.09) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      172deg,
+      var(--color-ground-a) 0%,
+      var(--color-ground-b) 100%
+    );
   background-attachment: fixed;
 }
 

@@ -4,6 +4,7 @@ import Footer from "@/components/sections/Footer";
 import Hero from "@/components/sections/Hero";
 import SelectedWork from "@/components/sections/SelectedWork";
 import Signal from "@/components/sections/Signal";
+import Specialties from "@/components/sections/Specialties";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <RootField />
       <Hero />
       <Capabilities />
+      <Specialties />
       <SelectedWork />
       <Signal />
       <Footer />

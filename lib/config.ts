@@ -19,6 +19,19 @@ export const FIELD = {
   SEED_DENSITY: 150,
 } as const;
 
+/**
+ * Case study visibility. `false` hides a project from Selected work and `/work/[slug]`
+ * (404). Content stays in `content/work/` — flip back to `true` when you're ready
+ * to surface it.
+ */
+export const WORK_PUBLISHED: Partial<Record<string, boolean>> = {
+  "conscious-connections": false,
+};
+
+export function isWorkPublished(slug: string): boolean {
+  return WORK_PUBLISHED[slug] !== false;
+}
+
 export const SITE = {
   name: "Taylor Aucoin",
   role: "Senior product engineer",
@@ -29,7 +42,7 @@ export const SITE = {
   linkedin: "https://www.linkedin.com/in/taylor-aucoin/",
   resume: "/taylor-aucoin-resume.pdf",
   tagline:
-    "Twelve products taken from zero to one — healthtech, AI platforms, consumer marketplaces, and accommodation booking.",
+    "Twelve products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
 } as const;
 
 /** 0→1 builds without a full case study on the site. */

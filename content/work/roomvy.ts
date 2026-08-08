@@ -4,7 +4,10 @@ export const roomvy = {
   slug: "roomvy",
   index: "04",
   title: "Roomvy",
-  meta: "Event housing · Agency",
+  meta: "Booking flow · Client app",
+  tagline:
+    "Room-block booking for conferences and tournaments — hotels release allocated inventory at event rates, attendees book it Airbnb-style.",
+  roleLabel: "Senior Frontend Engineer",
   role: "Senior frontend engineer (Pathfinder Studios)",
   period: "2023",
   stack: [

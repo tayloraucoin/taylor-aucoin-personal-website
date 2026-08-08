@@ -5,6 +5,9 @@ export const agora = {
   index: "05",
   title: "Agora",
   meta: "Recommender · Enrichment · Search",
+  tagline:
+    "A full marketplace commerce build — cart, checkout, tax, refunds, shipping — that later became a cross-marketplace discovery engine for independent sellers.",
+  roleLabel: "Technical Founder",
   role: "Founder, engineer",
   period: "2021 — 2026",
   stack: [

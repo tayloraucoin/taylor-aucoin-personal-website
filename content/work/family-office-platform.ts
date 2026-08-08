@@ -4,7 +4,10 @@ export const familyOfficePlatform = {
   slug: "family-office-platform",
   index: "01",
   title: "Multi-Entity Family Office Platform",
-  meta: "Fractional CTO · Platform · CRM",
+  meta: "Platform · CRM",
+  tagline:
+    "Unified five separately built business systems into one monorepo and database — an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
+  roleLabel: "Fractional CTO",
   role: "Fractional CTO (via Agora Network Technologies)",
   period: "2026",
   stack: [

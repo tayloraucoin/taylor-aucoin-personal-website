@@ -33,7 +33,7 @@ export function GhostButton({
   return (
     <Link
       href={href}
-      className="inline-flex items-center rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.55)] px-[22px] py-3.5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) backdrop-blur-[6px] transition-all duration-(--dur-fast) hover:border-[rgb(232_185_97/.55)] hover:bg-[rgb(9_12_34/.80)] hover:text-(--color-ink)"
+      className="inline-flex items-center rounded-(--radius) border border-[rgb(232_185_97/.42)] bg-[rgb(9_12_34/.55)] px-[22px] py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-[rgb(232_185_97/0.9)] backdrop-blur-[6px] transition-all duration-(--dur-fast) hover:border-[rgb(232_185_97/.72)] hover:bg-[rgb(9_12_34/.80)] hover:text-(--color-c3)"
     >
       {children}
     </Link>

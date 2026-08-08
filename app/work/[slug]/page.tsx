@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import RootField from "@/components/field/RootField";
 import CaseBody from "@/components/work/CaseBody";
-import { bySlug, work } from "@/content/work";
+import { bySlug, publishedWork } from "@/content/work";
 
 export function generateStaticParams() {
-  return work.map((w) => ({ slug: w.slug }));
+  return publishedWork.map((w) => ({ slug: w.slug }));
 }
 
 export async function generateMetadata({

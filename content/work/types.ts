@@ -42,6 +42,12 @@ export type CaseStudy = {
   index: string;
   title: string;
   meta: string;
+  /** One-line description under the title on the Selected Work row. Sentence case. */
+  tagline: string;
+  /** Short role label under the tags on the Selected Work row. Title case — rendered uppercase. */
+  roleLabel: string;
+  /** Listed on home but not clickable — case page may still exist for direct URLs. */
+  inactive?: boolean;
   role: string;
   period: string;
   stack: string[];

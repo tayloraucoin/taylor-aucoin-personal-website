@@ -5,6 +5,9 @@ export const calculateQxmd = {
   index: "06",
   title: "Calculate by QxMD",
   meta: "Healthtech · Clinical tools",
+  tagline:
+    "Clinical calculators used by physicians at the point of care, including the version embedded in Medscape.",
+  roleLabel: "Frontend Engineer",
   role: "Frontend software engineer",
   period: "2019 — 2021",
   stack: [

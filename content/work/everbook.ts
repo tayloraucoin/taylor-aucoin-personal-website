@@ -5,6 +5,9 @@ export const everbook = {
   index: "03",
   title: "Everbook",
   meta: "Realtime voice AI · Print engine",
+  tagline:
+    "AI-guided interviews that turn a person's spoken life story into structured chapters, then into a print-ready hardcover delivered to their door.",
+  roleLabel: "Founding Engineer",
   role: "Founding engineer, de facto tech lead",
   period: "2024 — 2025",
   stack: [
