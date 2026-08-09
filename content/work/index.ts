@@ -7,7 +7,22 @@ import { roomvy } from "./roomvy";
 import { isWorkPublished } from "@/lib/config";
 import type { CaseStudy } from "./types";
 
-export type { CaseLink, CaseStudy, Decision, Media } from "./types";
+export type {
+  AtAGlanceRow,
+  BriefContent,
+  BrokeCategory,
+  BrokeContent,
+  BulletGroup,
+  BuiltCard,
+  BuiltContent,
+  CaseLink,
+  CaseStudy,
+  Decision,
+  Media,
+  OutcomeContent,
+  ProcessContent,
+  ProcessSection,
+} from "./types";
 
 /** Display order. Reorder imports here when slot order changes. */
 export const work: CaseStudy[] = [
