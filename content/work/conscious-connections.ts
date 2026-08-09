@@ -2,7 +2,6 @@ import type { CaseStudy } from "./types";
 
 export const consciousConnections = {
   slug: "conscious-connections",
-  index: "02",
   title: "Conscious Connections",
   meta: "AI · Next.js · Supabase",
   tagline:

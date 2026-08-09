@@ -46,6 +46,8 @@ export type ProcessContent = {
 export type BuiltCard = {
   label: string;
   body: string;
+  /** Rare: an outbound doc link inside the card. Only set where truly needed. */
+  link?: { label: string; href: string };
 };
 
 /** Structured shape for `built`: an intro paragraph plus a LabelCard grid. */
@@ -102,7 +104,6 @@ export type AtAGlanceRow = {
 
 export type CaseStudy = {
   slug: string;
-  index: string;
   title: string;
   meta: string;
   /** One-line description under the title on the Selected Work row. Sentence case. */

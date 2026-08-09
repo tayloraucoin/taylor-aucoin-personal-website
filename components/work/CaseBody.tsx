@@ -1,5 +1,8 @@
 import type { CaseStudy } from "@/content/work";
+import { publishedWork } from "@/content/work";
 import CaseLinks from "@/components/work/CaseLinks";
+import ProcessSection from "@/components/work/ProcessSection";
+import Section from "@/components/work/Section";
 import LabelCard from "@/components/ui/LabelCard";
 import DecisionCard from "@/components/ui/DecisionCard";
 import BulletList from "@/components/ui/BulletList";
@@ -20,10 +23,13 @@ import BulletList from "@/components/ui/BulletList";
  * sub-headers/bullets/cards. Branch on `typeof` before rendering either.
  */
 export default function CaseBody({ c }: { c: CaseStudy }) {
+  const position = publishedWork.findIndex((w) => w.slug === c.slug) + 1;
+  const badge = String(position || 1).padStart(2, "0");
+
   return (
     <article className="mx-auto max-w-[1080px] px-[22px] py-14 md:px-14">
       <div className="mb-3 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
-        {c.index}
+        {badge}
       </div>
       <h1 className="mb-4 font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">
         {c.title}
@@ -56,7 +62,9 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
                 label={row.label}
                 padding="compact"
                 className={
-                  i === rows.length - 1 ? "md:col-span-2" : undefined
+                  rows.length % 2 === 1 && i === rows.length - 1
+                    ? "md:col-span-2"
+                    : undefined
                 }
               >
                 {row.value}
@@ -105,22 +113,7 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
             </p>
           </Section>
         ) : (
-          <Section label="Process">
-            <p className="max-w-[62ch] font-light leading-[1.7] text-(--color-body)">
-              {c.process.intro}
-            </p>
-            {c.process.sections.map((s) => (
-              <div key={s.header}>
-                <h3 className="mb-3 mt-7 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-ink)">
-                  {s.header}
-                </h3>
-                <p className="mb-3 max-w-[62ch] font-light leading-[1.7] text-(--color-body)">
-                  {s.intro}
-                </p>
-                <BulletList items={s.bullets} />
-              </div>
-            ))}
-          </Section>
+          <ProcessSection process={c.process} />
         ))}
 
       {/* The section that gets someone hired. Do not let it be thin. */}
@@ -152,6 +145,16 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
             {c.built.cards.map((card) => (
               <LabelCard key={card.label} label={card.label} padding="compact">
                 {card.body}
+                {card.link && (
+                  <a
+                    href={card.link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 block font-mono text-[10px] font-medium uppercase tracking-[.10em] text-(--color-c2)"
+                  >
+                    {card.link.label} →
+                  </a>
+                )}
               </LabelCard>
             ))}
           </div>
@@ -236,22 +239,5 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
         </Section>
       )}
     </article>
-  );
-}
-
-function Section({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="mb-14">
-      <div className="mb-5 border-b border-(--color-faint) pb-4 font-mono text-[12px] font-medium uppercase tracking-[.28em] text-(--color-ink)">
-        {label}
-      </div>
-      {children}
-    </section>
   );
 }

@@ -2,7 +2,6 @@ import type { CaseStudy } from "./types";
 
 export const familyOfficePlatform = {
   slug: "family-office-platform",
-  index: "01",
   title: "Multi-Entity Family Office Platform",
   meta: "Platform · CRM",
   tagline:
@@ -43,6 +42,11 @@ export const familyOfficePlatform = {
         "Custom CRM replacing scattered spreadsheets and siloed tools",
     },
     {
+      label: "Booking & subscription systems",
+      value:
+        "End-to-end booking and subscription payments for the retreat centre and the education platform, delivered to a fixed event deadline",
+    },
+    {
       label: "Handoff",
       value:
         "Operator documentation and AI-development governance for a non-engineering team",
@@ -64,10 +68,11 @@ export const familyOfficePlatform = {
       {
         header: "THE ASK",
         bullets: [
-          "Redirect the internal build — assess what carries forward, and set the architectural foundations before further development",
+          "Centralize the ecosystem into one shared database schema, with the infrastructure layer to make every entity interconnected",
           "Everything custom and owned — nothing rented from a SaaS vendor",
-          "A platform that survives its own owners' AI-assisted development",
-          "An active build window of six weeks",
+          "A platform that can keep building autonomously with AI, held to written conventions so future technical debt stays contained",
+          "Bring the shared document system — years of Google Drive growth with no conventions — into proper order",
+          "An active build window of six weeks against multiple large deliverables, including the legacy migrations, the booking engine, membership subscriptions, and the CRM",
         ],
       },
     ],
@@ -136,6 +141,16 @@ export const familyOfficePlatform = {
         ],
       },
       {
+        header: "Notion migration",
+        intro:
+          "A side task that became a deliverable: the team's Google Drive had grown for years without conventions, and finding anything was tribal knowledge.",
+        bullets: [
+          "Advised and pitched the move to Notion as the operational workspace",
+          "Designed the full folder schema and naming conventions from the actual contents of the Drive",
+          "Wrote the migration SOP as a Claude-assisted workflow the team could run without me",
+        ],
+      },
+      {
         header: "Handoff",
         intro:
           "The handoff was a product in itself, written for the non-technical staff running the systems daily.",
@@ -164,12 +179,13 @@ export const familyOfficePlatform = {
         body: "Booking and membership for the retreat center, with the full booking flow working on both Stripe and Square behind a toggle.",
       },
       {
-        label: "MEMBERSHIP PORTAL",
+        label: "MEMBERSHIP PORTALS",
         body: "Subscription billing on the shared contact records.",
       },
       {
-        label: "BRAND SITE & EVENTS DASHBOARD",
-        body: "A content-managed personal brand site, and an operations dashboard for the events business.",
+        label: "NOTION WORKSPACE",
+        body:
+          "A designed folder schema, naming conventions, and a Claude-assisted migration SOP — moving the team from an unstructured Google Drive to Notion as the operational workspace.",
       },
       {
         label: "DOCUMENTATION SUITE",
