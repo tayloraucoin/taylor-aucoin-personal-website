@@ -25,7 +25,7 @@ const cards: Array<{ tag: string; title: string; body: ReactNode }> = [
     title: "Twenty juniors, four teams",
     body: (
       <>
-        Thirteen cohorts through{" "}
+        Fourteen cohorts through{" "}
         <a
           href={BCIT_ISSP_URL}
           target="_blank"

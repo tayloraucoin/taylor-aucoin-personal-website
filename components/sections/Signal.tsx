@@ -3,7 +3,7 @@ import SectionLabel from "@/components/ui/SectionLabel";
 const stats = [
   { v: "9.5", k: "Years shipping" },
   { v: "12", k: "0→1 builds" },
-  { v: "13", k: "Cohorts mentored" },
+  { v: "14", k: "Cohorts mentored" },
   { v: "0→1", k: "Founding engineer" },
 ];
 
