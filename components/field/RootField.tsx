@@ -18,7 +18,14 @@ import { FIELD } from "@/lib/config";
  *  - Cursor glow is gated by `gain`, which eases to 0 over any interactive
  *    element. The interface always wins over the atmosphere.
  *  - Every fade eases. Nothing snaps.
- *  - The tree is built once per resize, never per frame.
+ *  - The tree is built once per resize, never per frame — and only when the
+ *    geometry actually changed. Mobile browsers fire `resize` when the URL bar
+ *    collapses during scroll; rebuilding there teleports every node.
+ *  - The clock is wall-time, not frame-count. A 120Hz phone must not run 2×
+ *    fast, and dropped frames must not slow the field down.
+ *  - `prefers-reduced-motion` is live, not sampled once. Chrome DevTools (and
+ *    the OS) can flip it while the page is mounted; the field must freeze and
+ *    resume accordingly without a remount.
  */
 
 type Seg = {
@@ -46,9 +53,8 @@ function mountRootField(
   ctx: CanvasRenderingContext2D,
   showPads: boolean,
 ): () => void {
-  const reduce = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
+  const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduce = reduceMq.matches;
     const css = getComputedStyle(document.documentElement);
     const C1 = css.getPropertyValue("--color-c1").trim() || "#8b7be8";
     const C2 = css.getPropertyValue("--color-c2").trim() || "#e8b961";
@@ -65,6 +71,14 @@ function mountRootField(
     let t = 0;
     let raf = 0;
     let visible = true;
+    let last = 0;
+
+    // One 60fps frame, in ms. dt is normalized against this so the tuned
+    // per-frame constants keep their exact desktop-at-60Hz feel.
+    const BASE_FRAME = 1000 / 60;
+    // iOS Safari silently blanks any canvas whose backing store exceeds
+    // ~16.7M pixels. Long pages at dpr 2 can cross it; degrade dpr instead.
+    const MAX_CANVAS_AREA = 14_000_000;
 
     const tech = (x: number) =>
       Math.max(0, Math.min(1, (x - W * 0.32) / (W * 0.46)));
@@ -110,7 +124,11 @@ function mountRootField(
 
     function build() {
       const r = wrapEl.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      builtDpr = window.devicePixelRatio;
+      let dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (r.width * r.height * dpr * dpr > MAX_CANVAS_AREA) {
+        dpr = Math.max(1, Math.sqrt(MAX_CANVAS_AREA / (r.width * r.height)));
+      }
       canvasEl.width = r.width * dpr;
       canvasEl.height = r.height * dpr;
       canvasEl.style.width = `${r.width}px`;
@@ -174,14 +192,20 @@ function mountRootField(
       ctx.stroke();
     }
 
-    function frame() {
+    function frame(now: number) {
       if (!visible) {
+        last = now;
         raf = requestAnimationFrame(frame);
         return;
       }
-      gain += (gainTarget - gain) * FIELD.GLOW_FADE;
+      // Wall-time delta, clamped so a throttled tab resumes where it left off
+      // instead of lurching to "catch up".
+      const dt = last ? Math.min(now - last, BASE_FRAME * 3) : BASE_FRAME;
+      last = now;
+      const step = dt / BASE_FRAME;
+      gain += (gainTarget - gain) * (1 - (1 - FIELD.GLOW_FADE) ** step);
       ctx.clearRect(0, 0, W, H);
-      if (!reduce) t += 0.0052;
+      if (!reduce) t += 0.0052 * step;
       ctx.lineCap = "round";
 
       for (const s of segs) {
@@ -252,10 +276,39 @@ function mountRootField(
       gainTarget = 0;
     };
 
+    // Reduced-motion is honored live. When it lifts, restart the loop —
+    // `frame` stopped scheduling itself the moment it went static.
+    const onReduceChange = () => {
+      reduce = reduceMq.matches;
+      if (!reduce) {
+        cancelAnimationFrame(raf);
+        last = 0;
+        raf = requestAnimationFrame(frame);
+      }
+    };
+    if (reduceMq.addEventListener) {
+      reduceMq.addEventListener("change", onReduceChange);
+    } else {
+      // Safari < 14 only has the deprecated listener API.
+      reduceMq.addListener(onReduceChange);
+    }
+
     let resizeTimer: ReturnType<typeof setTimeout>;
+    let builtDpr = 0;
     const onResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
+        // Mobile URL-bar collapse fires resize without changing the page's
+        // geometry. The tree is random; rebuilding it here makes every node
+        // jump. Only rebuild when the wrap actually changed size — or the
+        // display's pixel ratio did (monitor moves still need a rebuild).
+        const r = wrapEl.getBoundingClientRect();
+        if (
+          Math.abs(r.width - W) < 1 &&
+          Math.abs(r.height - H) < 1 &&
+          window.devicePixelRatio === builtDpr
+        )
+          return;
         build();
       }, 200);
     };
@@ -265,8 +318,14 @@ function mountRootField(
     });
     io.observe(wrapEl);
 
+    // The wrap can change size with no window resize at all — late font or
+    // image reflow grows the page under the field. Watch the box itself.
+    // (Fires once on observe; the debounced guard skips that no-op.)
+    const ro = new ResizeObserver(onResize);
+    ro.observe(wrapEl);
+
     build();
-    frame();
+    frame(performance.now());
 
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerleave", onLeave);
@@ -276,6 +335,12 @@ function mountRootField(
       cancelAnimationFrame(raf);
       clearTimeout(resizeTimer);
       io.disconnect();
+      ro.disconnect();
+      if (reduceMq.removeEventListener) {
+        reduceMq.removeEventListener("change", onReduceChange);
+      } else {
+        reduceMq.removeListener(onReduceChange);
+      }
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("resize", onResize);

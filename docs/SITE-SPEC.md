@@ -75,7 +75,7 @@ Each row: index (mono, gold) · title (display) · meta (mono, dim) · arrow (fa
 
 ### 4. Signal
 
-Section label, then a four-cell stat grid with hairline separators: `9.5` years shipping · `9` products in prod · `13` cohorts mentored · `0→1` founding engineer.
+Section label, then a four-cell stat grid with hairline separators: `9.5` years shipping · `9` products in prod · `14` cohorts mentored · `0→1` founding engineer.
 
 ### 5. Footer
 
