@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import RootField from "@/components/field/RootField";
 import Footer from "@/components/sections/Footer";
-import SectionLabel from "@/components/ui/SectionLabel";
 import { GradientButton } from "@/components/ui/GradientButton";
+import SectionLabel from "@/components/ui/SectionLabel";
 import { closingLine, howIThink, story, vancouver } from "@/content/about";
 import { availability } from "@/content/services";
 import { BOOKING_URL, PHOTO, SITE } from "@/lib/config";
@@ -43,14 +43,14 @@ export default function AboutPage() {
         />
       </div>
 
-      <div className="mb-8 flex items-center gap-5">
+      <div className="mb-8 flex items-start flex-col gap-5 w-fit">
         {PHOTO && (
           <Image
             src={PHOTO}
             alt={SITE.name}
-            width={80}
-            height={80}
-            className="h-20 w-20 shrink-0 rounded-(--radius) object-cover"
+            width={120}
+            height={120}
+            className="h-24 w-24 shrink-0 rounded-(--radius) object-cover"
           />
         )}
         <h1 className="font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">

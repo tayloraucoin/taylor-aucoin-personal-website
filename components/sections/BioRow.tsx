@@ -17,9 +17,9 @@ export default function BioRow() {
         <Image
           src={PHOTO}
           alt={SITE.name}
-          width={64}
-          height={64}
-          className="h-16 w-16 shrink-0 rounded-(--radius) object-cover"
+          width={80}
+          height={80}
+          className="h-20 w-20 shrink-0 rounded-(--radius) object-cover"
         />
       )}
       <p className="max-w-[48ch] text-[13.5px] font-light leading-[1.64] text-(--color-body)">
