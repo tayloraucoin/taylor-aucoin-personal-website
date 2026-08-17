@@ -108,6 +108,16 @@ export type CaseStudy = {
   meta: string;
   /** One-line description under the title on the Selected Work row. Sentence case. */
   tagline: string;
+  /**
+   * `<meta name="description">` for `/work/[slug]`. Never rendered on the page.
+   *
+   * This exists because these links get pasted into Slack and email by
+   * recruiters, and the preview truncates at ~160 characters. `brief.intro` used
+   * to fill this role and got cut mid-sentence every time. State what was built
+   * and the role, in 140–160 characters. See `generateMetadata` in
+   * `app/work/[slug]/page.tsx`.
+   */
+  metaDescription: string;
   /** Short role label under the tags on the Selected Work row. Title case — rendered uppercase. */
   roleLabel: string;
   /** Listed on home but not clickable — case page may still exist for direct URLs. */

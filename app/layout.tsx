@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import { SITE } from "@/lib/config";
+import { socialCard } from "@/lib/metadata";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -28,7 +29,13 @@ export const metadata: Metadata = {
     default: `${SITE.name} — ${SITE.role}`,
     template: `%s — ${SITE.name}`,
   },
-  description: `${SITE.role} and technical founder. ${SITE.tagline}`,
+  description: SITE.metaDescription,
+  // Routes that set their own `openGraph`/`twitter` replace these wholesale;
+  // routes that don't (the home page) inherit them.
+  ...socialCard({
+    title: `${SITE.name} — ${SITE.role}`,
+    description: SITE.metaDescription,
+  }),
 };
 
 export default function RootLayout({

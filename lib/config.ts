@@ -34,7 +34,7 @@ export function isWorkPublished(slug: string): boolean {
 
 export const SITE = {
   name: "Taylor Aucoin",
-  role: "Senior product engineer",
+  role: "Senior/staff product engineer",
   location: "Vancouver",
   url: "https://tayloraucoin.com",
   email: "hello@tayloraucoin.com",
@@ -43,7 +43,29 @@ export const SITE = {
   resume: "/taylor-aucoin-resume.pdf",
   tagline:
     "Twelve products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
+  /**
+   * Home page `<meta name="description">`. Written to survive truncation at
+   * ~160 characters in a Slack or Gmail link preview — which is why it is not
+   * composed from `role` + `tagline`. Keep it 140–160 characters.
+   */
+  metaDescription:
+    "Senior/staff product engineer in Vancouver. Twelve products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
 } as const;
+
+/**
+ * Social card image, served from `public/`.
+ *
+ * `null` until the asset exists. A card that points at a missing file previews
+ * worse than no card at all — Slack renders a broken frame instead of falling
+ * back to text. Drop `og.png` (1200×630) into `public/`, set this to
+ * `"/og.png"`, and every route picks it up; `twitter:card` upgrades from
+ * `summary` to `summary_large_image` on its own. See `lib/metadata.ts`.
+ */
+export const OG_IMAGE: string | null = null;
+
+/** Stack page `<meta name="description">`. 140–160 characters. */
+export const STACK_META_DESCRIPTION =
+  "The full working stack behind the case studies: languages, frameworks, databases and search, infrastructure, commerce integrations, and AI engineering.";
 
 /** 0→1 builds without a full case study on the site. */
 export const OTHER_BUILDS = [

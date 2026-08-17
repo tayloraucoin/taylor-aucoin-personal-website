@@ -6,6 +6,8 @@ export const everbook = {
   meta: "Realtime voice AI · Print engine",
   tagline:
     "An AI voice interview that becomes a typeset, press-ready hardcover — the interview engine, print pipeline, and commerce platform behind it, built solo from first commit through a relaunch.",
+  metaDescription:
+    "Founding engineer build: an AI voice interview that becomes a press-ready hardcover. MVP in six months, then a relaunch adding realtime voice and commerce.",
   roleLabel: "Founding Engineer",
   role: "Founding engineer, CTO-track",
   period: "2024 — 2025",

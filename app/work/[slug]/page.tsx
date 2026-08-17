@@ -4,6 +4,7 @@ import RootField from "@/components/field/RootField";
 import PageDismiss from "@/components/ui/PageDismiss";
 import CaseBody from "@/components/work/CaseBody";
 import { bySlug, publishedWork } from "@/content/work";
+import { socialCard } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return publishedWork.map((w) => ({ slug: w.slug }));
@@ -17,10 +18,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const c = bySlug(slug);
   if (!c) return {};
-  const brief = typeof c.brief === "string" ? c.brief : c.brief?.intro;
   return {
     title: c.title,
-    description: brief ?? c.constraint ?? c.tagline,
+    description: c.metaDescription,
+    ...socialCard({
+      title: `${c.title} — ${c.roleLabel}`,
+      description: c.metaDescription,
+      type: "article",
+    }),
   };
 }
 

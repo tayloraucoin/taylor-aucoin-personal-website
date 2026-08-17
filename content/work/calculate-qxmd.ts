@@ -6,6 +6,8 @@ export const calculateQxmd = {
   meta: "Healthtech · Clinical tools",
   tagline:
     "Clinical calculators used by physicians at the point of care, including the version embedded in Medscape.",
+  metaDescription:
+    "Frontend engineer at QxMD: rebuilt clinical calculators used by physicians at the point of care in Next.js, shipped inside Medscape. Zero production bugs.",
   roleLabel: "Frontend Software Engineer",
   role: "Frontend software engineer",
   period: "2019 — 2021",
