@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google";
+import SiteHeader from "@/components/ui/SiteHeader";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
 import "./globals.css";
@@ -51,6 +52,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
+        <SiteHeader />
         {children}
         {modal}
       </body>

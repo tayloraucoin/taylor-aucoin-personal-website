@@ -6,6 +6,13 @@ export default function Footer() {
       <span>tayloraucoin.com</span>
       <span className="flex gap-2">
         <a
+          href="/about"
+          className="text-(--color-body) transition-colors hover:text-(--color-c2)"
+        >
+          About
+        </a>
+        <span aria-hidden>·</span>
+        <a
           href={`mailto:${SITE.email}`}
           className="text-(--color-body) transition-colors hover:text-(--color-c2)"
         >

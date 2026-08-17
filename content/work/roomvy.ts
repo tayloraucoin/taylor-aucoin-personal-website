@@ -5,12 +5,13 @@ export const roomvy = {
   title: "Roomvy",
   meta: "Booking flow · Client app",
   tagline:
-    "Room-block booking for conferences and tournaments — hotels release allocated inventory at event rates, attendees book it Airbnb-style.",
+    "The entire client-facing booking frontend, built solo — an Airbnb-style room-block flow for conferences and tournaments — with zero issues reported in production.",
   metaDescription:
     "Senior frontend build: the participant-facing booking client for event room blocks. Map discovery, multi-room checkout, card holds. Shipped solo, zero issues.",
   roleLabel: "Senior Frontend Engineer",
   role: "Senior frontend engineer (Pathfinder Studios)",
   period: "2023",
+  engagementType: "Maps to · Contract",
   stack: [
     "Next.js",
     "TypeScript",

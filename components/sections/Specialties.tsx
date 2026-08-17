@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SectionLabel from "@/components/ui/SectionLabel";
 import LabelCard from "@/components/ui/LabelCard";
 
@@ -45,6 +46,17 @@ export default function Specialties() {
           </LabelCard>
         ))}
       </div>
+      {/* Same idiom as the core-stack line above. Specialties is the curated
+          at-a-glance surface; /capabilities is the problem-shaped deep dive. */}
+      <p className="mt-5 font-mono text-[11px] uppercase leading-[2] tracking-[.18em] text-(--color-body) md:text-[10px] md:text-(--color-dim)">
+        Problems I take on, in depth ·{" "}
+        <Link
+          href="/capabilities"
+          className="whitespace-nowrap text-(--color-c2) transition-colors duration-(--dur-fast) hover:text-(--color-c3)"
+        >
+          Capabilities →
+        </Link>
+      </p>
     </section>
   );
 }

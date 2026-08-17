@@ -11,6 +11,7 @@ export const calculateQxmd = {
   roleLabel: "Frontend Software Engineer",
   role: "Frontend software engineer",
   period: "2019 — 2021",
+  engagementType: "Maps to · Contract",
   stack: [
     "React",
     "Next.js",

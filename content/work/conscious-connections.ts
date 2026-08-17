@@ -14,6 +14,7 @@ export const consciousConnections = {
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer, designer",
   period: "2026 — present",
+  engagementType: "Maps to · 0→1 Build",
   stack: ["Next.js", "TypeScript", "tRPC", "DrizzleORM", "Supabase", "Stripe"],
   constraint:
     "Conscious Connections is a communication and coaching tool for couples — deliberately not therapy, because I don't want the liability or the responsibility of clinical care. But that positioning doesn't remove the duty of care. It removes my tools for it. The product reads two partners' raw accounts of a fight, and it has to catch intimate-partner-violence and coercive-control signals in that text and route them correctly — without diagnosing, without adjudicating who's right, and without ever blocking the moment a couple is actually in. I'm one person carrying that safety floor alongside product, design, the AI pipeline, and billing. The safety layer is the one place a solo builder can't cut corners, so the whole system is designed around not letting me.",
