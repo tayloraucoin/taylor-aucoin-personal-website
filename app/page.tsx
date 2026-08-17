@@ -1,10 +1,13 @@
 import RootField from "@/components/field/RootField";
+import BioRow from "@/components/sections/BioRow";
 import Capabilities from "@/components/sections/Capabilities";
 import Footer from "@/components/sections/Footer";
 import Hero from "@/components/sections/Hero";
 import SelectedWork from "@/components/sections/SelectedWork";
 import Signal from "@/components/sections/Signal";
 import Specialties from "@/components/sections/Specialties";
+import Testimonials from "@/components/sections/Testimonials";
+import { PHOTO } from "@/lib/config";
 
 export default function Home() {
   return (
@@ -14,8 +17,12 @@ export default function Home() {
       <Hero />
       <Capabilities />
       <Specialties />
+      {/* Renders nothing when visibleTestimonials() is empty. */}
+      <Testimonials />
       <SelectedWork />
       <Signal />
+      {/* HOME-04 — the bio row joins once the photo exists (PRE-04). */}
+      {PHOTO && <BioRow />}
       <Footer />
     </main>
   );

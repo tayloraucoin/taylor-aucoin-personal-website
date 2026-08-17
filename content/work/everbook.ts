@@ -11,6 +11,7 @@ export const everbook = {
   roleLabel: "Founding Engineer",
   role: "Founding engineer, CTO-track",
   period: "2024 — 2025",
+  engagementType: "Maps to · 0→1 Build",
   stack: [
     "Next.js",
     "TypeScript",

@@ -38,6 +38,8 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
       <div className="mb-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
         <span>{c.role}</span>
         <span>{c.period}</span>
+        {/* CASE-06 — quietly ties each study to a /services offer. */}
+        <span className="text-(--color-c2)">{c.engagementType}</span>
       </div>
 
       <div className="mb-12 flex flex-wrap gap-2">

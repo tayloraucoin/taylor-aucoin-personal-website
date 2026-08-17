@@ -4,6 +4,8 @@ Work **one ticket at a time**. After each: `npm run build && npx tsc --noEmit`, 
 
 Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job on those is to verify, wire, and polish — **not to rewrite.** The scaffolded components encode design decisions that took many rounds to reach. If you think one is wrong, say so and stop. Do not silently improve it.
 
+> **Current sprint:** v3 — Contract Sales Site (services page, capability grid, Cal.com CTA, CC case study). Tickets live in [`tickets/v3-contract-sales/`](tickets/v3-contract-sales/00-INDEX.md) — start there. The sections below are the v1 build backlog.
+
 ---
 
 ## FND — Foundation

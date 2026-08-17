@@ -11,6 +11,7 @@ export const familyOfficePlatform = {
   roleLabel: "Fractional CTO",
   role: "Fractional CTO",
   period: "2026",
+  engagementType: "Fractional CTO engagement",
   stack: [
     "Next.js",
     "TypeScript",

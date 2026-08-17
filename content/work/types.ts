@@ -124,6 +124,14 @@ export type CaseStudy = {
   inactive?: boolean;
   role: string;
   period: string;
+  /**
+   * CASE-06 — maps the study to one of the three /services offers. Rendered
+   * as a third item in the header's role · period mono row. Only the family
+   * office engagement was genuinely fractional and Agora was Taylor's own
+   * venture, so employment-era studies use "Maps to ·" bridge phrasing —
+   * it labels the shape of the work without misstating the paperwork.
+   */
+  engagementType: string;
   stack: string[];
   /** Renders as "The brief" when set; otherwise use `constraint` ("The constraint"). */
   brief?: string | BriefContent;

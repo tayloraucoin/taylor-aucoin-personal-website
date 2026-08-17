@@ -32,6 +32,26 @@ export function isWorkPublished(slug: string): boolean {
   return WORK_PUBLISHED[slug] !== false;
 }
 
+/**
+ * Cal.com "Intro call" booking link (PRE-03). Every booking CTA on the site
+ * resolves here — this constant is the only place the URL lives.
+ */
+export const BOOKING_URL = "https://cal.com/taylor-aucoin/30min";
+
+/**
+ * Portrait photo (PRE-04), served from `public/`. `null` until the asset
+ * exists — the bio block renders without it and closes cleanly.
+ */
+export const PHOTO: string | null = "/images/me-headshot-1.png";
+
+/**
+ * Testimonial preview gate (TST-01). While true, entries with
+ * `approved: false` render WITH a "pending approval" chip so Taylor can see
+ * the feature before confirmations land. MUST be false before deploy (QA-08)
+ * — production shows only approved quotes.
+ */
+export const SHOW_PENDING_TESTIMONIALS = false;
+
 export const SITE = {
   name: "Taylor Aucoin",
   role: "Senior/staff product engineer",

@@ -11,6 +11,7 @@ export const agora = {
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer",
   period: "2021 — 2026",
+  engagementType: "Maps to · 0→1 Build",
   stack: [
     "Next.js",
     "TypeScript",
