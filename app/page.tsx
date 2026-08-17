@@ -17,7 +17,7 @@ export default function Home() {
       <Hero />
       <Capabilities />
       <Specialties />
-      {/* Renders nothing until quotes are approved (or in dev). */}
+      {/* Renders nothing when visibleTestimonials() is empty. */}
       <Testimonials />
       <SelectedWork />
       <Signal />

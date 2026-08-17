@@ -11,7 +11,8 @@
 
 export type CapabilityProof = {
   label: string;
-  href: string;
+  /** Absent → renders as a non-link label (work not yet published/linkable). */
+  href?: string;
   external?: boolean;
 };
 
@@ -357,7 +358,8 @@ export const capabilities: Capability[] = [
     title: "Take a company through a formal branding process",
     tech: "brand pillars · identity · brand guide",
     approach:
-      "A full branding sequence, run in order: brand pillars, mood board, colors, typography, logo, layouts and spacing, UI design, and the brand guide that holds it together. The output is a system a team can apply without me.",
+      "A full branding sequence, run in order: brand pillars, mood board, colors, typography, logo, layouts and spacing, UI design, and the brand guide that holds it together. Run end to end for Agora. The output is a system a team can apply without me.",
+    proof: [{ label: "Agora", href: "/work/agora" }],
     offer: "Fractional CTO",
     keywords: [
       "brand",
@@ -476,6 +478,30 @@ export const capabilities: Capability[] = [
       "automation",
       "data processing",
       "growth",
+    ],
+  },
+  {
+    slug: "ai-native-process",
+    tags: ["AI", "Process"],
+    title: "Turn AI coding agents into a disciplined engineering team",
+    tech: "Cursor · Claude Code · convention systems · role prompts",
+    approach:
+      "My daily workflow, systematized: Cursor and Claude Code held to layered convention files, locked architecture contracts, and a cast of thirty-plus written roles — staff engineer, QA, security, behavioral scientist — each injected into the thread that needs it. Specs are executable tickets with kickoff and completion protocols; decisions and deviations land in append-only logs. Documentation is the management layer — an unwritten convention doesn't exist.",
+    // Link to /work/conscious-connections once CC-01 publishes it.
+    proof: [{ label: "Conscious Connections" }],
+    offer: "Fractional CTO",
+    keywords: [
+      "cursor",
+      "claude code",
+      "agents",
+      "conventions",
+      "roles",
+      "ai workflow",
+      "ai-native",
+      "process",
+      "documentation",
+      "prompts",
+      "agentic",
     ],
   },
   {

@@ -13,7 +13,6 @@
  */
 
 import { SHOW_PENDING_TESTIMONIALS } from "@/lib/config";
-import { isDev } from "@/lib/env";
 
 export type TestimonialRelationship = "worked-for" | "led";
 
@@ -43,7 +42,7 @@ export type Testimonial = {
 /** What renders: approved always; pending only while the preview flag is on. */
 export const visibleTestimonials = () =>
   testimonials.filter(
-    (t) => t.approved || SHOW_PENDING_TESTIMONIALS || isDev(),
+    (t) => t.approved || SHOW_PENDING_TESTIMONIALS,
   );
 
 export const testimonials: Testimonial[] = [

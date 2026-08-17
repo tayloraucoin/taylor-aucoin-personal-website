@@ -146,7 +146,14 @@ export default function CapabilityGrid() {
             {open.proof && (
               <p className="mb-6 flex flex-wrap gap-x-5 gap-y-2">
                 {open.proof.map((p) =>
-                  p.external ? (
+                  !p.href ? (
+                    <span
+                      key={p.label}
+                      className="font-mono text-[10px] uppercase tracking-[.18em] text-[rgb(232_185_97/.55)]"
+                    >
+                      {p.label}
+                    </span>
+                  ) : p.external ? (
                     <a
                       key={p.label}
                       href={p.href}
