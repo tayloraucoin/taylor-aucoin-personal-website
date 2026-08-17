@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Banner export scratch output (temporary — goes with app/banner-export/)
+/public/banner/

@@ -6,6 +6,11 @@ export const consciousConnections = {
   meta: "AI · Next.js · Supabase",
   tagline:
     "A communication and coaching tool for couples, with AI-mediated conflict translation and a safety layer that screens for intimate-partner-violence signals.",
+  // Unpublished (`WORK_PUBLISHED` in lib/config.ts) — this route 404s today, so
+  // nothing crawls this string yet. Written to satisfy the required field;
+  // Taylor should take an edit pass before the case study goes live.
+  metaDescription:
+    "Founder and engineer: an AI coaching tool for couples that translates each partner's side of a fight, with a safety layer screening for coercive control.",
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer, designer",
   period: "2026 — present",

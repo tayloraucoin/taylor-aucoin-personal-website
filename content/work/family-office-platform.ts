@@ -6,6 +6,8 @@ export const familyOfficePlatform = {
   meta: "Platform · CRM",
   tagline:
     "Unified five separately built business systems into one monorepo and database — an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
+  metaDescription:
+    "Fractional CTO build: ten legacy databases across five business entities unified into one monorepo and one login. Five production apps in six weeks.",
   roleLabel: "Fractional CTO",
   role: "Fractional CTO",
   period: "2026",

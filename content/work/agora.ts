@@ -6,6 +6,8 @@ export const agora = {
   meta: "Recommender · Enrichment · Search",
   tagline:
     "A full marketplace commerce build — cart, checkout, tax, refunds, shipping — that later became a cross-marketplace discovery engine for independent sellers.",
+  metaDescription:
+    "Founder and engineer: a festival-fashion marketplace with owned checkout, rebuilt as a discovery engine. LLM catalog enrichment feeding an ML recommender.",
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer",
   period: "2021 — 2026",
