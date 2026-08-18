@@ -1,6 +1,7 @@
 import type { CaseStudy } from "@/content/work";
 import { publishedWork } from "@/content/work";
 import CaseLinks from "@/components/work/CaseLinks";
+import CaseMedia from "@/components/work/CaseMedia";
 import ProcessSection from "@/components/work/ProcessSection";
 import Section from "@/components/work/Section";
 import LabelCard from "@/components/ui/LabelCard";
@@ -205,41 +206,7 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
         </Section>
       )}
 
-      {/* Renders only if it exists. If it doesn't, the article closes cleanly. */}
-      {c.media.length > 0 && (
-        <Section label="Interface">
-          <div className="grid gap-4">
-            {c.media.map((m) => (
-              <figure key={m.src}>
-                {m.size === "narrow" ? (
-                  <div className="flex justify-center rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 py-10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={m.src}
-                      alt={m.alt}
-                      loading="lazy"
-                      className="w-full max-w-[360px] rounded-(--radius) border border-(--color-faint)"
-                    />
-                  </div>
-                ) : (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={m.src}
-                    alt={m.alt}
-                    loading="lazy"
-                    className="w-full rounded-(--radius) border border-(--color-faint)"
-                  />
-                )}
-                {m.caption && (
-                  <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim)">
-                    {m.caption}
-                  </figcaption>
-                )}
-              </figure>
-            ))}
-          </div>
-        </Section>
-      )}
+      <CaseMedia media={c.media} />
     </article>
   );
 }

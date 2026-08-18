@@ -126,3 +126,44 @@ export const CORE_STACK = [
   "Resend",
   "Vercel",
 ] as const;
+
+/**
+ * Google Analytics 4 measurement ID (stream "Taylor Aucoin Web", 15453628349).
+ *
+ * Read from the environment rather than hardcoded — not because the ID is a
+ * secret (it ships in the HTML of every page), but so that preview deploys and
+ * local dev, which have no value set, load no tag at all and never pollute the
+ * property with traffic that isn't real. Set `NEXT_PUBLIC_GA_ID` on Vercel for
+ * the Production environment only.
+ *
+ * The literal `process.env.NEXT_PUBLIC_GA_ID` reference is required: Next
+ * inlines these at build time by static text match, so it cannot be computed.
+ */
+export const GA_MEASUREMENT_ID: string | null =
+  process.env.NEXT_PUBLIC_GA_ID ?? null;
+
+/**
+ * Dev-only geo spoof for the consent system.
+ *
+ * Set a country (and optionally a region) and the middleware treats you as a
+ * visitor from there. This overrides the *input* to
+ * `lib/consent/jurisdictions.ts`, never its verdict — you are exercising the
+ * real table, not bypassing it. Localhost has no Vercel geo headers, so this
+ * is the only way to see the banner locally.
+ *
+ *   { country: "DE" }               → prior-consent   · banner
+ *   { country: "GB" }               → prior-consent   · banner
+ *   { country: "CA", region: "QC" } → prior-consent   · banner (Law 25)
+ *   { country: "CA", region: "QC" } → notice-and-opt-out · no banner
+ *   { country: "CH" }               → notice-and-opt-out · no banner
+ *   { country: "JP" }               → unrestricted    · no banner
+ *   { country: null }               → no geo at all, exercises FALLBACK_REGIME
+ *
+ * `null` uses the visitor's real location. Read behind `isDev()` in
+ * `middleware.ts`, so committing a non-null value by accident cannot reach
+ * production — set it back to `null` anyway.
+ */
+export const DEV_GEO_OVERRIDE: {
+  country: string | null;
+  region?: string | null;
+} | null = null;

@@ -54,6 +54,17 @@ Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job 
 - **WORK-05** `components/work/CaseOverlay.tsx` — focus trap, `Escape` closes, backdrop click closes, focus returns to the originating row. Enter/exit animation: slide up from the bottom edge, `--ease-out`, 450ms.
 - **WORK-06** Media strip — renders only when `media.length > 0`. Full-bleed. Lazy-loaded.
 
+## MEDIA — case study imagery
+
+Built ahead of a batch of new captures. `media` is now `MediaGroup[]`; the strip
+still renders nothing at all when it is empty, and every case page still closes
+on Outcome.
+
+- **MEDIA-01** ✅ `next/image` with static imports (`import shot from "@/public/work/<slug>/x.webp"`). Intrinsic dimensions come from the file at build time, so CLS is structurally impossible and no dimension is ever hand-maintained. AVIF added ahead of WebP in `next.config.ts`. Everbook's strip went from 7.7 MB of raw PNG to 408 KB delivered.
+- **MEDIA-02** ✅ Grouped layout — `components/work/CaseMedia.tsx`. Optional mono `label` + prose `intro` per cluster, `size: "half"` pairs adjacent captures 2-up on desktop, `frame: "panel"` insets light-background diagrams. Group labels should reuse the matching `built` card label so the strip indexes back into What I built.
+- **MEDIA-03** ✅ Click-to-zoom — `components/work/MediaLightbox.tsx`. Purpose-built rather than reusing `ui/Overlay`, which cannot nest (see the component docstring). Esc closes only the image, arrows page the whole strip, focus returns to the triggering thumbnail.
+- **MEDIA-04** ✅ Optional `video` per item — `controls`, `preload="none"`, poster-framed, never autoplay. No GIFs.
+
 ## SIG — Signal
 
 - **SIG-01** [SCAFFOLDED] `components/sections/Signal.tsx` — four-cell stat grid.
@@ -79,7 +90,7 @@ Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job 
 ## SHIP
 
 - **SHIP-01** Vercel project, `tayloraucoin.com` DNS, HTTPS.
-- **SHIP-02** Analytics (Vercel Analytics — no third-party trackers).
+- **SHIP-02** ✅ Analytics — Google Analytics 4 via `@next/third-parties`, gated on a jurisdiction table (`lib/consent/jurisdictions.ts`). Supersedes the original "Vercel Analytics — no third-party trackers" scope, at Taylor's direction. Hard gate: in prior-consent jurisdictions (EU/EEA, UK, Quebec) the tag is never inserted until the visitor accepts. GPC is honoured globally. Disclosure + opt-out at `/privacy`. Measurement ID comes from `NEXT_PUBLIC_GA_ID`, set on Vercel Production only, so preview deploys stay out of the property.
 - **SHIP-03** Reserved routes `/ventures`, `/writing`, `/media` return 404 for now. Do not build them.
 
 ---

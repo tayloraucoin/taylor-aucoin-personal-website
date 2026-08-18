@@ -27,6 +27,13 @@ export default function Footer() {
         </a>
         <span aria-hidden>·</span>
         <a
+          href="/privacy"
+          className="text-(--color-body) transition-colors hover:text-(--color-c2)"
+        >
+          Privacy
+        </a>
+        <span aria-hidden>·</span>
+        <a
           href={SITE.linkedin}
           className="text-(--color-body) transition-colors hover:text-(--color-c2)"
         >

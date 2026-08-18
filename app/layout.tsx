@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google";
+import Analytics from "@/components/analytics/Analytics";
 import SiteHeader from "@/components/ui/SiteHeader";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -55,6 +56,7 @@ export default function RootLayout({
         <SiteHeader />
         {children}
         {modal}
+        <Analytics />
       </body>
     </html>
   );

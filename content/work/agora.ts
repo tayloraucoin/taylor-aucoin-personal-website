@@ -1,4 +1,5 @@
 import type { CaseStudy } from "./types";
+import openAiPipeline from "@/public/work/agora/open-ai-pipeline.png";
 
 export const agora = {
   slug: "agora",
@@ -260,10 +261,18 @@ export const agora = {
   },
   media: [
     {
-      src: "/work/agora/open-ai-pipeline.png",
-      alt: "Architecture diagram of the OpenAI enrichment pipeline — cron producer, Postgres job queue, phased gpt-5-mini and embedding calls",
-      caption:
-        "The enrichment pipeline — the ML system the metadata problem forced me to build.",
+      label: "ENRICHMENT PIPELINE",
+      items: [
+        {
+          src: openAiPipeline,
+          alt: "Architecture diagram of the OpenAI enrichment pipeline — cron producer, Postgres job queue, phased gpt-5-mini and embedding calls",
+          caption:
+            "The enrichment pipeline — the ML system the metadata problem forced me to build.",
+          // A light-background diagram, so it is inset on a dark field rather
+          // than butting against the page gradient.
+          frame: "panel",
+        },
+      ],
     },
   ],
   links: [

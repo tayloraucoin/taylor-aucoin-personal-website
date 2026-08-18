@@ -45,6 +45,18 @@ These are laws. They were each learned by breaking them.
 
 **Tailwind v4 CSS-var syntax.** `text-[--color-c2]` is Tailwind **v3** idiom — v4 drops it silently and the class becomes a no-op (gold renders as inherited body color, hairlines inherit text color, radii collapse to 0, and nothing errors). The v4 syntax is `text-(--color-c2)`. This shipped broken across the whole site once and was invisible until a human asked why nothing was gold. Never write `-[--` in a class.
 
+**`next/image` + `width:auto` renders the image at a fraction of its size.** With
+`sizes="100vw"` the browser picks the largest srcset candidate (`3840w`), but the
+optimizer never upscales past the source — so a 1536px capture arrives as a
+1536px file while the srcset still claims 3840w. The browser reads that as a 3x
+image and lays it out at a third of its size. A full-viewport diagram rendered
+514px wide with nothing in the console. CSS `aspect-ratio` does not rescue it
+either: it only derives a *missing* dimension, so it cannot shrink width when
+max-height is the binding constraint. Anywhere an image must fit a box, pass an
+**explicit pixel width/height** — see `MediaLightbox.tsx`, which computes the
+fitted size from the intrinsic dimensions. Sizing with `w-full` (as the strip
+thumbnails do) is immune; only `w-auto` exposes this.
+
 `@property --angle` must be declared **`inherits: true`**. `GradientRing` writes `--angle` to the element in JS, but the conic-gradient lives on the `::before` pseudo-element. With `inherits: false`, the pseudo never sees the value and the ring silently freezes at 0deg. It looks like nothing is wrong. It is wrong.
 
 ## Do not
