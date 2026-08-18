@@ -15,6 +15,7 @@ import {
   type ConsentRegime,
 } from "@/lib/consent/jurisdictions";
 import ConsentBanner from "./ConsentBanner";
+import PageViews from "./PageViews";
 
 type Status =
   /** First paint, before the browser has told us anything. Renders nothing. */
@@ -147,7 +148,12 @@ export default function Analytics() {
 
   return (
     <>
-      {status === "load" && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
+      {status === "load" && (
+        <>
+          <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
+          <PageViews />
+        </>
+      )}
       {status === "ask" && (
         <ConsentBanner
           onAccept={() => writeStoredChoice("granted")}

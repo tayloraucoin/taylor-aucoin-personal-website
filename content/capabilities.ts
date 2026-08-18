@@ -84,7 +84,10 @@ export const capabilities: Capability[] = [
     tech: "LLM orchestration · evals · agent workflows",
     approach:
       "AI features held to the same conventions as the rest of the codebase — typed boundaries around model calls, evals before trust, and layered convention files so generated code lands at senior quality. Realtime voice AI shipped in production on Everbook.",
-    proof: [{ label: "Everbook", href: "/work/everbook" }],
+    proof: [
+      { label: "Everbook", href: "/work/everbook" },
+      { label: "Conscious Connections", href: "/work/conscious-connections" },
+    ],
     offer: "Fractional CTO",
     keywords: [
       "llm",
@@ -487,8 +490,9 @@ export const capabilities: Capability[] = [
     tech: "Cursor · Claude Code · convention systems · role prompts",
     approach:
       "My daily workflow, systematized: Cursor and Claude Code held to layered convention files, locked architecture contracts, and a cast of thirty-plus written roles — staff engineer, QA, security, behavioral scientist — each injected into the thread that needs it. Specs are executable tickets with kickoff and completion protocols; decisions and deviations land in append-only logs. Documentation is the management layer — an unwritten convention doesn't exist.",
-    // Link to /work/conscious-connections once CC-01 publishes it.
-    proof: [{ label: "Conscious Connections" }],
+    proof: [
+      { label: "Conscious Connections", href: "/work/conscious-connections" },
+    ],
     offer: "Fractional CTO",
     keywords: [
       "cursor",
