@@ -25,7 +25,7 @@ export const FIELD = {
  * to surface it.
  */
 export const WORK_PUBLISHED: Partial<Record<string, boolean>> = {
-  "conscious-connections": false,
+  "conscious-connections": true,
 };
 
 export function isWorkPublished(slug: string): boolean {
