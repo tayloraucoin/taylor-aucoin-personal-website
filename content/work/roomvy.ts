@@ -1,4 +1,6 @@
 import type { CaseStudy } from "./types";
+import roomvy1 from "@/public/work/roomvy/roomvy-1.webp";
+import roomvy2 from "@/public/work/roomvy/roomvy-2.webp";
 
 export const roomvy = {
   slug: "roomvy",
@@ -210,18 +212,25 @@ export const roomvy = {
       "A checkout architecture where the server owns the truth and the UI cannot drift",
     ],
   },
+  // Unlabelled: two captures with a shared design credit need no cluster header.
+  // Left full width rather than paired 2-up, which would put the identical
+  // credit caption twice side by side.
   media: [
     {
-      src: "/work/roomvy/roomvy-1.webp",
-      alt: "Roomvy participant booking flow — reservation interface",
-      caption:
-        "Design direction by Nick Kidd (Pathfinder Studios); I built the application.",
-    },
-    {
-      src: "/work/roomvy/roomvy-2.webp",
-      alt: "Roomvy participant booking flow — event housing reservation",
-      caption:
-        "Design direction by Nick Kidd (Pathfinder Studios); I built the application.",
+      items: [
+        {
+          src: roomvy1,
+          alt: "Roomvy participant booking flow — reservation interface",
+          caption:
+            "Design direction by Nick Kidd (Pathfinder Studios); I built the application.",
+        },
+        {
+          src: roomvy2,
+          alt: "Roomvy participant booking flow — event housing reservation",
+          caption:
+            "Design direction by Nick Kidd (Pathfinder Studios); I built the application.",
+        },
+      ],
     },
   ],
 } satisfies CaseStudy;

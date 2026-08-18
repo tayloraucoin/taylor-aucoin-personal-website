@@ -1,4 +1,12 @@
 import type { CaseStudy } from "./types";
+import ecomHome from "@/public/work/everbook/everbook-ecom-home.png";
+import lifeStoryEcom from "@/public/work/everbook/everbook-life-story-ecom.png";
+import lifeStoryEcomCont from "@/public/work/everbook/everbook-life-story-ecom-cont.png";
+import lifeStoryEcomMobile from "@/public/work/everbook/everbook-life-story-ecom-mobile.png";
+import lifeStoryDashboard from "@/public/work/everbook/everbook-life-story-dashboard.png";
+import coverPreview from "@/public/work/everbook/everbook-life-story-cover-preview.png";
+import pagesPreview from "@/public/work/everbook/everbook-life-story-pages-preview.png";
+import interviewOpening from "@/public/work/everbook/everbook-life-story-interview-opening.png";
 
 export const everbook = {
   slug: "everbook",
@@ -236,39 +244,61 @@ export const everbook = {
       "Conventions and documentation that let the team scale beyond its first engineer",
     ],
   },
+  // Grouped by the `built` card each cluster is evidence for, so the labels are
+  // the case study's own vocabulary. `intro` is deliberately unset — that copy
+  // is Taylor's to write.
   media: [
     {
-      src: "/work/everbook/everbook-ecom-home.png",
-      alt: "Multi-category storefront home — memoir plus additional product lines",
+      label: "COMMERCE PLATFORM",
+      items: [
+        {
+          src: ecomHome,
+          alt: "Multi-category storefront home — memoir plus additional product lines",
+        },
+        {
+          src: lifeStoryEcom,
+          alt: "Life Story product page — desktop",
+          size: "half",
+        },
+        {
+          src: lifeStoryEcomCont,
+          alt: "Life Story marketing page — storytelling mode selection",
+          size: "half",
+        },
+        {
+          src: lifeStoryEcomMobile,
+          alt: "Life Story product page — mobile",
+          size: "narrow",
+        },
+      ],
     },
     {
-      src: "/work/everbook/everbook-life-story-ecom.png",
-      alt: "Life Story product page — desktop",
+      label: "VOICE INTERVIEW ENGINE",
+      items: [
+        {
+          src: interviewOpening,
+          alt: "Life Story interview — prompt screen with write, audio, video, and AI interview capture modes",
+        },
+        {
+          src: lifeStoryDashboard,
+          alt: "Life Story author dashboard — prompts, stories, and book settings",
+        },
+      ],
     },
     {
-      src: "/work/everbook/everbook-life-story-ecom-cont.png",
-      alt: "Life Story marketing page — storytelling mode selection",
-    },
-    {
-      src: "/work/everbook/everbook-life-story-ecom-mobile.png",
-      alt: "Life Story product page — mobile",
-      size: "narrow",
-    },
-    {
-      src: "/work/everbook/everbook-life-story-dashboard.png",
-      alt: "Life Story author dashboard — prompts, stories, and book settings",
-    },
-    {
-      src: "/work/everbook/everbook-life-story-cover-preview.png",
-      alt: "Cover preview — spine width computed from page count",
-    },
-    {
-      src: "/work/everbook/everbook-life-story-pages-preview.png",
-      alt: "Paginated book preview — interior spread at print dimensions",
-    },
-    {
-      src: "/work/everbook/everbook-life-story-interview-opening.png",
-      alt: "Life Story interview — prompt screen with write, audio, video, and AI interview capture modes",
+      label: "BOOK PAGINATION ENGINE",
+      items: [
+        {
+          src: coverPreview,
+          alt: "Cover preview — spine width computed from page count",
+          size: "half",
+        },
+        {
+          src: pagesPreview,
+          alt: "Paginated book preview — interior spread at print dimensions",
+          size: "half",
+        },
+      ],
     },
   ],
   links: [

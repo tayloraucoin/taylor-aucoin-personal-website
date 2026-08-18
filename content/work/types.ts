@@ -9,6 +9,8 @@
  * All prose is Taylor's. Do not "improve" it unprompted.
  */
 
+import type { StaticImageData } from "next/image";
+
 export type Decision = {
   /** Mono chip above the decision statement. Optional — omitted when unset. */
   chip?: string;
@@ -75,12 +77,76 @@ export type OutcomeContent = {
   bullets: string[];
 };
 
-export type Media = {
-  src: string;
+/** One capture in the media strip. */
+export type MediaItem = {
+  /**
+   * Prefer a static import — `import shot from "@/public/work/<slug>/x.webp"`.
+   * Next reads intrinsic width/height at build time, so the layout box is
+   * reserved before the image loads and CLS is structurally impossible. A
+   * plain string still works but forfeits that, so only reach for one if the
+   * asset genuinely cannot live in `public/`.
+   */
+  src: StaticImageData | string;
   alt: string;
+  /** Mono metadata under the image. Short. */
   caption?: string;
-  /** Portrait / mobile captures — phone-width, centered on a dark field. */
-  size?: "full" | "narrow";
+  /**
+   * "full" (default) — its own row, at content width.
+   * "half" — pairs with an *adjacent* `half` into a 2-up row on desktop and
+   *   stacks on mobile. A `half` with no neighbouring `half` renders full width,
+   *   because a half-width image alone on the left reads as a layout bug.
+   * "narrow" — portrait / phone capture, capped at 360px on a dark panel. Two
+   *   adjacent `narrow` items sit side by side on desktop, which is how you show
+   *   one moment across two devices.
+   */
+  size?: "full" | "half" | "narrow";
+  /**
+   * "plain" (default) — the capture sits directly on the ground.
+   * "panel" — inset on a dark field. For anything with a light background,
+   *   chiefly architecture diagrams, so it does not butt against the page
+   *   gradient. `narrow` is always panelled and ignores this.
+   */
+  frame?: "plain" | "panel";
+  /**
+   * Turns the entry into a screen recording. `src` stays required and becomes
+   * the poster frame, so the slot still reserves the right box and still reads
+   * correctly before anything plays — and if the video ever fails to load, a
+   * real image is what remains.
+   *
+   * Deliberately `controls`, `preload="none"`, and never autoplay: nothing
+   * downloads until the reader presses play, and `prefers-reduced-motion` is
+   * satisfied by construction rather than by a media query. Video entries are
+   * not zoomable — a lightbox around a player fights its own controls.
+   *
+   * NO GIFs. A GIF is many times the size of an equivalent MP4 and always
+   * animates, which breaks the reduced-motion contract. Convert to MP4/WebM
+   * and use a poster frame.
+   */
+  video?: {
+    /** Path under `public/work/<slug>/`. MP4 (h.264) is the safe default. */
+    src: string;
+    /** Optional second source, listed first when present — e.g. a WebM. */
+    altSrc?: string;
+    altType?: string;
+  };
+};
+
+/**
+ * A cluster of captures under one mono sub-label.
+ *
+ * `label` and `intro` are both optional, so a single ungrouped run of captures
+ * is just `[{ items: [...] }]` — nothing is forced on a case study that has two
+ * screenshots and nothing to say about them.
+ *
+ * Prefer setting `label` to the matching `built` card label. That makes the
+ * strip an index back into What I built, in the case study's own vocabulary,
+ * instead of a second naming scheme nobody asked for.
+ */
+export type MediaGroup = {
+  label?: string;
+  /** One or two sentences of body copy introducing the cluster. Taylor's words. */
+  intro?: string;
+  items: MediaItem[];
 };
 
 /**
@@ -146,6 +212,6 @@ export type CaseStudy = {
   decisions: Decision[];
   broke?: string | BrokeContent;
   outcome: string | OutcomeContent;
-  media: Media[];
+  media: MediaGroup[];
   links?: CaseLink[];
 };
