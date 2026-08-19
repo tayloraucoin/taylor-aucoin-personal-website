@@ -3,15 +3,15 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
       "port": 3000,
       "autoPort": true
     },
     {
       "name": "prod",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["start"],
       "port": 3100,
       "autoPort": true
     }
