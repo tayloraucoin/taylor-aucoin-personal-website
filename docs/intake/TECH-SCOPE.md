@@ -106,7 +106,7 @@ There are no end-user accounts. The URL token is the credential; design accordin
 
 ## 6. Stripe (Agora)
 
-- **Hosted Checkout Session** (D-INT-1): `mode: payment`, `price_data` with `currency: cad` and the per-engagement amount, `customer_email` prefilled, `metadata.engagement_id`, success → `/intake/[token]?paid=1`, cancel → `/intake/[token]?canceled=1`.
+- **Hosted Checkout Session** (D-INT-1): `mode: payment`, `price_data` with `currency: cad` and the per-engagement amount, `customer_email` prefilled, `metadata.engagement_id`, success → `intakeRoutes.entry(token)?paid=1`, cancel → the same with `?canceled=1` (both composed in `server/services/deposit.ts`; the literal path lives only in `lib/routes.ts`).
 - **Fulfillment is webhook-only** (`checkout.session.completed` → set `paidAt`, store the payment-intent id). The success-URL param is UX sugar, never the source of truth — a user can fabricate it. Idempotent: fulfillment guards on `paidAt IS NULL`; replayed webhooks no-op. Signature verified with `STRIPE_WEBHOOK_SECRET`; the handler reads the raw body (Next.js route handler, not a server action).
 - **Keys:** a **restricted key** from Agora's account (Checkout write + read only). `[PENDING — Taylor]`: statement descriptor / `statement_descriptor_suffix` confirmation so the P0 "shows as AGORA" line is literally true (D-INT-10 adjacent).
 - No amounts hardcoded anywhere; the amount lives on the engagement row, set at link creation.
@@ -121,9 +121,9 @@ All system sends go through `server/services/emails.ts`; every send writes an `e
 
 ## 9. Site-integrity constraints (this repo's laws, applied)
 
-- **The static site stays static.** The `/intake` segment is dynamic; nothing in it may add providers, imports, or middleware weight to the existing routes. PERF-01 (Lighthouse ≥95 mobile) is measured on the portfolio routes and must not regress.
-- **No analytics or consent tooling on `/intake`** (M-INT-10): the surface carries business-confidential answers; we measure nothing there, so the consent banner has nothing to gate. Exclude the segment from the analytics component and leave middleware behavior harmless.
-- **Design law:** Quiet Gilt per UX spec §4 — no new hexes, tokens by name, Tailwind v4 `-(--token)` syntax (the `-[--` trap is a known shipped bug in this repo — see `CLAUDE.md`), no `RootField` import anywhere under `app/intake/`.
+- **The static site stays static.** The intake segment is dynamic; nothing in it may add providers, imports, or middleware weight to the existing routes. PERF-01 (Lighthouse ≥95 mobile) is measured on the portfolio routes and must not regress.
+- **No analytics or consent tooling on the intake surface** (M-INT-10): the surface carries business-confidential answers; we measure nothing there, so the consent banner has nothing to gate. Exclude the segment from the analytics component and leave middleware behavior harmless.
+- **Design law:** Quiet Gilt per UX spec §4 — no new hexes, tokens by name, Tailwind v4 `-(--token)` syntax (the `-[--` trap is a known shipped bug in this repo — see `CLAUDE.md`), no `RootField` import anywhere under `app/websites/intake/`.
 - **Verification** for every INT ticket: `npm run build` · `npx tsc --noEmit` · `npm run lint` — plus the happy path exercised against the local/hosted Supabase when the slice touches data.
 
 ## 10. Open items (routed)

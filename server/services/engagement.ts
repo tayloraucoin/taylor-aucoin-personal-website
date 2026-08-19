@@ -4,7 +4,7 @@ import {
   createHash,
   randomBytes,
 } from "node:crypto";
-import { eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagements, type EngagementRow } from "@/db/schema";
 import { readEnv, requireEnv } from "@/lib/env";
@@ -246,7 +246,7 @@ export async function createEngagement(
     .insert(engagements)
     .values({
       businessName: parsed.businessName,
-      contactEmail: parsed.contactEmail,
+      contactEmail: parsed.contactEmail.trim().toLowerCase(),
       contactName: parsed.contactName,
       contactPhone: parsed.contactPhone,
       currency: parsed.currency,
@@ -294,6 +294,41 @@ export async function reissueEngagementToken(
   return { engagement: toEngagement(row, now), token };
 }
 
+/**
+ * Finds an unfinished engagement for an email address.
+ *
+ * The public start form is open to anyone, so a client who fills it twice —
+ * lost the tab, tried again tomorrow — would otherwise end up with two records
+ * and two deposits to reconcile. Reusing their existing one is both tidier and
+ * kinder: they land back where they were rather than starting over.
+ *
+ * Only unfinished engagements are reused. Someone coming back months later for
+ * a second website is a genuinely new engagement.
+ */
+export async function findResumableByEmail(
+  contactEmail: string,
+): Promise<{ engagement: Engagement; token: string | null } | null> {
+  const [row] = await getDb()
+    .select()
+    .from(engagements)
+    .where(
+      and(
+        eq(engagements.contactEmail, contactEmail.trim().toLowerCase()),
+        isNull(engagements.completedAt),
+      ),
+    )
+    .orderBy(desc(engagements.createdAt))
+    .limit(1);
+
+  if (!row) return null;
+  if (row.tokenExpiresAt.getTime() <= Date.now()) return null;
+
+  return {
+    engagement: toEngagement(row),
+    token: decryptToken(row.resumeTokenCiphertext),
+  };
+}
+
 /** Reads an engagement by id. Local tooling only — never a request path. */
 export async function findEngagementById(
   engagementId: string,
@@ -325,9 +360,14 @@ export async function markStepReached(
   await getDb()
     .update(engagements)
     .set({
-      currentStep: sql`greatest(${engagements.currentStep}, ${stepNumber})`,
+      currentStep: sql`greatest(${engagements.currentStep}, ${stepNumber}::integer)`,
       lastActivityAt: now,
-      startedAt: sql`coalesce(${engagements.startedAt}, ${now})`,
+      // `now()` rather than the JavaScript date: a raw `sql` template carries
+      // no column type, so Drizzle cannot map a Date to a timestamptz the way
+      // the typed `.set()` fields above are mapped, and postgres.js receives
+      // an unserialisable Date. Letting Postgres supply the value sidesteps
+      // the conversion entirely.
+      startedAt: sql`coalesce(${engagements.startedAt}, now())`,
       updatedAt: now,
     })
     .where(eq(engagements.id, engagementId));

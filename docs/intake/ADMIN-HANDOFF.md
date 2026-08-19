@@ -25,7 +25,7 @@ Creating an engagement needs: contact name · business name · phone · email ·
 
 > Subject: {Business name} — everything from our call
 >
-> Hey {first name} — great talking today. Here's the link with everything we agreed, the deposit, and a short questionnaire (about 20 minutes, skip anything you're not sure about): {link}
+> Hey {first name} — great talking today. Here's the link with everything we agreed, the deposit, and a short questionnaire (about 30 minutes, skip anything you're not sure about): {link}
 >
 > Text me if anything's weird. — Taylor
 

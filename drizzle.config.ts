@@ -1,5 +1,9 @@
 import { defineConfig } from "drizzle-kit";
+import { buildIntakeEnvForNextConfig } from "./lib/config/env/resolve-tier-env";
 import { readEnv } from "./lib/env";
+
+// drizzle-kit runs outside Next, so the tier collapse has to happen here too.
+Object.assign(process.env, buildIntakeEnvForNextConfig(process.env));
 
 /**
  * Drizzle Kit configuration.

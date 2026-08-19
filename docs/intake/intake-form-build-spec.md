@@ -49,7 +49,7 @@ Nine steps. Show step count and a progress bar throughout.
 
 **Intro screen (not a step)**
 
-> Everything we need to build your site — about 20 minutes.
+> Everything we need to build your site — about 30 minutes.
 > Skip anything you're not sure about; we'll go through it together on our call. Your answers save automatically, so you can stop and come back anytime.
 
 Include a "send me my link" button that emails the resume URL immediately, so they can switch devices.

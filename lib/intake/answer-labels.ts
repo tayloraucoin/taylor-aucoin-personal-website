@@ -73,7 +73,7 @@ export const ANSWER_LABELS: Record<string, string> = {
   // Step 5 — voice
   neverSay: "Words and phrases to avoid",
   writtenNotes: "Pasted writing",
-  recordingConsent: "Consent to record the call",
+  recordingConsent: "Consent to record calls",
 
   // Step 6 — photos
   logoStatus: "Logo status",
@@ -89,6 +89,7 @@ export const ANSWER_LABELS: Record<string, string> = {
   // Step 8 — team
   justYou: "Solo or team",
   headcount: "Headcount",
+  aboutTeam: "About the team",
   showTeam: "Show team on the site",
   team: "Team members",
   yourBackground: "Owner background",
@@ -97,14 +98,22 @@ export const ANSWER_LABELS: Record<string, string> = {
   ownsDomain: "Owns a domain",
   domainName: "Domain",
   registrar: "Registrar",
+  domainAccess: "Domain access preference",
   emailAtDomain: "Email at that domain",
-  googleBusinessProfile: "Google Business Profile",
+  googleBusinessProfile: "Can manage Google Business Profile",
+  googleMapsUrl: "Google Maps listing",
   socials: "Social accounts",
   existingWebsite: "Existing website",
   existingWebsitePlatform: "Existing website platform",
   hasStripe: "Stripe account",
   bookingTool: "Booking tool",
+  extrasWanted: "Paid extras requested",
+  bookingServices: "Services to make bookable",
+  bookingCalendar: "Calendar in use",
+  stripeAccountEmail: "Stripe account email",
+  statementDescriptor: "Card statement descriptor",
   bestContactMethod: "Preferred contact method",
+  anythingElse: "Anything else",
 };
 
 export function labelFor(key: string): string {

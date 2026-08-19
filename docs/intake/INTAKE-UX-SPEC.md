@@ -23,9 +23,11 @@ Author: Vesper (design). Status: **Draft for Taylor's sign-off**, then handoff t
 ### Route map
 
 ```
-/intake/[token]                 → state-routed entry (P0 pay / W0 welcome / resume / done)
-/intake/[token]/[step]          → steps 1–9 (per build spec §4)
-/intake/[token]/done            → confirmation
+/websites                       → the public service page the client was sent to
+/websites/intake                → PUBLIC start form — six fields, mints the token
+/websites/intake/[token]        → state-routed entry (P0 pay / W0 welcome / resume / done)
+/websites/intake/[token]/[step] → steps 1–9 (per build spec §4)
+/websites/intake/[token]/done   → confirmation
 ```
 
 One token = one client = one engagement, created by Taylor after the sales call with: contact name, business name, phone, email, a 1–3 line project summary, deposit amount, and a `deposit_required` flag. These prefill the flow — the client must never be asked something Taylor already knows.
@@ -41,7 +43,7 @@ Email link
   → Done                     (what happens next · skipped list · book the call)
 ```
 
-### State routing on `/intake/[token]`
+### State routing on `/websites/intake/[token]`
 
 | Engagement state                 | Landing behavior                                                                    |
 | -------------------------------- | ----------------------------------------------------------------------------------- |
@@ -72,7 +74,7 @@ Anatomy, top to bottom, single column:
    - `Payment handled by Stripe · Apple Pay / Google Pay / card`
    - `Shows as AGORA on your statement — that's us`
    - `Receipt emailed automatically`
-6. **What-happens-next line**, body dim: "Right after this you'll get a short questionnaire — about 20 minutes, skip anything you're not sure about."
+6. **What-happens-next line**, body dim: "Right after this you'll get a short questionnaire — about 30 minutes, skip anything you're not sure about."
 
 **States:** default · CTA loading (label swaps to `Opening secure checkout…`, button disabled, no spinner theater) · returned-canceled (adds one body line above the CTA: "No charge was made. Whenever you're ready." — nothing red, nothing modal) · paid (this screen never renders again; route to W0).
 
@@ -103,7 +105,7 @@ Ratified direction: **same system, calmer dialect.** One brand from tayloraucoin
 
 ### Muted for this surface
 
-- **No `RootField` canvas.** The atmosphere on /intake is ground + glows + grain only. A recursive circuit-root system behind a payment form is exactly the "atmosphere beating the interface" failure the site's own laws exist to prevent — and it costs mobile CPU we need for a long form.
+- **No `RootField` canvas.** The atmosphere on the intake surface is ground + glows + grain only. A recursive circuit-root system behind a payment form is exactly the "atmosphere beating the interface" failure the site's own laws exist to prevent — and it costs mobile CPU we need for a long form.
 - **GradientRing appears exactly once in the whole flow:** the voice-note card on Step 5 (§7). The ring is the site's signature; rationing it to the single field we most want answered gives that field the visual gravity the build spec demands, without decorating a questionnaire.
 - Motion approaches stillness: step transitions only (300ms `--ease-out`, fade + 8px rise), no ambient movement, no count-ups, nothing on scroll.
 
@@ -273,7 +275,7 @@ Stripe's own receipt covers payment confirmation; we do not duplicate it.
 
 - ~~`[ASSUMPTION]` Deposit amount and project summary are set per-link by Taylor at creation; amounts vary per deal.~~ **WRONG — corrected 2026-08-19.** A standard build is a standard price. The deposit is a saved Stripe Price (`STRIPE_PRICE_DEPOSIT`); only the project summary is per-link. This assumption was never confirmed and should have been a question at scoping.
 - `[ASSUMPTION]` A `deposit_required` flag exists per link so an edge deal can skip P0. `[PROPOSED — needs sign-off]`
-- `[ASSUMPTION]` Surface lives at `tayloraucoin.com/intake/...`.
+- ~~`[ASSUMPTION]` Surface lives at `tayloraucoin.com/intake/...`.~~ Resolved 2026-08-19: the tree nests under the service page it belongs to — `tayloraucoin.com/websites/intake/...`. See `docs/websites/WEBSITES-PAGE-SPEC.md` §7.
 - `[ASSUMPTION]` Cal.com is the call-booking rail (it is already the site's).
 - `[ASSUMPTION]` Taylor sends the initial link email personally; the system owns resume/reminder/completion emails.
 
@@ -290,7 +292,7 @@ Stripe's own receipt covers payment confirmation; we do not duplicate it.
 Added at Mason's request so tickets cite rulings by ID rather than prose. Each is **Ruled** unless marked otherwise; re-opening requires new evidence routed to Taylor.
 
 - **D-INT-1** — The deposit gate precedes the form; payment is **hosted Stripe Checkout** (wallets included); the app designs zero card UI. No urgency devices anywhere near payment.
-- **D-INT-2** — Quiet Gilt variant governs `/intake`: no `RootField` canvas; 560px max column; 16px minimum input font; 48px targets; validation in gold, never red; zero new hexes.
+- **D-INT-2** — Quiet Gilt variant governs the intake surface: no `RootField` canvas; 560px max column; 16px minimum input font; 48px targets; validation in gold, never red; zero new hexes.
 - **D-INT-3** — `GradientRing` appears exactly once in the flow: the Step 5 voice-note card.
 - **D-INT-4** — Nothing is required; **Continue is never disabled** (sole exception: P0 pay button while checkout opens); "Not sure" is a full-size rendered option on factual-risk radios.
 - **D-INT-5** — One step = one scrollable screen; nine steps exactly; linear navigation with back, step-jumping only from the resume screen.

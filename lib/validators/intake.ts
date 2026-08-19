@@ -30,6 +30,36 @@ export const createEngagementInput = z
 
 export type CreateEngagementInput = z.infer<typeof createEngagementInput>;
 
+/**
+ * The public start form at `/intake`.
+ *
+ * Six fields, because this is the screen a client meets before they have paid
+ * anything and the only job it has is to make an engagement real. Everything
+ * substantive — business number, GST, insurance — waits until Step 1, behind
+ * the deposit.
+ *
+ * `website` is a honeypot: a real client never sees it, so anything in it is a
+ * bot. Named to be tempting rather than obviously bait.
+ */
+export const startIntakeInput = z.object({
+  businessName: z.string().trim().min(1, "Please add your business name"),
+  contactName: z.string().trim().min(1, "Please add your name"),
+  contactEmail: z.email("Please add an email we can reach you at"),
+  contactPhone: z.string().trim().min(1).optional(),
+  whatYouDo: z.string().trim().min(1).optional(),
+  /**
+   * A Google Maps share link. Deliberately not validated beyond "some text" —
+   * a client pasting a search URL or their listing name instead of a share
+   * link has still told us enough to find them, and rejecting it would cost
+   * more than the tidiness is worth. The verification call confirms it.
+   */
+  googleMapsUrl: z.string().trim().optional(),
+  currentWebsite: z.string().trim().optional(),
+  website: z.string().max(0).optional(),
+});
+
+export type StartIntakeInput = z.infer<typeof startIntakeInput>;
+
 /* ────────────────────────────────────────────────────────────────────────────
    Questionnaire answers
    ────────────────────────────────────────────────────────────────────────────
@@ -157,6 +187,7 @@ export const teamMemberSchema = z.object({ name: text, role: text });
 export const stepTeamSchema = z.object({
   justYou: text,
   headcount: text,
+  aboutTeam: text,
   showTeam: text,
   team: z.array(teamMemberSchema).optional(),
   yourBackground: text,
@@ -173,9 +204,11 @@ export const socialAccountSchema = z.object({ platform: text, url: text });
  * upstream of the box (build spec §5).
  */
 export const stepAccessSchema = z.object({
+  googleMapsUrl: text,
   ownsDomain: text,
   domainName: text,
   registrar: text,
+  domainAccess: text,
   emailAtDomain: text,
   googleBusinessProfile: text,
   socials: z.array(socialAccountSchema).optional(),
@@ -183,7 +216,27 @@ export const stepAccessSchema = z.object({
   existingWebsitePlatform: text,
   hasStripe: text,
   bookingTool: text,
+  /**
+   * Paid extras the client wants quoted. Named `extrasWanted` rather than
+   * `addOns` because `answer-labels.ts` is a flat key-to-label map and step 2
+   * already owns `addOns` for the client's *own* add-on services. Two steps
+   * can hold the same key in the database without colliding; the document
+   * would have labelled these "Add-ons" and read as the client's price list.
+   */
+  extrasWanted: choice,
+  bookingServices: text,
+  bookingCalendar: text,
+  /**
+   * The two facts the Stripe setup guide needs that this form does not already
+   * hold. GST status is step 1 and the product list is step 2, so neither is
+   * asked twice (D-INT-8). There is no field for the invite itself: access is
+   * collected out of band, and a "have you invited me yet" checkbox ticked
+   * before the client has opened the guide would record a false yes.
+   */
+  stripeAccountEmail: text,
+  statementDescriptor: text,
   bestContactMethod: text,
+  anythingElse: text,
 });
 
 export const STEP_SCHEMAS = {

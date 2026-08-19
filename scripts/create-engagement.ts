@@ -7,6 +7,9 @@ import {
   getEngagementStatus,
   reissueEngagementToken,
 } from "@/server/services/engagement";
+import { applyTierEnv } from "./_env";
+
+applyTierEnv();
 
 /**
  * Creates a client intake link after a sales call.

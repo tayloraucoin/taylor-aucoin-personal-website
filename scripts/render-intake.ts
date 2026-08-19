@@ -3,6 +3,9 @@ import { sendIntakeDocument } from "@/server/services/emails";
 import { findEngagementById } from "@/server/services/engagement";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { linkUploads } from "@/server/services/submission";
+import { applyTierEnv } from "./_env";
+
+applyTierEnv();
 
 const LINK_TTL_SECONDS = 14 * 24 * 60 * 60;
 

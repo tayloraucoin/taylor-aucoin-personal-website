@@ -1,6 +1,9 @@
 import { parseArgs } from "node:util";
 import Stripe from "stripe";
 import { requireEnv } from "@/lib/env";
+import { applyTierEnv } from "./_env";
+
+applyTierEnv();
 
 /**
  * The Agora catalogue, as published in how_we_work.pdf and website_toolkit.pdf.
@@ -55,8 +58,8 @@ const CATALOGUE: ProductSpec[] = [
       "Five-page website built from your questionnaire answers. $1,200 + GST, half to start and half before it goes live.",
     taxCode: TAX_WEBSITE,
     prices: [
-      { nickname: "Deposit — half to start", amountCents: 60000, env: "STRIPE_PRICE_DEPOSIT" },
-      { nickname: "Balance — before go-live", amountCents: 60000, env: "STRIPE_PRICE_BALANCE" },
+      { nickname: "Deposit — half to start", amountCents: 60000, env: "PRICE_DEPOSIT" },
+      { nickname: "Balance — before go-live", amountCents: 60000, env: "PRICE_BALANCE" },
     ],
   },
   {
@@ -65,7 +68,7 @@ const CATALOGUE: ProductSpec[] = [
       "New sections, layout changes, rewritten copy, or a new page. Batched into one round.",
     taxCode: TAX_WEBSITE,
     prices: [
-      { nickname: "Standard round", amountCents: 50000, env: "STRIPE_PRICE_CHANGES_STANDARD" },
+      { nickname: "Standard round", amountCents: 50000, env: "PRICE_CHANGES_STANDARD" },
     ],
   },
   {
@@ -73,32 +76,32 @@ const CATALOGUE: ProductSpec[] = [
     description: "A few text edits, swapping photos, updating hours. Batched into one round.",
     taxCode: TAX_WEBSITE,
     prices: [
-      { nickname: "Small round", amountCents: 25000, env: "STRIPE_PRICE_CHANGES_SMALL" },
+      { nickname: "Small round", amountCents: 25000, env: "PRICE_CHANGES_SMALL" },
     ],
   },
   {
     name: "Extra page",
     description: "An additional page beyond the standard five. Priced per page.",
     taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Per page", amountCents: 15000, env: "STRIPE_PRICE_EXTRA_PAGE" }],
+    prices: [{ nickname: "Per page", amountCents: 15000, env: "PRICE_EXTRA_PAGE" }],
   },
   {
     name: "Online booking setup",
     description: "Your services, hours, and calendar synced to online booking.",
     taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "STRIPE_PRICE_BOOKING_SETUP" }],
+    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_BOOKING_SETUP" }],
   },
   {
     name: "Google Business Profile deep clean",
     description: "Photos, categories, and description brought up to scratch.",
     taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Deep clean", amountCents: 30000, env: "STRIPE_PRICE_GBP_CLEAN" }],
+    prices: [{ nickname: "Deep clean", amountCents: 30000, env: "PRICE_GBP_CLEAN" }],
   },
   {
     name: "Logo refresh",
     description: "A refreshed logo for your business.",
     taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Refresh", amountCents: 25000, env: "STRIPE_PRICE_LOGO" }],
+    prices: [{ nickname: "Refresh", amountCents: 25000, env: "PRICE_LOGO" }],
   },
   {
     name: "Care Plan",
@@ -106,7 +109,7 @@ const CATALOGUE: ProductSpec[] = [
       "Google review replies, listing posts, one small round of website changes a month, and priority on bigger work. Month to month.",
     taxCode: TAX_SERVICES,
     prices: [
-      { nickname: "Monthly", amountCents: 25000, env: "STRIPE_PRICE_CARE_PLAN", recurring: "month" },
+      { nickname: "Monthly", amountCents: 25000, env: "PRICE_CARE_PLAN", recurring: "month" },
     ],
   },
 ];
@@ -119,9 +122,15 @@ async function main(): Promise<void> {
     apiVersion: "2026-07-29.dahlia",
   });
 
-  const live = requireEnv("STRIPE_SECRET_KEY").startsWith("sk_live_");
+  // The key decides the mode, not APP_ENVIRONMENT — a live key run under a
+  // staging tier would still create live objects, so report what Stripe will
+  // actually see.
+  const mode = requireEnv("STRIPE_SECRET_KEY").startsWith("sk_live_")
+    ? "LIVE"
+    : "TEST";
+
   console.log(
-    `\n${apply ? "APPLYING" : "DRY RUN"} against ${live ? "LIVE" : "TEST"} mode.` +
+    `\n${apply ? "APPLYING" : "DRY RUN"} against Stripe ${mode} mode.` +
       (apply ? "" : "  Re-run with --apply to make changes.\n"),
   );
 
@@ -166,7 +175,7 @@ async function main(): Promise<void> {
 
       if (match && match.unit_amount === price.amountCents) {
         console.log(`  = ${price.nickname}  $${(price.amountCents / 100).toFixed(2)}`);
-        envLines.push(`${price.env}=${match.id}`);
+        envLines.push(`STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${match.id}`);
         continue;
       }
 
@@ -192,7 +201,7 @@ async function main(): Promise<void> {
           tax_behavior: "exclusive",
           ...(price.recurring ? { recurring: { interval: price.recurring } } : {}),
         });
-        envLines.push(`${price.env}=${created.id}`);
+        envLines.push(`STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${created.id}`);
       }
     }
 

@@ -2,7 +2,8 @@ import Stripe from "stripe";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagements } from "@/db/schema";
-import { requireEnv } from "@/lib/env";
+import { requireEnv, requirePriceId } from "@/lib/env";
+import { intakeRoutes } from "@/lib/routes";
 import type { Engagement } from "./engagement";
 
 /**
@@ -98,14 +99,14 @@ export async function createDepositCheckout(
         // charge. It is still written at fulfillment as the record of what
         // this client actually paid, because prices change and the intake
         // document should reflect the deal as struck.
-        price: requireEnv("STRIPE_PRICE_DEPOSIT"),
+        price: requirePriceId("DEPOSIT"),
       },
     ],
     payment_intent_data: {
       statement_descriptor_suffix: DEPOSIT_DESCRIPTOR_SUFFIX,
     },
-    success_url: `${origin}/intake/${token}?paid=1`,
-    cancel_url: `${origin}/intake/${token}?canceled=1`,
+    success_url: `${origin}${intakeRoutes.entry(token)}?paid=1`,
+    cancel_url: `${origin}${intakeRoutes.entry(token)}?canceled=1`,
   });
 
   if (!session.url) throw new Error("Stripe returned a session with no URL.");
@@ -130,11 +131,11 @@ export async function getDepositPrice(): Promise<{
   currency: string;
 }> {
   const price = await getStripe().prices.retrieve(
-    requireEnv("STRIPE_PRICE_DEPOSIT"),
+    requirePriceId("DEPOSIT"),
   );
 
   if (price.unit_amount === null) {
-    throw new Error("STRIPE_PRICE_DEPOSIT has no fixed unit amount.");
+    throw new Error("The deposit Price has no fixed unit amount.");
   }
 
   return { amountCents: price.unit_amount, currency: price.currency };

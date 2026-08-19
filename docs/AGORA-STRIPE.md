@@ -132,3 +132,36 @@ Never commit either. A pre-commit hook that greps for `sk_` and `rk_` is worth a
 - Run `yarn stripe:catalogue --deposit <cents> --balance <cents> --iteration <cents>` with your real prices, in each environment, and set the printed price ids.
 - Wire balance/iteration invoicing to engagements — the service exists, but nothing yet creates an invoice from a finished website build. Currently manual.
 - Complete the account's business profile — `charges_enabled` is currently `false`, so live charges are not yet possible.
+
+## Testing a payment locally
+
+Two processes. Both are required — the second is the one people forget, and
+without it a payment succeeds in Stripe and never reaches the app.
+
+```bash
+yarn dev
+```
+
+```bash
+yarn stripe:listen
+```
+
+`stripe listen` prints a `whsec_…` on startup. Put it in
+`STRIPE_LOCAL_WEBHOOK_SECRET` and restart `yarn dev` — the value is read
+through `next.config.ts`, so a running dev server will not pick it up.
+
+`yarn stripe:listen` forwards to port 3000. `yarn dev`'s `autoPort` means it
+can land on a different port if 3000 is already taken — if so, forward to that
+port instead: `stripe listen --forward-to localhost:<port>/api/webhooks/stripe`.
+
+The secret is regenerated per `stripe listen` session, which is exactly why the
+local tier does not share the staging one.
+
+**Why the app cannot fall back to the redirect.** `paid_at` is written only by
+a signature-verified webhook. The `?paid=1` on the return URL is a hint that
+decides which screen to show and nothing more — anyone can type it. So with no
+listener running, Checkout will succeed, Stripe will hold the payment, and the
+engagement will correctly still read unpaid. That is the system working, not
+failing.
+
+Card `4242 4242 4242 4242`, any future expiry, any CVC.

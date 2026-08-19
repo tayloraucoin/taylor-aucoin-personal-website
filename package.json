@@ -14,7 +14,8 @@
     "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "intake:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-engagement.ts",
     "intake:render": "node --env-file-if-exists=.env.local --import tsx scripts/render-intake.ts",
-    "stripe:catalogue": "node --env-file-if-exists=.env.local --import tsx scripts/setup-stripe-catalogue.ts"
+    "stripe:catalogue": "node --env-file-if-exists=.env.local --import tsx scripts/setup-stripe-catalogue.ts",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe"
   },
   "dependencies": {
     "@next/third-parties": "^15.5.20",
