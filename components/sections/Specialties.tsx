@@ -15,11 +15,11 @@ const specialties = [
   },
   {
     label: "Data & state architecture",
-    body: "Schemas designed for the use cases they'll actually meet, and state handled deliberately at every layer — component, store, query cache, CDN, database, read replica.",
+    body: "Schemas designed for the use cases they'll actually meet, and state handled deliberately at every layer: component, store, query cache, CDN, database, read replica.",
   },
   {
     label: "Rendering performance",
-    body: "React and Next.js at the level where it matters — server components, caching strategy, bundle discipline.",
+    body: "React and Next.js at the level where it matters: server components, caching strategy, bundle discipline.",
   },
   {
     label: "Search & discovery",
@@ -27,11 +27,11 @@ const specialties = [
   },
   {
     label: "Specification",
-    body: "Tutorial-grade tickets — every layer of a feature mapped end to end, upfront. Writing a spec that precise is coding the feature through another person.",
+    body: "Tutorial-grade tickets: every layer of a feature mapped end to end, upfront. Writing a spec that precise is coding the feature through another person — or an AI agent.",
   },
   {
     label: "Correctness",
-    body: "Typed contracts, integration tests, preview environments — knowing it works before the customer does.",
+    body: "Typed contracts, integration tests, preview environments. Knowing it works before the customer does.",
   },
 ];
 

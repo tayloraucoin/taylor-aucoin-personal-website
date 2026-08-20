@@ -10,16 +10,24 @@ import { stack } from "@/content/stack";
  * Categories render as GradientRing cards — the same moving-border idiom as
  * the Capabilities cards. Items flagged `core` in content/stack.ts render
  * bold; the legend under the h1 explains the emphasis.
+ *
+ * `overlay` — true when rendered inside the intercepted-route Overlay. The
+ * home link is hidden there: parallel-route slots keep rendering their last
+ * matched content on soft navigation, so a `<Link href="/">` inside the
+ * overlay changes the URL without closing the panel — a dead-looking click.
+ * Esc, backdrop, and the close chip already cover dismissal in that context.
  */
-export default function StackBody() {
+export default function StackBody({ overlay = false }: { overlay?: boolean }) {
   return (
     <article className="mx-auto max-w-[1080px] px-[22px] py-14 md:px-14">
-      <Link
-        href="/"
-        className="mb-8 inline-block font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink)"
-      >
-        ← tayloraucoin.com
-      </Link>
+      {!overlay && (
+        <Link
+          href="/"
+          className="mb-8 inline-block font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink)"
+        >
+          ← tayloraucoin.com
+        </Link>
+      )}
       <div className="mb-3 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
         Taylor Aucoin
       </div>
@@ -27,8 +35,8 @@ export default function StackBody() {
         Full stack
       </h1>
       <p className="mb-10 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-        <strong className="font-medium text-(--color-ink)">Bold</strong> · core
-        stack
+        The <strong className="font-medium text-(--color-ink)">bold</strong>{" "}
+        items are my core stack
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

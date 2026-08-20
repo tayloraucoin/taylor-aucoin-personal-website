@@ -13,12 +13,12 @@ const cards: Array<{ tag: string; title: string; body: ReactNode }> = [
   {
     tag: "01 / Architecture",
     title: "Systems, end to end",
-    body: "Turborepo monorepos, typed contracts from Postgres to the pixel, and infrastructure a team of one can actually operate. State handled deliberately at every layer — component to cache to read replica.",
+    body: "Turborepo monorepos, typed contracts from Postgres to the pixel, and infrastructure a team of one can actually operate. State handled deliberately at every layer, component to cache to read replica.",
   },
   {
     tag: "02 / Product",
     title: "Judgment, not tickets",
-    body: "I'm a product engineer — I've been the founder and the first engineer. Every build starts as a UX problem and ends as a business outcome; the code exists to serve that order. I know which corners are load-bearing and which ones are decoration.",
+    body: "I've been the founder and the first engineer, so I build like both. A feature starts as a UX problem and has to end as a business outcome. After twelve products I know which corners are load-bearing and which are decoration.",
   },
   {
     tag: "03 / Leadership",
@@ -44,7 +44,7 @@ const cards: Array<{ tag: string; title: string; body: ReactNode }> = [
   {
     tag: "04 / Process",
     title: "Conventions that compound",
-    body: "I learn a codebase's conventions, enforce them in review, and write them down — layered convention files and defined roles that let AI tooling generate at senior quality instead of plausible mediocrity. Fast because it's disciplined, not despite it.",
+    body: "I learn a codebase's conventions, enforce them in review, and write them down. The same convention files and role definitions hold AI-generated code to senior quality — that discipline is where the speed comes from.",
   },
 ];
 

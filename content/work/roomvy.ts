@@ -7,7 +7,7 @@ export const roomvy = {
   title: "Roomvy",
   meta: "Booking flow · Client app",
   tagline:
-    "The entire client-facing booking frontend, built solo — an Airbnb-style room-block flow for conferences and tournaments — with zero issues reported in production.",
+    "The entire client-facing booking frontend, built solo: an Airbnb-style room-block flow for conferences and tournaments, with zero issues reported in production.",
   metaDescription:
     "Senior frontend build: the participant-facing booking client for event room blocks. Map discovery, multi-room checkout, card holds. Shipped solo, zero issues.",
   roleLabel: "Senior Frontend Engineer",
@@ -30,7 +30,7 @@ export const roomvy = {
     {
       label: "Starting point",
       value:
-        "An existing codebase, conventions, and design language — none of them mine — and no QA function",
+        "An existing codebase, conventions, and design language (none of them mine), and no QA function",
     },
     {
       label: "Delivered",
@@ -44,7 +44,7 @@ export const roomvy = {
     },
     {
       label: "Payment",
-      value: "A two-phase commit against a custom card API — no drop-in payment SDK",
+      value: "A two-phase commit against a custom card API, with no drop-in payment SDK",
     },
     {
       label: "Quality",
@@ -53,13 +53,13 @@ export const roomvy = {
   ],
   brief: {
     intro:
-      "Roomvy rethinks event housing — the room blocks negotiated between event organizers, housing companies, and hotels, traditionally run on spreadsheets and lost email threads. I built the participant-facing side: the application where attendees of a tournament or conference actually book into an event's contracted inventory. The hard part wasn't the architecture — it was the entry.",
+      "Roomvy rethinks event housing: the room blocks negotiated between event organizers, housing companies, and hotels, traditionally run on spreadsheets and lost email threads. I built the participant-facing side, the application where attendees of a tournament or conference actually book into an event's contracted inventory. The hard part wasn't the architecture; it was the entry.",
     groups: [
       {
         header: "EXISTING CONDITIONS",
         bullets: [
           "A small agency scraping the project together, with a disorganized team, no QA function, and no oversight",
-          "The codebase, conventions, and design language already existed — and weren't mine",
+          "The codebase, conventions, and design language already existed, and weren't mine",
           "A product with group DNA: attendees book by team, rooms come from contracted blocks tied to one event, and policies are contractual per hotel per event",
           "I was brought in for one thing: velocity",
         ],
@@ -93,8 +93,8 @@ export const roomvy = {
         intro:
           "Event-scoped from the first pixel: every session starts at an event URL and stays inside that event's inventory, branding, and policies.",
         bullets: [
-          "Split-pane search — hotel list beside a live map, with a mobile toggle between them",
-          "Filters for amenities and room types, with drive-time-to-venue sorting — for event travel, proximity matters as much as price",
+          "Split-pane search: hotel list beside a live map, with a mobile toggle between them",
+          "Filters for amenities and room types, with drive-time-to-venue sorting. For event travel, proximity matters as much as price",
           "Filter and sort implemented as a client-side engine over nightly inventory data",
           "Search state persisted across navigation, so filters survive the whole journey",
         ],
@@ -104,9 +104,9 @@ export const roomvy = {
         intro:
           "One page, not a wizard: team identity, guest details per room, payment, travel protection, and policy review in a single scroll with a sticky summary.",
         bullets: [
-          "No cart and no login — the \"cart\" is a server-side draft reservation held by a cookie, so an anonymous attendee can leave and return without losing progress",
+          "No cart and no login. The \"cart\" is a server-side draft reservation held by a cookie, so an anonymous attendee can leave and return without losing progress",
           "Live roster editing: adding or removing a room or guest fires real API mutations immediately, keeping the draft in sync with the backend as the form is filled",
-          "Team, group, and location fields relabel themselves per event — one checkout that adapts its vocabulary to each event type",
+          "Team, group, and location fields relabel themselves per event: one checkout that adapts its vocabulary to each event type",
           "Policy text authored with template placeholders and interpolated from contract data at render time — non-engineers keep it accurate without code changes",
           "Custom availability math layering hold blocks over contracted inventory",
         ],
@@ -162,19 +162,19 @@ export const roomvy = {
         "Keep the draft on the server, and let the checkout edit it live. There is no cart — every roster change is a real mutation against a draft reservation the backend owns.",
       alternative:
         "A client-side cart submitted at the end — less chatty, simpler to build, and how most booking flows work.",
-      why: "A multi-room group booking is too much entered progress to lose, and it's exactly the kind of state that drifts when the client owns it. With the server as the single owner of the draft, an anonymous user can close the tab and come back, and the UI can never disagree with the backend about what's being booked. The cost is a chattier interface — every add and remove is a network call — accepted in exchange for state that cannot lie.",
+      why: "A multi-room group booking is too much entered progress to lose, and it's exactly the kind of state that drifts when the client owns it. With the server as the single owner of the draft, an anonymous user can close the tab and come back, and the UI can never disagree with the backend about what's being booked. The cost is a chattier interface, where every add and remove is a network call. I accepted that in exchange for state that can't drift.",
     },
     {
       chip: "QUALITY",
       decision: "Be my own QA function.",
       alternative:
         "Ship and let the client's review catch what it caught — the de facto standard on a team with no QA process.",
-      why: "With no QA function, defects would surface in front of the agency's client, not in front of me. So I paid the velocity tax myself: my own verification pass on everything before it left my hands, as the release gate. The cost is real on a role justified by speed — every hour QA-ing my own work was an hour not building. It bought sole, clean accountability for the result.",
+      why: "With no QA function, defects would surface in front of the agency's client instead of in front of me. So I paid the velocity tax myself: my own verification pass on everything before it left my hands, as the release gate. On a role justified by speed that cost is real — every hour QA-ing my own work was an hour not building. It bought sole, clean accountability for the result.",
     },
   ],
   built: {
     intro:
-      "The full participant-facing booking application, built solo from the agency's design specs on their existing stack — implementation, GraphQL integration, and my own QA, end to end. The deliverables:",
+      "The full participant-facing booking application, built solo from the agency's design specs on their existing stack: implementation, GraphQL integration, and my own QA, end to end. The deliverables:",
     cards: [
       {
         label: "DISCOVERY & SEARCH",
@@ -186,15 +186,15 @@ export const roomvy = {
       },
       {
         label: "PAYMENT INTEGRATION",
-        body: "A custom card-collection form and two-phase commit against an internal card API — payment method attached first, reservation finalized second.",
+        body: "A custom card-collection form and two-phase commit against an internal card API: payment method attached first, reservation finalized second.",
       },
       {
         label: "HOLD BLOCKS",
-        body: "Inventory holds before rosters exist — shareable countdown links, self-booking into the hold, and a rooming-list view for organizers.",
+        body: "Inventory holds before rosters exist: shareable countdown links, self-booking into the hold, and a rooming-list view for organizers.",
       },
       {
         label: "POST-BOOKING TOOLS",
-        body: "Cancel, modify, and resend-confirmation flows verified by email and confirmation number — no account, no login.",
+        body: "Cancel, modify, and resend-confirmation flows verified by email and confirmation number. No account, no login.",
       },
       {
         label: "AVAILABILITY & PRICING",

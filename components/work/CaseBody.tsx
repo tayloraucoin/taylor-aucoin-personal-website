@@ -1,12 +1,16 @@
 import type { CaseStudy } from "@/content/work";
 import { publishedWork } from "@/content/work";
+import { visibleTestimonials } from "@/content/testimonials";
 import CaseLinks from "@/components/work/CaseLinks";
-import CaseMedia from "@/components/work/CaseMedia";
+import CaseMedia, { flattenZoomable } from "@/components/work/CaseMedia";
+import MediaLightbox from "@/components/work/MediaLightbox";
+import MediaRail from "@/components/work/MediaRail";
 import ProcessSection from "@/components/work/ProcessSection";
 import Section from "@/components/work/Section";
 import LabelCard from "@/components/ui/LabelCard";
 import DecisionCard from "@/components/ui/DecisionCard";
 import BulletList from "@/components/ui/BulletList";
+import TestimonialCard from "@/components/testimonials/TestimonialCard";
 
 /**
  * The case study template. Shared by the full page and the intercepted overlay.
@@ -27,7 +31,25 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
   const position = publishedWork.findIndex((w) => w.slug === c.slug) + 1;
   const badge = String(position || 1).padStart(2, "0");
 
-  return (
+  /**
+   * Testimonials attach themselves by slug match on `project.href` — no
+   * duplicated content, and a newly approved quote appears on its case page
+   * with zero wiring. Rendered after Outcome: the reader has just finished
+   * the claims, and a third-party voice is the strongest close.
+   */
+  const caseTestimonials = visibleTestimonials().filter(
+    (t) => t.project?.href === `/work/${c.slug}`,
+  );
+
+  /**
+   * One MediaLightbox wraps the whole article so the header rail and the
+   * bottom strip share a single zoom with one paging order (indices from
+   * `flattenZoomable`). Children stay server-rendered — only the lightbox
+   * shell hydrates. Studies with no media skip the wrapper entirely.
+   */
+  const zoomable = flattenZoomable(c.media);
+
+  const body = (
     <article className="mx-auto max-w-[1080px] px-[22px] py-14 md:px-14">
       <div className="mb-3 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
         {badge}
@@ -55,6 +77,9 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
       </div>
 
       <CaseLinks links={c.links} />
+
+      {/* Opt-in per study — see `mediaPreview` in content/work/types.ts. */}
+      {c.mediaPreview && <MediaRail media={c.media} />}
 
       {c.atAGlance && c.atAGlance.length > 0 && (
         <Section label="At a glance">
@@ -206,7 +231,39 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
         </Section>
       )}
 
+      {caseTestimonials.length > 0 && (
+        <Section
+          label={caseTestimonials.length > 1 ? "Testimonials" : "Testimonial"}
+        >
+          <div
+            className={
+              caseTestimonials.length > 1
+                ? "grid grid-cols-1 items-start gap-4 md:grid-cols-2"
+                : "max-w-[560px]"
+            }
+          >
+            {caseTestimonials.map((t) => (
+              <TestimonialCard key={t.slug} t={t} detail />
+            ))}
+          </div>
+        </Section>
+      )}
+
       <CaseMedia media={c.media} />
     </article>
+  );
+
+  if (zoomable.length === 0) return body;
+
+  return (
+    <MediaLightbox
+      items={zoomable.map((m) => ({
+        src: m.src,
+        alt: m.alt,
+        caption: m.caption,
+      }))}
+    >
+      {body}
+    </MediaLightbox>
   );
 }

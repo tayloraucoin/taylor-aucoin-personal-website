@@ -199,6 +199,18 @@ export type CaseStudy = {
    */
   engagementType: string;
   stack: string[];
+  /**
+   * Opt-in: renders a small thumbnail rail of the media strip in the header
+   * block (below the stack chips), so the look and feel of the work is
+   * visible inside the sixty-second window. Thumbnails open the same
+   * lightbox as the strip; a quiet anchor jumps to the full strip.
+   *
+   * Per-study by design: enable it where the visual design is Taylor's
+   * (Everbook, Conscious Connections). Leave it off where the visuals are
+   * someone else's design credit (Roomvy) — there the media stays bottom-only
+   * with its caption. Does nothing when `media` is empty.
+   */
+  mediaPreview?: boolean;
   /** Renders as "The brief" when set; otherwise use `constraint` ("The constraint"). */
   brief?: string | BriefContent;
   constraint?: string;
