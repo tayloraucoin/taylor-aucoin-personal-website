@@ -38,7 +38,7 @@ export const offers: Offer[] = [
     cadence: "8–16 weeks · fixed scope, fixed timeline",
     bestFor: "Founders who need a real product, not a prototype.",
     includes: [
-      "Idea to shipped product — architecture, schema, and infrastructure included",
+      "Idea to shipped product, with architecture, schema, and infrastructure included",
       "Built solo, with weekly written updates",
       "Documentation and conventions the next engineer inherits",
     ],
@@ -59,7 +59,7 @@ export const offers: Offer[] = [
 
 /** SVC-04 — soft anchor. Build-project totals, not rates. */
 export const priceAnchor =
-  "Most engagements land between $15K and $75K CAD. Fixed scope where it makes sense — no hourly surprises.";
+  "Most engagements land between $15K and $75K CAD. Fixed scope where it makes sense, with no hourly surprises.";
 
 /** SVC-05 — problem statements in the client's voice, tagged to an offer. */
 export const problems: Array<{ quote: string; offer: string }> = [
@@ -120,7 +120,7 @@ export const whatImNot: string[] = [
 /** SVC-08 — three steps. */
 export const steps: Array<{ title: string; body: string }> = [
   { title: "A 30-minute call", body: "What you're building, where it's stuck, whether I'm the right fit." },
-  { title: "A scoped proposal", body: "Within 48 hours — scope, timeline, price, start date." },
+  { title: "A scoped proposal", body: "Within 48 hours: scope, timeline, price, start date." },
   { title: "A start date", body: "Work begins. Weekly written updates from week one." },
 ];
 
@@ -130,23 +130,23 @@ export const replyLine = "I reply within one business day.";
 export const faq: Array<{ q: string; a: string }> = [
   {
     q: "How do engagements start?",
-    a: "With a 30-minute call. If it's a fit, you get a scoped proposal within 48 hours — scope, timeline, price, start date. No pitch either way.",
+    a: "With a 30-minute call. If it's a fit, you get a scoped proposal within 48 hours: scope, timeline, price, start date. No pitch either way.",
   },
   {
     q: "Contract or fractional — which do I need?",
-    a: "Contract is embedded: I join your team for three to twelve months and ship production features. Fractional is one or two days a week on retainer — architecture, technical strategy, hiring, review. If you're not sure, the call sorts it out quickly.",
+    a: "Contract is embedded: I join your team for three to twelve months and ship production features. Fractional is one or two days a week on retainer, covering architecture, technical strategy, hiring, and review. If you're not sure, the call sorts it out quickly.",
   },
   {
     q: "Where do you work from?",
-    a: "Vancouver, Canada — PST. Remote, with full overlap of North American working hours.",
+    a: "Vancouver, Canada (PST). Remote, with full overlap of North American working hours.",
   },
   {
     q: "How does pricing work?",
-    a: "Fixed scope where it makes sense — a price tied to deliverables, not hours. Contract engagements bill monthly. Most engagements land between $15K and $75K CAD.",
+    a: "Fixed scope where it makes sense: a price tied to deliverables rather than hours. Contract engagements bill monthly. Most land between $15K and $75K CAD.",
   },
   {
     q: "Are you available now?",
-    a: "Yes — taking up to two engagements, or the right full-time role.",
+    a: "Yes. Taking up to two engagements, or the right full-time role.",
   },
 ];
 
@@ -156,8 +156,8 @@ export const availability =
 
 /** SVC-11 — closing. */
 export const closing =
-  "30-minute call. No pitch — we'll figure out if I'm the right fit.";
+  "A 30-minute call, no pitch. We'll figure out if I'm the right fit.";
 
 /** SVC-09 — two-line bio beside the photo. Taylor owns the final wording. */
 export const bio =
-  "Senior product engineer and technical founder — twelve products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+  "Senior product engineer and technical founder: twelve products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";

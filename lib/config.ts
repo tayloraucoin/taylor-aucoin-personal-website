@@ -52,6 +52,20 @@ export const PHOTO: string | null = "/images/me-headshot-1.png";
  */
 export const SHOW_PENDING_TESTIMONIALS = false;
 
+/**
+ * The three testimonial slugs the home/services strip leads with, in order.
+ * Curation over sort logic — same philosophy as CORE_STACK. Yogesh sits in
+ * the third slot over Vaughn deliberately: an engineer Taylor led describing
+ * the client/PM/senior multi-hat is the narrative the site sells, and it
+ * makes the strip's "and the engineers I led" caption true. Entries missing
+ * or unapproved are skipped; remaining slots fill from the visible pool.
+ */
+export const HOME_TESTIMONIALS = [
+  "dawson-whitfield",
+  "bruno",
+  "yogesh-verma",
+] as const;
+
 export const SITE = {
   name: "Taylor Aucoin",
   role: "Senior/staff product engineer",
@@ -109,6 +123,7 @@ export const CORE_STACK = [
   "shadcn/ui",
   "tRPC",
   "TanStack Query",
+  "Zustand",
   "Zod",
   "Drizzle",
   "Postgres",
@@ -117,6 +132,7 @@ export const CORE_STACK = [
   "Cursor",
   "Claude Code",
   "Claude API",
+  "OpenAI API",
   "Turborepo",
   "Git",
   "Linear",

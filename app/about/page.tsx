@@ -4,7 +4,13 @@ import RootField from "@/components/field/RootField";
 import Footer from "@/components/sections/Footer";
 import { GradientButton } from "@/components/ui/GradientButton";
 import SectionLabel from "@/components/ui/SectionLabel";
-import { closingLine, howIThink, story, vancouver } from "@/content/about";
+import {
+  closingLine,
+  howIThink,
+  locationLine,
+  offTheClock,
+  story,
+} from "@/content/about";
 import { availability } from "@/content/services";
 import { BOOKING_URL, PHOTO, SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -32,7 +38,7 @@ export default function AboutPage() {
       <RootField />
 
       <div className="mb-6 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
-        <span>{SITE.location} · The person behind the work</span>
+        <span>The person behind the work</span>
         <span
           aria-hidden
           className="h-px max-w-[220px] flex-1"
@@ -53,9 +59,14 @@ export default function AboutPage() {
             className="h-24 w-24 shrink-0 rounded-(--radius) object-cover"
           />
         )}
-        <h1 className="font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">
-          About
-        </h1>
+        <div>
+          <h1 className="font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">
+            About
+          </h1>
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+            {locationLine}
+          </p>
+        </div>
       </div>
 
       <div className="max-w-[62ch] space-y-5">
@@ -89,10 +100,17 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-16">
-        <SectionLabel>Here</SectionLabel>
-        <p className="mt-6 max-w-[62ch] text-base font-light leading-[1.66] text-(--color-body)">
-          {vancouver}
-        </p>
+        <SectionLabel>Off the clock</SectionLabel>
+        <div className="mt-6 max-w-[62ch] space-y-5">
+          {offTheClock.map((para, i) => (
+            <p
+              key={i}
+              className="text-base font-light leading-[1.66] text-(--color-body)"
+            >
+              {para}
+            </p>
+          ))}
+        </div>
       </section>
 
       <section className="mt-16 border-t border-(--color-faint) pt-12">

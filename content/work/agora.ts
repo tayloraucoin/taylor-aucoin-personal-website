@@ -6,7 +6,7 @@ export const agora = {
   title: "Agora",
   meta: "Recommender · Enrichment · Search",
   tagline:
-    "A full marketplace commerce build — cart, checkout, tax, refunds, shipping — that later became a cross-marketplace discovery engine for independent sellers.",
+    "A full marketplace commerce build (cart, checkout, tax, refunds, shipping) that later became a cross-marketplace discovery engine for independent sellers.",
   metaDescription:
     "Founder and engineer: a festival-fashion marketplace with owned checkout, rebuilt as a discovery engine. LLM catalog enrichment feeding an ML recommender.",
   roleLabel: "Founder, Engineer",
@@ -28,7 +28,7 @@ export const agora = {
   atAGlance: [
     {
       label: "Engagement",
-      value: "Technical founder — five years, three versions, three fresh codebases",
+      value: "Technical founder: five years, three versions, three fresh codebases",
     },
     {
       label: "Starting point",
@@ -53,19 +53,19 @@ export const agora = {
     {
       label: "Ending",
       value:
-        "Backlogged deliberately in March 2026 — the numbers didn't work; the judgment did",
+        "Backlogged deliberately in March 2026. The numbers didn't work; the judgment did",
     },
   ],
   brief: {
     intro:
-      "Agora set out to centralize festival fashion — a market of independent artists scattered across platforms — and became three products under one name over five years, each version a fresh answer to what the business should be. The hard part was that both halves of \"personalized discovery\" were starved.",
+      "Agora set out to centralize festival fashion, a market of independent artists scattered across platforms, and became three products under one name over five years — each version a fresh answer to what the business should be. The hard part was that both halves of \"personalized discovery\" were starved.",
     groups: [
       {
         header: "EXISTING CONDITIONS",
         bullets: [
           "Independent sellers spread across Etsy, Shopify, and Instagram, with discovery happening by accident",
-          "Cold start on the user side: a taste model to train with almost no users — the recommender had to work before meaningful interaction data existed",
-          "Garbage in on the catalog side: ingested products don't carry the attributes a fashion recommender needs — even mens versus womens fit wasn't derivable from titles and descriptions",
+          "Cold start on the user side: a taste model to train with almost no users, so the recommender had to work before meaningful interaction data existed",
+          "Garbage in on the catalog side: ingested products don't carry the attributes a fashion recommender needs. Even mens versus womens fit wasn't derivable from titles and descriptions",
           "Built nights and weekends, solo at the architecture level, while the business model corrected twice underneath me",
         ],
       },
@@ -88,7 +88,7 @@ export const agora = {
         header: "Version 1 · Marketplace (2021–2023)",
         intro: "The full-commerce version: own the transaction, split the money, ship the goods.",
         bullets: [
-          "Wrote ~95% of the codebase while directing a cross-functional team of up to twelve — conventions, Agile sprints, and reviews as the operating system",
+          "Wrote ~95% of the codebase while directing a cross-functional team of up to twelve, with conventions, Agile sprints, and reviews as the operating system",
           "Multi-vendor checkout splitting one cart across sellers: Stripe Connect transfers per shop, live carrier rates, tax snapshots persisted for audit",
           "Soft inventory holds so limited stock couldn't oversell mid-checkout",
           "JWT-to-Postgres-role authorization — access control enforced at the database layer",
@@ -99,11 +99,11 @@ export const agora = {
         header: "Version 2 · Artist directory (2023–2024)",
         intro: "Strip the transaction, sell the map: a freemium directory of curated artists, personalized by a style-guide quiz.",
         bullets: [
-          "A three-step style quiz with guest persistence and merge-on-signup — the directory re-sorts itself around your profile",
+          "A three-step style quiz with guest persistence and merge-on-signup; the directory re-sorts itself around your profile",
           "A claim-your-profile flow seeding artist pages before artists signed up, fed by scheduled Instagram sync",
           "Etsy and Shopify CSV import with format normalization, plus a 3,000-line keyword taxonomy engine auto-categorizing listings",
           "The full subscription lifecycle on Stripe — billing portal, churn survey, and an affiliate program paying automated Connect transfers",
-          "The market read came fast: the flow wasn't enjoyable enough to pay for — and Instagram's API was shut down entirely months after I'd already pivoted toward hosting real products",
+          "The market read came fast: the flow wasn't enjoyable enough to pay for. Instagram's API was then shut down entirely, months after I'd already pivoted toward hosting real products",
         ],
       },
       {
@@ -132,7 +132,7 @@ export const agora = {
       {
         header: "Version 3 · Search",
         intro:
-          "Elasticsearch with business-signal reranking — relevance as a product decision, not a default.",
+          "Elasticsearch with business-signal reranking: relevance as a product decision.",
         bullets: [
           "Tiered field boosting, phrase-match bonuses, and auto-detected filter-term boosting",
           "Quality, freshness, popularity, and seller-trust signals folded into ranking",
@@ -170,7 +170,7 @@ export const agora = {
       chip: "THE THREE VERSIONS",
       decision: "Throw the codebase away twice instead of migrating it.",
       alternative: "Refactor the existing app toward each new business model.",
-      why: "V1's data model was built around owning the transaction; v2's around a directory. Neither could honestly express what v3 needed, and migrating would have meant dragging dead assumptions into a new thesis. The cost was severe and I knew it: v1 was ~95% my own code, built with a team of twelve, and I re-implemented working features from zero — twice. What I bought was a schema that fit the actual business each time instead of a franken-model that fit none of them.",
+      why: "V1's data model was built around owning the transaction; v2's around a directory. Neither could honestly express what v3 needed, and migrating would have meant dragging dead assumptions into a new thesis. The cost was severe and I knew it: v1 was ~95% my own code, built with a team of twelve, and I re-implemented working features from zero, twice. What I bought was a schema that fit the actual business each time instead of a franken-model that fit none of them.",
     },
     {
       chip: "VERSION 3",
@@ -194,7 +194,7 @@ export const agora = {
         "Build the ML program through junior teams I directed, rather than alone or not at all.",
       alternative:
         "Build the recommender myself on nights I didn't have, contract it out, or defer ML until the business earned it.",
-      why: "The architecture, the model core, and the pipelines stayed mine; the build capacity came from BCIT cohorts, an SFU co-op, and an intern working from scoped epics, reviewed PRs, and written handoffs. The cost is that supervision is real work — tutorial-grade tickets, reviews, and documentation on top of a founder's hours — and iteration runs at the speed of academic terms. What it bought was an ML system a solo founder had no hours to build, and five years of evidence for something I now know cold: juniors ship when the work is scoped right.",
+      why: "The architecture, the model core, and the pipelines stayed mine; the build capacity came from BCIT cohorts, an SFU co-op, and an intern working from scoped epics, reviewed PRs, and written handoffs. The cost is that supervision is real work (tutorial-grade tickets, reviews, and documentation on top of a founder's hours), and iteration runs at the speed of academic terms. What it bought was an ML system a solo founder had no hours to build.",
     },
   ],
   built: {
@@ -203,7 +203,7 @@ export const agora = {
     cards: [
       {
         label: "V1 MARKETPLACE",
-        body: "Multi-vendor commerce end to end: Stripe Connect payout splitting, live carrier rates, tax automation, soft inventory holds, and a vendor operations dashboard — ~95% of the code mine, built with a team of twelve.",
+        body: "Multi-vendor commerce end to end: Stripe Connect payout splitting, live carrier rates, tax automation, soft inventory holds, and a vendor operations dashboard. ~95% of the code mine, built with a team of twelve.",
       },
       {
         label: "V2 DIRECTORY",
@@ -219,7 +219,7 @@ export const agora = {
       },
       {
         label: "CATALOG INGESTION",
-        body: "Etsy, Shopify, and affiliate-link ingestion under budgeted rate limits, normalized into one catalog model — built for data that can't be trusted on arrival.",
+        body: "Etsy, Shopify, and affiliate-link ingestion under budgeted rate limits, normalized into one catalog model, built for data that can't be trusted on arrival.",
       },
       {
         label: "SEARCH",
@@ -227,35 +227,35 @@ export const agora = {
       },
       {
         label: "RECOMMENDER & FEEDS",
-        body: "A hybrid Keras model with weight-transfer retraining, served realtime — powering swipe, a daily discovery collage, and a trending feed, each with graceful fallback.",
+        body: "A hybrid Keras model with weight-transfer retraining, served realtime, powering swipe, a daily discovery collage, and a trending feed — each with graceful fallback.",
       },
     ],
   },
   broke: {
     intro:
-      "Five years of a correcting business model breaks things in every layer — code, plans, and founder assumptions.",
+      "Five years of a correcting business model breaks things in every layer: code, plans, and founder assumptions.",
     categories: [
       {
         chip: "METADATA",
-        body: "The original plan was that critical tags like gender fit would come from keyword association. It didn't work — titles and descriptions from independent sellers just don't encode it reliably, and a fashion recommender that can't tell mens from womens is broken in a way users feel immediately. That failure forced the entire enrichment pipeline: an ML system I never planned to build, existing because the metadata I inherited couldn't be trusted. The lesson stuck: in a catalog product, the data you ingest is the real bottleneck, and you can't keyword your way out of it.",
+        body: "The original plan was that critical tags like gender fit would come from keyword association. It didn't work: titles and descriptions from independent sellers just don't encode it reliably, and a fashion recommender that can't tell mens from womens is broken in a way users feel immediately. That failure forced the entire enrichment pipeline — an ML system I never planned to build, existing because the metadata I inherited couldn't be trusted. The lesson stuck: in a catalog product, the data you ingest is the real bottleneck, and you can't keyword your way out of it.",
       },
       {
         chip: "FOUNDER LENS",
-        body: "Version 1 was built like a developer, not an entrepreneur: two years of production-grade engineering — checkout, tax, shipping, a twelve-person team — pointed at a business model I hadn't validated. The code was excellent; the bet underneath it went unexamined until the market examined it for me. Versions 2 and 3 exist because I learned to read the market first and build second.",
+        body: "Version 1 was built like a developer, not an entrepreneur: two years of production-grade engineering (checkout, tax, shipping, a twelve-person team) pointed at a business model I hadn't validated. The code was excellent; the bet underneath it went unexamined until the market examined it for me. Versions 2 and 3 exist because I learned to read the market first and build second.",
       },
       {
         chip: "RETRY STORM",
-        body: "An Etsy sync incident overran the API budget by 8–13×. The cause wasn't concurrency — it was the failure path: sellers whose sync failed partway through never had their last-synced timestamp advanced, so the once-a-minute cron re-claimed and re-charged them on every run until the underlying failure was fixed. Root-causing it meant reasoning about side effects on the unhappy path, and the budget guards that exist now came out of it.",
+        body: "An Etsy sync incident overran the API budget by 8–13×. The cause wasn't concurrency; it was the failure path. Sellers whose sync failed partway through never had their last-synced timestamp advanced, so the once-a-minute cron re-claimed and re-charged them on every run until the underlying failure was fixed. Root-causing it meant reasoning about side effects on the unhappy path, and the budget guards that exist now came out of it.",
       },
     ],
   },
   outcome: {
     intro:
-      "The numbers didn't work. After five years and three versions, the engagement and revenue didn't justify continuing — so in March 2026 I backlogged the product deliberately rather than letting it decay. V3 remains the model I believe in, shelved until the economics change, kept as the passion project it became. What the project actually produced:",
+      "The numbers didn't work. After five years and three versions, the engagement and revenue didn't justify continuing, so in March 2026 I backlogged the product deliberately rather than letting it decay. V3 remains the model I believe in, shelved until the economics change. What the project actually produced:",
     bullets: [
       "Three full builds of the same idea against a correcting business model",
       "A trained personalization model and a production enrichment pipeline with real cost governance",
-      "A search stack, an ingestion layer, and three recommendation surfaces — much of it shipped through teams I led",
+      "A search stack, an ingestion layer, and three recommendation surfaces, much of it shipped through teams I led",
       "And the part I weigh most: the judgment to recognize a working system attached to a business that wasn't, and to stop",
     ],
   },
@@ -267,7 +267,7 @@ export const agora = {
           src: openAiPipeline,
           alt: "Architecture diagram of the OpenAI enrichment pipeline — cron producer, Postgres job queue, phased gpt-5-mini and embedding calls",
           caption:
-            "The enrichment pipeline — the ML system the metadata problem forced me to build.",
+            "The enrichment pipeline: the ML system the metadata problem forced me to build.",
           // A light-background diagram, so it is inset on a dark field rather
           // than butting against the page gradient.
           frame: "panel",

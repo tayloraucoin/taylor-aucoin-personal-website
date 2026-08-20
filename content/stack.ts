@@ -38,6 +38,7 @@ export const stack: readonly StackCategory[] = [
       { name: "Drizzle ORM", core: true },
       "Prisma",
       { name: "TanStack / React Query", core: true },
+      { name: "Zustand", core: true },
       "Redux",
       "Apollo GraphQL",
       { name: "Zod", core: true },
@@ -78,9 +79,9 @@ export const stack: readonly StackCategory[] = [
     label: "Databases & content",
     items: [
       { name: "PostgreSQL", core: true },
-      { name: "Supabase (row-level security at 150+ table scale)", core: true },
+      { name: "Supabase", core: true },
       "pgvector",
-      "Prisma/Drizzle schema design at 200+ models",
+      { name: "Prisma/Drizzle schema design", core: true },
       "Elasticsearch with business-signal reranking",
       {
         name: "Sanity (GROQ, Portable Text, custom Studio schemas)",
@@ -124,10 +125,10 @@ export const stack: readonly StackCategory[] = [
     label: "AI engineering",
     items: [
       { name: "Claude API", core: true },
-      "OpenAI API (vision, text, embeddings)",
-      "OpenAI Realtime API for speech-to-speech",
+      { name: "OpenAI API", core: true },
+      { name: "OpenAI Realtime API", core: true },
       "Whisper",
-      "custom Keras recommender (learned user/product embeddings into an MLP, negative sampling, hourly incremental retrains with weight transfer, realtime serving with fallback)",
+      "custom Keras recommender",
       "multi-phase enrichment pipelines with schema-validated structured output",
       "safety classifiers with tiered response protocols",
     ],
@@ -135,6 +136,8 @@ export const stack: readonly StackCategory[] = [
   {
     label: "AI concepts",
     items: [
+      { name: "AI-assisted development governance", core: true },
+      { name: "multi-agent workflows", core: true },
       "embeddings",
       "vector search",
       "semantic similarity",
@@ -145,8 +148,6 @@ export const stack: readonly StackCategory[] = [
       "fail-open safety design",
       "token accounting and per-run budgets",
       "job queues with phase checkpointing and backoff",
-      "AI-assisted development governance",
-      "multi-agent workflows",
     ],
   },
 ] as const;
