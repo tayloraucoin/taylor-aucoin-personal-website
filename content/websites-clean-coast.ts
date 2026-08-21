@@ -1,4 +1,5 @@
 import type { StaticImageData } from "next/image";
+import type { LabelledRow } from "@/content/websites";
 
 import desktopHome from "@/public/websites/clean-coast/desktop-home.jpg";
 import desktopServices from "@/public/websites/clean-coast/desktop-services.jpg";
@@ -84,7 +85,7 @@ export type CleanCoast = {
   brandColors: BrandColor[];
   ramps: ColorRamp[];
   rampNote: string;
-  built: string[];
+  built: LabelledRow[];
   outcome: string;
   /** Optional enrichment. The section closes cleanly without any of it. */
   logo: string | null;
@@ -98,16 +99,16 @@ export const cleanCoast: CleanCoast = {
   liveUrl: "https://cleancoast.ca",
 
   business: "Clean Coast Detailing",
-  what: "Fully mobile vehicle detailing, Metro Vancouver. Owner-operated — the van brings its own water and power, which is the whole pitch and was nowhere online.",
+  what: "Fully mobile vehicle detailing, Metro Vancouver. Owner-operated, and the van brings its own water and power. That's the whole pitch, and it was nowhere online.",
 
   intro:
     "Liam had a logo, a phone full of before-and-afters, and no website. The two colours in that badge are the entire brand system below: pulled out, built into two eight-step ramps with a neutral scale and semantic states, paired with a type stack, and written up as a brand guide before a single page existed.",
 
   brandColors: [
-    { name: "Coast Navy", hex: "#022A5B", role: "Primary — headers, buttons, headlines" },
-    { name: "Wave Blue", hex: "#2396D7", role: "Accent — CTAs, links, highlights" },
-    { name: "Salt White", hex: "#F8F8F8", role: "Canvas — matches the logo background" },
-    { name: "Harbour Slate", hex: "#5B6B7C", role: "Neutral — secondary text, borders" },
+    { name: "Coast Navy", hex: "#022A5B", role: "Primary · headers, buttons, headlines" },
+    { name: "Wave Blue", hex: "#2396D7", role: "Accent · CTAs, links, highlights" },
+    { name: "Salt White", hex: "#F8F8F8", role: "Canvas · matches the logo background" },
+    { name: "Harbour Slate", hex: "#5B6B7C", role: "Neutral · secondary text, borders" },
   ],
 
   ramps: [
@@ -145,11 +146,34 @@ export const cleanCoast: CleanCoast = {
     "100 → 800. The brand colour sits at 500; everything above and below it is derived, so a hover state or a disabled control is a step on a scale rather than a fresh decision.",
 
   built: [
-    "Five pages — home, services and pricing, service area, about, contact",
-    "Real prices published, because people comparison-shop mobile detailing on their phone and a hidden price is a closed tab",
-    "Tap-to-call above the fold on every page, and a contact form that lands in his inbox",
-    "Google Business Profile linked, service-area page written as much for Google as for a customer",
-    "Brand guide handed over as a document he owns — colour system, type, voice, and the do/don't list",
+    {
+      label: "Five pages",
+      body: "Home, services and pricing, service area, about, contact. Each one written from his answers rather than dropped into a template.",
+    },
+    {
+      label: "Prices published",
+      body: "$149 interior, $149 exterior, $249 for both. People comparison-shop mobile detailing on their phone, and a hidden price is a closed tab.",
+    },
+    {
+      label: "Built for the driveway",
+      body: "Tap-to-call above the fold on every page, a booking button that follows you down the screen, and a contact form that lands in his inbox.",
+    },
+    {
+      label: "Found locally",
+      body: "Google Business Profile linked, and a service-area page written as much for Google as for a customer.",
+    },
+    {
+      label: "A brand guide he owns",
+      body: "The colour system, the type stack, the voice, and the do/don't list, handed over as a document.",
+    },
+    {
+      label: "AI employees",
+      body: "Role briefs built from the same answers, so his copywriter knows his prices and his service area without being told twice.",
+    },
+    {
+      label: "A command centre",
+      body: "One Notion document covering how to run every part of the site, how to use each AI role, and what extended help looks like.",
+    },
   ],
 
   outcome:

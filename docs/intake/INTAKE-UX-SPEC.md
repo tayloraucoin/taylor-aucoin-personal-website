@@ -82,7 +82,7 @@ Anatomy, top to bottom, single column:
 
 **Deliberate omissions:** no countdown, no "offer expires," no scarcity of any kind — manufactured urgency is banned in my practice and it is doubly banned next to a payment button. No testimonial strip here either; the sale already happened on the phone. The screen's confidence _is_ the reassurance.
 
-Refund/cancellation terms for the deposit are **[OPEN — Taylor]**: one sentence must exist under the trust block before the first real charge ("If we don't end up building, the deposit comes back — full stop." or whatever is true). I will not invent refund policy; it is a money-and-trust claim.
+Refund/cancellation terms for the deposit are **[RULED — Taylor, 2026-08-21]** (D-INT-10): "Change your mind before I start building? The deposit comes back in full — just ask." Rendered under the trust block. The binding form is terms §5 at `/websites/terms`; the sentence and the section must always agree. P0 also carries the acceptance line directly above the pay CTA — "By paying the deposit, you agree to the website services terms and the privacy policy" — with both documents opening in the site Overlay so the client never leaves the payment screen to read them.
 
 ### W0 — Welcome
 
@@ -300,7 +300,9 @@ Added at Mason's request so tickets cite rulings by ID rather than prose. Each i
 - **D-INT-7** — System emails: resume link, three reminders maximum (all killed on completion), completion confirmation. Taylor sends the initial link email personally.
 - **D-INT-8** — Prefill from link creation: the client is never asked what Taylor already knows.
 - **D-INT-9** `[PROVISIONAL — Taylor]` — Per-link `deposit_required` flag may skip the pay gate.
-- **D-INT-10** `[NEEDS DECISION — Taylor]` — Deposit refund sentence on P0. Blocks the first real charge only.
+- **D-INT-10** `[RULED — Taylor, 2026-08-21]` — Deposit refund sentence on P0: refundable in full until the build starts; earned once it does. Rendered under the trust block; the binding form is terms §5 at `/websites/terms`, and the two must agree.
+- **D-INT-11** `[RULED — Taylor, 2026-08-21; amended same day]` — P0 offers catalogue add-ons as checkbox rows with a running total, each with a "How it works" dialog (`content/addon-details.ts`), and the terms acceptance is a real checkbox. **Amended (Taylor):** the CTA is disabled until the terms box is ticked, with one dim explanatory line under the button — the tap-nudge design is retired. The deposit is never rendered as a checkbox; `extra_page` is never offered at checkout.
+- **D-INT-12** `[RULED — Taylor, 2026-08-21]` — P0 carries a promo rail, hidden behind "Have a code from our call?" and auto-applied from `?promo=` on the entry URL. A code grants a specific $0 catalogue item (never a discount); display activation and the charge resolve the same server-side map independently. First code: TAYLOR_FREE_ITERATION_ROUND → `changes_small_promo`.
 
 ## 14. Handoff notes for Mason and Reeve
 

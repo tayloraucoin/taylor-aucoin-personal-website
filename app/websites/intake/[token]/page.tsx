@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { SITE } from "@/lib/config";
+import { adminTestPaymentEnabled } from "@/lib/env";
 import { intakeRoutes } from "@/lib/routes";
-import { getDepositPrice } from "@/server/services/deposit";
+import { getCheckoutCatalogue } from "@/server/services/deposit";
 import {
   EngagementNotFoundError,
   requireEngagement,
@@ -32,10 +33,11 @@ export default async function IntakeEntryPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ paid?: string; canceled?: string }>;
+  searchParams: Promise<{ paid?: string; canceled?: string; promo?: string; admin_test_payment?: string }>;
 }) {
   const { token } = await params;
-  const { paid, canceled } = await searchParams;
+  const { paid, canceled, promo, admin_test_payment: adminTestPayment } =
+    await searchParams;
 
   let engagement;
   try {
@@ -53,12 +55,19 @@ export default async function IntakeEntryPage({
     // Returned from Checkout but the webhook has not landed yet.
     if (paid === "1") return <PaymentConfirming supportEmail={SITE.email} />;
 
+    const wantsAdminTest = adminTestPayment === "1";
+    const isAdminTest = wantsAdminTest && adminTestPaymentEnabled();
+    const { deposit, addons } = await getCheckoutCatalogue(wantsAdminTest);
+
     return (
       <DepositGate
         engagement={engagement}
         token={token}
         canceled={canceled === "1"}
-        deposit={await getDepositPrice()}
+        deposit={deposit}
+        addons={addons}
+        promoCode={promo}
+        isAdminTest={isAdminTest}
       />
     );
   }

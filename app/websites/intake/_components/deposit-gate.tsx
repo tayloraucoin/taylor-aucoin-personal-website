@@ -1,7 +1,8 @@
 import { formatMoney } from "@/lib/intake/money";
+import type { SellableProduct } from "@/server/services/products";
 import type { Engagement } from "@/server/services/engagement";
+import { DepositCheckout, type CheckoutAddonView } from "./deposit-checkout";
 import { Eyebrow } from "./eyebrow";
-import { PayButton } from "./pay-button";
 
 /**
  * P0 — Confirm & pay (UX spec §3).
@@ -28,17 +29,37 @@ export function DepositGate({
   token,
   canceled,
   deposit,
+  addons,
+  promoCode,
+  isAdminTest = false,
 }: {
   engagement: Engagement;
   token: string;
   canceled: boolean;
-  /** The standard price, read from Stripe so the screen cannot misquote it. */
-  deposit: { amountCents: number; currency: string };
+  /** From `?promo=` on the entry URL, prefilled and auto-applied on P0. */
+  promoCode?: string;
+  /** From `?admin_test_payment=1` — server swaps in the test price when env allows. */
+  isAdminTest?: boolean;
+  /**
+   * The catalogue's deposit row. Display comes from the row; the charge is
+   * verified against Stripe at session creation, which is where the
+   * screen-cannot-misquote guarantee now lives.
+   */
+  deposit: SellableProduct;
+  /** Optional add-ons offered at checkout, in display order. */
+  addons: SellableProduct[];
 }) {
   const firstName =
     engagement.contactName.split(" ")[0] ?? engagement.contactName;
 
-  const amount = formatMoney(deposit.amountCents, deposit.currency);
+  const amount = formatMoney(deposit.priceCents, engagement.currency);
+
+  const addonViews: CheckoutAddonView[] = addons.map((a) => ({
+    key: a.key,
+    name: a.name,
+    description: a.description,
+    amountCents: a.priceCents,
+  }));
 
   return (
     <div>
@@ -83,17 +104,32 @@ export function DepositGate({
         </p>
       ) : null}
 
-      <div className="mt-8">
-        <PayButton token={token} label={`Pay deposit — ${amount}`} />
-      </div>
+      {/* Add-ons, total, the terms checkbox, and the pay button. The
+          agreement row sits immediately above the button it modifies:
+          "by paying, you agree" has to be read before the tap it describes,
+          or it isn't notice. */}
+      <DepositCheckout
+        token={token}
+        depositCents={deposit.priceCents}
+        currency={engagement.currency}
+        addons={addonViews}
+        initialPromoCode={promoCode}
+        isAdminTest={isAdminTest}
+      />
 
-      {/* TODO(D-INT-10): the deposit refund sentence goes here once Taylor
-          rules on it. Blocks the first real charge, not this build. */}
       <div className="mt-5 space-y-1.5 font-mono text-[10px] uppercase leading-[1.7] tracking-[.18em] text-(--color-dim)">
         <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
         <p>Shows as TAYLORAUCOIN.COM on your statement</p>
         <p>Receipt emailed automatically</p>
       </div>
+
+      {/* D-INT-10, ruled 2026-08-21: refundable in full until the build
+          starts; earned once it does. Terms §5 is the binding form of this
+          sentence — the two must always agree. */}
+      <p className="mt-4 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
+        Change your mind before I start building? The deposit comes back in
+        full — just ask.
+      </p>
 
       <p className="mt-8 max-w-[48ch] border-t border-(--color-faint) pt-5 font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
         Right after this you&apos;ll get a short questionnaire — about 20

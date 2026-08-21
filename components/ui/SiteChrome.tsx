@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { isIntakePath } from "@/lib/routes";
+import { isIntakePath, isLegalPath } from "@/lib/routes";
 
 /**
  * Hides the site's chrome on the client-intake surface.
@@ -19,5 +19,6 @@ import { isIntakePath } from "@/lib/routes";
  * grows more of its own chrome.
  */
 export default function SiteChrome({ children }: { children: ReactNode }) {
-  return isIntakePath(usePathname()) ? null : <>{children}</>;
+  const pathname = usePathname();
+  return isIntakePath(pathname) || isLegalPath(pathname) ? null : <>{children}</>;
 }

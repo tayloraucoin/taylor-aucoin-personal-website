@@ -286,3 +286,27 @@ export const uploadIssueInput = z.object({
   mimeType: z.string().max(160).optional(),
   sizeBytes: z.number().int().positive().max(MAX_UPLOAD_BYTES),
 });
+
+/**
+ * The pay action's input beyond the token: which optional add-ons the client
+ * ticked on P0. Keys are validated against the live catalogue in the deposit
+ * service — this schema only bounds the shape, so a hostile payload cannot
+ * smuggle in size or type surprises.
+ */
+export const depositAddonSelectionInput = z
+  .array(z.string().trim().min(1).max(64))
+  .max(12)
+  .default([]);
+
+/**
+ * A promo code as typed by a client. Bounds only — whether it means anything
+ * is decided by `lib/intake/promo.ts`, in one place, on the server.
+ */
+export const promoCodeInput = z.string().trim().max(64).optional();
+
+/**
+ * Whether the pay action should attempt the admin test price. The env var
+ * `ADMIN_TEST_PAYMENT` must also be true — this flag alone cannot change
+ * what is charged.
+ */
+export const adminTestPaymentInput = z.boolean().optional().default(false);

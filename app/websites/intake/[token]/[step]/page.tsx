@@ -5,6 +5,7 @@ import {
   EngagementNotFoundError,
   requireEngagement,
 } from "@/server/services/engagement";
+import { listPurchasedExtras } from "@/server/services/products";
 import { listUploads, readStepAnswers } from "@/server/services/submission";
 import { FooterSaveIndicator, SaveStateProvider } from "../../_lib/save-state";
 import { LinkUnavailable } from "../../_components/link-unavailable";
@@ -118,7 +119,13 @@ export default async function IntakeStepPage({
       case "team":
         return <StepTeam token={token} initial={initial} />;
       case "access":
-        return <StepAccess token={token} initial={initial} />;
+        return (
+          <StepAccess
+            token={token}
+            initial={initial}
+            purchasedExtras={await listPurchasedExtras(engagement!.id)}
+          />
+        );
     }
   }
 

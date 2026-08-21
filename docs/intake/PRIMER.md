@@ -150,7 +150,9 @@ All eight tickets are code complete. Everything below is verified against a real
 
 **Local development:** `yarn dev` plus `yarn stripe:listen` in a second terminal. The webhook secret it prints goes in `STRIPE_LOCAL_WEBHOOK_SECRET`, and **`yarn dev` must be restarted** for it to take effect — env is collapsed at build time in `next.config.ts`.
 
-**Environment tiers:** `local` / `staging` / `live`, resolved once in `next.config.ts` via `lib/config/env/resolve-tier-env.ts`. Application code reads canonical names only (`STRIPE_SECRET_KEY`, `DATABASE_URL`) and has no idea a tier exists. Never add a tier-suffixed name outside that resolver.
+**Environment tiers:** `local` / `staging` / `production`, resolved once in `next.config.ts` via `lib/config/env/resolve-tier-env.ts`. Application code reads canonical names only (`STRIPE_SECRET_KEY`, `DATABASE_URL`) and has no idea a tier exists. Never add a tier-suffixed name outside that resolver.
+
+`APP_ENVIRONMENT` is the only switch: `local` / `staging` / `production`, read straight from `process.env` with no inference. Vercel carries `production`; unset defaults to `local`. Changing it requires restarting `yarn dev`, since env is collapsed at build time.
 
 **Database work** can be verified locally without Supabase — Postgres 15 is installed at `/usr/local/opt/postgresql@15`. A scratch instance in the session scratchpad, migrate, exercise, tear down. Taylor runs migrations against hosted databases; author the SQL and stop.
 

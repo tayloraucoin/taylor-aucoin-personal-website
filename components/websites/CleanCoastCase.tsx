@@ -1,5 +1,5 @@
 import Image from "next/image";
-import BulletList from "@/components/ui/BulletList";
+import LabelCard from "@/components/ui/LabelCard";
 import SectionLabel from "@/components/ui/SectionLabel";
 import CleanCoastGallery from "@/components/websites/CleanCoastGallery";
 import { cleanCoast } from "@/content/websites-clean-coast";
@@ -60,34 +60,44 @@ export default function CleanCoastCase() {
 
       <PaletteArtifact />
 
-      <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div>
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2)">
-            What got built
-          </p>
-          <BulletList items={cleanCoast.built} />
+      {/* Full width, three across. The built list used to be a bullet column
+          beside Outcome; as cards it needs the whole measure, and Outcome is
+          two lines that were never worth half the page. */}
+      <div className="mt-12">
+        <p className="font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2)">
+          What got built
+        </p>
+        {/* Numbered LabelCards rather than a bullet list. A non-technical
+            buyer reading this is counting what they get, and indices answer
+            that at a glance where bullets do not. Same flat spec-bg idiom as
+            Specialties on the home page. */}
+        <div className="mt-[26px] grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cleanCoast.built.map((item, i) => (
+            <LabelCard key={item.label} label={item.label} index={i + 1} padding="compact">
+              {item.body}
+            </LabelCard>
+          ))}
         </div>
-        <div>
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2)">
-            Outcome
-          </p>
-          <p className="max-w-[48ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
-            {cleanCoast.outcome}
-          </p>
+      </div>
 
-          {cleanCoast.testimonial ? (
-            <blockquote className="mt-6 border-l border-(--color-faint) pl-5">
-              <p className="max-w-[48ch] text-[15px] font-light leading-[1.7] text-(--color-ink)">
-                “{cleanCoast.testimonial.quote}”
-              </p>
-              <footer className="mt-2.5 font-mono text-[9px] uppercase tracking-[.24em] text-(--color-dim)">
-                {cleanCoast.testimonial.attribution}
-              </footer>
-            </blockquote>
-          ) : null}
+      <div className="mt-10 border-t border-(--color-faint) pt-8">
+        <p className="mb-4 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2)">
+          Outcome
+        </p>
+        <p className="max-w-[56ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
+          {cleanCoast.outcome}
+        </p>
 
-
-        </div>
+        {cleanCoast.testimonial ? (
+          <blockquote className="mt-6 border-l border-(--color-faint) pl-5">
+            <p className="max-w-[48ch] text-[15px] font-light leading-[1.7] text-(--color-ink)">
+              “{cleanCoast.testimonial.quote}”
+            </p>
+            <footer className="mt-2.5 font-mono text-[9px] uppercase tracking-[.24em] text-(--color-dim)">
+              {cleanCoast.testimonial.attribution}
+            </footer>
+          </blockquote>
+        ) : null}
       </div>
     </section>
   );

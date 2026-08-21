@@ -155,3 +155,39 @@ export function requirePriceId(key: StripePriceKey): string {
 
   return value;
 }
+
+/**
+ * Whether Checkout sessions ask Stripe Tax to add GST.
+ *
+ * Deliberately opt-in via `STRIPE_TAX_CHECKOUT=true`: with no head-office
+ * address or active registration, `automatic_tax` silently collects zero
+ * while looking normal, and past charges cannot be corrected retroactively
+ * (docs/AGORA-STRIPE.md). Flip it only after `taxReadiness()` reports ready
+ * and a test charge shows GST actually collected.
+ */
+export function stripeTaxEnabled(): boolean {
+  return process.env.STRIPE_TAX_CHECKOUT?.trim().toLowerCase() === "true";
+}
+
+/**
+ * Whether the admin test-payment price may replace the deposit at checkout.
+ *
+ * Deliberately opt-in via `ADMIN_TEST_PAYMENT=true`, and still requires
+ * `?admin_test_payment=1` on the intake link — the env var alone is not enough.
+ * Set per Vercel environment; flip off on production after smoke-testing.
+ */
+export function adminTestPaymentEnabled(): boolean {
+  return process.env.ADMIN_TEST_PAYMENT?.trim().toLowerCase() === "true";
+}
+
+/**
+ * Agora's GST/HST registration number, for invoice emails.
+ *
+ * CRA requires it on invoices over $100 when the supplier is registered —
+ * without it a client cannot claim their input tax credit. Optional here so
+ * staging can run without one, but a live invoice email without it is flagged
+ * to ops by the invoice service.
+ */
+export function agoraGstNumber(): string | null {
+  return process.env.AGORA_GST_NUMBER?.trim() || null;
+}

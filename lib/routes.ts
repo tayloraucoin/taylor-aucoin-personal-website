@@ -47,3 +47,23 @@ export const intakeRoutes = {
 
   done: (token: string) => `${INTAKE_PREFIX}/${token}/done`,
 } as const;
+
+/**
+ * The legal pages for the websites service. Scoped under `/websites` on
+ * purpose: these terms govern the website-build engagements, not the
+ * portfolio site around them, and the URL should say so.
+ */
+export const legalRoutes = {
+  terms: "/websites/terms",
+  privacy: "/websites/privacy",
+} as const;
+
+/**
+ * True on the legal pages. They get the intake surface's treatment from the
+ * site's chrome and analytics: a client reads these mid-payment or from an
+ * invoice, and a nav offering "Work with me" (or a tag watching them read a
+ * contract) belongs on neither.
+ */
+export function isLegalPath(pathname: string): boolean {
+  return pathname === legalRoutes.terms || pathname === legalRoutes.privacy;
+}

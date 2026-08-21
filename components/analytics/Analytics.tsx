@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { GA_MEASUREMENT_ID } from "@/lib/config";
-import { isIntakePath } from "@/lib/routes";
+import { isIntakePath, isLegalPath } from "@/lib/routes";
 import {
   CONSENT_STORAGE_KEY,
   REGIME_COOKIE,
@@ -149,7 +149,7 @@ export default function Analytics() {
   // a business's pricing, revenue hints, and access details; no third-party
   // script goes near them. With nothing measured there is also nothing for a
   // consent banner to gate, so both stand down together.
-  if (isIntakePath(pathname)) return null;
+  if (isIntakePath(pathname) || isLegalPath(pathname)) return null;
 
   // No measurement ID (local dev, preview deploys) means no analytics and no
   // banner asking to enable analytics that would not run.

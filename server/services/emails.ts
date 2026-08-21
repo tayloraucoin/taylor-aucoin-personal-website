@@ -42,6 +42,8 @@ function toEngagementForEmail(row: EngagementRow): Engagement {
     projectSummary: row.projectSummary,
     sentAt: row.sentAt,
     startedAt: row.startedAt,
+    termsAcceptedAt: row.termsAcceptedAt,
+    termsVersion: row.termsVersion,
     tokenExpiresAt: row.tokenExpiresAt,
     status: getEngagementStatus(row),
   };
@@ -136,6 +138,29 @@ async function sendOnce(input: {
     );
     return false;
   }
+}
+
+/**
+ * A one-off send with no engagement ledger — the invoice service brings its
+ * own send-once table (`invoice_emails`) and claims before calling this.
+ * Everything else in this file should keep using `sendOnce`.
+ */
+export async function sendRawEmail(input: {
+  to: string;
+  subject: string;
+  html?: string;
+  text: string;
+  /** Filename + bytes. Used by the invoice rail to attach the PDF. */
+  attachments?: Array<{ filename: string; content: Buffer }>;
+}): Promise<void> {
+  await getResend().emails.send({
+    from: from(),
+    to: input.to,
+    subject: input.subject,
+    ...(input.html ? { html: input.html } : {}),
+    text: input.text,
+    ...(input.attachments?.length ? { attachments: input.attachments } : {}),
+  });
 }
 
 /** Whether a given kind has already gone out for this engagement. */

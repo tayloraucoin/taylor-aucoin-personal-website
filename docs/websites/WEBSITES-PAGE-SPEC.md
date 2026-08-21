@@ -1,6 +1,6 @@
 # `/websites` — page specification
 
-Author: Vesper (design), with Forge on the code contract. Status: **built and revised once against Taylor's feedback. Awaiting his read-aloud pass and one content gate (§8).**
+Author: Vesper (design), with Forge on the code contract. Status: **built, revised twice against Taylor's feedback, and passed through his Human-Hand tell scan. Awaiting his read-aloud pass and one content gate (§8).**
 
 **Document authority.** On tokens and visual law, [`../DESIGN-SYSTEM.md`](../DESIGN-SYSTEM.md) wins. On register and what Taylor has rejected, [`../TASTE-PROFILE.md`](../TASTE-PROFILE.md) wins. On the offer itself — price, process, terms, timelines — **Taylor's client-facing "How We Work Together" document wins over everything here.** Every substantive sentence on this page is adapted from it or lifted from it; nothing about the commercial relationship was invented. Where this spec is silent, the `/services` page is the nearest precedent and its idioms are the default.
 
@@ -130,6 +130,10 @@ Six hairline-divided rows, `md:grid-cols-[240px_1fr]`, gold mono lead label + bo
 
 **Why rows and not a card grid.** This is the page's most brochure-shaped content, and a six-cell card grid is precisely the generic template rhythm the drift test exists to catch. The inscription register — wide-tracked mono label against plain body — is what keeps a deliverables list from reading as a deliverables list. It is also the third distinct section shape on the page, which is what stops the scroll from feeling like one repeated component.
 
+Eleven rows, and the length is the point: this is the section that has to survive being compared against a $3,000 quote. Two of them — the **SEO plan** (the site built for local search, plus a checklist of what to do next in the order Taylor would do it) and the **command centre** — are the newest and the least expected, which is why neither is buried at the bottom.
+
+The SEO row and the "No ranking promise" row in §5.7 are written to hold each other up rather than to contradict: a plan and a checklist are things that can honestly be handed over, a ranking is not.
+
 ### 5.3 How it goes
 
 Six numbered steps, stacked. Each: gold mono index (`01`), display-type title, a **mono system label** in dim beneath it, then body.
@@ -150,6 +154,8 @@ The section that stops this reading as "a website for $1,200," and the reason th
 
 Flat `--color-spec-bg` cards, two-up. The ring stays rationed to the price card.
 
+The **command centre document** is what ties the section to the rest of the offer: one Notion doc covering how to run every part of the site, how to use each AI role, and what extended help looks like. It is listed in `deliverables` and named again in the process's Enablement step, because it is the artifact that turns "here are some files" into something a person can actually act on.
+
 ### 5.4 Case study — Clean Coast
 
 `id="clean-coast"`, so the hero and the close can both anchor to it.
@@ -161,6 +167,10 @@ This is the single best decision on the page. The brief predicted the logo→pal
 **Hex values are hardcoded in `content/websites.ts` and this is not a violation.** `DESIGN-SYSTEM.md`'s "nothing hardcodes a hex" governs *the site's own theming*. These are a client's brand colours rendered as data — the subject of the case study, not a style decision. They are quarantined in the content file, annotated, and no component reads a colour token from anywhere but the theme.
 
 **Contrast handling:** every swatch carries a `--color-faint` hairline so the pale end (`#F8F8F8`, `#E6EEF7`) does not float on the dark ground. Colour is never the sole carrier of meaning — every named chip states its hex as real text beside it, and the swatches themselves are `aria-hidden`.
+
+**"What got built" is numbered cards, not a bullet list.** Seven flat `LabelCard`s with `01 ·`–`07 ·` indices, three across at `lg`, using the Specialties idiom from the home page. A non-technical buyer reading a case study is counting what they get, and indices answer that at a glance where bullets do not. The index is an optional prop on `LabelCard` rather than a forked component — every existing caller renders unchanged without one, because Specialties is a set with no order to imply.
+
+The block runs full width and Outcome sits beneath it behind a hairline. It was a two-column split when the left side was bullets; as cards it needs the whole measure, and Outcome is two lines that never earned half the page.
 
 **The gallery leads with phones.** Four captures: home and services on a phone, then the same two on desktop. Phones first is not a layout preference — the buyer reading this page is holding one, and so is nearly everyone who will find their business. Showing the desktop view first would be leading with the view they are least likely to have.
 
@@ -269,6 +279,16 @@ WCAG 2.2 AA, audited not assumed.
 
 ---
 
+## 6b. The copy standard
+
+This page is held to Taylor's Human-Hand checklist (`~/Documents/Professional/Job Search/human-hand-mode.md`), same as the rest of the site.
+
+He asked whether it should be, given the audience is non-technical and the goal is plainness. It should, and the two are not in tension. Every tell on that list — em-dash pile-ups, `X, not Y` antithesis scaffolding, triads, uniform sentence rhythm — makes a paragraph harder to parse, not easier. A tradesperson reading this on a phone at 9pm is exactly who suffers most from prose with a metronome in it. Passing the scan and being clear are the same job.
+
+First draft scored **41 em dashes across ~2,450 words**, which is the fingerprint Don Burks named. After the pass: **zero em dashes**, and the two surviving `X, not Y` constructions are both deliberate — "changes come in batches, not messages" is a rule stated the way a person states a rule, and "a real working website, not a picture and not a mock-up" answers a question the reader is actually holding.
+
+The mechanical scan is worth re-running against `content/websites.ts` and `content/websites-clean-coast.ts` after any copy edit. It is a `grep`-level check, not a judgement call.
+
 ## 7. `/intake` → `/websites/intake`
 
 Taylor's call, and the right one: the questionnaire is one service's onboarding, not a site-wide facility. A client who trims the URL back to its parent now lands on the page that explains what they are filling in instead of a 404 — which, for a user who has just been asked for $600, is a meaningful difference.
@@ -289,6 +309,8 @@ The trust work that makes this safe is in §5.1: the note under the button, stat
 
 | Was open | Resolved |
 | --- | --- |
+| Copy carrying AI tells | **Scanned and rewritten.** 41 em dashes to zero. See §6b. |
+| AI employee documents missing from the deliverables | **Added**, along with the **command centre** Notion doc and the **SEO plan**. |
 | Clean Coast P0s — fabricated testimonials, AI headshots, placeholder phone | **Fixed.** Verified against the live site 2026-08-19: no testimonials at all, real phone (778-269-0082), real published prices. `liveUrl` is now set. |
 | GST — are the $600 Prices inclusive? | **Exclusive.** `scripts/setup-stripe-catalogue.ts` sets `tax_behavior: "exclusive"`, so "+ GST" on the page is correct and Stripe adds it at checkout. |
 | Questionnaire duration contradicting itself (20 vs 30–45 min) | **Thirty minutes**, Taylor's call, now consistent across `/websites`, the intake start page, the welcome screen, and the three docs that quoted it. |
@@ -301,7 +323,7 @@ The trust work that makes this safe is in §5.1: the note under the button, stat
 | --- | --- |
 | **Liam's written permission** | The one remaining gate on the case study. `CLEAN_COAST.published` is `true` and the section renders — flip it to `false` if permission does not land before this goes public. Ask for a testimonial in the same message: `testimonial` is still `null`, and there is no real quote anywhere on this page. |
 | **Brand-guide sample** | Taylor is asking Liam. Format decided: **image previews of two or three spreads, not an embedded PDF** — PDF embeds are miserable on a phone and heavy to load, and the buyer is on a phone. If Liam says no, the fallback is an invented/anonymised sample rather than nothing. |
-| **Care plan scope** | Still $250/month with no stated contents. Deliberately absent from the page; `content/websites.ts` carries a commented slot. Taylor's own note: worth working out what a month of attention actually buys before it is sold. |
+| **Care plan scope** | Still $250/month with no stated contents, and still deliberately absent from the page rather than published vague. Taylor's direction as of 2026-08-21, recorded beside the commented slot in `content/websites.ts`: on call for questions, with a monthly ceiling, possibly around two hours. That is a direction and not yet an offer — a published ceiling is the number clients hold him to, so it stays off until he settles it. |
 | **Read-aloud pass** | Copy is adapted from Taylor's document and his spoken feedback, not generated — but it was re-cut for the page and he has not read it aloud. `TASTE-PROFILE.md` § voice says he will notice. |
 | **Phone number is published** | `604-353-4287` as a `tel:` link in the hero note and the close. Will get scraped; accepted trade for tap-to-call. One line to remove. |
 

@@ -77,14 +77,20 @@ export default function WebsitesHero() {
         <GhostButton href={BOOKING_URL}>Book a call first</GhostButton>
       </div>
 
-      {/* Body type, sentence case — NOT the mono label register. This is the
+      {/* Body type, sentence case, NOT the mono label register. This is the
           one line on the page written for the least confident reader, and
           wide-tracked uppercase at 10px is work to read. Mono earns its place
-          on labels and metadata; a sentence that has to be absorbed is not
-          either of those. */}
+          on labels and metadata; a sentence that has to be absorbed is neither.
+
+          It said "six questions first" once, which is true of the start form
+          and false of the thing it leads to. Undersizing a real interview to
+          make a button easier to press buys the click and loses the trust
+          twenty minutes later. It states what is safe (no charge yet) without
+          making a claim about length. */}
       <p className="mt-5 max-w-[52ch] text-[13.5px] font-light leading-[1.64] text-(--color-dim)">
-        Six questions first — nothing is charged until you&apos;ve seen what
-        you&apos;re starting. Rather talk it through?{" "}
+        A few details to set things up, then the questionnaire. Nothing is
+        charged until you&apos;ve seen what you&apos;re starting. Rather talk it
+        through first?{" "}
         <a
           href={AGORA.phoneHref}
           className="whitespace-nowrap text-(--color-c2) transition-colors duration-(--dur-fast) hover:text-(--color-c3)"

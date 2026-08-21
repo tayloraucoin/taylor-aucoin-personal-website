@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { intakeRoutes } from "@/lib/routes";
+import { intakeRoutes, legalRoutes } from "@/lib/routes";
 import {
   EngagementNotFoundError,
   requireEngagement,
@@ -74,8 +74,17 @@ export default async function IntakeStartPage() {
         <StartForm />
       </div>
 
+      {/* Notice at the point of collection: this is the first screen that
+          takes personal information, so the privacy policy is named here —
+          before the pay screen's acceptance line, not only on it. */}
       <p className="mt-10 border-t border-(--color-faint) pt-5 font-mono text-[10px] uppercase leading-[1.8] tracking-[.18em] text-(--color-dim)">
-        Nothing is charged on this page. Everything you enter is confidential.
+        Nothing is charged on this page. Everything you enter is confidential ·{" "}
+        <Link
+          href={legalRoutes.privacy}
+          className="underline underline-offset-4 transition-colors hover:text-(--color-ink)"
+        >
+          Privacy
+        </Link>
       </p>
     </div>
   );

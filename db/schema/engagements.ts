@@ -70,6 +70,13 @@ export const engagements = pgTable(
     startedAt: timestamp("started_at", { withTimezone: true }),
     stripeCheckoutSessionId: text("stripe_checkout_session_id"),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
+    // Acceptance record for the website services terms (terms §2): paying the
+    // deposit is agreeing, so fulfillment stamps when and to which version.
+    // The version travels in the Checkout session's metadata — it is what the
+    // pay screen displayed when the session was created, not whatever happens
+    // to be current when the webhook lands.
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+    termsVersion: text("terms_version"),
     tokenExpiresAt: timestamp("token_expires_at", {
       withTimezone: true,
     }).notNull(),

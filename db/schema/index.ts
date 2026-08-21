@@ -1,11 +1,17 @@
 import type { emailEvents } from "./email-events";
+import type { engagementProducts } from "./engagement-products";
 import type { engagements } from "./engagements";
 import type { intakeFiles } from "./intake-files";
+import type { invoiceEmails } from "./invoice-emails";
+import type { products } from "./products";
 import type { stripeEvents } from "./stripe-events";
 
 export * from "./email-events";
+export * from "./engagement-products";
 export * from "./engagements";
 export * from "./intake-files";
+export * from "./invoice-emails";
+export * from "./products";
 export * from "./stripe-events";
 
 /**
@@ -26,3 +32,11 @@ export type StripeEventRow = typeof stripeEvents.$inferSelect;
 
 export type EmailEventRow = typeof emailEvents.$inferSelect;
 export type NewEmailEventRow = typeof emailEvents.$inferInsert;
+
+export type ProductRow = typeof products.$inferSelect;
+export type NewProductRow = typeof products.$inferInsert;
+
+export type EngagementProductRow = typeof engagementProducts.$inferSelect;
+export type NewEngagementProductRow = typeof engagementProducts.$inferInsert;
+
+export type InvoiceEmailRow = typeof invoiceEmails.$inferSelect;

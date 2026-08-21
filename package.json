@@ -15,10 +15,12 @@
     "intake:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-engagement.ts",
     "intake:render": "node --env-file-if-exists=.env.local --import tsx scripts/render-intake.ts",
     "stripe:catalogue": "node --env-file-if-exists=.env.local --import tsx scripts/setup-stripe-catalogue.ts",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe"
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
+    "db:seed": "node --env-file-if-exists=.env.local --import tsx scripts/seed-products.ts"
   },
   "dependencies": {
     "@next/third-parties": "^15.5.20",
+    "@react-pdf/renderer": "^4.6.1",
     "@supabase/supabase-js": "2.112.3",
     "drizzle-orm": "0.45.2",
     "motion": "^11.15.0",

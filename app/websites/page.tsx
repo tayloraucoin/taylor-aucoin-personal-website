@@ -57,7 +57,7 @@ export default function WebsitesPage() {
       <AiEmployees />
       <CleanCoastCase />
       <Pricing />
-      <StartCta line="That's the whole offer. Six questions to get going, and you can stop and come back whenever you like." />
+      <StartCta line="That's the whole offer. Starting takes a few details, and you can stop and come back whenever you like." />
       <Changes />
       <UpFront />
       <section className="mt-16">

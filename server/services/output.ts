@@ -169,6 +169,18 @@ function depositLine(engagement: Engagement): string {
   return "Deposit: NOT PAID";
 }
 
+/**
+ * The acceptance receipt, in the one document Taylor keeps per engagement.
+ * Null when unpaid (acceptance is by deposit payment, terms §2) and for
+ * waived-deposit engagements, which have no acceptance event — a gap worth
+ * seeing in the document rather than papering over.
+ */
+function termsLine(engagement: Engagement): string | null {
+  if (!engagement.termsAcceptedAt || !engagement.termsVersion) return null;
+
+  return `Terms: version ${engagement.termsVersion} accepted ${day(engagement.termsAcceptedAt)} by deposit payment`;
+}
+
 export function renderIntakeMarkdown(input: {
   engagement: Engagement;
   files: readonly IntakeFileLink[];
@@ -182,6 +194,8 @@ export function renderIntakeMarkdown(input: {
     `Generated ${day(generatedAt)} · ${engagement.contactName} · ${engagement.contactPhone ?? "no phone"} · ${engagement.contactEmail}`,
   );
   lines.push(depositLine(engagement));
+  const terms = termsLine(engagement);
+  if (terms) lines.push(terms);
   lines.push(
     engagement.completedAt
       ? `Submitted ${day(engagement.completedAt)}`

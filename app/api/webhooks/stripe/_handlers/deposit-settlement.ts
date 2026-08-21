@@ -2,6 +2,8 @@ import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
 import { fulfillDeposit } from "@/server/services/deposit";
 import { notifyOps } from "@/server/services/emails";
+import { findEngagementById } from "@/server/services/engagement";
+import { sendDepositInvoiceEmail } from "@/server/services/invoices";
 
 /**
  * The shared settlement path for a deposit Checkout session.
@@ -43,12 +45,25 @@ export async function settleDepositSession(
     engagementId,
     paymentIntentId,
     session.amount_total,
+    // The terms version the pay screen carried when this session was created
+    // (see createDepositCheckout) — the acceptance record on the row.
+    session.metadata?.terms_version ?? null,
   );
 
   console.info(`[stripe] ${event.id}: ${engagementId} → ${outcome}`);
 
-  // Only the transition is worth an email. `already_paid` is a replay of work
-  // that was announced the first time round.
+  if (outcome === "unknown") return;
+
+  // The client's paid invoice. Attempted on `already_paid` as well as on the
+  // transition, because a retry after a failed send arrives as a replay —
+  // the `invoice_emails` claim is what makes this exactly-once, and a send
+  // failure throws so Stripe redelivers until it lands.
+  const engagement = await findEngagementById(engagementId);
+  const invoiceOutcome = await sendDepositInvoiceEmail(engagement, session);
+  console.info(`[stripe] ${event.id}: deposit invoice email → ${invoiceOutcome}`);
+
+  // Only the transition is worth an ops email. `already_paid` is a replay of
+  // work that was announced the first time round.
   if (outcome !== "fulfilled") return;
 
   const amount =
@@ -62,7 +77,7 @@ export async function settleDepositSession(
     `Amount:     ${amount}`,
     `Engagement: ${engagementId}`,
     ``,
-    `They now have the questionnaire. You will get the intake document when`,
-    `they finish it.`,
+    `They now have the questionnaire and their paid invoice email. You will`,
+    `get the intake document when they finish it.`,
   ]);
 }

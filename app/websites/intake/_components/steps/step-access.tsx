@@ -41,20 +41,6 @@ const CONTACT_METHODS = [
   { value: "whatsapp", label: "WhatsApp" },
 ] as const;
 
-/**
- * Prices live in the label, not in a footnote. A tick-box whose cost is one
- * tap away is a dark pattern, and this list sits inside a form the client has
- * already paid a deposit on — the one place trust is most expensive to lose.
- */
-const EXTRAS = [
-  { value: "booking", label: "Online booking setup — $250" },
-  { value: "stripe", label: "Stripe payments setup — $250" },
-  { value: "gbp", label: "Google Business Profile clean-up — $300" },
-  { value: "logo", label: "Logo refresh — $250" },
-  { value: "extraPage", label: "An extra page beyond the standard five — $150 each" },
-  { value: "none", label: "None of these for now" },
-] as const;
-
 const CALLOUT_CLASS =
   "mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5";
 const CALLOUT_EYEBROW_CLASS =
@@ -66,10 +52,6 @@ const CALLOUT_LINK_CLASS =
 
 function asSocials(value: unknown): SocialAccountAnswer[] {
   return Array.isArray(value) ? (value as SocialAccountAnswer[]) : [];
-}
-
-function asList(value: unknown): string[] {
-  return Array.isArray(value) ? (value as string[]) : [];
 }
 
 /**
@@ -90,13 +72,9 @@ function asList(value: unknown): string[] {
  * opinion about what it should be — and registration is part of the build, so
  * that opinion is work we would otherwise chase on the call.
  *
- * The extras block sits near the end but never at it: "Best way to reach you"
- * and then "Anything else we should know?" follow it, so the last thing a
- * client reads is an invitation rather than a price list. It is a callout in
- * the same grammar as the no-passwords block above — deliberately *not* the
- * gradient ring, which appears exactly once in this flow and is spent on the
- * Step 5 voice note (D-INT-3). Money must never be the loudest thing on the
- * screen.
+ * Paid add-ons are chosen at deposit checkout, not here. Booking and Stripe
+ * detail questions render only when those add-ons were bought — buying booking
+ * setup is precisely why we need to know what gets booked.
  *
  * The closing question is open on purpose, in a form that otherwise prefers
  * checkboxes. Every other field here narrows; this one is the only place a
@@ -107,17 +85,23 @@ function asList(value: unknown): string[] {
 export function StepAccess({
   token,
   initial,
+  purchasedExtras = [],
 }: {
   token: string;
   initial: Record<string, unknown>;
+  /**
+   * Extras values already bought on the pay screen (P0 add-ons). Booking and
+   * Stripe detail questions render when the matching add-on was purchased.
+   */
+  purchasedExtras?: string[];
 }) {
   const form = useStepAutosave({ token, stepKey: "access", initial });
   useReportSaveState(form.state, form.retry);
 
   const ownsDomain = form.values.ownsDomain;
-  const extras = asList(form.values.extrasWanted);
-  const wantsBooking = extras.includes("booking");
-  const wantsStripe = extras.includes("stripe");
+  const purchased = new Set(purchasedExtras);
+  const wantsBooking = purchased.has("booking");
+  const wantsStripe = purchased.has("stripe");
 
   return (
     <>
@@ -257,26 +241,26 @@ export function StepAccess({
         label="Booking or scheduling tool you use"
       />
 
-      <div className={CALLOUT_CLASS}>
-        <p className={CALLOUT_EYEBROW_CLASS}>Extras · nothing charged here</p>
-        <p className={CALLOUT_BODY_CLASS}>
-          None of these are part of your build. Tick anything you want and
-          I&apos;ll add it to your final invoice — I&apos;ll confirm the price
-          with you first, and nothing is charged from this form.
-        </p>
-      </div>
-
-      <ChoiceAnswer
-        form={form}
-        name="extrasWanted"
-        label="Anything you'd like added?"
-        options={EXTRAS}
-        multiple
-        exclusiveValue="none"
-      />
-
       {wantsBooking ? (
         <>
+          <div className={CALLOUT_CLASS}>
+            <p className={CALLOUT_EYEBROW_CLASS}>Booking · one shared schedule</p>
+            <p className={CALLOUT_BODY_CLASS}>
+              This is one calendar for the whole business — not a separate
+              calendar per person. Customers pick a service, date, and time; they
+              can&apos;t pick a specific crew member, and nothing auto-assigns
+              jobs. That&apos;s the right fit for a solo operator, and workable
+              for a small crew who split jobs themselves after the booking comes
+              in.
+            </p>
+            <p className={CALLOUT_BODY_CLASS}>
+              For anything more complex — a bigger team, customers picking a
+              specific person, jobs that need to auto-assign — email{" "}
+              {SITE.email} with what you&apos;re looking for and I&apos;ll quote
+              it properly.
+            </p>
+          </div>
+
           <LongAnswer
             form={form}
             name="bookingServices"
@@ -287,7 +271,7 @@ export function StepAccess({
             form={form}
             name="bookingCalendar"
             label="What calendar do you use?"
-            help="Google, Apple, Outlook — or 'none'."
+            help="Google Calendar syncs automatically. Apple, Outlook, or none — tell me anyway, I'll set your hours by hand instead."
           />
         </>
       ) : null}

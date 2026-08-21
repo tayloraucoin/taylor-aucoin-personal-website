@@ -50,6 +50,8 @@ export type Engagement = Pick<
   | "projectSummary"
   | "sentAt"
   | "startedAt"
+  | "termsAcceptedAt"
+  | "termsVersion"
   | "tokenExpiresAt"
 > & { status: EngagementStatus };
 
@@ -185,6 +187,8 @@ function toEngagement(row: EngagementRow, now: Date = new Date()): Engagement {
     projectSummary: row.projectSummary,
     sentAt: row.sentAt,
     startedAt: row.startedAt,
+    termsAcceptedAt: row.termsAcceptedAt,
+    termsVersion: row.termsVersion,
     tokenExpiresAt: row.tokenExpiresAt,
     status: getEngagementStatus(row, now),
   };
