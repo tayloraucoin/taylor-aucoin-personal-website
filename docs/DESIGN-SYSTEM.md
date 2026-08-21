@@ -219,3 +219,31 @@ Rotation is driven by `requestAnimationFrame` writing `--angle`. Hover lerps spe
 | **Stat cell**       | translucent                              | slightly more opaque                                                           |
 
 **Every one of these fades the field's cursor-glow to zero while hovered.**
+
+## D-DOC-1 · Palette D on paper (documents: invoices, PDFs)
+
+Ratified 2026-08-21 (Taylor: brand styles, white background). The light
+variant of Palette D for client-facing business documents — invoice emails
+and PDF attachments. **This supersedes the cream/rust of `how_we_work.pdf`,
+which predates this system and is not part of Palette D.**
+
+Tokens live in `lib/invoices/paper.ts` (`PAPER`), derived from this file's
+palette rather than invented: `--color-ground-a` promoted from background to
+ink; the violet-gray text ramp flipped for white; gold unchanged.
+
+| Token | Value | Role |
+|---|---|---|
+| `paper` | `#ffffff` | The page. White on purpose — prints honestly |
+| `tint` | `#f7f6fa` | The one surface (meta blocks); ground-a at ~3% |
+| `ink` | `#060b1e` | Headings, amounts, totals — `--color-ground-a` |
+| `body` | `#3f3c5c` | Prose — light counterpart of `--color-body` |
+| `dim` | `#6b6889` | Labels, footer — counterpart of `--color-dim`, AA-corrected |
+| `hairline` | `#e3e1ec` | Rules — counterpart of `--color-faint` |
+| `gold` | `#e8b961` | `--color-c2`, unchanged. **Never text on paper** (~1.9:1 on white). Rules, chip fills, button fills with ink text — same law as the site CTA |
+
+Same three families (Space Grotesk / Manrope / JetBrains Mono; vendored
+subset TTFs in `server/assets/fonts/` for the PDF path), same mono grammar
+(eyebrow masthead with the gold hairline trailing right), same 3px radius.
+Renderers: `server/services/invoice-pdf.tsx` (PDF) and
+`renderInvoiceEmailHtml` in `server/services/invoices.ts` (email) — both
+consume `lib/invoices/document.ts`, neither carries its own hex.

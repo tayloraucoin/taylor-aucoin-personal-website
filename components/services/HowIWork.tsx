@@ -1,3 +1,4 @@
+import LabelRows from "@/components/ui/LabelRows";
 import SectionLabel from "@/components/ui/SectionLabel";
 import { howIWork, whatImNot } from "@/content/services";
 
@@ -12,19 +13,7 @@ export default function HowIWork() {
       <SectionLabel>How I work</SectionLabel>
 
       <div className="mt-2">
-        {howIWork.map((item) => (
-          <div
-            key={item.lead}
-            className="grid grid-cols-1 gap-x-8 gap-y-1.5 border-b border-(--color-faint) py-5 md:grid-cols-[240px_1fr] md:items-baseline"
-          >
-            <span className="font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2)">
-              {item.lead}
-            </span>
-            <p className="max-w-[56ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
-              {item.body}
-            </p>
-          </div>
-        ))}
+        <LabelRows rows={howIWork.map((i) => ({ label: i.lead, body: i.body }))} />
       </div>
 
       <div className="mt-10 border-l border-(--color-faint) pl-5">

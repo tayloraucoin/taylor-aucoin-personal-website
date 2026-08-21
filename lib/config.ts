@@ -39,6 +39,15 @@ export function isWorkPublished(slug: string): boolean {
 export const BOOKING_URL = "https://cal.com/taylor-aucoin/30min";
 
 /**
+ * Client-facing guide for setting up a Stripe account, linked from the intake
+ * form's Stripe add-on. The `?source=copy_link` parameter Notion appends when
+ * you copy a share URL is deliberately stripped — it is Notion's telemetry,
+ * not ours, and this surface measures nothing (M-INT-10).
+ */
+export const STRIPE_SETUP_GUIDE_URL =
+  "https://stellar-resistance-54a.notion.site/Setting-Up-Your-Stripe-Account-3c1774d5f3f1807fae7dde837afbbf0f";
+
+/**
  * Portrait photo (PRE-04), served from `public/`. `null` until the asset
  * exists — the bio block renders without it and closes cleanly.
  */
@@ -65,6 +74,21 @@ export const HOME_TESTIMONIALS = [
   "bruno",
   "yogesh-verma",
 ] as const;
+
+/**
+ * The trading entity behind the local-business website service. Distinct from
+ * `SITE` on purpose: `/websites` sells as Agora, and the card statement, the
+ * invoice, and the page have to agree or the client opens a dispute.
+ *
+ * The phone number is published as a `tel:` CTA because tap-to-call is the
+ * right control for a buyer standing in a driveway. It will get scraped;
+ * that is the accepted trade. Removing it is one line.
+ */
+export const AGORA = {
+  entity: "Agora Network Technologies Inc.",
+  phone: "604-353-4287",
+  phoneHref: "tel:+16043534287",
+} as const;
 
 export const SITE = {
   name: "Taylor Aucoin",

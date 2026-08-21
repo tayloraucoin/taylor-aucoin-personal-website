@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import Analytics from "@/components/analytics/Analytics";
+import SiteChrome from "@/components/ui/SiteChrome";
 import SiteHeader from "@/components/ui/SiteHeader";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -53,7 +54,9 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
-        <SiteHeader />
+        <SiteChrome>
+          <SiteHeader />
+        </SiteChrome>
         {children}
         {modal}
         <Analytics />

@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import RootField from "@/components/field/RootField";
 import ClosingCta from "@/components/services/ClosingCta";
-import Faq from "@/components/services/Faq";
 import HowIWork from "@/components/services/HowIWork";
 import HowToStart from "@/components/services/HowToStart";
 import OfferCards from "@/components/services/OfferCards";
 import ProblemGrid from "@/components/services/ProblemGrid";
 import ProofStrip from "@/components/services/ProofStrip";
 import ServicesHero from "@/components/services/ServicesHero";
+import Faq from "@/components/ui/Faq";
+import SectionLabel from "@/components/ui/SectionLabel";
 import Footer from "@/components/sections/Footer";
+import { faq } from "@/content/services";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
 
@@ -35,7 +37,10 @@ export default function ServicesPage() {
       <HowIWork />
       <HowToStart />
       <ProofStrip />
-      <Faq />
+      <section className="mt-16">
+        <SectionLabel>FAQ</SectionLabel>
+        <Faq items={faq} />
+      </section>
       <ClosingCta />
       <Footer />
     </main>

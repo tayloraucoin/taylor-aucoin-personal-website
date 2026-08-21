@@ -108,6 +108,10 @@ export default function PrivacyPage() {
         <ConsentControl />
       </Row>
 
+      {/* Deliberately no link to /websites/privacy here: the websites service
+          is unlinked from the portfolio site by design (see app/websites/
+          page.tsx). Its clients reach their policy from the intake flow and
+          the terms; this page covers only the portfolio site. */}
       <Row label="Contact">
         <a
           href={`mailto:${SITE.email}`}

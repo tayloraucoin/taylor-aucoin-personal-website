@@ -1,0 +1,1 @@
+ALTER TABLE "invoice_emails" ADD COLUMN "pdf_storage_path" text;

@@ -1,0 +1,1 @@
+ALTER TABLE "engagements" ADD COLUMN "resume_token_ciphertext" text;

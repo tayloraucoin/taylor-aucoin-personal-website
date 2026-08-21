@@ -21,10 +21,12 @@ Before you touch anything visual, read `docs/TASTE-PROFILE.md`. It records what 
 
 ## Commands
 
+**Package manager is Yarn 4** (`yarn.lock`, `.yarnrc.yml`, `packageManager` in `package.json`). Never run `npm install` or `npm add` — it writes a `package-lock.json` beside the yarn lockfile and resolves a different dependency tree. Installs are `yarn add` (use `--exact` for anything the docs call pinned).
+
 ```bash
-npm run dev      # localhost:3000
-npm run build    # must pass before any PR
-npm run lint
+yarn dev         # localhost:3000
+yarn build       # must pass before any PR
+yarn lint
 npx tsc --noEmit # strict — must be clean
 ```
 
@@ -51,7 +53,7 @@ optimizer never upscales past the source — so a 1536px capture arrives as a
 1536px file while the srcset still claims 3840w. The browser reads that as a 3x
 image and lays it out at a third of its size. A full-viewport diagram rendered
 514px wide with nothing in the console. CSS `aspect-ratio` does not rescue it
-either: it only derives a *missing* dimension, so it cannot shrink width when
+either: it only derives a _missing_ dimension, so it cannot shrink width when
 max-height is the binding constraint. Anywhere an image must fit a box, pass an
 **explicit pixel width/height** — see `MediaLightbox.tsx`, which computes the
 fitted size from the intrinsic dimensions. Sizing with `w-full` (as the strip
