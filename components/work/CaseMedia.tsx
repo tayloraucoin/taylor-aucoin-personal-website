@@ -1,12 +1,17 @@
 import Image from "next/image";
 import type { MediaGroup, MediaItem } from "@/content/work";
 import Section from "@/components/work/Section";
-import MediaLightbox from "@/components/work/MediaLightbox";
 
 /**
  * The case-study media strip. Renders only when there is something to show —
  * `media: []` renders nothing at all and the article closes on Outcome. Media is
  * enrichment, never scaffolding.
+ *
+ * The click-to-zoom lightbox is OWNED BY CaseBody, not here: the header's
+ * thumbnail rail (MediaRail) and this strip share one MediaLightbox wrapping
+ * the whole article, so both open the same zoom with one paging order. The
+ * flat order comes from `flattenZoomable` below — the single source of truth
+ * for `data-zoom-index`, used by CaseBody, MediaRail, and this strip alike.
  *
  * Images arrive as static imports (see `content/work/types.ts`), which is what
  * makes CLS impossible: Next reads the file at build time and emits intrinsic
@@ -177,22 +182,31 @@ function Figure({
   );
 }
 
+/**
+ * One flat running order across every group — the lightbox pages through the
+ * whole strip, not just the cluster the reader clicked into. Video entries are
+ * excluded: they are players, not zoom targets, so they must not occupy a slot
+ * in the paging order or the counter would count things it cannot show.
+ */
+export function flattenZoomable(media: MediaGroup[]): MediaItem[] {
+  return media
+    .filter((g) => g.items.length > 0)
+    .flatMap((g) => g.items)
+    .filter((m) => !m.video);
+}
+
+/** Anchor id for the strip — the header rail's "All captures" jump target. */
+export const MEDIA_SECTION_ID = "interface";
+
 export default function CaseMedia({ media }: { media: MediaGroup[] }) {
   const groups = media.filter((g) => g.items.length > 0);
   if (groups.length === 0) return null;
 
-  // One flat running order across every group — the lightbox pages through the
-  // whole strip, not just the cluster the reader clicked into. Video entries are
-  // excluded: they are players, not zoom targets, so they must not occupy a slot
-  // in the paging order or the counter would count things it cannot show.
-  const flat = groups.flatMap((g) => g.items).filter((m) => !m.video);
-  const zoomIndex = new Map(flat.map((m, i) => [m, i]));
+  const zoomIndex = new Map(flattenZoomable(media).map((m, i) => [m, i]));
 
   return (
-    <Section label="Interface">
-      <MediaLightbox
-        items={flat.map((m) => ({ src: m.src, alt: m.alt, caption: m.caption }))}
-      >
+    <Section label="Interface" id={MEDIA_SECTION_ID}>
+      <>
         {groups.map((g, gi) => (
           <div key={g.label ?? gi} className={gi > 0 ? "mt-12" : undefined}>
             {/* Same treatment as the sub-headers in `brief.groups` — the strip
@@ -227,7 +241,7 @@ export default function CaseMedia({ media }: { media: MediaGroup[] }) {
             </div>
           </div>
         ))}
-      </MediaLightbox>
+      </>
     </Section>
   );
 }

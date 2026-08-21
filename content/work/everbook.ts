@@ -13,13 +13,14 @@ export const everbook = {
   title: "Everbook",
   meta: "Realtime voice AI · Print engine",
   tagline:
-    "An AI voice interview that becomes a typeset, press-ready hardcover — the interview engine, print pipeline, and commerce platform behind it, built solo from first commit through a relaunch.",
+    "An AI voice interview that becomes a typeset, press-ready hardcover: the interview engine, print pipeline, and commerce platform behind it, built solo from first commit through a relaunch.",
   metaDescription:
     "Founding engineer build: an AI voice interview that becomes a press-ready hardcover. MVP in six months, then a relaunch adding realtime voice and commerce.",
   roleLabel: "Founding Engineer",
   role: "Founding engineer, CTO-track",
   period: "2024 — 2025",
   engagementType: "Maps to · 0→1 Build",
+  mediaPreview: true,
   stack: [
     "Next.js",
     "TypeScript",
@@ -38,7 +39,7 @@ export const everbook = {
     {
       label: "Engagement",
       value:
-        "Founding engineer, CTO-track — fourteen months from first commit to relaunch",
+        "Founding engineer, CTO-track. Fourteen months from first commit to relaunch",
     },
     {
       label: "Starting point",
@@ -53,7 +54,7 @@ export const everbook = {
     {
       label: "Core system",
       value:
-        "An AI interview that becomes a typeset, press-ready hardcover — voice to print, end to end",
+        "An AI interview that becomes a typeset, press-ready hardcover: voice to print, end to end",
     },
     {
       label: "Commerce",
@@ -91,7 +92,7 @@ export const everbook = {
   },
   process: {
     intro:
-      "I digested everything that existed, scoped the entire build upfront as an ordered plan, got it approved, and executed it linearly. It went to plan — the value of specifying before building is that the building becomes the easy part.",
+      "I digested everything that existed, scoped the entire build upfront as an ordered plan, got it approved, and executed it linearly. It went to plan; specifying first made the building the easy part.",
     sections: [
       {
         header: "Onboarding & scoping",
@@ -107,22 +108,22 @@ export const everbook = {
         intro:
           "A live spoken conversation with an AI interviewer, recorded, transcribed, and turned into a story chapter.",
         bullets: [
-          "Browser connects by WebRTC directly to OpenAI's Realtime API — the server only mints a short-lived, scoped credential",
+          "Browser connects by WebRTC directly to OpenAI's Realtime API; the server only mints a short-lived, scoped credential",
           "Dual parallel recorders: a combined mix of the storyteller and the AI voice for playback, and an audio-only track chunked turn-by-turn into Whisper for transcription",
           "Voice-activity detection tuned with a deliberately long silence threshold, so reflective and elderly storytellers aren't cut off mid-thought",
-          "The interview ends itself: when the AI judges the story arc complete it speaks a set phrase — the app detects it in the transcript, and a spoken \"yes\" advances the flow with no button press",
+          "The interview ends itself: when the AI judges the story arc complete it speaks a set phrase. The app detects it in the transcript, and a spoken \"yes\" advances the flow with no button press",
           "Persistent storyteller memories carried between sessions, so each interview knows the person it's talking to",
         ],
       },
       {
         header: "Book generation engine",
         intro:
-          "The deepest system in the product: AI-generated text becomes perfectly typeset pages, measured — not estimated.",
+          "The deepest system in the product: AI-generated text becomes perfectly typeset pages, measured rather than estimated.",
         bullets: [
-          "Content is rendered in a hidden iframe with the book's real fonts and measured element by element against true print dimensions — trim, bleed, gutter margins that widen with page count",
+          "Content is rendered in a hidden iframe with the book's real fonts and measured element by element against true print dimensions: trim, bleed, gutter margins that widen with page count",
           "Paragraphs that overflow are split word by word against actual rendered layout, to the exact word where the page breaks",
           "Print conventions encoded as logic: chapters open on the right-hand page, chapter images sit on the left, blank pages inserted to keep the spread math true",
-          "Two-pass table of contents — built rough to learn its own length, then rebuilt with final page numbers",
+          "Two-pass table of contents, built rough to learn its own length, then rebuilt with final page numbers",
           "Editing one chapter re-paginates only that chapter, cascading downstream only when its page count changes",
         ],
       },
@@ -131,7 +132,7 @@ export const everbook = {
         intro: "Two checkout systems over shared payment, tax, and shipping infrastructure.",
         bullets: [
           "Carts for both authenticated and anonymous buyers, reconciled on login",
-          "A universal single-page checkout with Apple Pay and Google Pay, and a dedicated multi-step wizard for the Life Story product — gift flows included",
+          "A universal single-page checkout with Apple Pay and Google Pay, and a dedicated multi-step wizard for the Life Story product, gift flows included",
           "One server-side pricing orchestrator as the source of truth: cart, discounts, credits, and exact tax computed together, never trusted from the client",
           "The payment intent is patched live as address, shipping, and discounts change — totals update on screen without remounting the payment UI",
         ],
@@ -140,7 +141,7 @@ export const everbook = {
         header: "Print fulfillment",
         intro: "From confirmed order to a hardcover at the door, across three print providers.",
         bullets: [
-          "Each page rendered to its own PDF by headless Chrome and merged — one page at a time, for reliability at scale",
+          "Each page rendered to its own PDF by headless Chrome and merged one page at a time, for reliability at scale",
           "Cover mathematics computed to the printer's spec: spine width from page count, board thickness, wrap area",
           "Every interior file validated with the printer before ordering, with the confirmed print SKU taken from the validator rather than assumed",
           "A cron pipeline that waits for every page to exist, pads short books to the binding minimum, submits the order, and retries instead of failing",
@@ -153,7 +154,7 @@ export const everbook = {
         intro: "Built solo, documented for the team that followed.",
         bullets: [
           "Engineering conventions, API standards, and onboarding documentation authored as developers joined",
-          "Code review process established — every merge reviewed against the conventions",
+          "Code review process established; every merge reviewed against the conventions",
           "Schema kept clean and stable through the full arc from MVP to relaunch",
         ],
       },
@@ -166,7 +167,7 @@ export const everbook = {
         "The webhook is the single writer of truth for orders. The checkout UI only gets Stripe to a confirmed payment — it never creates the order.",
       alternative:
         "Let the client create the order after payment confirms — simpler, faster to build, and how most first versions do it.",
-      why: "A closed tab or a dropped connection mid-confirmation must never leave a customer charged with no order. So order creation lives in one server-side transaction, reconstructed entirely from payment metadata — users provisioned, projects activated, line items built, print jobs fired, receipt sent. The cost is a race the UI has to absorb: the success page can load before the order exists, so it polls, treating \"not found\" as \"not yet\" rather than as an error.",
+      why: "A closed tab or a dropped connection mid-confirmation must never leave a customer charged with no order. So order creation lives in one server-side transaction, reconstructed entirely from payment metadata: users provisioned, projects activated, line items built, print jobs fired, receipt sent. The cost is a race the UI has to absorb — the success page can load before the order exists, so it polls, treating \"not found\" as \"not yet\" rather than as an error.",
     },
     {
       chip: "BOOK GENERATION",
@@ -174,20 +175,20 @@ export const everbook = {
         "Measure with the browser instead of modelling the text. The pagination engine renders real content in real fonts and reads the layout — down to the word.",
       alternative:
         "Estimate text height with font metrics and formulas — the standard approach, and dramatically less machinery.",
-      why: "The content is rich text: headers, inline images, bold, italic, strikethrough, lists, pull quotes — across multiple fonts, where every font changes the math, and where the browser preview and the print PDF follow different rules. A formula approximates; print does not forgive approximation. Trusting the browser's own layout engine as the measuring instrument made 100% correctness reachable — found edge case by edge case, until the math held everywhere. The cost is complexity and speed: an off-screen rendering pipeline where a formula would have been one function.",
+      why: "The content is rich text (headers, inline images, bold, italic, strikethrough, lists, pull quotes) across multiple fonts, where every font changes the math, and where the browser preview and the print PDF follow different rules. A formula approximates; print does not forgive approximation. Trusting the browser's own layout engine as the measuring instrument made 100% correctness reachable, found edge case by edge case, until the math held everywhere. The cost is complexity and speed: an off-screen rendering pipeline where a formula would have been one function.",
     },
     {
       chip: "VOICE",
       decision:
-        "Wire the browser straight to the model. The realtime voice session is a direct WebRTC connection from the client to OpenAI — the server never touches the audio.",
+        "Wire the browser straight to the model. The realtime voice session is a direct WebRTC connection from the client to OpenAI; the server never touches the audio.",
       alternative:
         "Proxy the audio through the application server — the comfortable pattern, with everything observable in one place.",
-      why: "Conversation lives or dies on latency, and a relay adds a hop to every spoken turn. The server's only role is minting a short-lived credential scoped to the session; the audio flows peer to peer. The cost is that the hard problems move into the browser — mixed-stream recording, turn-by-turn transcription capture, and teardown across every device and browser quirk — running client-side against an API that had only just shipped.",
+      why: "Conversation lives or dies on latency, and a relay adds a hop to every spoken turn. The server's only role is minting a short-lived credential scoped to the session; the audio flows peer to peer. The cost is that the hard problems move into the browser (mixed-stream recording, turn-by-turn transcription capture, teardown across every device and browser quirk), running client-side against an API that had only just shipped.",
     },
   ],
   built: {
     intro:
-      "One platform from first commit: an AI interview system, a typesetting engine, a commerce stack, and a print pipeline — with the conventions and documentation for the team that grew around it. The deliverables:",
+      "One platform from first commit: an AI interview system, a typesetting engine, a commerce stack, and a print pipeline, with the conventions and documentation for the team that grew around it. The deliverables:",
     cards: [
       {
         label: "VOICE INTERVIEW ENGINE",
@@ -195,7 +196,7 @@ export const everbook = {
       },
       {
         label: "BOOK PAGINATION ENGINE",
-        body: "Browser-measured typesetting to true print dimensions — word-level page breaks, verso/recto rules, gutter math by page count, and a two-pass table of contents.",
+        body: "Browser-measured typesetting to true print dimensions: word-level page breaks, verso/recto rules, gutter math by page count, and a two-pass table of contents.",
       },
       {
         label: "PRINT PIPELINE",
@@ -217,25 +218,25 @@ export const everbook = {
   },
   broke: {
     intro:
-      "The systems that fought back were the ones touching the physical world and the browser's edges — and each one left permanent engineering behind it.",
+      "The systems that fought back were the ones touching the physical world and the browser's edges, and each one left permanent engineering behind it.",
     categories: [
       {
         chip: "BROWSER STATE",
-        body: "Leaked microphone access and zombie audio contexts surfaced across browsers and devices — recordings that outlived their sessions. The answer was aggressive, paranoid teardown: every track stopped, every audio context force-closed and probed to verify it, every stray media element scrubbed. That code exists because the polite version failed in the field.",
+        body: "Leaked microphone access and zombie audio contexts surfaced across browsers and devices: recordings that outlived their sessions. The answer was aggressive, paranoid teardown — every track stopped, every audio context force-closed and probed to verify it, every stray media element scrubbed. That code exists because the polite version failed in the field.",
       },
       {
         chip: "ORDER RACE",
-        body: "Making the webhook the only writer of orders created a window where a paying customer lands on the success page before their order exists. The fix was to make waiting a designed state — polling that treats absence as pending, with staged progress messaging — instead of an error a customer ever sees.",
+        body: "Making the webhook the only writer of orders created a window where a paying customer lands on the success page before their order exists. The fix was to make waiting a designed state (polling that treats absence as pending, with staged progress messaging) instead of an error a customer ever sees.",
       },
       {
         chip: "PAGINATION EDGE CASES",
-        body: "The page math did not arrive perfect. Fonts, markdown elements, and print-versus-preview differences produced a long tail of layout breaks — including a word overflowing a line by exactly the width of a trailing space. Each was found, reproduced, and closed until the engine held at 100%. Iterative, unglamorous, finished.",
+        body: "The page math did not arrive perfect. Fonts, markdown elements, and print-versus-preview differences produced a long tail of layout breaks, including a word overflowing a line by exactly the width of a trailing space. Each was found, reproduced, and closed until the engine held at 100%. Iterative, unglamorous, finished.",
       },
     ],
   },
   outcome: {
     intro:
-      "Fourteen months from first commit: MVP to production in six, then a relaunch that made the product what it set out to be — a spoken conversation that arrives as a printed book. The role ended in October 2025 in a company-wide layoff following a strategic pivot to marketing operations.",
+      "Fourteen months from first commit: MVP to production in six, then a relaunch that made the product what it set out to be — a spoken conversation that arrives as a printed book. The role ended in October 2025 in a company-wide layoff after a strategic pivot to marketing operations.",
     bullets: [
       "Realtime AI voice interviews live in production, browser to model",
       "A typesetting engine at full correctness across fonts, elements, and print rules",

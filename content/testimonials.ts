@@ -2,11 +2,11 @@
  * Testimonials (TST-01) — shared by the home strip, the services proof strip,
  * and /testimonials. Source: LinkedIn recommendations, text VERBATIM.
  *
- * PUBLISH GATE: every entry ships `approved: false` until the person confirms
- * (PRE-01 asks are out). Components render pending entries only while
- * SHOW_PENDING_TESTIMONIALS is true in lib/config.ts — that flag must be
- * false before deploy (QA-08). Flip `approved` per person as replies land,
- * and replace wording with whatever they revised.
+ * PUBLISH GATE: entries stay `approved: false` until the person confirms.
+ * Components render pending entries only while SHOW_PENDING_TESTIMONIALS is
+ * true in lib/config.ts — that flag must be false before deploy (QA-08).
+ * Flip `approved` per person as replies land, and replace wording with
+ * whatever they revised.
  *
  * `quote` is the extracted lead — it must be a CONTIGUOUS verbatim span of
  * `full`. No splicing sentences together that the person didn't write.
@@ -58,7 +58,28 @@ export const testimonials: Testimonial[] = [
       "Taylor is a phenomenal engineer. During his time at Pine Studio, he took rough concepts and turned them into full products. He owned the project scope, technical architecture, and development through to launch. He was a pleasure to work with, always reliable, sharp, and dedicated to building great product. I highly recommend him.",
     ],
     project: { label: "Everbook", href: "/work/everbook" },
-    approved: false,
+    approved: true,
+  },
+  {
+    slug: "bruno",
+    name: "Bruno",
+    title: "Creative Director, Family Office",
+    relationship: "worked-for",
+    relationshipLine: "Creative Director · family office engagement · 2026",
+    quote:
+      "He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
+    full: [
+      "Taylor served as our fractional CTO during a period when our operations spanned five businesses across ten disparate systems. He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
+      "His execution speed and adaptability were exceptional, successfully completing multiple initiatives within a six-week timeframe. This included delivering a booking engine ahead of a critical event deadline and deploying a CRM system in four days to accommodate an expanded project scope.",
+      "Beyond technical execution, Taylor provided vital strategic clarity to our internal team. At a stage when our vision was not yet fully articulated, he effectively aligned and structured our technical strategy. Furthermore, he articulated complex technical trade-offs in accessible terms, ensuring our executive decision-making was fully informed.",
+      "Most importantly, Taylor established robust technical conventions, documentation, and standard operating procedures. These foundational assets, along with the industry standards and development methodologies he imparted, have enabled us to continuously maintain and expand the platform independently without dedicated engineering staff.",
+      "I highly recommend Taylor to any organization seeking a true strategic technical partner.",
+    ],
+    project: {
+      label: "Family Office Platform",
+      href: "/work/family-office-platform",
+    },
+    approved: true,
   },
   {
     slug: "vaughn-richards",
@@ -74,7 +95,7 @@ export const testimonials: Testimonial[] = [
       "Happy to provide a reference anytime.",
     ],
     project: { label: "FYBR · first development job" },
-    approved: false,
+    approved: true,
   },
   {
     slug: "yogesh-verma",
@@ -94,7 +115,7 @@ export const testimonials: Testimonial[] = [
     ],
     project: { label: "Agora V1 · BCIT ISSP", href: "/work/agora" },
     workedOn: "Stripe checkout (v1) and analytics on Agora, under Taylor's specs and code review",
-    approved: false,
+    approved: true,
   },
   {
     slug: "micheal-ozdoba",
