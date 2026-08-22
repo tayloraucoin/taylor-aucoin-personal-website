@@ -12,15 +12,13 @@ export function StepProgress({ current }: { current: number }) {
   const pct = (current / INTAKE_STEP_COUNT) * 100;
 
   return (
-    <div
-      aria-hidden
-      className="mt-4 h-px w-full bg-(--color-faint)"
-    >
+    <div aria-hidden className="mt-4 h-px w-full bg-(--color-faint)">
       <div
         className="h-px transition-[width] duration-(--dur-base) ease-(--ease-out)"
         style={{
           width: `${pct}%`,
-          background: "linear-gradient(90deg, var(--color-c2), var(--color-c3))",
+          background:
+            "linear-gradient(90deg, var(--color-c2), var(--color-c3))",
         }}
       />
     </div>

@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
 import {
   INTAKE_STEP_COUNT,
-  type IntakeStep,
   nextStep,
   previousStep,
+  type IntakeStep,
 } from "@/lib/intake/steps";
 import { intakeRoutes } from "@/lib/routes";
 import { INTAKE_COLUMN } from "../_lib/column";

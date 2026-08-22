@@ -46,7 +46,12 @@ export function PayButton({
           setFailed(false);
           startTransition(async () => {
             try {
-              await startDepositCheckout(token, addonKeys, promoCode, adminTestPayment);
+              await startDepositCheckout(
+                token,
+                addonKeys,
+                promoCode,
+                adminTestPayment,
+              );
             } catch {
               // A redirect throws by design and unmounts this; anything that
               // lands here is a real failure to open Checkout.

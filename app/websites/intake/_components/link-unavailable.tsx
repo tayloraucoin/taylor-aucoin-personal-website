@@ -12,11 +12,7 @@ import { Eyebrow } from "./eyebrow";
  * reaching it requires a token that really existed, so it tells a stranger
  * nothing they did not already have. A random token lands on the generic copy.
  */
-export function LinkUnavailable({
-  expired = false,
-}: {
-  expired?: boolean;
-}) {
+export function LinkUnavailable({ expired = false }: { expired?: boolean }) {
   return (
     <div>
       <Eyebrow>Agora · Website build</Eyebrow>

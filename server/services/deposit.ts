@@ -1,11 +1,15 @@
-import Stripe from "stripe";
 import { and, eq, isNull } from "drizzle-orm";
+import Stripe from "stripe";
 import { getDb } from "@/db/client";
 import { engagementProducts, engagements, products } from "@/db/schema";
-import { adminTestPaymentEnabled, requireEnv, stripeTaxEnabled } from "@/lib/env";
+import {
+  adminTestPaymentEnabled,
+  requireEnv,
+  stripeTaxEnabled,
+} from "@/lib/env";
+import { resolvePromoCode } from "@/lib/intake/promo";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { intakeRoutes } from "@/lib/routes";
-import { resolvePromoCode } from "@/lib/intake/promo";
 import type { Engagement } from "./engagement";
 import {
   findSellableProductByKey,
@@ -106,7 +110,9 @@ export async function getCheckoutCatalogue(useAdminTestPrice = false): Promise<{
  * while the screen showed ours — is the one failure this flow must never
  * have, so a drifted price is an outage, not a rounding difference.
  */
-async function assertPricesMatchStripe(items: SellableProduct[]): Promise<void> {
+async function assertPricesMatchStripe(
+  items: SellableProduct[],
+): Promise<void> {
   await Promise.all(
     items.map(async (item) => {
       const price = await getStripe().prices.retrieve(item.stripePriceId);
@@ -164,7 +170,9 @@ export async function createDepositCheckout(
     const known = new Set(addons.map((a) => a.key));
     const unknown = addonKeys.filter((key) => !known.has(key));
     if (unknown.length > 0) {
-      console.warn(`[deposit] dropping unknown add-on keys: ${unknown.join(", ")}`);
+      console.warn(
+        `[deposit] dropping unknown add-on keys: ${unknown.join(", ")}`,
+      );
     }
 
     selected = addons.filter((a) => addonKeys.includes(a.key));
@@ -175,7 +183,9 @@ export async function createDepositCheckout(
     // be a subset of what was displayed, and a $0 line is the one line whose
     // absence costs the client nothing.
     const grant = promoCode ? resolvePromoCode(promoCode) : null;
-    granted = grant ? await findSellableProductByKey(grant.grantsProductKey) : null;
+    granted = grant
+      ? await findSellableProductByKey(grant.grantsProductKey)
+      : null;
     if (promoCode && !granted) {
       console.warn(`[deposit] promo code resolved to nothing sellable`);
     }
@@ -205,7 +215,10 @@ export async function createDepositCheckout(
       ...(granted ? { promo_grant: granted.key } : {}),
       ...(useTestPrice ? { admin_test_payment: "1" } : {}),
     },
-    line_items: items.map((item) => ({ price: item.stripePriceId, quantity: 1 })),
+    line_items: items.map((item) => ({
+      price: item.stripePriceId,
+      quantity: 1,
+    })),
     // GST via Stripe Tax, gated by env: enabling automatic_tax without an
     // active registration silently collects zero tax (docs/AGORA-STRIPE.md),
     // so the flag is flipped deliberately, never defaulted.

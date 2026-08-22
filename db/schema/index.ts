@@ -1,16 +1,24 @@
+import type { callAttempts } from "./call-attempts";
 import type { emailEvents } from "./email-events";
 import type { engagementProducts } from "./engagement-products";
 import type { engagements } from "./engagements";
 import type { intakeFiles } from "./intake-files";
 import type { invoiceEmails } from "./invoice-emails";
+import type { leadEmails } from "./lead-emails";
+import type { leadSyncs } from "./lead-syncs";
+import type { leads } from "./leads";
 import type { products } from "./products";
 import type { stripeEvents } from "./stripe-events";
 
+export * from "./call-attempts";
 export * from "./email-events";
 export * from "./engagement-products";
 export * from "./engagements";
 export * from "./intake-files";
 export * from "./invoice-emails";
+export * from "./lead-emails";
+export * from "./lead-syncs";
+export * from "./leads";
 export * from "./products";
 export * from "./stripe-events";
 
@@ -40,3 +48,23 @@ export type EngagementProductRow = typeof engagementProducts.$inferSelect;
 export type NewEngagementProductRow = typeof engagementProducts.$inferInsert;
 
 export type InvoiceEmailRow = typeof invoiceEmails.$inferSelect;
+
+/**
+ * CRM rows.
+ *
+ * `LeadRow` is the database's shape. Surfaces receive it narrowed by
+ * `server/services/leads.ts`, which attaches the derived stage and call-window
+ * — neither of which is a column, and neither of which any page should be
+ * computing for itself.
+ */
+export type LeadRow = typeof leads.$inferSelect;
+export type NewLeadRow = typeof leads.$inferInsert;
+
+export type CallAttemptRow = typeof callAttempts.$inferSelect;
+export type NewCallAttemptRow = typeof callAttempts.$inferInsert;
+
+export type LeadEmailRow = typeof leadEmails.$inferSelect;
+export type NewLeadEmailRow = typeof leadEmails.$inferInsert;
+
+export type LeadSyncRow = typeof leadSyncs.$inferSelect;
+export type NewLeadSyncRow = typeof leadSyncs.$inferInsert;

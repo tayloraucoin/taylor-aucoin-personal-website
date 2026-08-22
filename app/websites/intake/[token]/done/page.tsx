@@ -1,4 +1,4 @@
-import { GradientButton, GhostButton } from "@/components/ui/GradientButton";
+import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
 import { BOOKING_URL } from "@/lib/config";
 import { intakeRoutes } from "@/lib/routes";
 import {
@@ -6,9 +6,9 @@ import {
   requireEngagement,
 } from "@/server/services/engagement";
 import { collectUnanswered } from "@/server/services/output";
+import { CompleteOnArrival } from "../../_components/complete-on-arrival";
 import { Eyebrow } from "../../_components/eyebrow";
 import { LinkUnavailable } from "../../_components/link-unavailable";
-import { CompleteOnArrival } from "../../_components/complete-on-arrival";
 
 /**
  * The confirmation screen.
@@ -44,7 +44,10 @@ export default async function IntakeDonePage({
 
   return (
     <div>
-      <CompleteOnArrival token={token} alreadyComplete={Boolean(engagement.completedAt)} />
+      <CompleteOnArrival
+        token={token}
+        alreadyComplete={Boolean(engagement.completedAt)}
+      />
 
       <Eyebrow>Agora · Website build</Eyebrow>
 

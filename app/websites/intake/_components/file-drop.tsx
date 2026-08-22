@@ -69,7 +69,9 @@ export function FileDrop({
 
   function patch(key: string, changes: Partial<Item>) {
     setItems((current) =>
-      current.map((item) => (item.key === key ? { ...item, ...changes } : item)),
+      current.map((item) =>
+        item.key === key ? { ...item, ...changes } : item,
+      ),
     );
   }
 

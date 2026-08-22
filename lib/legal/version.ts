@@ -9,7 +9,7 @@
  *
  * Client-safe on purpose: the pay screen renders it.
  */
-export const TERMS_VERSION = "2026-08-21";
+export const TERMS_VERSION = "2026-08-22";
 
 /** Human form of the same date, for the documents' effective lines. */
-export const TERMS_EFFECTIVE = "August 21, 2026";
+export const TERMS_EFFECTIVE = "August 22, 2026";

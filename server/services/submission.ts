@@ -172,7 +172,9 @@ export async function issueUploadTicket(input: {
     .createSignedUploadUrl(storagePath);
 
   if (error || !data) {
-    throw new Error(`Could not create an upload URL: ${error?.message ?? "unknown"}`);
+    throw new Error(
+      `Could not create an upload URL: ${error?.message ?? "unknown"}`,
+    );
   }
 
   const [row] = await getDb()
@@ -307,7 +309,9 @@ export async function markComplete(engagementId: string): Promise<boolean> {
   const [row] = await getDb()
     .update(engagements)
     .set({ completedAt: now, lastActivityAt: now, updatedAt: now })
-    .where(and(eq(engagements.id, engagementId), isNull(engagements.completedAt)))
+    .where(
+      and(eq(engagements.id, engagementId), isNull(engagements.completedAt)),
+    )
     .returning({ id: engagements.id });
 
   return Boolean(row);

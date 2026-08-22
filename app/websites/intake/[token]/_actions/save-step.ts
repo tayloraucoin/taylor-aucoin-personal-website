@@ -5,8 +5,7 @@ import { EngagementNotFoundError } from "@/server/services/engagement";
 import { saveStepAnswers } from "@/server/services/submission";
 
 export type SaveStepResult =
-  | { ok: true }
-  | { ok: false; reason: "link" | "server" };
+  { ok: true } | { ok: false; reason: "link" | "server" };
 
 /**
  * Persists one step's answers.
@@ -33,10 +32,15 @@ export async function saveStep(
   if (!parsed.success) return { ok: false, reason: "server" };
 
   try {
-    await saveStepAnswers(parsed.data.token, parsed.data.stepKey, parsed.data.answers);
+    await saveStepAnswers(
+      parsed.data.token,
+      parsed.data.stepKey,
+      parsed.data.answers,
+    );
     return { ok: true };
   } catch (error) {
-    if (error instanceof EngagementNotFoundError) return { ok: false, reason: "link" };
+    if (error instanceof EngagementNotFoundError)
+      return { ok: false, reason: "link" };
 
     console.error(
       `[intake] save failed for step ${parsed.data.stepKey}`,

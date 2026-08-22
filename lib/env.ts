@@ -29,6 +29,7 @@ export type ServerEnvVar =
   | "STRIPE_PUBLISHABLE_KEY"
   | "STRIPE_SECRET_KEY"
   | "STRIPE_WEBHOOK_SECRET"
+  | "SUPABASE_ANON_KEY"
   | "SUPABASE_SERVICE_ROLE_KEY"
   | "SUPABASE_URL";
 
@@ -64,6 +65,8 @@ function rawValue(name: ServerEnvVar): string | undefined {
       return process.env.STRIPE_SECRET_KEY;
     case "STRIPE_WEBHOOK_SECRET":
       return process.env.STRIPE_WEBHOOK_SECRET;
+    case "SUPABASE_ANON_KEY":
+      return process.env.SUPABASE_ANON_KEY;
     case "SUPABASE_SERVICE_ROLE_KEY":
       return process.env.SUPABASE_SERVICE_ROLE_KEY;
     case "SUPABASE_URL":

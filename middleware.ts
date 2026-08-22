@@ -1,8 +1,52 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { DEV_GEO_OVERRIDE } from "@/lib/config";
 import { REGIME_COOKIE } from "@/lib/consent/constants";
 import { resolveRegime } from "@/lib/consent/jurisdictions";
-import { isDev } from "@/lib/env";
+import { isDev, requireEnv } from "@/lib/env";
+import { isAdminPath } from "@/lib/routes";
+
+/**
+ * Keeps the admin's Supabase session alive across requests.
+ *
+ * Refresh needs a mutable response, which a Server Component does not have —
+ * so it happens here and only here. `getUser` is what actually performs the
+ * refresh; discarding its result is intentional, because middleware is not the
+ * authorization decision. `requireAdmin` is (M-CRM-1), and putting the check
+ * in both places would invite someone to later trust the weaker one.
+ *
+ * The admin surface deliberately gets no consent cookie: nothing on it is
+ * measured, so there is nothing for consent to gate (M-INT-10's reasoning,
+ * applied here).
+ */
+async function refreshAdminSession(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    requireEnv("SUPABASE_URL"),
+    requireEnv("SUPABASE_ANON_KEY"),
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
+          response = NextResponse.next({ request });
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options);
+          }
+        },
+      },
+    },
+  );
+
+  await supabase.auth.getUser();
+
+  return response;
+}
 
 /**
  * Resolves the visitor's consent regime from edge geo and hands it to the
@@ -15,7 +59,13 @@ import { isDev } from "@/lib/env";
  * the client reads the cookie after hydration. The banner is client-only
  * anyway, so nothing needs this at render time.
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // The admin tree gets session refresh and nothing else. Returning early is
+  // what keeps the consent machinery off a surface that measures nothing.
+  if (isAdminPath(request.nextUrl.pathname)) {
+    return refreshAdminSession(request);
+  }
+
   const response = NextResponse.next();
 
   // DEV_GEO_OVERRIDE is read only in dev, so a value left set in the file

@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startIntake, type StartResult } from "../_actions/start";
 import { Field } from "./field";
-import { TextField, looksLikeEmail } from "./text-field";
+import { looksLikeEmail, TextField } from "./text-field";
 
 async function action(
   _previous: StartResult | null,
@@ -29,12 +29,15 @@ async function action(
  * Nothing here is behind a payment. A client can get this far, see exactly
  * what they have started, and walk away owing nothing.
  */
-export function StartForm() {
+export function StartForm({ promo }: { promo?: string }) {
   const [result, formAction, pending] = useActionState(action, null);
   const [emailError, setEmailError] = useState<string | null>(null);
 
   return (
     <form action={formAction}>
+      {/* Carried from the link Taylor emailed, so the offer made on the call
+          survives the one page that mints the engagement. */}
+      {promo ? <input type="hidden" name="promo" value={promo} /> : null}
       <Field id="businessName" label="Business name">
         <TextField
           id="businessName"
@@ -45,7 +48,12 @@ export function StartForm() {
       </Field>
 
       <Field id="contactName" label="Your name">
-        <TextField id="contactName" name="contactName" required autoComplete="name" />
+        <TextField
+          id="contactName"
+          name="contactName"
+          required
+          autoComplete="name"
+        />
       </Field>
 
       <Field id="contactEmail" label="Email" error={emailError ?? undefined}>
@@ -119,9 +127,18 @@ export function StartForm() {
       </Field>
 
       {/* Honeypot. Hidden from people, tempting to bots. */}
-      <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute left-[-9999px] h-0 w-0 overflow-hidden"
+      >
         <label htmlFor="website">Website</label>
-        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
 
       {result && "error" in result ? (

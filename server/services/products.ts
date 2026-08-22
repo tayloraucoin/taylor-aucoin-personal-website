@@ -55,7 +55,10 @@ export async function listCheckoutAddons(): Promise<SellableProduct[]> {
   for (const row of rows) {
     const item = toSellable(row);
     if (item) sellable.push(item);
-    else console.warn(`[products] ${row.key} offered at checkout but has no Stripe price — hidden`);
+    else
+      console.warn(
+        `[products] ${row.key} offered at checkout but has no Stripe price — hidden`,
+      );
   }
 
   return sellable;

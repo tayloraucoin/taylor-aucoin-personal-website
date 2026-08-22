@@ -7,7 +7,7 @@ import { TERMS_EFFECTIVE, TERMS_VERSION } from "@/lib/legal/version";
  * These are binding documents, not marketing. Every commercial number here
  * must agree with `content/websites.ts` and the published How We Work PDF:
  * $1,200 + GST, $600 deposit, $500/$250/free change tiers, the 14-day fix
- * window, the 60-day quiet close-out, 5–7 business days. If one of those
+ * window, the 60-day quiet close-out, 3–7 business days. If one of those
  * changes anywhere, it changes everywhere, and TERMS_VERSION gets bumped.
  *
  * DRAFTED BY CLAUDE (Chancery role), 2026-08-21. Reviewed by no lawyer yet.
@@ -137,7 +137,7 @@ export const terms: LegalDoc = {
       title: "Timelines",
       blocks: [
         {
-          p: "The build takes five to seven business days from your final answers. The clock starts when I have everything I need.",
+          p: "The build takes three to seven business days from your final answers. The clock starts when I have everything I need.",
         },
         {
           p: "The clock pauses while I'm waiting on you, whether that's answers, photos, or a payment. That time doesn't count against the estimate.",

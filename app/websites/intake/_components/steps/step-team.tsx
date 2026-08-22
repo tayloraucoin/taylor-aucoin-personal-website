@@ -84,7 +84,9 @@ export function StepTeam({
                       aria-label="Name"
                       placeholder="Name"
                       value={member.name ?? ""}
-                      onChange={(e) => update({ ...member, name: e.target.value })}
+                      onChange={(e) =>
+                        update({ ...member, name: e.target.value })
+                      }
                       onBlur={form.flush}
                     />
                     <TextField
@@ -92,7 +94,9 @@ export function StepTeam({
                       aria-label="Role"
                       placeholder="What they do"
                       value={member.role ?? ""}
-                      onChange={(e) => update({ ...member, role: e.target.value })}
+                      onChange={(e) =>
+                        update({ ...member, role: e.target.value })
+                      }
                       onBlur={form.flush}
                     />
                   </div>

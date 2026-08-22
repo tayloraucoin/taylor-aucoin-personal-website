@@ -24,7 +24,13 @@ export const metadata = {
  * A client who already started on this device is offered their place back
  * rather than a blank form, so a lost tab is not a lost engagement.
  */
-export default async function IntakeStartPage() {
+export default async function IntakeStartPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const promoParam = (await searchParams).promo;
+  const promo = Array.isArray(promoParam) ? promoParam[0] : promoParam;
   const token = await readResumeCookie();
   let inProgress: { token: string; businessName: string } | null = null;
 
@@ -49,15 +55,18 @@ export default async function IntakeStartPage() {
       </h1>
 
       <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
-        A few details to set things up. The full questionnaire comes next — about
-        30 minutes, and you can skip anything you&apos;re not sure about.
+        A few details to set things up. The full questionnaire comes next —
+        about 30 minutes, and you can skip anything you&apos;re not sure about.
       </p>
 
       {inProgress ? (
         <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
           <p className="font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
             You already started one for{" "}
-            <span className="text-(--color-ink)">{inProgress.businessName}</span>.
+            <span className="text-(--color-ink)">
+              {inProgress.businessName}
+            </span>
+            .
           </p>
           <p className="mt-3">
             <Link
@@ -71,7 +80,7 @@ export default async function IntakeStartPage() {
       ) : null}
 
       <div className="mt-10">
-        <StartForm />
+        <StartForm promo={promo} />
       </div>
 
       {/* Notice at the point of collection: this is the first screen that

@@ -90,7 +90,9 @@ export function StepPricing({
                 aria-label="What's included"
                 placeholder="What's included — bullet points are fine"
                 value={service.included ?? ""}
-                onChange={(e) => update({ ...service, included: e.target.value })}
+                onChange={(e) =>
+                  update({ ...service, included: e.target.value })
+                }
                 onBlur={form.flush}
               />
               <TextField
@@ -98,7 +100,9 @@ export function StepPricing({
                 aria-label="How long it takes"
                 placeholder="How long it takes"
                 value={service.duration ?? ""}
-                onChange={(e) => update({ ...service, duration: e.target.value })}
+                onChange={(e) =>
+                  update({ ...service, duration: e.target.value })
+                }
                 onBlur={form.flush}
               />
               <TextField
@@ -189,7 +193,11 @@ export function StepPricing({
       />
 
       {form.values.whenTheyPay === "depositUpFront" ? (
-        <TextAnswer form={form} name="depositAmount" label="How much deposit?" />
+        <TextAnswer
+          form={form}
+          name="depositAmount"
+          label="How much deposit?"
+        />
       ) : null}
 
       <LongAnswer
