@@ -4,8 +4,8 @@ import GradientRing from "@/components/ui/GradientRing";
 import { useReportSaveState } from "../../_lib/save-state";
 import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { LongAnswer } from "../answer-inputs";
-import { FileDrop, type ExistingFile } from "../file-drop";
 import { Field } from "../field";
+import { FileDrop, type ExistingFile } from "../file-drop";
 
 /**
  * Step 5 — How you talk.

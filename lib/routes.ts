@@ -67,3 +67,35 @@ export const legalRoutes = {
 export function isLegalPath(pathname: string): boolean {
   return pathname === legalRoutes.terms || pathname === legalRoutes.privacy;
 }
+
+/**
+ * The admin CRM. Taylor-only, and the only authenticated surface on the site.
+ *
+ * Nav order here is the order the shell renders, so the one home for "what
+ * sections exist" is also the one home for "what order they appear in".
+ */
+const ADMIN_PREFIX = "/admin";
+
+export const adminRoutes = {
+  home: ADMIN_PREFIX,
+  login: `${ADMIN_PREFIX}/login`,
+  queue: `${ADMIN_PREFIX}/queue`,
+  leads: `${ADMIN_PREFIX}/leads`,
+  lead: (id: string) => `${ADMIN_PREFIX}/leads/${id}`,
+  engagements: `${ADMIN_PREFIX}/engagements`,
+  engagement: (id: string) => `${ADMIN_PREFIX}/engagements/${id}`,
+  sync: `${ADMIN_PREFIX}/sync`,
+  scoreboard: `${ADMIN_PREFIX}/scoreboard`,
+} as const;
+
+/**
+ * True on any admin surface.
+ *
+ * Read by the site chrome and the analytics component for the same reason
+ * `isIntakePath` is: the admin carries a prospect's contact details and
+ * Taylor's private call notes, so nothing third-party may observe it, and a
+ * marketing nav bar has no business inside a working tool.
+ */
+export function isAdminPath(pathname: string): boolean {
+  return pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`);
+}

@@ -57,6 +57,17 @@ export const engagements = pgTable(
     lastActivityAt: timestamp("last_activity_at", { withTimezone: true }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     projectSummary: text("project_summary"),
+    /**
+     * The per-engagement reminder kill switch (D-CRM-13).
+     *
+     * Set when Taylor decides this client should stop hearing from the sweep,
+     * usually because he has picked them up by phone. It only ever stops
+     * sends: the three-reminder ceiling remains a property of `email_events`'
+     * partial unique index, and nothing here can raise it.
+     */
+    remindersDisabledAt: timestamp("reminders_disabled_at", {
+      withTimezone: true,
+    }),
     // AES-256-GCM ciphertext of the URL token, written at creation.
     //
     // The reminder sweep has to compose a client's link without a request to

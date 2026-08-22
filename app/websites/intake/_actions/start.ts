@@ -44,12 +44,21 @@ export async function startIntake(formData: FormData): Promise<StartResult> {
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Please check the form." };
+    return {
+      error: parsed.error.issues[0]?.message ?? "Please check the form.",
+    };
   }
 
   // A filled honeypot is a bot. Answer as though it worked rather than
   // explaining the trap.
   if (parsed.data.website) redirect("/");
+
+  // A promo code from the intro email's link. Validated only at the charge
+  // seam (`resolvePromoCode`), so an invented code buys nothing — carrying it
+  // here just means the pay screen can offer what the email promised.
+  const promo = String(formData.get("promo") ?? "").trim();
+  const withPromo = (path: string) =>
+    promo ? `${path}?promo=${encodeURIComponent(promo)}` : path;
 
   const existing = await findResumableByEmail(parsed.data.contactEmail);
 
@@ -57,7 +66,7 @@ export async function startIntake(formData: FormData): Promise<StartResult> {
     // They have started before and not finished. Put them back rather than
     // creating a second engagement and a second deposit to reconcile.
     await setResumeCookie(existing.token);
-    redirect(intakeRoutes.entry(existing.token));
+    redirect(withPromo(intakeRoutes.entry(existing.token)));
   }
 
   const { engagement, token } = await createEngagement({
@@ -92,7 +101,7 @@ export async function startIntake(formData: FormData): Promise<StartResult> {
   // send must not cost them the engagement they just created.
   void sendResumeLink(engagement, buildIntakeUrl(token)).catch(() => {});
 
-  redirect(intakeRoutes.entry(token));
+  redirect(withPromo(intakeRoutes.entry(token)));
 }
 
 async function setResumeCookie(token: string): Promise<void> {

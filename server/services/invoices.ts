@@ -1,6 +1,6 @@
-import type Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, isNotNull } from "drizzle-orm";
+import type Stripe from "stripe";
 import { getDb } from "@/db/client";
 import {
   engagementProducts,
@@ -18,8 +18,8 @@ import {
   type InvoiceLine,
 } from "@/lib/invoices/document";
 import { PAPER } from "@/lib/invoices/paper";
-import type { Engagement } from "./engagement";
 import { notifyOps, sendRawEmail } from "./emails";
+import type { Engagement } from "./engagement";
 import { renderInvoicePdf } from "./invoice-pdf";
 
 /**
@@ -365,7 +365,10 @@ export async function sendDepositInvoiceEmail(
 
     const lines: InvoiceLine[] =
       basket.length > 0
-        ? basket.map((row) => ({ label: row.name, amountCents: row.amountCents }))
+        ? basket.map((row) => ({
+            label: row.name,
+            amountCents: row.amountCents,
+          }))
         : [
             {
               label: "Website build — deposit",

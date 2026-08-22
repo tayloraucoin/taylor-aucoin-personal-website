@@ -33,11 +33,20 @@ export default async function IntakeEntryPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ paid?: string; canceled?: string; promo?: string; admin_test_payment?: string }>;
+  searchParams: Promise<{
+    paid?: string;
+    canceled?: string;
+    promo?: string;
+    admin_test_payment?: string;
+  }>;
 }) {
   const { token } = await params;
-  const { paid, canceled, promo, admin_test_payment: adminTestPayment } =
-    await searchParams;
+  const {
+    paid,
+    canceled,
+    promo,
+    admin_test_payment: adminTestPayment,
+  } = await searchParams;
 
   let engagement;
   try {

@@ -208,78 +208,80 @@ export function DepositCheckout({
       ) : null}
 
       {!isAdminTest ? (
-      <div className="mt-6">
-        {activePromo ? (
-          <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-3.5">
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="font-body text-[16px] text-(--color-ink)">
-                {activePromo.grant.name}
-              </span>
-              <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-                Included
-              </span>
-            </div>
-            <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-              {activePromo.grant.description} Nothing added to today&apos;s
-              total.
-            </p>
-          </div>
-        ) : !promoOpen ? (
-          <button
-            type="button"
-            onClick={() => setPromoOpen(true)}
-            className="font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim) underline decoration-(--color-faint) underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
-          >
-            Have a code from our call?
-          </button>
-        ) : (
-          <div>
-            <label
-              htmlFor="promo-code"
-              className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)"
-            >
-              Promo code
-            </label>
-            <div className="mt-2 flex gap-2.5">
-              <input
-                id="promo-code"
-                type="text"
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck={false}
-                value={promoInput}
-                onChange={(e) => {
-                  setPromoInput(e.target.value);
-                  if (promo.status === "invalid") setPromo({ status: "idle" });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    void applyPromo(promoInput);
-                  }
-                }}
-                className="min-h-12 w-full min-w-0 grow rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 font-mono text-[16px] tracking-[.04em] text-(--color-ink) placeholder:text-(--color-dim) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
-              />
-              <button
-                type="button"
-                disabled={promo.status === "checking" || !promoInput.trim()}
-                onClick={() => void applyPromo(promoInput)}
-                className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) transition-colors hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
-              >
-                {promo.status === "checking" ? "Checking…" : "Apply"}
-              </button>
-            </div>
-            {promo.status === "invalid" ? (
-              <p
-                aria-live="polite"
-                className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
-              >
-                That code isn&apos;t one of mine — worth checking the spelling.
+        <div className="mt-6">
+          {activePromo ? (
+            <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-3.5">
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="font-body text-[16px] text-(--color-ink)">
+                  {activePromo.grant.name}
+                </span>
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                  Included
+                </span>
+              </div>
+              <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                {activePromo.grant.description} Nothing added to today&apos;s
+                total.
               </p>
-            ) : null}
-          </div>
-        )}
-      </div>
+            </div>
+          ) : !promoOpen ? (
+            <button
+              type="button"
+              onClick={() => setPromoOpen(true)}
+              className="font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim) underline decoration-(--color-faint) underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            >
+              Have a code from our call?
+            </button>
+          ) : (
+            <div>
+              <label
+                htmlFor="promo-code"
+                className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)"
+              >
+                Promo code
+              </label>
+              <div className="mt-2 flex gap-2.5">
+                <input
+                  id="promo-code"
+                  type="text"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  value={promoInput}
+                  onChange={(e) => {
+                    setPromoInput(e.target.value);
+                    if (promo.status === "invalid")
+                      setPromo({ status: "idle" });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      void applyPromo(promoInput);
+                    }
+                  }}
+                  className="min-h-12 w-full min-w-0 grow rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 font-mono text-[16px] tracking-[.04em] text-(--color-ink) placeholder:text-(--color-dim) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                />
+                <button
+                  type="button"
+                  disabled={promo.status === "checking" || !promoInput.trim()}
+                  onClick={() => void applyPromo(promoInput)}
+                  className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) transition-colors hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                >
+                  {promo.status === "checking" ? "Checking…" : "Apply"}
+                </button>
+              </div>
+              {promo.status === "invalid" ? (
+                <p
+                  aria-live="polite"
+                  className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+                >
+                  That code isn&apos;t one of mine — worth checking the
+                  spelling.
+                </p>
+              ) : null}
+            </div>
+          )}
+        </div>
       ) : null}
 
       <div className="mt-8">

@@ -105,7 +105,7 @@ h1            Websites for local businesses
 sub (48ch)    You've got a real business with real customers who already say
               good things about you. What you don't have is a front door online
               that matches that. I build that front door.
-stat row      $1,200        5–7 days        $0
+stat row      $1,200        3–7 days        $0
               CAD + GST     TYPICAL BUILD   ONGOING COST TO ME
 CTAs          [Start your site →]   [Book a call first]
 note          Six questions first — nothing is charged until you've seen

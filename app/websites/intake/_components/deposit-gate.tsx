@@ -1,6 +1,6 @@
 import { formatMoney } from "@/lib/intake/money";
-import type { SellableProduct } from "@/server/services/products";
 import type { Engagement } from "@/server/services/engagement";
+import type { SellableProduct } from "@/server/services/products";
 import { DepositCheckout, type CheckoutAddonView } from "./deposit-checkout";
 import { Eyebrow } from "./eyebrow";
 
@@ -127,8 +127,8 @@ export function DepositGate({
           starts; earned once it does. Terms §5 is the binding form of this
           sentence — the two must always agree. */}
       <p className="mt-4 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
-        Change your mind before I start building? The deposit comes back in
-        full — just ask.
+        Change your mind before I start building? The deposit comes back in full
+        — just ask.
       </p>
 
       <p className="mt-8 max-w-[48ch] border-t border-(--color-faint) pt-5 font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">

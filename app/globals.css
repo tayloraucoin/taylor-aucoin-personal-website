@@ -61,6 +61,47 @@
   inherits: true;
 }
 
+/* The lead-record Sheet (D-CRM-30, /admin only): a keyframe animation, not a
+   transition, because Radix mounts the panel already in its open data-state
+   — there is no "before" frame for a transition to animate from. A keyframe
+   animation always starts at its own 0%, so it plays on mount; Radix's own
+   Presence handling plays it in reverse on unmount. Reduced motion needs no
+   extra rule here: the sitewide collapse below already zeroes every
+   animation-duration, which is the actual law (CRM-UX-SPEC §5: "panel
+   transitions collapse") — a collapse, not a separate fade. */
+@keyframes sheet-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes sheet-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes sheet-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 html {
   color-scheme: dark;
 }

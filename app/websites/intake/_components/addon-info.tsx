@@ -38,7 +38,11 @@ export function AddonInfo({ productKey }: { productKey: string }) {
       </button>
 
       {open ? (
-        <Overlay label={detail.heading} variant="sheet" onClose={() => setOpen(false)}>
+        <Overlay
+          label={detail.heading}
+          variant="sheet"
+          onClose={() => setOpen(false)}
+        >
           <div className="mx-auto max-w-[560px] px-[22px] pt-4 pb-12">
             <h2 className="max-w-[24ch] font-display text-[clamp(22px,5vw,28px)] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)">
               {detail.heading}

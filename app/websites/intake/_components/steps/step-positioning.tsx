@@ -24,14 +24,22 @@ export function StepPositioning({
 
   return (
     <>
-      <LongAnswer form={form} name="idealCustomer" label="Describe your ideal customer" />
+      <LongAnswer
+        form={form}
+        name="idealCustomer"
+        label="Describe your ideal customer"
+      />
       <LongAnswer form={form} name="badFit" label="Who's a bad fit?" />
       <LongAnswer
         form={form}
         name="whyPickYou"
         label="Why do people pick you over the alternative?"
       />
-      <LongAnswer form={form} name="whoYouLoseTo" label="Who do you lose work to, and why?" />
+      <LongAnswer
+        form={form}
+        name="whoYouLoseTo"
+        label="Who do you lose work to, and why?"
+      />
 
       <TextAnswer
         form={form}
@@ -42,7 +50,11 @@ export function StepPositioning({
       <TextAnswer form={form} name="valueTwo" label="And the second" />
       <TextAnswer form={form} name="valueThree" label="And the third" />
 
-      <LongAnswer form={form} name="sellYourself" label="Sell yourself in one sentence" />
+      <LongAnswer
+        form={form}
+        name="sellYourself"
+        label="Sell yourself in one sentence"
+      />
       <LongAnswer
         form={form}
         name="whatYouAreNot"

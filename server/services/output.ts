@@ -1,6 +1,6 @@
-import { INTAKE_STEPS } from "@/lib/intake/steps";
 import { labelFor } from "@/lib/intake/answer-labels";
 import { formatMoney } from "@/lib/intake/money";
+import { INTAKE_STEPS } from "@/lib/intake/steps";
 import type { IntakeStepKey } from "@/lib/types/intake";
 import { STEP_SCHEMAS } from "@/lib/validators/intake";
 import type { Engagement } from "./engagement";
@@ -75,7 +75,9 @@ function renderValue(value: unknown): string {
     });
 
     const kept = parts.filter((p): p is string => p !== null);
-    return kept.length > 1 ? `\n${kept.map((p) => `  - ${p}`).join("\n")}` : (kept[0] ?? "");
+    return kept.length > 1
+      ? `\n${kept.map((p) => `  - ${p}`).join("\n")}`
+      : (kept[0] ?? "");
   }
 
   return String(value);
@@ -114,9 +116,13 @@ export function collectFlags(engagement: Engagement): string[] {
     : [];
 
   if (sources.length === 0 || sources.includes("none")) {
-    flags.push("No reviews yet — remove the testimonial section rather than filling it.");
+    flags.push(
+      "No reviews yet — remove the testimonial section rather than filling it.",
+    );
   } else if (reviews.publishPermission !== true) {
-    flags.push("Reviews supplied without explicit permission to publish — confirm before using.");
+    flags.push(
+      "Reviews supplied without explicit permission to publish — confirm before using.",
+    );
   }
 
   if (access.ownsDomain !== "yes") {
@@ -149,7 +155,9 @@ export function collectUnanswered(
   return INTAKE_STEPS.map((step) => {
     const stored = readStepAnswers(engagement.answers, step.key);
     const shape = STEP_SCHEMAS[step.key as IntakeStepKey];
-    const keys = Object.keys((shape as { shape: Record<string, unknown> }).shape);
+    const keys = Object.keys(
+      (shape as { shape: Record<string, unknown> }).shape,
+    );
 
     const labels = keys
       .filter((key) => isEmpty(stored[key]))

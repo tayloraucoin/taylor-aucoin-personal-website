@@ -1,7 +1,7 @@
 "use client";
 
-import type { SocialAccountAnswer } from "@/lib/validators/intake";
 import { SITE, STRIPE_SETUP_GUIDE_URL } from "@/lib/config";
+import type { SocialAccountAnswer } from "@/lib/validators/intake";
 import { useReportSaveState } from "../../_lib/save-state";
 import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
@@ -203,7 +203,9 @@ export function StepAccess({
                 aria-label="Platform"
                 placeholder="Instagram, Facebook…"
                 value={social.platform ?? ""}
-                onChange={(e) => update({ ...social, platform: e.target.value })}
+                onChange={(e) =>
+                  update({ ...social, platform: e.target.value })
+                }
                 onBlur={form.flush}
               />
               <TextField
@@ -244,14 +246,16 @@ export function StepAccess({
       {wantsBooking ? (
         <>
           <div className={CALLOUT_CLASS}>
-            <p className={CALLOUT_EYEBROW_CLASS}>Booking · one shared schedule</p>
+            <p className={CALLOUT_EYEBROW_CLASS}>
+              Booking · one shared schedule
+            </p>
             <p className={CALLOUT_BODY_CLASS}>
               This is one calendar for the whole business — not a separate
-              calendar per person. Customers pick a service, date, and time; they
-              can&apos;t pick a specific crew member, and nothing auto-assigns
-              jobs. That&apos;s the right fit for a solo operator, and workable
-              for a small crew who split jobs themselves after the booking comes
-              in.
+              calendar per person. Customers pick a service, date, and time;
+              they can&apos;t pick a specific crew member, and nothing
+              auto-assigns jobs. That&apos;s the right fit for a solo operator,
+              and workable for a small crew who split jobs themselves after the
+              booking comes in.
             </p>
             <p className={CALLOUT_BODY_CLASS}>
               For anything more complex — a bigger team, customers picking a

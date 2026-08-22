@@ -71,7 +71,11 @@ export function StepOperations({
         label="Anything else they need to have ready"
       />
 
-      <LongAnswer form={form} name="whatYouBring" label="What do you bring to a job?" />
+      <LongAnswer
+        form={form}
+        name="whatYouBring"
+        label="What do you bring to a job?"
+      />
 
       <LongAnswer
         form={form}
@@ -92,7 +96,11 @@ export function StepOperations({
         label="Areas you'd rather avoid"
         help="Even if you technically could."
       />
-      <TextAnswer form={form} name="furthestTravel" label="Furthest you'll travel" />
+      <TextAnswer
+        form={form}
+        name="furthestTravel"
+        label="Furthest you'll travel"
+      />
 
       <ChoiceAnswer
         form={form}
@@ -102,12 +110,32 @@ export function StepOperations({
         multiple
       />
       <TextAnswer form={form} name="typicalHours" label="Typical hours" />
-      <TextAnswer form={form} name="jobsPerDay" label="Jobs per day, realistically" />
-      <TextAnswer form={form} name="howFarAhead" label="How far ahead you take bookings" />
-      <TextAnswer form={form} name="shortestNotice" label="Shortest notice you'll accept" />
+      <TextAnswer
+        form={form}
+        name="jobsPerDay"
+        label="Jobs per day, realistically"
+      />
+      <TextAnswer
+        form={form}
+        name="howFarAhead"
+        label="How far ahead you take bookings"
+      />
+      <TextAnswer
+        form={form}
+        name="shortestNotice"
+        label="Shortest notice you'll accept"
+      />
 
-      <LongAnswer form={form} name="badWeather" label="Bad weather or off-season" />
-      <TextAnswer form={form} name="replySpeed" label="How fast you reply to enquiries" />
+      <LongAnswer
+        form={form}
+        name="badWeather"
+        label="Bad weather or off-season"
+      />
+      <TextAnswer
+        form={form}
+        name="replySpeed"
+        label="How fast you reply to enquiries"
+      />
 
       <ChoiceAnswer
         form={form}

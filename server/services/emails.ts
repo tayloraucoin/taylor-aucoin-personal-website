@@ -1,9 +1,14 @@
-import { Resend } from "resend";
 import { and, eq, isNull } from "drizzle-orm";
+import { Resend } from "resend";
 import { getDb } from "@/db/client";
-import { emailEvents, engagements, type EngagementRow } from "@/db/schema";
-import { requireEnv } from "@/lib/env";
+import {
+  emailEvents,
+  engagements,
+  leadEmails,
+  type EngagementRow,
+} from "@/db/schema";
 import { BOOKING_URL } from "@/lib/config";
+import { requireEnv } from "@/lib/env";
 import {
   REMINDER_1_AFTER_HOURS,
   REMINDER_2_AFTER_IDLE_HOURS,
@@ -326,6 +331,11 @@ export async function sweepReminders(now: Date = new Date()): Promise<{
     const sentAt = row.sentAt;
     if (!sentAt) continue;
 
+    // The per-engagement kill switch (D-CRM-13). Checked here rather than in
+    // the query so the count of "considered" stays honest about what the sweep
+    // looked at, and so a switch flipped mid-sweep still takes effect.
+    if (row.remindersDisabledAt) continue;
+
     const idleFrom = row.lastActivityAt ?? row.startedAt;
     const age = now.getTime() - sentAt.getTime();
 
@@ -394,5 +404,66 @@ export async function notifyOps(
       error instanceof Error ? error.message : "unknown error",
     );
     return false;
+  }
+}
+
+/**
+ * The intro email to a prospect, after they asked for it on a call.
+ *
+ * **The row is written before the send**, and keeps `resendId: null` when the
+ * send fails. That ordering is the point: this is the CASL evidence trail
+ * (M-CRM-3), and a record that only exists when the network cooperated is not
+ * a record. A failed send leaves a visible failed row rather than nothing.
+ *
+ * Unlike the intake sends there is no send-once constraint — a second intro to
+ * the same prospect is legitimate, and the surface asks for confirmation
+ * rather than the database forbidding it (D-CRM-9).
+ */
+export async function sendIntroEmail(input: {
+  leadId: string;
+  to: string;
+  subject: string;
+  body: string;
+  promoIncluded: boolean;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  const db = getDb();
+
+  const [row] = await db
+    .insert(leadEmails)
+    .values({
+      leadId: input.leadId,
+      toEmail: input.to,
+      subject: input.subject,
+      body: input.body,
+      promoIncluded: input.promoIncluded,
+      kind: "intro",
+    })
+    .returning({ id: leadEmails.id });
+
+  try {
+    const sent = await getResend().emails.send({
+      from: from(),
+      to: input.to,
+      subject: input.subject,
+      text: input.body,
+    });
+
+    if (sent.error) throw new Error(sent.error.message);
+
+    await db
+      .update(leadEmails)
+      .set({ resendId: sent.data?.id ?? null })
+      .where(eq(leadEmails.id, row!.id));
+
+    return { ok: true };
+  } catch (error) {
+    // The row stays, marked undelivered — the timeline shows the attempt.
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? `The email didn't send: ${error.message}`
+          : "The email didn't send.",
+    };
   }
 }

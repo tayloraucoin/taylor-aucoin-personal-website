@@ -118,6 +118,7 @@ export function buildIntakeEnvForNextConfig(): Record<string, string> {
   set("DIRECT_DATABASE_URL", `DIRECT_${T}_DATABASE_URL`);
 
   set("SUPABASE_URL", `SUPABASE_${T}_URL`);
+  set("SUPABASE_ANON_KEY", `SUPABASE_${T}_ANON_KEY`);
   set("SUPABASE_SERVICE_ROLE_KEY", `SUPABASE_${T}_SERVICE_ROLE_KEY`);
 
   set("STRIPE_PUBLISHABLE_KEY", `STRIPE_${T}_PUBLISHABLE_KEY`);

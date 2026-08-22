@@ -25,7 +25,7 @@ export const hero = {
  */
 export const heroStats: Array<{ value: string; label: string }> = [
   { value: "$1,200", label: "CAD + GST" },
-  { value: "5–7 days", label: "Typical build" },
+  { value: "3–7 days", label: "Typical build" },
   { value: "$0", label: "Ongoing cost to me" },
 ];
 

@@ -23,7 +23,8 @@ export function Welcome({
   engagement: Engagement;
   token: string;
 }) {
-  const firstName = engagement.contactName.split(" ")[0] ?? engagement.contactName;
+  const firstName =
+    engagement.contactName.split(" ")[0] ?? engagement.contactName;
   const firstStep = INTAKE_STEPS[0]!;
 
   return (

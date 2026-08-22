@@ -1,7 +1,7 @@
 "use client";
 
-import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { useReportSaveState } from "../../_lib/save-state";
+import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
 
 const YES_NO_UNSURE = [
@@ -108,12 +108,7 @@ export function StepBusiness({
         label="Best phone number"
         mode="tel"
       />
-      <TextAnswer
-        form={form}
-        name="contactEmail"
-        label="Email"
-        mode="email"
-      />
+      <TextAnswer form={form} name="contactEmail" label="Email" mode="email" />
 
       <TextAnswer
         form={form}

@@ -3,8 +3,8 @@
 import { useReportSaveState } from "../../_lib/save-state";
 import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
-import { FileDrop, type ExistingFile } from "../file-drop";
 import { Field } from "../field";
+import { FileDrop, type ExistingFile } from "../file-drop";
 
 const LOGO_STATUS = [
   { value: "have", label: "Yes, I have one" },
@@ -112,7 +112,11 @@ export function StepPhotos({
         />
       </Field>
 
-      <TextAnswer form={form} name="coloursYouUse" label="Colours you already use" />
+      <TextAnswer
+        form={form}
+        name="coloursYouUse"
+        label="Colours you already use"
+      />
 
       <LongAnswer
         form={form}
