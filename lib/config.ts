@@ -20,6 +20,19 @@ export const FIELD = {
 } as const;
 
 /**
+ * A/B switch for the background field implementation.
+ *
+ *   1 — the field as it shipped before the banner rework (components/field/v1.ts,
+ *       frozen from commit 260649a). Page variant only.
+ *   2 — the current field (components/field/v2/): growth config, banner variant,
+ *       control handle.
+ *
+ * The banner export always renders v2 regardless — v1 cannot draw a banner.
+ * Flip to 1, reload, compare; delete v1.ts and this switch once settled.
+ */
+export const FIELD_VERSION: 1 | 2 = 2;
+
+/**
  * Case study visibility. `false` hides a project from Selected work and `/work/[slug]`
  * (404). Content stays in `content/work/` — flip back to `true` when you're ready
  * to surface it.
