@@ -51,6 +51,7 @@ export const MIN_N_FOR_RATE = 20;
 export const DISPOSITION_LABELS: Record<CallDisposition, string> = {
   no_answer: "No answer",
   voicemail: "Voicemail",
+  hung_up: "Hung up",
   busy_callback: "Busy — callback",
   conversation: "Conversation",
   wrong_number: "Wrong number",
@@ -66,6 +67,7 @@ export const DISPOSITION_LABELS: Record<CallDisposition, string> = {
 export const DISPOSITION_ORDER: CallDisposition[] = [
   "no_answer",
   "voicemail",
+  "hung_up",
   "busy_callback",
   "conversation",
   "wrong_number",
@@ -101,3 +103,11 @@ export const TERMINAL_CLOSED_STATES: LeadClosedState[] = [
   "do_not_call",
   "bad_lead",
 ];
+
+/** Busy-callback chips — shared by call mode and the lead record scheduler. */
+export const CALLBACK_CHIPS = [
+  { token: "this_afternoon", label: "This afternoon" },
+  { token: "tomorrow_am", label: "Tomorrow AM" },
+  { token: "tomorrow_pm", label: "Tomorrow PM" },
+  { token: "next_week", label: "Next week" },
+] as const;

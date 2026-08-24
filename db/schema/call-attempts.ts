@@ -18,6 +18,7 @@ import { leads } from "./leads";
 export const callDispositionEnum = pgEnum("call_disposition", [
   "no_answer",
   "voicemail",
+  "hung_up",
   "busy_callback",
   "conversation",
   "wrong_number",

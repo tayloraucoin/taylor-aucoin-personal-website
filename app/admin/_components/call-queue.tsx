@@ -35,6 +35,11 @@ type Filters = {
   shown: number;
 };
 
+/** Callable right now — not a due-today promise whose time hasn't arrived. */
+function isActionableNow(lead: QueueLead) {
+  return lead.nextActionAt === null || lead.nextActionAt.getTime() <= Date.now();
+}
+
 export function CallQueue({
   bands,
   filters,
@@ -96,15 +101,20 @@ export function CallQueue({
 
   const flat = useMemo(() => groups.flatMap((group) => group.leads), [groups]);
 
+  const actionable = useMemo(() => flat.filter(isActionableNow), [flat]);
+
   // Keep a selection on the list at all times, so Enter and the number keys
   // always have a subject.
   useEffect(() => {
     if (flat.length === 0) {
       setSelectedId(null);
     } else if (!selectedId || !flat.some((lead) => lead.id === selectedId)) {
-      setSelectedId(flat[0]!.id);
+      // Prefer something callable right now; if literally everything left is a
+      // promise for later today, fall back to the soonest one rather than
+      // stranding the queue with no selection.
+      setSelectedId((actionable[0] ?? flat[0])!.id);
     }
-  }, [flat, selectedId]);
+  }, [flat, actionable, selectedId]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

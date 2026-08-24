@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { INTEREST_TAG_LABELS } from "@/lib/crm/constants";
 import { adminRoutes } from "@/lib/routes";
 import type { InterestTag } from "@/lib/types/crm";
 import type { QueueLead } from "@/server/services/leads";
+import { IntroEmailForm } from "./intro-email-form";
 import type { CompletedAction } from "./post-call-panel";
 
 /**
@@ -48,6 +50,18 @@ export function CallReview({
   completed: CompletedAction[];
   onAdvance: () => void;
 }) {
+  const [sentTo, setSentTo] = useState<string | null>(null);
+
+  const forDecisionMaker = summary.interestTags.includes("decision_maker");
+  const capturedEmail = summary.contactEmail.trim();
+  const emailAlreadySent =
+    completed.some((action) => action.kind === "email") || sentTo !== null;
+  const showEmailForm = capturedEmail !== "" && !emailAlreadySent;
+
+  const allCompleted: CompletedAction[] = sentTo
+    ? [...completed, { kind: "email", to: sentTo }]
+    : completed;
+
   const captured: { label: string; value: string }[] = [
     { label: "Name", value: summary.contactName },
     { label: "Email", value: summary.contactEmail },
@@ -99,11 +113,23 @@ export function CallReview({
         </p>
       ) : null}
 
+      {showEmailForm ? (
+        <section className="flex flex-col gap-3">
+          <h4 className="text-sm text-(--color-body)">Intro email</h4>
+          <IntroEmailForm
+            leadId={lead.id}
+            hasEmail={Boolean(capturedEmail)}
+            forDecisionMaker={forDecisionMaker}
+            onSent={setSentTo}
+          />
+        </section>
+      ) : null}
+
       <div className="flex flex-col gap-1">
-        {completed.length === 0 ? (
+        {allCompleted.length === 0 && !showEmailForm ? (
           <p className="text-xs text-(--color-dim)">Nothing else was owed.</p>
         ) : (
-          completed.map((action) => (
+          allCompleted.map((action) => (
             <p key={action.kind} className="text-xs text-(--color-body)">
               {action.kind === "email"
                 ? `Intro email sent to ${action.to}.`

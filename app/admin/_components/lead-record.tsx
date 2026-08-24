@@ -8,6 +8,7 @@ import {
   MoneyTable,
 } from "@/app/admin/_components/engagement-state";
 import { LeadContact } from "@/app/admin/_components/lead-contact";
+import { LeadSchedule } from "@/app/admin/_components/lead-schedule";
 import { LeadTimeline } from "@/app/admin/_components/lead-timeline";
 import { loadEngagementAdminDetail } from "@/server/services/engagement-admin";
 import {
@@ -16,12 +17,6 @@ import {
   suggestEngagements,
 } from "@/server/services/leads";
 
-const WHEN = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Vancouver",
-  dateStyle: "medium",
-  timeStyle: "short",
-});
-
 /**
  * Everything known about one lead.
  *
@@ -29,10 +24,11 @@ const WHEN = new Intl.DateTimeFormat("en-CA", {
  * drift — a record that shows different things depending on how it was opened
  * is a record nobody trusts.
  *
- * Read-and-convert, not dispose: the call queue owns dispositions and
- * scheduling because those belong to a call in progress. What lives here is
- * what you need when looking someone up — their history, their contact
- * details, and the two things that turn a yes into a client.
+ * Read-and-convert, not dispose: the call queue owns dispositions because
+ * those belong to a call in progress. Scheduling a callback lives here too —
+ * same chips as call mode, no dial required. What else lives here is what you
+ * need when looking someone up: history, contact details, and the two things
+ * that turn a yes into a client.
  */
 export async function LeadRecord({ leadId }: { leadId: string }) {
   const detail = await loadLeadDetail(leadId);
@@ -104,12 +100,11 @@ export async function LeadRecord({ leadId }: { leadId: string }) {
         contactEmail={lead.contactEmail}
       />
 
-      {lead.nextActionAt ? (
-        <p className="text-sm text-(--color-body)">
-          Next action {WHEN.format(lead.nextActionAt)}
-          {lead.nextActionNote ? ` — ${lead.nextActionNote}` : ""}
-        </p>
-      ) : null}
+      <LeadSchedule
+        leadId={lead.id}
+        nextActionAt={lead.nextActionAt?.toISOString() ?? null}
+        nextActionNote={lead.nextActionNote}
+      />
 
       {lead.notes ? (
         <section className="flex flex-col gap-2">

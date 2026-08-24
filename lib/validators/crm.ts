@@ -12,6 +12,7 @@ import { z } from "zod";
 export const callDispositionSchema = z.enum([
   "no_answer",
   "voicemail",
+  "hung_up",
   "busy_callback",
   "conversation",
   "wrong_number",

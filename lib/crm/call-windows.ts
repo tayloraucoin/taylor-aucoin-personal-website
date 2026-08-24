@@ -340,7 +340,8 @@ export function getCallWindow(niche: string, now: Date): CallWindow {
   const laterToday = starts.find((start) => start > hours);
   const nextStart = laterToday ?? starts[0] ?? null;
 
-  const openNow = tier === "best" || tier === "fair";
+  const dayOk = dayTier === "best" || dayTier === "good";
+  const openNow = (tier === "best" || tier === "fair") && dayOk;
 
   return {
     profile,

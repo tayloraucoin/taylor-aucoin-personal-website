@@ -88,6 +88,25 @@ export function LeadFacts({
           </>
         ) : null}
       </p>
+
+      {lead.address || lead.mapsUrl ? (
+        <p className="text-sm text-(--color-dim)">
+          {lead.address}
+          {lead.mapsUrl ? (
+            <>
+              {lead.address ? " · " : null}
+              <a
+                href={lead.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                Map
+              </a>
+            </>
+          ) : null}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -121,20 +140,7 @@ export function LeadAdvisories({
 
       {lead.window.walkInViable ? (
         <p className="text-xs text-(--color-dim)">
-          Walk-in beats a call for these. {lead.address}
-          {lead.mapsUrl ? (
-            <>
-              {" · "}
-              <a
-                href={lead.mapsUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                Map
-              </a>
-            </>
-          ) : null}
+          Walk-in beats a call for these.
         </p>
       ) : null}
 

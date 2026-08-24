@@ -46,7 +46,7 @@ Top: phone number large with copy button · name · niche · rating × reviews �
 
 Follow-through, contextual, chip-based (two clicks total for every common case; nothing beyond disposition ever required):
 
-- **No answer / Voicemail** → next attempt auto-set per cadence (D-CRM-5); chips to override: Tomorrow AM · +2 days · Next week · Pick.
+- **No answer / Voicemail** → next attempt auto-set per cadence (D-CRM-5); chips to override: In 30 min · Today early afternoon · Today late afternoon · Today early evening · Tomorrow AM · +2 days · Next week · Pick.
 - **Busy — callback** → time chips: This afternoon · Tomorrow AM · Tomorrow PM · Pick date & time.
 - **Conversation** → interest chips: Wants info (opens intro-email dialog, or shows the sms: option on mobile) · Talk to the boss (blocker tag) · Price talk · Not now (requires resurface chips: 1 month · 3 months · Pick) · Ready for intake (jumps to engagement creation, prefilled).
 - **Not interested** → reason chips: Has a guy · No need · Money · Timing (suggests Not now instead). Optional note.
@@ -54,24 +54,24 @@ Follow-through, contextual, chip-based (two clicks total for every common case; 
 
 ### 3.3 Lead detail (`/admin/leads/[id]`)
 
-Contact block: phone (admin override editable), email (inline add/edit; empty state "Add an email to send the intro"), address, maps link. One merged timeline: dials with dispositions, emails sent, stage changes, notes. Engagement panel:
+Contact block: phone (admin override editable), email (inline add/edit; empty state "Add an email to send the intro"), address, maps link. **Callback scheduler** — same chip vocabulary as busy-callback in §3.2 (This afternoon · Tomorrow AM · Tomorrow PM · Next week · Pick a time), settable here without logging a dial; optional note for who to ask for. One merged timeline: dials with dispositions, emails sent, stage changes, notes. Engagement panel:
 
 - **Unlinked:** *Create intake link* (prefills contact name, business, phone, email, project summary — the client is never asked what Taylor already knows) · *Link existing engagement* with suggested matches on phone/email.
 - **Linked:** derived engagement status (sent / paid or waived / started / in progress / abandoned / complete) · deposit state ("paid $600 on Aug 12 via Stripe" / waived) · questionnaire progress (step n of 9) · reminder history with per-engagement kill switch (ceiling of three is law; the admin never grows a fourth nudge) · one-click markdown output · **money**: itemized `engagement_products` at actually-paid prices, with total.
 
 ### 3.4 Intro email dialog
 
-Modal from lead detail or the Wants-info chip. To (prefilled, editable) · Subject · full body drafted plain-text, editable in place. Checkbox **"Include free change-round promo"** appends `?promo=TAYLOR_FREE_ITERATION_ROUND` to the intake link and one sentence naming the grant. One quiet line: "Send only after they've asked on a call." Confirm before any re-send to the same lead. Failure: say what happened, keep the draft, offer retry. Default body (Drummer, Taylor's register):
+Modal from lead detail or the Wants-info chip. To (prefilled, editable) · Subject · full body drafted plain-text, editable in place. Checkbox **"Include free change-round promo"** mentions the grant and the code to enter at the deposit step ("Have a code from our call?"). One quiet line: "Send only after they've asked on a call." Confirm before any re-send to the same lead. Failure: say what happened, keep the draft, offer retry. Default body (Drummer, Taylor's register):
 
 > Subject: {Business name} — website info from our call
 >
-> Hey {first name} — good talking today. Here's everything in one place: {sales page link}. Short version: five pages, $1,200 + GST, half to start, you own all of it, live about a week after your answers.
+> Hey {first name} — good talking today. Here's everything in one place: {sales page link}. Short version: five pages, $1,200 + GST, half to start, you own all of it, live about a week after your answers. Built on an AI-powered platform that empowers business-owners long-term.
 >
-> When you're ready, this link starts things — the deposit and a short questionnaire (about 30 minutes): {intake link}
+> When you're ready, the deposit and a short questionnaire (about 30 minutes) start things — it's on that page, behind "Start your site."
 >
-> *(promo checked)* That link includes a free small round of changes after launch, from our call.
+> *(promo checked)* Quick bonus: that includes a free small round of changes after launch — enter TAYLOR_FREE_ITERATION_ROUND at the deposit step ("Have a code from our call?").
 >
-> Text me if anything's weird. — Taylor
+> Text me at {phone} if you have any questions. — Taylor
 
 ### 3.5 Sync (`/admin/sync`)
 
@@ -87,7 +87,7 @@ One screen, no charts. This week and all-time: dials → conversations → info 
 
 The premise (Drummer): published cold-call timing data describes SDRs dialing desk workers. This list is people under a car or on a roof, and the two groups want opposite hours. Each niche carries a **call-window profile** — `storefront` · `field_trade` · `solo_mobile` — with `best` / `fair` / `avoid` hours and a day-of-week tier. The profile table is config, and its single home is `TECH-SCOPE.md` §12; nothing restates those values.
 
-**The toggle.** One control in the queue header: **Ready to call now**. On, it filters the **Fresh** band to leads whose current local hour is in their `best` or `fair` window. Off (default), it does not filter — it only sorts (§3.1). The callback bands ignore it entirely.
+**The toggle.** One control in the queue header: **Ready to call now**. On, it filters the **Fresh** band to leads whose current local hour is in their `best` or `fair` window **and** whose weekday is `best` or `good` (poor/avoid days drop out even at a good hour). Off (default), it does not filter — it only sorts (§3.1). The callback bands ignore it entirely.
 
 **The window chip.** Quiet text, never a colored dot — traffic-light semantics are banned, and a lead outside its window is not an error. Shown on queue rows **only when the toggle is off**, where it explains the sort ("good now", "best 4:30pm", "best Wed 10am"); always shown in the focus card, where it is a fact about the call being made. Copy states the fact, never a scold and never pressure: "best window ends 11:30" is fine; anything counting down is not.
 
