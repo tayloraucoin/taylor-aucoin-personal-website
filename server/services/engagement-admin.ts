@@ -8,7 +8,7 @@ import {
   products,
   type EngagementRow,
 } from "@/db/schema";
-import { INTAKE_STEP_KEYS } from "@/lib/types/intake";
+import { stepCountFor } from "@/lib/intake/tracks";
 import { getEngagementStatus } from "./engagement";
 
 /**
@@ -19,8 +19,6 @@ import { getEngagementStatus } from "./engagement";
  * other write to these rows; this module never sets a status, because status
  * is derived from timestamps and there is nothing here to set (M-INT-7).
  */
-
-const TOTAL_STEPS = INTAKE_STEP_KEYS.length;
 
 /** The three reminder kinds, in the order they fire. The ceiling is three. */
 const REMINDER_KINDS = ["reminder_1", "reminder_2", "reminder_3"] as const;
@@ -56,7 +54,7 @@ function toSummary(
     paidAt: row.paidAt,
     depositRequired: row.depositRequired,
     currentStep: row.currentStep,
-    totalSteps: TOTAL_STEPS,
+    totalSteps: stepCountFor(row.track),
     lastActivityAt: row.lastActivityAt,
     completedAt: row.completedAt,
     remindersDisabled: row.remindersDisabledAt !== null,

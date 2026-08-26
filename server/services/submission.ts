@@ -4,8 +4,9 @@ import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagements, intakeFiles } from "@/db/schema";
 import { requireEnv } from "@/lib/env";
-import type { IntakeStepKey } from "@/lib/types/intake";
-import { MAX_UPLOAD_BYTES, STEP_SCHEMAS } from "@/lib/validators/intake";
+import { schemaFor } from "@/lib/intake/tracks";
+import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
+import { MAX_UPLOAD_BYTES } from "@/lib/validators/intake";
 import { requireEngagement } from "./engagement";
 
 /**
@@ -26,12 +27,12 @@ import { requireEngagement } from "./engagement";
  */
 export async function saveStepAnswers(
   token: string,
-  stepKey: IntakeStepKey,
+  stepKey: AnyIntakeStepKey,
   answers: Record<string, unknown>,
 ): Promise<void> {
   const engagement = await requireEngagement(token);
 
-  const parsed = guardShape(stepKey, answers);
+  const parsed = guardShape(engagement.track, stepKey, answers);
   const patch = JSON.stringify({ [stepKey]: parsed });
   const now = new Date();
 
@@ -57,10 +58,17 @@ export async function saveStepAnswers(
  * The names of dropped fields are logged; their values never are.
  */
 function guardShape(
-  stepKey: IntakeStepKey,
+  track: IntakeTrackKey,
+  stepKey: AnyIntakeStepKey,
   answers: Record<string, unknown>,
 ): unknown {
-  const schema = STEP_SCHEMAS[stepKey];
+  const schema = schemaFor(track, stepKey);
+
+  // A step key belonging to the other track. Only a fabricated request can
+  // produce one, and the honest response is to refuse rather than to write an
+  // empty object under a key this track's document generator will never read.
+  if (!schema) throw new UnknownStepError(track, stepKey);
+
   const first = schema.safeParse(answers);
   if (first.success) return first.data;
 
@@ -89,15 +97,27 @@ function guardShape(
  * any one version of the form), so narrowing happens here at the boundary
  * rather than being asserted by a caller.
  */
-export function readStepAnswers<K extends IntakeStepKey>(
+export function readStepAnswers(
+  track: IntakeTrackKey,
   answers: unknown,
-  stepKey: K,
+  stepKey: AnyIntakeStepKey,
 ): Record<string, unknown> {
   const document = (answers ?? {}) as Record<string, unknown>;
   const stored = document[stepKey];
+  const schema = schemaFor(track, stepKey);
 
-  const result = STEP_SCHEMAS[stepKey].safeParse(stored ?? {});
+  if (!schema) return {};
+
+  const result = schema.safeParse(stored ?? {});
   return result.success ? (result.data as Record<string, unknown>) : {};
+}
+
+/** Thrown when a step key does not belong to the engagement's track. */
+export class UnknownStepError extends Error {
+  constructor(track: IntakeTrackKey, stepKey: string) {
+    super(`Step "${stepKey}" does not exist on the ${track} track.`);
+    this.name = "UnknownStepError";
+  }
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -153,8 +173,10 @@ export type UploadTicket = {
  */
 export async function issueUploadTicket(input: {
   token: string;
-  stepKey: IntakeStepKey;
+  stepKey: AnyIntakeStepKey;
   fieldKey: string;
+  /** Scopes the file to one repeatable entry — a project's stills (M-PORT-3). */
+  entryKey?: string;
   filename: string;
   mimeType?: string;
   sizeBytes: number;
@@ -181,6 +203,7 @@ export async function issueUploadTicket(input: {
     .insert(intakeFiles)
     .values({
       engagementId: engagement.id,
+      entryKey: input.entryKey ?? null,
       fieldKey: input.fieldKey,
       mimeType: input.mimeType ?? null,
       originalName: input.filename,
@@ -234,6 +257,7 @@ export async function listUploads(engagementId: string, fieldKey: string) {
   return getDb()
     .select({
       id: intakeFiles.id,
+      entryKey: intakeFiles.entryKey,
       originalName: intakeFiles.originalName,
       sizeBytes: intakeFiles.sizeBytes,
       uploadedAt: intakeFiles.uploadedAt,
@@ -261,6 +285,7 @@ export async function linkUploads(
 ): Promise<
   Array<{
     fieldKey: string;
+    entryKey: string | null;
     originalName: string | null;
     sizeBytes: number | null;
     uploadedAt: Date | null;
@@ -288,6 +313,7 @@ export async function linkUploads(
 
       return {
         fieldKey: row.fieldKey,
+        entryKey: row.entryKey,
         originalName: row.originalName,
         sizeBytes: row.sizeBytes,
         uploadedAt: row.uploadedAt,

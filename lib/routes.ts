@@ -1,4 +1,4 @@
-import type { IntakeStepKey } from "@/lib/types/intake";
+import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 
 /**
  * Every intake path is built here. No route string is written inline anywhere
@@ -25,7 +25,9 @@ const INTAKE_PREFIX = "/websites/intake";
  * paying client does not need.
  */
 export function isIntakePath(pathname: string): boolean {
-  return pathname === INTAKE_PREFIX || pathname.startsWith(`${INTAKE_PREFIX}/`);
+  return [INTAKE_PREFIX, SHOWCASE_INTAKE_PREFIX].some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
 
 export const intakeRoutes = {
@@ -41,12 +43,77 @@ export const intakeRoutes = {
   /** The state-routed entry: pay, welcome, resume, or done. */
   entry: (token: string) => `${INTAKE_PREFIX}/${token}`,
 
-  /** One questionnaire step. Step identity comes from `IntakeStepKey`. */
-  step: (token: string, step: IntakeStepKey) =>
+  /**
+   * One questionnaire step.
+   *
+   * The key type spans both tracks because a step slug is a slug; which keys
+   * are real for a given engagement is decided by `lib/intake/tracks.ts`, which
+   * resolves them per track and returns undefined for a foreign one. That is
+   * the gate, and it is a better one than the type — a wrong slug 404s rather
+   * than rendering an empty step. The showcase track gets its own builder with
+   * PORT-2.
+   */
+  step: (token: string, step: AnyIntakeStepKey) =>
     `${INTAKE_PREFIX}/${token}/${step}`,
 
   done: (token: string) => `${INTAKE_PREFIX}/${token}/done`,
 } as const;
+
+/**
+ * The website-service marketing pages.
+ *
+ * `/websites` is a chooser between two builds. The slugs name the DELIVERABLE
+ * rather than the buyer: some professions could plausibly buy either track, so
+ * "who it's for" cannot carry the distinction on its own, while "a platform you
+ * run yourself" versus "code you own" always can. Naming by buyer was the
+ * earlier plan and Taylor overruled it.
+ *
+ * Note `showcase` is the internal key for the coded track everywhere in the
+ * data model (`M-PORT-1`), because "portfolio" already means tayloraucoin.com
+ * itself in this codebase. Public slug and internal key differ on purpose.
+ *
+ * The coded track's intake nests under `coded`, immediately below.
+ */
+export const websiteRoutes = {
+  chooser: "/websites",
+  platform: "/websites/platform",
+  coded: "/websites/coded",
+} as const;
+
+/**
+ * The showcase track's intake, nested under the sales page that explains it.
+ *
+ * Composed from `websiteRoutes.coded` rather than restating the slug, which is
+ * still `[PROPOSED — Taylor ratifies]` (marketing scope §3) and therefore has
+ * to have exactly one place to rename. Nesting is the trim-back law: someone
+ * who cuts this URL back lands on the page describing what they are filling
+ * in, never a 404 (WEBSITES-PAGE-SPEC §7, M-PORT-7).
+ *
+ * The durable tree does not move and does not change (that scope's R-3).
+ */
+const SHOWCASE_INTAKE_PREFIX = `${websiteRoutes.coded}/intake`;
+
+export const showcaseIntakeRoutes = {
+  start: SHOWCASE_INTAKE_PREFIX,
+  /** Its own cookie scope, so one track's token is never sent to the other. */
+  cookiePath: SHOWCASE_INTAKE_PREFIX,
+  entry: (token: string) => `${SHOWCASE_INTAKE_PREFIX}/${token}`,
+  step: (token: string, step: AnyIntakeStepKey) =>
+    `${SHOWCASE_INTAKE_PREFIX}/${token}/${step}`,
+  done: (token: string) => `${SHOWCASE_INTAKE_PREFIX}/${token}/done`,
+} as const;
+
+/**
+ * The route builder for one track.
+ *
+ * Shared components — the resume list, the step shell — render links for
+ * whichever engagement they were handed. Without this each would need to know
+ * which tree it is rendering in, which is exactly the branch that gets copied
+ * wrong once and then everywhere.
+ */
+export function intakeRoutesFor(track: IntakeTrackKey) {
+  return track === "showcase" ? showcaseIntakeRoutes : intakeRoutes;
+}
 
 /**
  * The legal pages for the websites service. Scoped under `/websites` on
@@ -86,6 +153,7 @@ export const adminRoutes = {
   engagement: (id: string) => `${ADMIN_PREFIX}/engagements/${id}`,
   sync: `${ADMIN_PREFIX}/sync`,
   scoreboard: `${ADMIN_PREFIX}/scoreboard`,
+  transcripts: `${ADMIN_PREFIX}/transcripts`,
 } as const;
 
 /**

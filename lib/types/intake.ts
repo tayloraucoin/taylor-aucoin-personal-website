@@ -28,6 +28,66 @@ export const INTAKE_STEP_KEYS = [
 export type IntakeStepKey = (typeof INTAKE_STEP_KEYS)[number];
 
 /**
+ * The website types this machine collects for.
+ *
+ * `durable` is the original track: Metro Vancouver service businesses, built on
+ * Durable, sold at `/websites`. `showcase` is the bespoke portfolio-site track
+ * for creatives.
+ *
+ * The internal name is deliberately not "portfolio": in this repo that word
+ * already means tayloraucoin.com itself (see `legalRoutes` and
+ * `content/legal.ts`). Public URLs say portfolio; identifiers say showcase.
+ * See TECHNICAL-DECISIONS M-PORT-1.
+ */
+export const INTAKE_TRACK_KEYS = ["durable", "showcase"] as const;
+
+export type IntakeTrackKey = (typeof INTAKE_TRACK_KEYS)[number];
+
+/**
+ * The showcase track's nine steps, in order.
+ *
+ * Its own key space, sitting in the same answers document as the durable
+ * track's. `access` appears in both by coincidence of subject, not by sharing:
+ * each track resolves its own schema and labels for that key through
+ * `lib/intake/tracks.ts`, so the two never meet.
+ */
+export const SHOWCASE_STEP_KEYS = [
+  "about",
+  "audience",
+  "experience",
+  "work",
+  "taste",
+  "words",
+  "media",
+  "site",
+  "access",
+] as const;
+
+export type ShowcaseStepKey = (typeof SHOWCASE_STEP_KEYS)[number];
+
+/** Any step key from any track — what a registry entry or a route slug holds. */
+export type AnyIntakeStepKey = IntakeStepKey | ShowcaseStepKey;
+
+/**
+ * One step in a track's registry.
+ *
+ * Generic over its key so each track's registry keeps its own narrow key type
+ * while `lib/intake/tracks.ts` can hand back either as a common shape.
+ *
+ * `emphasis: "ink"` renders a step's intro at full ink instead of dim. Exactly
+ * one step in the durable track has it, because that step is the one that stops
+ * a false claim reaching a live site. It is not decoration and it is not
+ * granted to a step because the step is long.
+ */
+export type IntakeStep<K extends AnyIntakeStepKey = AnyIntakeStepKey> = {
+  key: K;
+  number: number;
+  title: string;
+  intro?: string;
+  emphasis?: "ink";
+};
+
+/**
  * One step's answers as stored.
  *
  * Deliberately open at this layer: the per-step field shapes are specified in
@@ -44,8 +104,14 @@ export type IntakeStepAnswers = Record<string, unknown>;
  * Partial by construction — nothing in this form is required (D-INT-4), so
  * every step, and every field within it, may be absent. The markdown generator
  * (INT-7) reports absence explicitly rather than rendering a blank heading.
+ *
+ * Keyed by every track's steps rather than one track's: the column outlives any
+ * one questionnaire, and an engagement only ever carries the keys of the track
+ * it was created on.
  */
-export type IntakeAnswers = Partial<Record<IntakeStepKey, IntakeStepAnswers>>;
+export type IntakeAnswers = Partial<
+  Record<AnyIntakeStepKey, IntakeStepAnswers>
+>;
 
 /**
  * Where an engagement stands, derived from its timestamp columns rather than

@@ -1,4 +1,5 @@
-import { INTAKE_STEP_COUNT } from "@/lib/intake/steps";
+import { stepCountFor } from "@/lib/intake/tracks";
+import type { IntakeTrackKey } from "@/lib/types/intake";
 
 /**
  * A hairline track with a gold fill. No percentage, no "almost there", no
@@ -8,8 +9,14 @@ import { INTAKE_STEP_COUNT } from "@/lib/intake/steps";
  * The bar is decorative; the step count above it carries the same information
  * as text, so screen readers get it once rather than twice.
  */
-export function StepProgress({ current }: { current: number }) {
-  const pct = (current / INTAKE_STEP_COUNT) * 100;
+export function StepProgress({
+  track,
+  current,
+}: {
+  track: IntakeTrackKey;
+  current: number;
+}) {
+  const pct = (current / stepCountFor(track)) * 100;
 
   return (
     <div aria-hidden className="mt-4 h-px w-full bg-(--color-faint)">

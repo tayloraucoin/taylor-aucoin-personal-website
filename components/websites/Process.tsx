@@ -1,6 +1,6 @@
 import BulletList from "@/components/ui/BulletList";
 import SectionLabel from "@/components/ui/SectionLabel";
-import { processSteps } from "@/content/websites";
+import { processSteps, type ProcessStep } from "@/content/websites";
 
 /**
  * The section both audiences are here for, served by one artifact.
@@ -11,19 +11,28 @@ import { processSteps } from "@/content/websites";
  * verification → live preview → DNS cutover → handoff. Neither audience pays
  * for the other's needs and there is one list to maintain.
  *
- * Step 03 carries sub-lines the others don't. It is the step that proves a
- * system exists rather than a workflow, and it is the only place on the page
- * where the extra depth is spent.
+ * Exactly one step per page carries sub-lines the others don't. It is the step
+ * that proves a system exists rather than a workflow, and it is the only place
+ * on a page where the extra depth is spent. On the platform track that is the
+ * build (03); on the coded track it is taste extraction (02), because that is
+ * where each page's buyer is deciding whether this is a system or a guy.
  *
- * The platform is never named here — preview-first, platform-name-last. The
- * client learns it at handoff.
+ * On the platform track the platform is never named here — preview-first,
+ * platform-name-last, and the client learns it at handoff. The coded track
+ * names its stack on purpose, because there the tooling is part of what gets
+ * handed over.
+ *
+ * `steps` defaults to the platform track's content so that page's call site
+ * stays a bare `<Process />` and its output is unchanged.
  */
-export default function Process() {
+export default function Process({
+  steps = processSteps,
+}: { steps?: readonly ProcessStep[] } = {}) {
   return (
     <section className="mt-16">
       <SectionLabel>How it goes</SectionLabel>
       <ol className="mt-2">
-        {processSteps.map((step, i) => (
+        {steps.map((step, i) => (
           <li
             key={step.system}
             className="grid grid-cols-1 gap-x-8 border-b border-(--color-faint) py-7 md:grid-cols-[240px_1fr]"

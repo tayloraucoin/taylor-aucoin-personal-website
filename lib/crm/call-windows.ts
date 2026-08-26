@@ -406,7 +406,7 @@ function zoneOffsetMs(at: Date): number {
 }
 
 /** The UTC instant of local midnight on a `YYYY-MM-DD` Vancouver date. */
-function vancouverMidnight(isoDate: string): Date {
+export function vancouverMidnight(isoDate: string): Date {
   const guess = new Date(`${isoDate}T00:00:00Z`);
   const offset = zoneOffsetMs(guess);
   const candidate = new Date(guess.getTime() - offset);
@@ -432,6 +432,11 @@ function vancouverMidnight(isoDate: string): Date {
  * days are 23 or 25 hours long, and twice a year the arithmetic version is off
  * by one.
  */
+/** A Vancouver calendar day as `YYYY-MM-DD`, for date inputs and URL params. */
+export function vancouverIsoDate(at: Date): string {
+  return DATE_FORMAT.format(at);
+}
+
 export function vancouverDayBounds(now: Date): {
   startOfToday: Date;
   startOfTomorrow: Date;

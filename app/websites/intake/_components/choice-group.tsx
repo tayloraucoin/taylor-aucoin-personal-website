@@ -19,7 +19,13 @@ import { useId } from "react";
  * Controlled, so the autosave engine owns the value and the same answer cannot
  * exist in two places.
  */
-export type Choice = { value: string; label: string };
+/**
+ * `disabled` renders an option that is real but not yet offered — the start
+ * form's "coming soon" categories. It stays in the tab order and keeps its full
+ * label so a screen-reader user hears the same roadmap a sighted one reads; it
+ * simply cannot be chosen. A tooltip would hide that from both.
+ */
+export type Choice = { value: string; label: string; disabled?: boolean };
 
 const CARD_CLASS =
   "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left font-body text-[16px] font-light leading-[1.4] transition-colors duration-(--dur-fast) ease-(--ease-out)";
@@ -29,6 +35,9 @@ const UNSELECTED_CLASS =
 
 const SELECTED_CLASS =
   "border-[rgb(232_185_97/.55)] bg-(--color-card-hover) text-(--color-ink)";
+
+const DISABLED_CLASS =
+  "border-(--color-faint) bg-(--color-card) text-(--color-dim) opacity-60";
 
 export function ChoiceGroup({
   legend,
@@ -52,6 +61,8 @@ export function ChoiceGroup({
   const groupId = useId();
 
   function toggle(option: string) {
+    if (options.find((o) => o.value === option)?.disabled) return;
+
     if (!multiple) {
       onChange([option]);
       return;
@@ -80,11 +91,19 @@ export function ChoiceGroup({
           const isSelected = value.includes(option.value);
           const id = `${groupId}-${option.value}`;
 
+          const state = option.disabled
+            ? DISABLED_CLASS
+            : isSelected
+              ? SELECTED_CLASS
+              : UNSELECTED_CLASS;
+
           return (
             <label
               key={option.value}
               htmlFor={id}
-              className={`${CARD_CLASS} ${isSelected ? SELECTED_CLASS : UNSELECTED_CLASS} cursor-pointer`}
+              className={`${CARD_CLASS} ${state} ${
+                option.disabled ? "cursor-default" : "cursor-pointer"
+              }`}
             >
               <input
                 id={id}
@@ -92,6 +111,11 @@ export function ChoiceGroup({
                 name={name}
                 value={option.value}
                 checked={isSelected}
+                // Focusable and announced, but never selectable: `aria-disabled`
+                // rather than `disabled`, which would drop it from the tab order
+                // and hide the roadmap from exactly the users who cannot see the
+                // dimmed styling.
+                aria-disabled={option.disabled || undefined}
                 onChange={() => toggle(option.value)}
                 className="sr-only"
               />

@@ -132,6 +132,59 @@ const CATALOGUE: ProductSpec[] = [
       { nickname: "Monthly", amountCents: 25000, env: "PRICE_CARE_PLAN", dbKey: "care_plan", recurring: "month" },
     ],
   },
+
+  /* ── The coded track (internal key: showcase) ────────────────────────────
+     Separate products from the platform track's, not extra prices under them:
+     Checkout and invoices display the *product* name on each line, and a
+     filmmaker's invoice reading "Website build" for a $2,000 coded site would
+     be describing the other product. Prices are R-5 and R-8 of
+     docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md, published.
+
+     The Care Plan is deliberately absent. Taylor's ruling (M-PORT-6): nothing
+     recurring is sold on this track until the offer itself is settled, so
+     there is no Stripe object to mint and no row to charge.
+     ──────────────────────────────────────────────────────────────────────── */
+  {
+    name: "Portfolio website build",
+    description:
+      "Five-page portfolio site built in code, from your questionnaire answers. $2,000 + GST, half to start and half before launch — or $1,900 paid in full.",
+    taxCode: TAX_WEBSITE,
+    prices: [
+      { nickname: "Deposit — half to start", amountCents: 100000, env: "PRICE_SHOWCASE_DEPOSIT", dbKey: "showcase_deposit" },
+      { nickname: "Balance — before launch", amountCents: 100000, env: "PRICE_SHOWCASE_BALANCE", dbKey: "showcase_balance" },
+      { nickname: "Paid in full — 5% off", amountCents: 190000, env: "PRICE_SHOWCASE_FULL", dbKey: "showcase_full" },
+      // The negotiated-price rows a promo code substitutes in (lib/intake/promo.ts).
+      // Real prices on the same product, so what was charged stays auditable.
+      { nickname: "Deposit — negotiated $1,600", amountCents: 80000, env: "PRICE_SHOWCASE_DEPOSIT_1600", dbKey: "showcase_deposit_1600" },
+      { nickname: "Paid in full — negotiated $1,600", amountCents: 152000, env: "PRICE_SHOWCASE_FULL_1600", dbKey: "showcase_full_1600" },
+    ],
+  },
+  {
+    name: "Portfolio admin panel",
+    description:
+      "A private login for changing copy and swapping images yourself, no code involved.",
+    taxCode: TAX_WEBSITE,
+    prices: [{ nickname: "Admin panel", amountCents: 50000, env: "PRICE_SHOWCASE_ADMIN_PANEL", dbKey: "showcase_admin_panel" }],
+  },
+  {
+    name: "Logo or wordmark refresh",
+    description: "A refreshed mark for your name, for when you want one.",
+    taxCode: TAX_SERVICES,
+    prices: [{ nickname: "Refresh", amountCents: 25000, env: "PRICE_SHOWCASE_LOGO", dbKey: "showcase_logo" }],
+  },
+  {
+    name: "Extra page (portfolio)",
+    description: "An additional page beyond the included five. Priced per page.",
+    taxCode: TAX_WEBSITE,
+    prices: [{ nickname: "Per page", amountCents: 15000, env: "PRICE_SHOWCASE_EXTRA_PAGE", dbKey: "showcase_extra_page" }],
+  },
+  {
+    name: "Booking setup",
+    description:
+      "A booking page wired to your calendar, for coaching, teaching, or consults.",
+    taxCode: TAX_SERVICES,
+    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_BOOKING", dbKey: "showcase_booking" }],
+  },
 ];
 
 async function main(): Promise<void> {

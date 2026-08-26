@@ -28,6 +28,18 @@ export const intakeFiles = pgTable(
       .defaultNow()
       .notNull(),
 
+    /**
+     * Which repeatable entry this file belongs to, when it belongs to one.
+     *
+     * The showcase track uploads images inside project entries, so a file needs
+     * to know which project it is a still of. The key is minted client-side
+     * when the entry is added and stored in the answers document beside it;
+     * `fieldKey` stays the field's own name, and this scopes it.
+     *
+     * Null for every upload that is not inside an entry, which is all of the
+     * durable track's and most of the showcase track's. See M-PORT-3.
+     */
+    entryKey: text("entry_key"),
     fieldKey: text("field_key").notNull(),
     mimeType: text("mime_type"),
     originalName: text("original_name"),

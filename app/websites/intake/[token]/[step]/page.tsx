@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { findStep } from "@/lib/intake/steps";
+import { findStep } from "@/lib/intake/tracks";
 import { intakeRoutes } from "@/lib/routes";
 import {
   EngagementNotFoundError,
@@ -26,7 +26,12 @@ import { FooterSaveIndicator, SaveStateProvider } from "../../_lib/save-state";
  *
  * The slug is validated against the step registry rather than parsed, so the
  * URL space stays exactly nine wide and a typo lands on a 404 instead of a
- * blank shell claiming to be "step NaN of 9".
+ * blank shell claiming to be "step NaN of 9". Which registry is the
+ * engagement's to say, so the token resolves first: there is no way to know
+ * whether `work` is a real step without knowing whose questionnaire this is.
+ *
+ * This tree serves the durable track. A showcase engagement has its own, and
+ * arriving here is a 404 rather than a rendered shell with nothing in it.
  *
  * An unpaid engagement is bounced back to the entry route: the deposit is step
  * zero, and a client should not be able to skip it by editing the address bar.
@@ -42,9 +47,6 @@ export default async function IntakeStepPage({
 }) {
   const { token, step: slug } = await params;
 
-  const step = findStep(slug);
-  if (!step) notFound();
-
   let engagement;
   try {
     engagement = await requireEngagement(token);
@@ -55,11 +57,20 @@ export default async function IntakeStepPage({
     throw error;
   }
 
+  if (engagement.track !== "durable") notFound();
+
+  const step = findStep(engagement.track, slug);
+  if (!step) notFound();
+
   if (engagement.depositRequired && !engagement.paidAt) {
     redirect(intakeRoutes.entry(token));
   }
 
-  const initial = readStepAnswers(engagement.answers, step.key);
+  const initial = readStepAnswers(
+    engagement.track,
+    engagement.answers,
+    step.key,
+  );
   const uploadsFor = (fieldKey: string) => listUploads(engagement.id, fieldKey);
 
   async function body() {
@@ -126,6 +137,11 @@ export default async function IntakeStepPage({
             purchasedExtras={await listPurchasedExtras(engagement!.id)}
           />
         );
+      // Unreachable: the track guard above admits only durable engagements, and
+      // `findStep` resolves against that track's registry. Present so the switch
+      // stays exhaustive over the key type both tracks share.
+      default:
+        notFound();
     }
   }
 
@@ -133,7 +149,12 @@ export default async function IntakeStepPage({
     <SaveStateProvider>
       <RecordStepReached token={token} stepNumber={step.number} />
 
-      <StepShell token={token} step={step} saveSlot={<FooterSaveIndicator />}>
+      <StepShell
+        track={engagement.track}
+        token={token}
+        step={step}
+        saveSlot={<FooterSaveIndicator />}
+      >
         {await body()}
       </StepShell>
     </SaveStateProvider>

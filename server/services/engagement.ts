@@ -8,8 +8,8 @@ import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagements, type EngagementRow } from "@/db/schema";
 import { readEnv, requireEnv } from "@/lib/env";
-import { intakeRoutes } from "@/lib/routes";
-import type { EngagementStatus, IntakeStepKey } from "@/lib/types/intake";
+import { intakeRoutes, showcaseIntakeRoutes } from "@/lib/routes";
+import type { AnyIntakeStepKey, EngagementStatus } from "@/lib/types/intake";
 import {
   createEngagementInput,
   type CreateEngagementInput,
@@ -53,6 +53,7 @@ export type Engagement = Pick<
   | "termsAcceptedAt"
   | "termsVersion"
   | "tokenExpiresAt"
+  | "track"
 > & { status: EngagementStatus };
 
 /**
@@ -190,18 +191,45 @@ function toEngagement(row: EngagementRow, now: Date = new Date()): Engagement {
     termsAcceptedAt: row.termsAcceptedAt,
     termsVersion: row.termsVersion,
     tokenExpiresAt: row.tokenExpiresAt,
+    track: row.track,
     status: getEngagementStatus(row, now),
   };
 }
 
-/** The absolute link a client receives. Server-side only. */
+/** The absolute link a durable-track client receives. Server-side only. */
 export function buildIntakeUrl(token: string): string {
   return `${siteOrigin()}${intakeRoutes.entry(token)}`;
 }
 
+/** The same, for the showcase track's own tree. */
+export function buildShowcaseIntakeUrl(token: string): string {
+  return `${siteOrigin()}${showcaseIntakeRoutes.entry(token)}`;
+}
+
+/**
+ * The absolute entry link for whichever track an engagement is on.
+ *
+ * The reminder sweep and the resume email both send a link before they know
+ * anything about the flow it belongs to; this is the one place that maps a
+ * track to its tree, so neither has to.
+ */
+export function buildEntryUrlFor(
+  track: EngagementRow["track"],
+  token: string,
+): string {
+  return track === "showcase"
+    ? buildShowcaseIntakeUrl(token)
+    : buildIntakeUrl(token);
+}
+
 /** Deep link to one step, for a reminder that should resume where they were. */
-export function buildIntakeStepUrl(token: string, step: IntakeStepKey): string {
-  return `${siteOrigin()}${intakeRoutes.step(token, step)}`;
+export function buildIntakeStepUrl(
+  track: EngagementRow["track"],
+  token: string,
+  step: AnyIntakeStepKey,
+): string {
+  const routes = track === "showcase" ? showcaseIntakeRoutes : intakeRoutes;
+  return `${siteOrigin()}${routes.step(token, step)}`;
 }
 
 function siteOrigin(): string {
@@ -256,6 +284,7 @@ export async function createEngagement(
       currency: parsed.currency,
       depositRequired: parsed.depositRequired,
       projectSummary: parsed.projectSummary,
+      track: parsed.track,
       // Taylor sends the link himself the moment it is created, so creation
       // and sending are the same event here (D-INT-7).
       sentAt: now,

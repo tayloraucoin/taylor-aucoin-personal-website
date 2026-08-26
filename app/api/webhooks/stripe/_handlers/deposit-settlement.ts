@@ -1,6 +1,9 @@
 import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
-import { fulfillDeposit } from "@/server/services/deposit";
+import {
+  fulfillDeposit,
+  settleAncillaryPurchase,
+} from "@/server/services/deposit";
 import { notifyOps } from "@/server/services/emails";
 import { findEngagementById } from "@/server/services/engagement";
 import { sendDepositInvoiceEmail } from "@/server/services/invoices";
@@ -33,6 +36,16 @@ export async function settleDepositSession(
 
   if (session.payment_status === "unpaid") {
     console.info(`[stripe] ${event.id}: ${engagementId} → awaiting settlement`);
+    return;
+  }
+
+  // Not every Checkout session on an engagement is the build. An extra-page
+  // charge settles its own basket rows and must never mark the deposit paid —
+  // `paid_at` means the build was bought, and a client whose extra pages set
+  // it would walk straight past the pay screen into a questionnaire they had
+  // not paid for (M-PORT-4).
+  if (session.metadata?.charge_kind === "extra_pages") {
+    await settleExtraPages(event, session, engagementId);
     return;
   }
 
@@ -79,5 +92,48 @@ export async function settleDepositSession(
     ``,
     `They now have the questionnaire and their paid invoice email. You will`,
     `get the intake document when they finish it.`,
+  ]);
+}
+
+/**
+ * Settles an extra-page purchase.
+ *
+ * Deliberately quieter than a deposit: no invoice email and no questionnaire
+ * to hand over — the client already has both. What it does do is stamp the
+ * basket so the engagement's record shows what was actually bought, and tell
+ * Taylor, because he is the one who agreed to it on a call and will be asked
+ * about it later.
+ */
+async function settleExtraPages(
+  event: Stripe.Event,
+  session: Stripe.Checkout.Session,
+  engagementId: string,
+): Promise<void> {
+  const productKey = session.metadata?.product_key;
+
+  if (!productKey) {
+    console.warn(`[stripe] ${event.id}: extra-page session without product_key`);
+    return;
+  }
+
+  const outcome = await settleAncillaryPurchase(engagementId, productKey);
+  console.info(`[stripe] ${event.id}: ${engagementId} extra pages → ${outcome}`);
+
+  // A replay has already been announced once.
+  if (outcome !== "settled") return;
+
+  const amount =
+    session.amount_total === null
+      ? "unknown amount"
+      : formatMoney(session.amount_total, session.currency ?? "cad");
+
+  await notifyOps(`Extra pages paid — ${amount}`, [
+    `An extra-page charge has settled.`,
+    ``,
+    `Amount:     ${amount}`,
+    `Pages:      ${session.metadata?.pages ?? "unknown"}`,
+    `Engagement: ${engagementId}`,
+    ``,
+    `Their deposit state is untouched by this.`,
   ]);
 }

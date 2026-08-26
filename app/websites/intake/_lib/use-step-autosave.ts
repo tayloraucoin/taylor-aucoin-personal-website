@@ -161,10 +161,26 @@ export function useStepAutosave({
     void attempt();
   }, [attempt]);
 
+  /**
+   * `value` may be an updater, `(previous) => next`, and for anything built
+   * from its own previous value it must be.
+   *
+   * React batches state updates, so two calls in one tick both read the value
+   * the component last rendered with. For a text field that is harmless — the
+   * second keystroke's value already contains the first. For an array it is
+   * not: two favourites toggled in the same tick both compute from the empty
+   * list, and the second silently discards the first. That was a real bug on
+   * the taste step before this existed.
+   */
   const setValue = useCallback(
     (field: string, value: unknown) => {
       setValues((current) => {
-        const next = { ...current, [field]: value };
+        const resolved =
+          typeof value === "function"
+            ? (value as (previous: unknown) => unknown)(current[field])
+            : value;
+
+        const next = { ...current, [field]: resolved };
         valuesRef.current = next;
         // Safety net first, network second. This line is the no-loss promise.
         writeLocal(key, next);

@@ -14,10 +14,10 @@ import {
   REMINDER_2_AFTER_IDLE_HOURS,
   REMINDER_3_AFTER_DAYS,
 } from "@/lib/intake/constants";
-import { stepByNumber } from "@/lib/intake/steps";
+import { stepByNumber } from "@/lib/intake/tracks";
 import {
+  buildEntryUrlFor,
   buildIntakeStepUrl,
-  buildIntakeUrl,
   decryptToken,
   getEngagementStatus,
   type Engagement,
@@ -34,6 +34,7 @@ function toEngagementForEmail(row: EngagementRow): Engagement {
     updatedAt: row.updatedAt,
     answers: row.answers,
     businessName: row.businessName,
+    track: row.track,
     completedAt: row.completedAt,
     contactEmail: row.contactEmail,
     contactName: row.contactName,
@@ -240,7 +241,7 @@ export async function sendResumeLink(
     engagementId: engagement.id,
     kind: "resume_link",
     to: engagement.contactEmail,
-    subject: "Your website questionnaire — pick up where you left off",
+    subject: `Your ${questionnaireNoun(engagement.track)} — pick up where you left off`,
     text: [
       `Hi ${firstName},`,
       "",
@@ -251,6 +252,19 @@ export async function sendResumeLink(
       "— Taylor",
     ].join("\n"),
   });
+}
+
+/**
+ * What to call the thing in a subject line.
+ *
+ * The only place either track's emails differ. Cadence, ceiling, dedupe, and
+ * register are one mechanism across both — a second email system would be a
+ * second place for the three-reminder ceiling to be got wrong.
+ *
+ * `[COPY — pending Taylor]` on the coded track's noun.
+ */
+function questionnaireNoun(track: EngagementRow["track"]): string {
+  return track === "showcase" ? "portfolio questionnaire" : "website questionnaire";
 }
 
 /**
@@ -272,7 +286,9 @@ export async function sendReminder(
     reminder_1: [
       `Hi ${firstName},`,
       "",
-      "Whenever you get a minute — the questionnaire for your site is here. About 20 minutes, and you can skip anything you're not sure about.",
+      engagement.track === "showcase"
+        ? "Whenever you get a minute — the questionnaire for your site is here. About 45 minutes, and you can skip anything you're not sure about."
+        : "Whenever you get a minute — the questionnaire for your site is here. About 20 minutes, and you can skip anything you're not sure about.",
       "",
       url,
     ],
@@ -296,7 +312,7 @@ export async function sendReminder(
     engagementId: engagement.id,
     kind,
     to: engagement.contactEmail,
-    subject: `Your website questionnaire — ${engagement.businessName}`,
+    subject: `Your ${questionnaireNoun(engagement.track)} — ${engagement.businessName}`,
     text: [...body[kind], "", "— Taylor"].join("\n"),
   });
 }
@@ -366,8 +382,12 @@ export async function sweepReminders(now: Date = new Date()): Promise<{
     // Reminder 2 goes to someone mid-form, so it lands them where they were.
     const url =
       kind === "reminder_2" && row.currentStep > 0
-        ? buildIntakeStepUrl(token, stepByNumber(row.currentStep).key)
-        : buildIntakeUrl(token);
+        ? buildIntakeStepUrl(
+            row.track,
+            token,
+            stepByNumber(row.track, row.currentStep).key,
+          )
+        : buildEntryUrlFor(row.track, token);
 
     if (await sendReminder(engagement, kind, url)) sent += 1;
   }

@@ -84,9 +84,19 @@ export default async function ScoreboardPage() {
             {board.health.workedWithoutNextAction}
           </strong>{" "}
           worked leads with no next action
-          {board.health.workedWithoutNextAction === 0
-            ? " — as it should be"
-            : " — these are the ones that go quiet and get lost"}
+          {board.health.workedWithoutNextAction === 0 ? (
+            " — as it should be"
+          ) : (
+            <>
+              {" — these are the ones that go quiet and get lost."}{" "}
+              <Link
+                href={`${adminRoutes.leads}?preset=no_next_action`}
+                className="underline"
+              >
+                See them.
+              </Link>
+            </>
+          )}
         </p>
 
         <p className="text-sm text-(--color-body)">

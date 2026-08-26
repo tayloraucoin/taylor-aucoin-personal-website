@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { href: adminRoutes.engagements, label: "Engagements", ready: true },
   { href: adminRoutes.sync, label: "Sync", ready: true },
   { href: adminRoutes.scoreboard, label: "Scoreboard", ready: true },
+  { href: adminRoutes.transcripts, label: "Transcripts", ready: true },
 ];
 
 export function AdminShell({

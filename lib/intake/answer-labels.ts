@@ -1,5 +1,8 @@
 /**
- * Human labels for every answer key, for the intake document.
+ * Human labels for every durable-track answer key, for the intake document.
+ *
+ * Read through `labelFor` in `lib/intake/tracks.ts`, which resolves the right
+ * track's map. Nothing imports this constant directly except that resolver.
  *
  * The step components currently declare their own labels inline, so these are
  * a second statement of the same words. That is deliberate for now rather than
@@ -115,7 +118,3 @@ export const ANSWER_LABELS: Record<string, string> = {
   bestContactMethod: "Preferred contact method",
   anythingElse: "Anything else",
 };
-
-export function labelFor(key: string): string {
-  return ANSWER_LABELS[key] ?? key;
-}

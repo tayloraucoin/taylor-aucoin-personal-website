@@ -71,6 +71,13 @@
       "when": 1787600340976,
       "tag": "0009_thick_tag",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1787779786047,
+      "tag": "0010_fast_cloak",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { INTAKE_STEP_KEYS, type IntakeStepKey } from "@/lib/types/intake";
+import {
+  INTAKE_STEP_KEYS,
+  INTAKE_TRACK_KEYS,
+  SHOWCASE_STEP_KEYS,
+  type IntakeStepKey,
+} from "@/lib/types/intake";
 
 /**
  * Everything Taylor knows after the sales call, captured once so the client is
@@ -21,6 +26,13 @@ export const createEngagementInput = z
 
     currency: z.string().trim().length(3).default("cad"),
     depositRequired: z.boolean().default(true),
+
+    /**
+     * Which questionnaire this engagement answers. Defaults to the durable
+     * track, so every existing caller — the CLI, the durable start form —
+     * keeps creating exactly what it created before.
+     */
+    track: z.enum(INTAKE_TRACK_KEYS).default("durable"),
   });
 
 // The deposit amount is deliberately absent. A standard build has a standard
@@ -28,7 +40,14 @@ export const createEngagementInput = z
 // being retyped per client. `engagements.deposit_amount_cents` is now written
 // at fulfillment as the record of what was actually charged.
 
-export type CreateEngagementInput = z.infer<typeof createEngagementInput>;
+/**
+ * `z.input`, not `z.infer`: the defaulted fields (`currency`, `depositRequired`,
+ * `track`) are optional to *supply* and guaranteed to *exist* after parsing.
+ * Inferring the output type here would force every caller to restate a default
+ * the schema already holds — and would have made adding `track` a change to
+ * every call site rather than to none.
+ */
+export type CreateEngagementInput = z.input<typeof createEngagementInput>;
 
 /**
  * The public start form at `/intake`.
@@ -260,10 +279,26 @@ export type AddOnAnswer = z.infer<typeof addOnSchema>;
 
 export const intakeStepKeySchema = z.enum(INTAKE_STEP_KEYS);
 
+/**
+ * Any track's step key.
+ *
+ * The save action is shared by both tracks — the autosave engine is one
+ * mechanism and forking it would fork the one promise this system makes about
+ * never losing an answer. Shape validation here is deliberately permissive
+ * about *which* track a key belongs to, because that question has a better
+ * answer one layer down: `saveStepAnswers` resolves the schema through the
+ * engagement's own track and refuses a foreign key outright (M-PORT-1). The
+ * action validates shape; the seam validates belonging.
+ */
+export const anyStepKeySchema = z.enum([
+  ...INTAKE_STEP_KEYS,
+  ...SHOWCASE_STEP_KEYS,
+]);
+
 /** The save action's input. The token is a credential, so it is never logged. */
 export const saveStepInput = z.object({
   token: z.string().min(1),
-  stepKey: intakeStepKeySchema,
+  stepKey: anyStepKeySchema,
   answers: z.record(z.string(), z.unknown()),
 });
 
@@ -280,8 +315,15 @@ export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export const uploadIssueInput = z.object({
   token: z.string().min(1),
-  stepKey: intakeStepKeySchema,
+  stepKey: anyStepKeySchema,
   fieldKey: z.string().min(1).max(40),
+  /**
+   * Which repeatable entry the file belongs to. Bounded shape only — an
+   * unrecognised key just means the file groups under nothing, which is a
+   * cosmetic loss in the intake document rather than a reason to refuse a
+   * client's upload.
+   */
+  entryKey: z.string().min(1).max(24).optional(),
   filename: z.string().min(1).max(255),
   mimeType: z.string().max(160).optional(),
   sizeBytes: z.number().int().positive().max(MAX_UPLOAD_BYTES),

@@ -8,8 +8,16 @@ import { changeRules, changeTiers, changesClosing } from "@/content/websites";
  * run this enough times to know where it goes wrong, which is exactly what
  * both audiences are trying to determine. The closing line is what converts it
  * from a set of restrictions into the reason the price is what it is.
+ *
+ * The tiers and the three rules are identical on both tracks and stay shared
+ * here. Only `closing` takes a prop, because that line names the track's own
+ * price and the anchor it is being compared against: $3,000 for the platform
+ * build, $5,000 for the coded one. Those are different buyers holding different
+ * quotes, and the sentence only lands if it names the right one.
  */
-export default function Changes() {
+export default function Changes({
+  closing = changesClosing,
+}: { closing?: string } = {}) {
   return (
     <section className="mt-16">
       <SectionLabel>Changes after the build</SectionLabel>
@@ -61,7 +69,7 @@ export default function Changes() {
       </ol>
 
       <p className="mt-8 max-w-[56ch] border-l border-(--color-faint) pl-5 text-[15px] font-light leading-[1.7] text-(--color-dim)">
-        {changesClosing}
+        {closing}
       </p>
     </section>
   );
