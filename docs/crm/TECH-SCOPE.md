@@ -63,7 +63,9 @@ The two published CSVs stay frozen (the Cowork audit rubric consumes one; leadge
 ```
 db/schema/leads.ts · call-attempts.ts · lead-emails.ts · lead-syncs.ts   # + engagements.ts gains remindersDisabledAt
 server/services/admin-auth.ts        # requireAdmin() — the only admin gate
-server/services/leads.ts             # sync upsert · queue query · getLeadStage · terminal rulings
+server/services/leads.ts             # sync upsert · queue query · getLeadStage + loadLeadContext
+                                     #   (the shared stage derivation) · lead detail · engagement linkage
+server/services/lead-workspace.ts    # /admin/leads reads: filter query, preset predicates, facets (CRM-18)
 server/services/calls.ts             # logAttempt + cadence (nextActionAt computation)
 server/services/emails.ts            # gains sendIntroEmail (all Resend sends stay in one home)
 lib/crm/constants.ts                 # cadence numbers (D-CRM-5) · disposition + interest-tag vocab · scoreboard n-threshold

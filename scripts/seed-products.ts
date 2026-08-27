@@ -39,16 +39,30 @@ const SEED_PRODUCT_IDS = {
   care_plan: "00000000-0000-4000-9000-000000000010",
   changes_small_promo: "00000000-0000-4000-9000-000000000011",
   admin_test_payment: "00000000-0000-4000-9000-000000000012",
+
+  // The coded track (internal key: showcase).
+  showcase_deposit: "00000000-0000-4000-9000-000000000013",
+  showcase_balance: "00000000-0000-4000-9000-000000000014",
+  showcase_full: "00000000-0000-4000-9000-000000000015",
+  showcase_admin_panel: "00000000-0000-4000-9000-000000000016",
+  showcase_logo: "00000000-0000-4000-9000-000000000017",
+  showcase_booking: "00000000-0000-4000-9000-000000000018",
+  showcase_care_plan: "00000000-0000-4000-9000-000000000019",
+  showcase_deposit_1600: "00000000-0000-4000-9000-000000000020",
+  showcase_full_1600: "00000000-0000-4000-9000-000000000021",
+  showcase_extra_page: "00000000-0000-4000-9000-000000000022",
 } as const;
 
 export type SeedProductKey = keyof typeof SEED_PRODUCT_IDS;
 
-const STRIPE_CATALOGUE_IDS: Record<
-  SeedProductKey,
-  {
-    production: { productId: string; priceId: string };
-    sandbox: { productId: string; priceId: string };
-  }
+const STRIPE_CATALOGUE_IDS: Partial<
+  Record<
+    SeedProductKey,
+    {
+      production: { productId: string; priceId: string };
+      sandbox: { productId: string; priceId: string };
+    }
+  >
 > = {
   deposit: {
     production: {
@@ -172,13 +186,32 @@ const STRIPE_CATALOGUE_IDS: Record<
       priceId: "price_1U6EeyRvld9FSVemaupdv9py",
     },
   },
+
+  // [NEEDS VALUE AT BUILD] The coded track's Stripe objects do not exist yet.
+  // Run `yarn stripe:catalogue --apply` against each tier, then paste the
+  // printed ids here as entries for: showcase_deposit · showcase_balance ·
+  // showcase_full · showcase_admin_panel · showcase_logo · showcase_booking ·
+  // showcase_deposit_1600 · showcase_full_1600. Until then those rows seed
+  // unsellable and the pay screen has nothing to charge — which is the
+  // correct behaviour, not a bug to work around.
+  //
+  // showcase_care_plan is deliberately never minted (M-PORT-6).
 };
 
-/** LIVE for production, STAGING (sandbox/test mode) for staging and local. */
+/**
+ * LIVE for production, STAGING (sandbox/test mode) for staging and local.
+ *
+ * A key with no entry has not been minted in Stripe yet — the coded track's
+ * rows, until `yarn stripe:catalogue --apply` runs. It seeds with null ids
+ * rather than failing: a row without a price id is not sellable, so
+ * `server/services/products.ts` drops it with a warning instead of rendering a
+ * checkbox the checkout could not charge. The catalogue and the database stay
+ * honest about what can actually take money.
+ */
 function stripeIdsFor(key: SeedProductKey) {
   const mode =
     credentialSet(resolveAppTier()) === "LIVE" ? "production" : "sandbox";
-  return STRIPE_CATALOGUE_IDS[key][mode];
+  return STRIPE_CATALOGUE_IDS[key]?.[mode] ?? { productId: "", priceId: "" };
 }
 
 /**
@@ -315,6 +348,138 @@ const CATALOGUE_ROWS: NewProductRow[] = [
     offeredAtCheckout: false,
     sortOrder: 40,
   },
+
+  /* ── The coded track (internal key: showcase) ──────────────────────────── */
+
+  {
+    id: SEED_PRODUCT_IDS.showcase_deposit,
+    key: "showcase_deposit",
+    kind: "build",
+    track: "showcase",
+    name: "Portfolio build — deposit",
+    description: "Half to start. The balance is due before launch.",
+    priceCents: 100000,
+    offeredAtCheckout: false,
+    sortOrder: 100,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_balance,
+    key: "showcase_balance",
+    kind: "build",
+    track: "showcase",
+    name: "Portfolio build — balance",
+    description: "The second half, due before your site goes live.",
+    priceCents: 100000,
+    offeredAtCheckout: false,
+    sortOrder: 101,
+  },
+  {
+    // Its own row rather than a runtime 5% off the deposit: what was charged
+    // is then a catalogue fact with an immutable Stripe Price behind it,
+    // rather than arithmetic nobody can re-derive later. Ratified in the
+    // scoping thread (handoff decision 4).
+    id: SEED_PRODUCT_IDS.showcase_full,
+    key: "showcase_full",
+    kind: "build",
+    track: "showcase",
+    name: "Portfolio build — paid in full",
+    description: "The whole build up front, 5% off.",
+    priceCents: 190000,
+    offeredAtCheckout: false,
+    sortOrder: 102,
+  },
+  {
+    // Kryshan's negotiated $1,600, granted by promo code only (M-PORT-6).
+    // Never `offeredAtCheckout`: a discounted row a client could tick
+    // themselves is a pricing bug, not a deal-sweetener.
+    id: SEED_PRODUCT_IDS.showcase_deposit_1600,
+    key: "showcase_deposit_1600",
+    kind: "build",
+    track: "showcase",
+    name: "Portfolio build — deposit",
+    description: "Half to start. The balance is due before launch.",
+    priceCents: 80000,
+    offeredAtCheckout: false,
+    sortOrder: 103,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_full_1600,
+    key: "showcase_full_1600",
+    kind: "build",
+    track: "showcase",
+    name: "Portfolio build — paid in full",
+    description: "The whole build up front, 5% off.",
+    priceCents: 152000,
+    offeredAtCheckout: false,
+    sortOrder: 104,
+  },
+  {
+    // Ruled a live upsell by Taylor, 2026-08-26 (M-PORT-6).
+    id: SEED_PRODUCT_IDS.showcase_admin_panel,
+    key: "showcase_admin_panel",
+    kind: "addon",
+    track: "showcase",
+    name: "Admin panel",
+    description:
+      "A private login where you change copy and swap images yourself, no code involved. Most people do fine without it — the site comes with a guide for editing it yourself either way.",
+    priceCents: 50000,
+    offeredAtCheckout: true,
+    sortOrder: 110,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_logo,
+    key: "showcase_logo",
+    kind: "addon",
+    track: "showcase",
+    name: "Logo / wordmark refresh",
+    description:
+      "Most portfolio sites don't need a logo; your name in good type usually does it better. This is for when you want the mark anyway.",
+    priceCents: 25000,
+    offeredAtCheckout: true,
+    sortOrder: 111,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_booking,
+    key: "showcase_booking",
+    kind: "addon",
+    track: "showcase",
+    name: "Booking setup",
+    description:
+      "A booking page wired to your calendar, for coaching, teaching, or consults. Honestly: you can set Cal.com up yourself in an afternoon — this is for skipping the afternoon.",
+    priceCents: 25000,
+    offeredAtCheckout: true,
+    sortOrder: 112,
+  },
+  {
+    // Quantity-shaped, so it is never `offeredAtCheckout`: how many pages is
+    // questionnaire material, and the charge is Taylor-minted only (PORT-9).
+    id: SEED_PRODUCT_IDS.showcase_extra_page,
+    key: "showcase_extra_page",
+    kind: "addon",
+    track: "showcase",
+    name: "Extra page",
+    description: "An additional page beyond the included five. Priced per page.",
+    priceCents: 15000,
+    offeredAtCheckout: false,
+    sortOrder: 115,
+  },
+  {
+    // Present but dark. Taylor's ruling: "don't charge for the maintenance
+    // care plan until it's done" (M-PORT-6). Inactive and unoffered means it
+    // renders nowhere and appears in no total; the v2 doc's row copy waits in
+    // that document for the day this flips. No Stripe object exists for it.
+    id: SEED_PRODUCT_IDS.showcase_care_plan,
+    key: "showcase_care_plan",
+    kind: "care_plan",
+    track: "showcase",
+    isActive: false,
+    name: "Care plan",
+    description:
+      "Email me a change, it's live within 48 hours — plus I keep the underlying software current.",
+    priceCents: 10000,
+    offeredAtCheckout: false,
+    sortOrder: 120,
+  },
 ];
 
 async function main(): Promise<void> {
@@ -330,8 +495,10 @@ async function main(): Promise<void> {
       .insert(products)
       .values({
         ...row,
-        stripeProductId: stripe.productId,
-        stripePriceId: stripe.priceId,
+        // Empty means not yet minted in Stripe; null is what "unsellable"
+        // looks like to the products service.
+        stripeProductId: stripe.productId || null,
+        stripePriceId: stripe.priceId || null,
       })
       .onConflictDoUpdate({
         target: products.key,
@@ -343,8 +510,11 @@ async function main(): Promise<void> {
           offeredAtCheckout: row.offeredAtCheckout ?? false,
           priceCents: row.priceCents,
           sortOrder: row.sortOrder ?? 0,
-          stripeProductId: stripe.productId,
-          stripePriceId: stripe.priceId,
+          track: row.track ?? "durable",
+          // Only overwrite ids we actually have: re-seeding must never wipe
+          // ids that `yarn stripe:catalogue --apply` wrote onto a row.
+          ...(stripe.productId ? { stripeProductId: stripe.productId } : {}),
+          ...(stripe.priceId ? { stripePriceId: stripe.priceId } : {}),
           updatedAt: sql`now()`,
         },
       });

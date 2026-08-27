@@ -51,6 +51,7 @@ export const MIN_N_FOR_RATE = 20;
 export const DISPOSITION_LABELS: Record<CallDisposition, string> = {
   no_answer: "No answer",
   voicemail: "Voicemail",
+  hung_up: "Hung up",
   busy_callback: "Busy — callback",
   conversation: "Conversation",
   wrong_number: "Wrong number",
@@ -66,6 +67,7 @@ export const DISPOSITION_LABELS: Record<CallDisposition, string> = {
 export const DISPOSITION_ORDER: CallDisposition[] = [
   "no_answer",
   "voicemail",
+  "hung_up",
   "busy_callback",
   "conversation",
   "wrong_number",
@@ -101,3 +103,68 @@ export const TERMINAL_CLOSED_STATES: LeadClosedState[] = [
   "do_not_call",
   "bad_lead",
 ];
+
+/** Busy-callback chips — shared by call mode and the lead record scheduler. */
+export const CALLBACK_CHIPS = [
+  { token: "this_afternoon", label: "This afternoon" },
+  { token: "tomorrow_am", label: "Tomorrow AM" },
+  { token: "tomorrow_pm", label: "Tomorrow PM" },
+  { token: "next_week", label: "Next week" },
+] as const;
+
+/**
+ * How long a worked lead can go untouched before it counts as gone quiet
+ * (D-CRM-33).
+ *
+ * `[PROVISIONAL — Taylor tunes after real call data]`, same standing as
+ * `CADENCE`: this is a judgment about how long a warm conversation stays warm,
+ * not a measured number. It lives here rather than inside a query so the
+ * "Gone quiet" preset and anything that later counts the same thing read one
+ * value.
+ *
+ * A touch is the most recent dial *or* intro email — an intro sent three days
+ * ago is not silence, even if the last dial was a month back.
+ */
+export const GONE_QUIET_DAYS = 14;
+
+/** How many leads the workspace list renders at once. Surfaced, never silent
+ * — the same law as the queue's `FRESH_PAGE`: a cap always has a way past it
+ * (D-CRM-19's reasoning). */
+export const LEAD_PAGE = 50;
+
+/** How many transcripts the review list renders at once. */
+export const TRANSCRIPT_PAGE = 50;
+
+/**
+ * The saved views, as a registry rather than four hand-built links
+ * (D-CRM-34).
+ *
+ * A preset is a URL and nothing more — there is no stored object, no
+ * per-preset table, and no way for one to drift from the query it names. The
+ * predicates themselves live in `server/services/lead-workspace.ts`; this is
+ * only what they are called and in what order they appear.
+ */
+export const LEAD_PRESETS = [
+  {
+    token: "gone_quiet",
+    label: "Gone quiet",
+    blurb: "Worked, no date or overdue, untouched for a while",
+  },
+  {
+    token: "no_next_action",
+    label: "No next action",
+    blurb: "Dialled at least once and carrying no date — the scoreboard's defect list",
+  },
+  {
+    token: "wants_info_unsent",
+    label: "Wants info, never sent",
+    blurb: "Asked for the info on a call and never got it",
+  },
+  {
+    token: "resurfacing",
+    label: "Resurfacing soon",
+    blurb: "Resting leads coming back within 30 days",
+  },
+] as const;
+
+export type LeadPresetToken = (typeof LEAD_PRESETS)[number]["token"];

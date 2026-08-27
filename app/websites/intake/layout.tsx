@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { socialCard } from "@/lib/metadata";
 import { INTAKE_COLUMN } from "./_lib/column";
 
 /**
@@ -24,10 +26,28 @@ import { INTAKE_COLUMN } from "./_lib/column";
  */
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+/**
+ * Deliberately neutral, and this covers the tokenized routes beneath it.
+ *
+ * `robots` keeps these out of search but cannot stop a link unfurl — Slack and
+ * iMessage fetch Open Graph whatever robots says. A resume link is a URL a
+ * client may well paste to their spouse or their bookkeeper, so the preview has
+ * to be safe in a room nobody planned for. Without a card of its own it
+ * inherited the root layout's, which announced Taylor as a senior/staff
+ * engineer looking for work, mid-payment, to a paying client.
+ *
+ * So the card says the least true thing that is still true. No price, no
+ * business name, no track, nothing about who is filling it in, and nothing
+ * about Taylor's job search. The start pages inside override this with
+ * something more useful, because those URLs are public and tokenless.
+ */
+const description = "A private questionnaire for a website build.";
+
+export const metadata: Metadata = {
   title: "Client intake",
-  // Nothing here should ever be indexed or previewed in a link unfurl.
+  description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Client intake", description }),
 };
 
 export default function IntakeLayout({ children }: { children: ReactNode }) {

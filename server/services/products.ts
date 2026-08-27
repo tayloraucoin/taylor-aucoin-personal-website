@@ -1,6 +1,7 @@
 import { and, asc, eq, isNotNull } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagementProducts, products, type ProductRow } from "@/db/schema";
+import type { IntakeTrackKey } from "@/lib/types/intake";
 
 /**
  * Reads over the commercial catalogue (`products`).
@@ -15,7 +16,7 @@ import { engagementProducts, products, type ProductRow } from "@/db/schema";
 /** What a purchase surface needs to render and charge one product. */
 export type SellableProduct = Pick<
   ProductRow,
-  "id" | "key" | "name" | "description" | "priceCents"
+  "id" | "key" | "name" | "description" | "priceCents" | "track"
 > & { stripePriceId: string };
 
 function toSellable(row: ProductRow): SellableProduct | null {
@@ -27,6 +28,7 @@ function toSellable(row: ProductRow): SellableProduct | null {
     name: row.name,
     description: row.description,
     priceCents: row.priceCents,
+    track: row.track,
     stripePriceId: row.stripePriceId,
   };
 }
@@ -38,7 +40,9 @@ function toSellable(row: ProductRow): SellableProduct | null {
  * warning rather than rendered — a checkbox that cannot be charged is a
  * promise the checkout would break.
  */
-export async function listCheckoutAddons(): Promise<SellableProduct[]> {
+export async function listCheckoutAddons(
+  track: IntakeTrackKey = "durable",
+): Promise<SellableProduct[]> {
   const rows = await getDb()
     .select()
     .from(products)
@@ -47,6 +51,9 @@ export async function listCheckoutAddons(): Promise<SellableProduct[]> {
         eq(products.isActive, true),
         eq(products.offeredAtCheckout, true),
         eq(products.kind, "addon"),
+        // One track's pay screen must never offer the other's rows: the
+        // prices differ, the copy differs, and the deliverable differs.
+        eq(products.track, track),
       ),
     )
     .orderBy(asc(products.sortOrder));
@@ -80,23 +87,59 @@ export async function findSellableProductByKey(
   return row ? toSellable(row) : null;
 }
 
-/** The deposit itself. The one product P0 cannot render without. */
-export async function getDepositProduct(): Promise<SellableProduct> {
-  const [row] = await getDb()
-    .select()
-    .from(products)
-    .where(eq(products.key, "deposit"))
-    .limit(1);
+/**
+ * Which plan a client picked on the pay screen.
+ *
+ * `half` is the deposit with a balance to follow; `full` is the whole build up
+ * front. The durable track offers only `half` — it has no pay-in-full row —
+ * so this is a showcase-shaped question with a durable-safe default.
+ */
+export type BuildPlan = "half" | "full";
 
-  const item = row ? toSellable(row) : null;
+/**
+ * The build line a pay screen charges: one row, resolved server-side.
+ *
+ * The browser names a plan, never a product key and never an amount. This is
+ * the function that turns the one into the other, so a fabricated request can
+ * at worst pick the other legitimate plan on its own track.
+ *
+ * `overrideKey` is a promo code's negotiated substitution, already resolved
+ * from the one server-side code map (`lib/intake/promo.ts`). It is looked up
+ * exactly like any other row, so a code can only ever charge something the
+ * catalogue actually sells.
+ */
+export async function getBuildProduct(
+  track: IntakeTrackKey,
+  plan: BuildPlan = "half",
+  overrideKey?: string,
+): Promise<SellableProduct> {
+  const key =
+    overrideKey ??
+    (track === "showcase"
+      ? plan === "full"
+        ? "showcase_full"
+        : "showcase_deposit"
+      : "deposit");
+
+  const item = await findSellableProductByKey(key);
 
   if (!item) {
     throw new Error(
-      "No sellable deposit product. Run `yarn db:seed` against this tier's database.",
+      `No sellable build product "${key}". Run \`yarn stripe:catalogue --apply\` ` +
+        "and `yarn db:seed` against this tier's database.",
     );
   }
 
   return item;
+}
+
+/**
+ * The durable track's deposit. Kept as its own name because the durable pay
+ * screen and the invoicing rail both read like this, and renaming their call
+ * sites buys nothing.
+ */
+export async function getDepositProduct(): Promise<SellableProduct> {
+  return getBuildProduct("durable");
 }
 
 /**

@@ -114,7 +114,7 @@ export default function TestimonialCard({
                   {t.project.label} →
                 </Link>
               ) : (
-                <div className="mt-2.5 font-mono text-[9px] uppercase tracking-[.18em] text-[rgb(232_185_97/.55)]">
+                <div className="mt-2.5 font-mono text-[9px] uppercase tracking-[.18em] text-(--color-proof-label)">
                   {t.project.label}
                 </div>
               ))}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { INTEREST_TAG_LABELS } from "@/lib/crm/constants";
+import { startOfNextHour, toDatetimeLocalValue } from "@/lib/crm/datetime-local";
 import type { ContactChannel, InterestTag } from "@/lib/types/crm";
 import type { ScheduleToken } from "@/server/services/calls";
 import type { QueueLead } from "@/server/services/leads";
@@ -223,7 +224,12 @@ export function ConversationForm({
             ))}
             <button
               type="button"
-              onClick={() => setPicking(true)}
+              onClick={() => {
+                setPicking(true);
+                setPickedAt((current) =>
+                  current || toDatetimeLocalValue(startOfNextHour()),
+                );
+              }}
               aria-pressed={picking}
               className={chip(picking)}
             >
@@ -261,7 +267,7 @@ export function ConversationForm({
               nextActionAt: picking && pickedAt ? new Date(pickedAt) : null,
             })
           }
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
         >
           {disabled ? "Saving…" : "Save"}
         </button>

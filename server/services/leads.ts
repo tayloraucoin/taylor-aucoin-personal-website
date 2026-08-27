@@ -3,7 +3,6 @@ import {
   and,
   desc,
   eq,
-  ilike,
   inArray,
   isNotNull,
   isNull,
@@ -596,7 +595,7 @@ export async function loadQueue(
     ...readyFiltered.slice(0, freshLimit),
   ];
 
-  const context = await loadQueueContext(
+  const context = await loadLeadContext(
     db,
     shown.map((row) => row.id),
   );
@@ -676,7 +675,11 @@ export async function loadQueue(
   };
 }
 
-type QueueContext = {
+// ---------------------------------------------------------------------------
+// Aggregate facts about a set of leads
+// ---------------------------------------------------------------------------
+
+export type LeadContext = {
   attemptCount: number;
   hadConversation: boolean;
   hadTextedLink: boolean;
@@ -687,21 +690,20 @@ type QueueContext = {
 };
 
 /**
- * Attempt history, email history, and engagement state for the leads on
- * screen.
+ * Attempt history, email history, and engagement state for a set of leads.
  *
  * Aggregated in the database rather than by pulling every attempt row: the
- * queue needs four numbers per lead, and fetching the full history to count it
- * would grow with how hard Taylor has worked the list.
+ * caller needs a few numbers per lead, and fetching the full history to count
+ * it would grow with how hard Taylor has worked the list.
  */
-async function loadQueueContext(
+export async function loadLeadContext(
   db: ReturnType<typeof getDb>,
   leadIds: string[],
-): Promise<Map<string, QueueContext>> {
-  const result = new Map<string, QueueContext>();
+): Promise<Map<string, LeadContext>> {
+  const result = new Map<string, LeadContext>();
   if (leadIds.length === 0) return result;
 
-  const ensure = (id: string): QueueContext => {
+  const ensure = (id: string): LeadContext => {
     let entry = result.get(id);
     if (!entry) {
       entry = {
@@ -904,82 +906,6 @@ export async function loadLeadDetail(
     displayPhone: lead.phoneOverride ?? lead.phone,
     engagement,
   };
-}
-
-export type LeadListRow = {
-  id: string;
-  businessName: string;
-  niche: string;
-  city: string;
-  phone: string;
-  rating: number | null;
-  reviews: number | null;
-  leadScore: number;
-  closedState: LeadClosedState | null;
-  hasEmail: boolean;
-};
-
-/**
- * Every lead, searchable — including the closed and the do-not-call.
- *
- * This is the lookup surface, not the call list. A lead Taylor marked
- * do-not-call must still be findable here, or he cannot check *why* it was
- * marked when the same business calls him back. The queue is where the DNC
- * exclusion belongs; hiding them from search would just mean re-dialing them
- * to find out.
- */
-export async function searchLeads(
-  query: string,
-  limit = 100,
-): Promise<LeadListRow[]> {
-  const db = getDb();
-  const trimmed = query.trim();
-
-  const rows = await db
-    .select({
-      id: leads.id,
-      businessName: leads.businessName,
-      niche: leads.niche,
-      city: leads.city,
-      phone: leads.phone,
-      phoneOverride: leads.phoneOverride,
-      rating: leads.rating,
-      reviews: leads.reviews,
-      leadScore: leads.leadScore,
-      closedState: leads.closedState,
-      contactEmail: leads.contactEmail,
-    })
-    .from(leads)
-    .where(
-      trimmed
-        ? or(
-            ilike(leads.businessName, `%${trimmed}%`),
-            ilike(leads.phone, `%${trimmed}%`),
-            ilike(leads.city, `%${trimmed}%`),
-            ilike(leads.niche, `%${trimmed}%`),
-          )
-        : undefined,
-    )
-    .orderBy(desc(leads.leadScore))
-    .limit(limit);
-
-  return rows.map((row) => ({
-    id: row.id,
-    businessName: row.businessName,
-    niche: row.niche,
-    city: row.city,
-    phone: row.phoneOverride ?? row.phone,
-    rating: row.rating,
-    reviews: row.reviews,
-    leadScore: row.leadScore,
-    closedState: row.closedState,
-    hasEmail: Boolean(row.contactEmail),
-  }));
-}
-
-/** Total leads, for the list's "showing N of M" line. */
-export async function countLeads(): Promise<number> {
-  return getDb().$count(leads);
 }
 
 /**

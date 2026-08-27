@@ -21,6 +21,7 @@
 export type CallDisposition =
   | "no_answer"
   | "voicemail"
+  | "hung_up"
   | "busy_callback"
   | "conversation"
   | "wrong_number"

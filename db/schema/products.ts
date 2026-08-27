@@ -10,6 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { engagementProducts } from "./engagement-products";
+import { intakeTrackEnum } from "./intake-track";
 
 /** Used by one table, so it lives beside it (drizzle conventions §3). */
 export const productKindEnum = pgEnum("product_kind", [
@@ -60,6 +61,15 @@ export const products = pgTable(
     sortOrder: integer("sort_order").notNull().default(0),
     stripePriceId: text("stripe_price_id"),
     stripeProductId: text("stripe_product_id"),
+    /**
+     * Which website product this row sells for.
+     *
+     * The two tracks have separate deposits, balances, and add-ons at different
+     * prices, and a pay screen must never offer the other track's rows. Reads
+     * filter on it; the `durable` default keeps every existing row where it
+     * already was.
+     */
+    track: intakeTrackEnum("track").notNull().default("durable"),
   },
   (table) => [uniqueIndex("products_key_idx").on(table.key)],
 );

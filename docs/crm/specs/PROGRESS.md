@@ -21,3 +21,5 @@ The only authoritative answer to "is this Complete."
 | CRM-17 | Markup renderer | — | Complete | 2026-08-22 |
 | CRM-15 | Call mode state machine | CRM-13, CRM-14, CRM-17 | Complete | 2026-08-22 |
 | CRM-16 | Post-call actions & review | CRM-15 | Complete | 2026-08-22 |
+| CRM-18 | Leads workspace: filters, presets, list | CRM-5, CRM-6, CRM-11 | Built — runtime verification pending a database | 2026-08-24 |
+| CRM-19 | Pipeline board | CRM-18 | Not started | — |

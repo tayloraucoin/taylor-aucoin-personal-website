@@ -17,15 +17,32 @@
   --color-c2: #e8b961;
   --color-c3: #fff6e3;
 
-  /* Text */
+  /* Primary action fill (the admin CRM's solid buttons) — violet-600.
+     --color-c1 is STRUCTURE: traces, ring, gradient cold end. It must never
+     carry text. White on c1 is 3.44:1 and failed AA at all 13 admin button
+     call sites; white on violet-600 is 5.33:1 (D-CON-1 / CON-05). */
+  --color-action: #6d5cc0; /* = violet-600 */
+
+  /* Text — recalibrated per D-CON-1 (contrast audit, 2026-08-26). Body and
+     dim each lifted one ramp step; hues unchanged. Half-step fallback if the
+     full step reads too bright in situ: body #a09dc0 · dim #9391b6. */
   --color-ink: #f1effa;
-  --color-body: #9c99bc;
-  --color-dim: #7e7ca0;
+  --color-body: #b0adcd; /* = night-400 — was #9c99bc (6.67:1 on ground-b → 8.41:1) */
+  --color-dim: #9c99bc; /* = night-500 — was #7e7ca0 (4.57:1 → 6.67:1; 6.18:1 in the glow) */
   --color-faint: rgb(200 190 240 / 0.11);
   /* Mono footer lines (Core stack / Also built prefixes) — ink white, not full glare */
   --color-meta-label: rgb(255 255 255 / 0.85);
-  /* Selected Work role line — --color-dim at ~55%, quieter than the tags above it */
-  --color-role-label: rgb(126 124 160 / 0.55);
+  /* Selected Work role line — quieter than the tags above it via size and
+     tracking, not alpha: the old 55% alpha landed at 2.2:1, under half the
+     legal floor. Solid, 4.6:1, still the quietest line on the page. */
+  --color-role-label: #7f7da1;
+  /* Proof / attribution labels in the mono register — the NON-INTERACTIVE twin
+     of --color-c2. Where a proof label has an href it renders in c2 with an
+     arrow; where it does not, it renders here. Same gold family, visibly
+     recessive, still legible: gold-600, 5.7–6.1:1 on the grounds. Was
+     rgb(232 185 97 / .55) hardcoded at three call sites — 3.82:1 at 9px, and
+     off-system besides (D-CON-1 / CON-06). */
+  --color-proof-label: #b48934; /* = gold-600 */
 
   /* Surfaces */
   --color-card: rgb(9 12 34 / 0.9);
@@ -49,6 +66,24 @@
 
   /* Geometry — sharp, not rounded. Deliberate. */
   --radius: 3px;
+}
+
+/* Night ramp — the violet-gray text spine, 100 (light) → 800 (dark).
+   Built in OKLCH, hue held; 500 is the ramp anchor (the pre-D-CON-1 body
+   color). Full tables + contrast annotations: DESIGN-SYSTEM.md §1.
+   `@theme static` is mandatory here: a plain @theme prunes variables with no
+   utility consumers, so these would never reach :root and any future
+   `text-(--color-night-300)` would silently render as inherited color —
+   the same invisible-no-op class of bug as the v3 `-[--` syntax trap. */
+@theme static {
+  --color-night-100: #eeedfa;
+  --color-night-200: #d9d7ec;
+  --color-night-300: #c4c2dd;
+  --color-night-400: #b0adcd;
+  --color-night-500: #9c99bc;
+  --color-night-600: #6f6c8b;
+  --color-night-700: #45425c;
+  --color-night-800: #1f1c2f;
 }
 
 /* The animated ring writes --angle in JS. The conic gradient lives on a

@@ -1,12 +1,8 @@
 import type { ReactNode } from "react";
 import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
-import {
-  INTAKE_STEP_COUNT,
-  nextStep,
-  previousStep,
-  type IntakeStep,
-} from "@/lib/intake/steps";
-import { intakeRoutes } from "@/lib/routes";
+import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
+import { intakeRoutesFor } from "@/lib/routes";
+import type { IntakeStep, IntakeTrackKey } from "@/lib/types/intake";
 import { INTAKE_COLUMN } from "../_lib/column";
 import { Eyebrow } from "./eyebrow";
 import { StepHeading } from "./step-heading";
@@ -41,23 +37,27 @@ import { StepProgress } from "./step-progress";
  * margin rather than tucking it under glass.
  */
 export function StepShell({
+  track,
   token,
   step,
   saveSlot,
   children,
 }: {
+  track: IntakeTrackKey;
   token: string;
   step: IntakeStep;
   saveSlot?: ReactNode;
   children: ReactNode;
 }) {
-  const previous = previousStep(step);
-  const next = nextStep(step);
+  const previous = previousStep(track, step);
+  const next = nextStep(track, step);
+  const stepCount = stepCountFor(track);
+  const routes = intakeRoutesFor(track);
 
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="mb-8">
-        <Eyebrow>{`Step ${step.number} of ${INTAKE_STEP_COUNT}`}</Eyebrow>
+        <Eyebrow>{`Step ${step.number} of ${stepCount}`}</Eyebrow>
 
         <StepHeading>{step.title}</StepHeading>
 
@@ -73,7 +73,7 @@ export function StepShell({
           </p>
         ) : null}
 
-        <StepProgress current={step.number} />
+        <StepProgress track={track} current={step.number} />
       </header>
 
       <main className="flex-1 pb-32">{children}</main>
@@ -82,7 +82,7 @@ export function StepShell({
         <div className={`py-4 ${INTAKE_COLUMN}`}>
           <div className="flex items-center justify-between gap-3">
             {previous ? (
-              <GhostButton href={intakeRoutes.step(token, previous.key)}>
+              <GhostButton href={routes.step(token, previous.key)}>
                 ← Back
               </GhostButton>
             ) : (
@@ -92,8 +92,8 @@ export function StepShell({
             <GradientButton
               href={
                 next
-                  ? intakeRoutes.step(token, next.key)
-                  : intakeRoutes.done(token)
+                  ? routes.step(token, next.key)
+                  : routes.done(token)
               }
             >
               {next ? "Continue" : "Finish"}

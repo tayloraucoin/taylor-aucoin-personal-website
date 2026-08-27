@@ -34,6 +34,8 @@ export function PostCallPanel({
   attemptId,
   owed,
   channel,
+  capturedEmail,
+  forDecisionMaker = false,
   onDone,
 }: {
   lead: QueueLead;
@@ -41,6 +43,10 @@ export function PostCallPanel({
   attemptId: string;
   owed: { info: boolean; intake: boolean };
   channel: ContactChannel | null;
+  /** Email captured on this call — the pinned lead snapshot may predate it. */
+  capturedEmail: string;
+  /** "Talk to the boss" was tagged — draft for someone passing it along. */
+  forDecisionMaker?: boolean;
   onDone: (completed: CompletedAction[]) => void;
 }) {
   const [completed, setCompleted] = useState<CompletedAction[]>([]);
@@ -53,13 +59,10 @@ export function PostCallPanel({
   const did = (kind: CompletedAction["kind"]) =>
     completed.some((c) => c.kind === kind);
 
-  // Text when they asked for a text; otherwise the email — but only if an
-  // address was actually captured. Offering a send with nowhere to send it
-  // would be a control that cannot work.
   const wantsText = channel === "text";
-  const hasEmail = Boolean(lead.contactEmail);
-  const showEmail = owed.info && !wantsText && hasEmail;
-  const showNoEmail = owed.info && !wantsText && !hasEmail;
+  const hasEmail = Boolean(lead.contactEmail || capturedEmail);
+  const showEmail = owed.info && !wantsText;
+  const skippedWithoutEmail = showEmail && !hasEmail;
 
   return (
     <div className="flex flex-col gap-5 rounded-(--radius) border border-(--color-c2)/40 p-4">
@@ -92,17 +95,11 @@ export function PostCallPanel({
             <IntroEmailForm
               leadId={lead.id}
               hasEmail={hasEmail}
+              forDecisionMaker={forDecisionMaker}
               onSent={(to) => add({ kind: "email", to })}
             />
           </section>
         )
-      ) : null}
-
-      {showNoEmail ? (
-        <p className="text-sm text-(--color-c2)">
-          They asked for info but no email or text preference was captured.
-          Add an address on the full record and send it from there.
-        </p>
       ) : null}
 
       {owed.intake ? (
@@ -113,7 +110,11 @@ export function PostCallPanel({
         <button
           type="button"
           onClick={() =>
-            onDone(showNoEmail ? [...completed, { kind: "noEmail" }] : completed)
+            onDone(
+              skippedWithoutEmail && !did("email")
+                ? [...completed, { kind: "noEmail" }]
+                : completed,
+            )
           }
           className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 text-sm text-(--color-ink)"
         >
@@ -236,7 +237,7 @@ function TextBlock({
             record(true);
             onSent();
           }}
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 py-2.5 text-sm font-medium text-white lg:hidden"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 py-2.5 text-sm font-medium text-white lg:hidden"
         >
           Open in Messages
         </a>
@@ -251,7 +252,7 @@ function TextBlock({
             record(true);
             onSent();
           }}
-          className="hidden min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60 lg:block"
+          className="hidden min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60 lg:block"
         >
           {copied ? "Copied" : "Copy text"}
         </button>
@@ -306,7 +307,7 @@ function IntakeBlock({
             void navigator.clipboard.writeText(url);
             setCopied(true);
           }}
-          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
         >
           {copied ? "Copied" : "Copy link"}
         </button>
@@ -382,7 +383,7 @@ function IntakeBlock({
             }
           })
         }
-        className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+        className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
       >
         {pending ? "Creating…" : "Create intake link"}
       </button>

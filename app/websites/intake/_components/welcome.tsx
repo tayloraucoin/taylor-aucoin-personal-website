@@ -1,5 +1,5 @@
 import { GradientButton } from "@/components/ui/GradientButton";
-import { INTAKE_STEPS } from "@/lib/intake/steps";
+import { stepsFor } from "@/lib/intake/tracks";
 import { intakeRoutes } from "@/lib/routes";
 import type { Engagement } from "@/server/services/engagement";
 import { Eyebrow } from "./eyebrow";
@@ -25,7 +25,7 @@ export function Welcome({
 }) {
   const firstName =
     engagement.contactName.split(" ")[0] ?? engagement.contactName;
-  const firstStep = INTAKE_STEPS[0]!;
+  const firstStep = stepsFor(engagement.track)[0]!;
 
   return (
     <div>

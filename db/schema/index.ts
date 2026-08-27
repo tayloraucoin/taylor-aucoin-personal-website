@@ -15,6 +15,7 @@ export * from "./email-events";
 export * from "./engagement-products";
 export * from "./engagements";
 export * from "./intake-files";
+export * from "./intake-track";
 export * from "./invoice-emails";
 export * from "./lead-emails";
 export * from "./lead-syncs";

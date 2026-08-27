@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { INTAKE_STEPS, stepByNumber } from "@/lib/intake/steps";
-import { intakeRoutes } from "@/lib/routes";
+import { eyebrowFor, stepByNumber, stepsFor } from "@/lib/intake/tracks";
+import { intakeRoutesFor } from "@/lib/routes";
 import type { Engagement } from "@/server/services/engagement";
 import { Eyebrow } from "./eyebrow";
 
@@ -27,11 +27,15 @@ export function ResumeList({
 }) {
   const firstName =
     engagement.contactName.split(" ")[0] ?? engagement.contactName;
-  const current = stepByNumber(Math.max(engagement.currentStep, 1));
+  const current = stepByNumber(
+    engagement.track,
+    Math.max(engagement.currentStep, 1),
+  );
+  const routes = intakeRoutesFor(engagement.track);
 
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
+      <Eyebrow>{eyebrowFor(engagement.track)}</Eyebrow>
 
       <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
         Welcome back, {firstName}.
@@ -43,19 +47,19 @@ export function ResumeList({
       </p>
 
       <div className="mt-8">
-        <GradientButton href={intakeRoutes.step(token, current.key)}>
+        <GradientButton href={routes.step(token, current.key)}>
           Continue — step {current.number}
         </GradientButton>
       </div>
 
       <ul className="mt-10 border-t border-(--color-faint)">
-        {INTAKE_STEPS.map((step) => {
+        {stepsFor(engagement.track).map((step) => {
           const visited = step.number <= engagement.currentStep;
 
           return (
             <li key={step.key} className="border-b border-(--color-faint)">
               <Link
-                href={intakeRoutes.step(token, step.key)}
+                href={routes.step(token, step.key)}
                 className="flex min-h-12 items-center gap-4 py-3 transition-colors duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-card-hover)"
               >
                 <span

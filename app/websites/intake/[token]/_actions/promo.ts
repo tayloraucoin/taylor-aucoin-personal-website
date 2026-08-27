@@ -1,9 +1,8 @@
 "use server";
 
-import { resolvePromoCode } from "@/lib/intake/promo";
 import { promoCodeInput } from "@/lib/validators/intake";
+import { describePromo } from "@/server/services/deposit";
 import { requireEngagement } from "@/server/services/engagement";
-import { findSellableProductByKey } from "@/server/services/products";
 
 /** What the pay screen renders for an activated code. Display only. */
 export type PromoCheckResult =
@@ -25,21 +24,17 @@ export async function checkPromoCode(
   token: string,
   code: unknown,
 ): Promise<PromoCheckResult> {
-  await requireEngagement(token);
+  const engagement = await requireEngagement(token);
 
-  const parsed = promoCodeInput.parse(code);
-  const grant = parsed ? resolvePromoCode(parsed) : null;
-  if (!grant) return { valid: false };
+  const described = await describePromo(
+    engagement.track,
+    promoCodeInput.parse(code),
+  );
 
-  const product = await findSellableProductByKey(grant.grantsProductKey);
-  if (!product) return { valid: false };
+  // The durable screen only knows how to draw a granted item; it has no plan
+  // cards for a build override to change. A code that does nothing but
+  // substitute a build row is therefore not a code this screen can show.
+  if (!described.valid || !described.granted) return { valid: false };
 
-  return {
-    valid: true,
-    grant: {
-      key: product.key,
-      name: product.name,
-      description: product.description,
-    },
-  };
+  return { valid: true, grant: described.granted };
 }

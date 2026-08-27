@@ -76,7 +76,7 @@ no future import brings them back. Use it when they ask, always.
 **Wants info** — they asked you to send something. The system stops and offers
 the intro email right there, prefilled. Send it while you are still on their
 mind. Ticking the promo box adds a free small round of changes after launch and
-puts the code in their link.
+mentions the code to enter at the deposit step.
 
 **Talk to the boss** — you reached someone who is not the decision maker. Logged
 as a blocker on the lead so you know what you are walking into next time. Comes

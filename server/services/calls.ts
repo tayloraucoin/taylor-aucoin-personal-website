@@ -39,7 +39,11 @@ function cadenceNextAttempt(
   priorAttempts: number,
   now: Date,
 ): { nextActionAt: Date | null; rest: boolean } {
-  if (disposition === "no_answer" || disposition === "voicemail") {
+  if (
+    disposition === "no_answer" ||
+    disposition === "voicemail" ||
+    disposition === "hung_up"
+  ) {
     const attemptsSoFar = priorAttempts + 1;
 
     // The finite end of the sequence. Four unanswered tries is enough; the
@@ -302,7 +306,11 @@ export async function saveLeadNotes(
  * so the label on the chip and the time it produces cannot drift apart.
  */
 export type ScheduleToken =
+  | "in_30_min"
   | "this_afternoon"
+  | "today_early_afternoon"
+  | "today_late_afternoon"
+  | "today_early_evening"
   | "tomorrow_am"
   | "tomorrow_pm"
   | "in_2_days"
@@ -312,8 +320,16 @@ export type ScheduleToken =
 
 export function resolveSchedule(token: ScheduleToken, now = new Date()): Date {
   switch (token) {
+    case "in_30_min":
+      return new Date(now.getTime() + 30 * 60 * 1000);
     case "this_afternoon":
       return vancouverAt(now, 0, 14);
+    case "today_early_afternoon":
+      return vancouverAt(now, 0, 13);
+    case "today_late_afternoon":
+      return vancouverAt(now, 0, 15.5);
+    case "today_early_evening":
+      return vancouverAt(now, 0, 17);
     case "tomorrow_am":
       return vancouverAt(now, 1, 9);
     case "tomorrow_pm":

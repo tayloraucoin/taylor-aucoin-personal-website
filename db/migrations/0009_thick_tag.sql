@@ -1,0 +1,1 @@
+ALTER TYPE "public"."call_disposition" ADD VALUE 'hung_up' BEFORE 'busy_callback';

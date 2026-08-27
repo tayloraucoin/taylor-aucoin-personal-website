@@ -256,3 +256,32 @@
 **Consequences:** Editing the script is editing a markdown file, no code review needed; deploys pick it up. Cost: Vercel output tracing must include the file — flagged `[NEEDS VALUE AT BUILD]` in CRM-15 (criterion 11): the builder verifies the production build serves it and adds `outputFileTracingIncludes` if not. Failure degrades safely by construction: CRM-15 requires call mode to log even with the sheet unreadable.
 
 **Revisit trigger:** the sheet growing per-trade variants (a directory of sheets keyed by niche) — the read seam already accommodates it.
+
+## 2026-08-24 · CRM-18 · M-CRM-10 · The board's card set is the derived complement of `to_call`; `to_call` is counted by subtraction
+
+**Context:** `/admin/leads` needed stage on every row and, for CRM-19, per-column counts across the whole table. Stage is derived, never stored (M-CRM-4, D-CRM-2), and `getLeadStage` needs per-lead aggregates over `call_attempts`, `lead_emails`, and the linked engagement. The obvious readings were all bad: a stage column reintroduces the second home M-CRM-4 exists to prevent; a materialized view buys an invalidation problem; deriving stage for every row on every paint scales with leads imported.
+
+**Decision:** `getLeadStage` returns `to_call` only when every fact is absent, and `hadConversation`/`hadTextedLink` are themselves derived from attempt rows — so the ladder's base case collapses to four terms. Their negation is exactly the set of leads that are *not* `to_call`:
+
+```sql
+closed_state IS NOT NULL OR engagement_id IS NOT NULL
+OR EXISTS (call_attempts) OR EXISTS (lead_emails)
+```
+
+`WORKED` in `server/services/lead-workspace.ts` is that predicate. Leads needing aggregates are the ones Taylor has worked, so cost grows with dials made rather than leads imported. `to_call` is counted by subtraction and never queried on its own, so it cannot disagree with the function that defines it. The predicate decides only "worked or not" — never which stage — so it is a restatement of the base case, not a second implementation of the ladder.
+
+**Consequence:** no schema change, no read model, no cache. Stage filtering resolves qualifying ids over the worked set first, then runs the real query against `id in (…)`; unworked leads rejoin as a plain `not (WORKED)` term when `to_call` is selected. When no stage filter is active, stage is display-only: page in SQL, derive for the page.
+
+**Cost of being wrong:** if `getLeadStage`'s ladder ever gains a stage reachable with no attempt, no email, no engagement, and no closed state, this predicate silently misclassifies it as `to_call`. That is the one change to that function that must come back here. Noted at both sites.
+
+## 2026-08-24 · CRM-18 · M-CRM-11 · Correlated subqueries in Drizzle must write the outer reference literally
+
+**Context (as it was then):** `lastTouchAt` — the "touched 11 days ago" fact, and the axis the nurture presets sort on — is a correlated scalar subquery built with Drizzle's `sql` template, interpolating `${leads.id}` for the outer reference.
+
+**Decision:** write the outer reference as literal `"leads"."id"`, never `${leads.id}`.
+
+**Why:** Drizzle renders a column reference **qualified** (`"leads"."id"`) inside a WHERE clause but **bare** (`"id"`) in a SELECT projection. `call_attempts` has its own `id` column, so in the projection the subquery bound to `ca.id`, compared it against `ca.lead_id`, and returned null for every row. The filter kept working — it is built in WHERE — while the rendered "touched N days ago" would have read "never called" on every line. A silent disagreement between what a surface filters on and what it displays.
+
+Nothing in the type system, the lint, or the build can see this: it type-checks, builds, and produces valid SQL that runs without error. It was caught by compiling the query with Drizzle's `QueryBuilder` and reading the generated statement. **Inspect generated SQL for any hand-written correlated subquery** — the same discipline as reviewing a migration as SQL before applying it.
+
+**Consequence:** every raw correlation in `lead-workspace.ts` is written literally, including the ones only ever used in WHERE, so the pattern stays safe when copied.

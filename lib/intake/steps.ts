@@ -1,12 +1,14 @@
-import type { IntakeStepKey } from "@/lib/types/intake";
+import type { IntakeStep, IntakeStepKey } from "@/lib/types/intake";
 
 /**
- * The nine steps, in order, with the copy that frames each one.
+ * The durable track's nine steps, in order, with the copy that frames each one.
  *
- * One home for step identity: routing, the progress indicator, the resume
- * list, the skipped-items inventory (INT-7), and the markdown generator all
- * read from here. A tenth step added anywhere else would be a tenth step the
- * progress bar lies about.
+ * One home for this track's step identity. Nothing imports this array directly
+ * except `lib/intake/tracks.ts`, which is the single resolver every consumer
+ * asks for a registry — routing, the progress indicator, the resume list, the
+ * skipped-items inventory, and the markdown generator all come through it. A
+ * tenth step added anywhere else would be a tenth step the progress bar lies
+ * about.
  *
  * Nine is a promise made on the welcome screen. It does not grow, and no step
  * sub-paginates — see D-INT-5.
@@ -16,15 +18,7 @@ import type { IntakeStepKey } from "@/lib/types/intake";
  * stops us putting something untrue on a client's site, and its intro is the
  * only one that renders at full ink.
  */
-export type IntakeStep = {
-  key: IntakeStepKey;
-  number: number;
-  title: string;
-  intro?: string;
-  emphasis?: "ink";
-};
-
-export const INTAKE_STEPS: readonly IntakeStep[] = [
+export const INTAKE_STEPS: readonly IntakeStep<IntakeStepKey>[] = [
   { key: "business", number: 1, title: "About your business" },
   { key: "pricing", number: 2, title: "What you offer and what you charge" },
   {
@@ -58,22 +52,3 @@ export const INTAKE_STEPS: readonly IntakeStep[] = [
   { key: "team", number: 8, title: "Your team" },
   { key: "access", number: 9, title: "Accounts and access" },
 ] as const;
-
-export const INTAKE_STEP_COUNT = INTAKE_STEPS.length;
-
-export function findStep(slug: string): IntakeStep | undefined {
-  return INTAKE_STEPS.find((step) => step.key === slug);
-}
-
-/** The step a resume link should land on: furthest reached, or the first. */
-export function stepByNumber(number: number): IntakeStep {
-  return INTAKE_STEPS[Math.min(Math.max(number, 1), INTAKE_STEP_COUNT) - 1]!;
-}
-
-export function nextStep(step: IntakeStep): IntakeStep | null {
-  return step.number < INTAKE_STEP_COUNT ? stepByNumber(step.number + 1) : null;
-}
-
-export function previousStep(step: IntakeStep): IntakeStep | null {
-  return step.number > 1 ? stepByNumber(step.number - 1) : null;
-}

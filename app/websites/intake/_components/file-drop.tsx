@@ -41,6 +41,7 @@ export function FileDrop({
   token,
   stepKey,
   fieldKey,
+  entryKey,
   label,
   accept,
   multiple = false,
@@ -49,6 +50,15 @@ export function FileDrop({
   token: string;
   stepKey: string;
   fieldKey: string;
+  /**
+   * Which repeatable entry these files belong to, when they belong to one.
+   *
+   * A project's stills are only meaningful attached to that project, and the
+   * entry a client is looking at has no id until they add it — so the key is
+   * minted client-side and stored in the answers document beside the entry.
+   * Absent everywhere else, which is most places. See M-PORT-3.
+   */
+  entryKey?: string;
   label: string;
   accept?: string;
   multiple?: boolean;
@@ -87,6 +97,7 @@ export function FileDrop({
           token,
           stepKey,
           fieldKey,
+          entryKey,
           filename: file.name,
           mimeType: file.type || undefined,
           sizeBytes: file.size,

@@ -56,7 +56,7 @@ export function SyncForm() {
             name="intent"
             value="commit"
             disabled={pending}
-            className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+            className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
           >
             Import {state.preview.newCount + state.preview.updatedCount} rows
           </button>

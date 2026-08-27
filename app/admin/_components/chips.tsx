@@ -36,7 +36,7 @@ export function StageChip({ stage }: { stage: LeadStage }) {
  * "best 4:30pm" is a fact, "closing in 12 minutes" is pressure.
  */
 export function WindowChip({ window }: { window: CallWindow }) {
-  const good = window.tier === "best";
+  const good = window.isOpenNow && window.tier === "best";
 
   return (
     <span

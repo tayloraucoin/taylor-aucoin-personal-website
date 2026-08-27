@@ -15,6 +15,7 @@ import {
 import type { IntakeAnswers } from "../../lib/types/intake";
 import { emailEvents } from "./email-events";
 import { intakeFiles } from "./intake-files";
+import { intakeTrackEnum } from "./intake-track";
 
 /**
  * One client engagement: the deposit, the questionnaire, and the link that
@@ -54,6 +55,15 @@ export const engagements = pgTable(
     currentStep: integer("current_step").notNull().default(0),
     depositAmountCents: integer("deposit_amount_cents"),
     depositRequired: boolean("deposit_required").notNull().default(true),
+    /**
+     * How many times this client has run the showcase track's paste-extractor.
+     *
+     * A counter rather than a table: the only question anyone asks of it is
+     * "has this engagement had enough", and the gate is the increment's own
+     * predicate, so two presses cannot both pass it. Always 0 on the durable
+     * track, which has no extractor. See M-PORT-5.
+     */
+    extractionRuns: integer("extraction_runs").notNull().default(0),
     lastActivityAt: timestamp("last_activity_at", { withTimezone: true }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     projectSummary: text("project_summary"),
@@ -95,6 +105,16 @@ export const engagements = pgTable(
     // never persisted, so a leaked database does not leak live links
     // (M-INT-6). Lookup is by hash, which is also the comparison.
     tokenHash: text("token_hash").notNull(),
+    /**
+     * Which questionnaire this engagement is answering.
+     *
+     * The step registry, the schemas, the labels, and the catalogue rows all
+     * resolve from it through `lib/intake/tracks.ts`. Stored rather than
+     * derived because it is a fact about the deal, decided at creation and
+     * true for the life of the row — unlike status, which is a function of
+     * time and is therefore derived (M-INT-7).
+     */
+    track: intakeTrackEnum("track").notNull().default("durable"),
   },
   (table) => [
     uniqueIndex("engagements_token_hash_idx").on(table.tokenHash),

@@ -1,6 +1,10 @@
-# `/websites` — page specification
+# `/websites/platform` — page specification
 
 Author: Vesper (design), with Forge on the code contract. Status: **built, revised twice against Taylor's feedback, and passed through his Human-Hand tell scan. Awaiting his read-aloud pass and one content gate (§8).**
+
+> **THIS PAGE MOVED — 2026-08-26.** It now lives at **`/websites/platform`**, and `/websites` is a chooser between this build and the coded build at `/websites/coded`. **The page's content did not change in the move and must not**; only its route and its own doc comment did. Read `.../platform` wherever this document says `/websites` below, except in §7 — the intake tree deliberately did **not** move and is still at `/websites/intake`.
+>
+> The chooser and the coded track are specified in [`CODED-PAGE-SPEC.md`](CODED-PAGE-SPEC.md), which inherits every law in this file by default and records only what differs. Taylor's rulings that drove the move are in [`PORTFOLIO-MARKETING-EXECUTION-SCOPE.md`](PORTFOLIO-MARKETING-EXECUTION-SCOPE.md) §2. Six components on this page were given optional props (defaulting to this track's content) so both pages share one implementation; this page's rendered output is unchanged.
 
 **Document authority.** On tokens and visual law, [`../DESIGN-SYSTEM.md`](../DESIGN-SYSTEM.md) wins. On register and what Taylor has rejected, [`../TASTE-PROFILE.md`](../TASTE-PROFILE.md) wins. On the offer itself — price, process, terms, timelines — **Taylor's client-facing "How We Work Together" document wins over everything here.** Every substantive sentence on this page is adapted from it or lifted from it; nothing about the commercial relationship was invented. Where this spec is silent, the `/services` page is the nearest precedent and its idioms are the default.
 

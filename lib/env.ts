@@ -19,6 +19,7 @@ export function isDev(): boolean {
  * `lib/config.ts` reads `NEXT_PUBLIC_GA_ID` directly rather than through here.
  */
 export type ServerEnvVar =
+  | "ANTHROPIC_API_KEY"
   | "CRON_SECRET"
   | "DATABASE_URL"
   | "DIRECT_DATABASE_URL"
@@ -45,6 +46,8 @@ export type ServerEnvVar =
  */
 function rawValue(name: ServerEnvVar): string | undefined {
   switch (name) {
+    case "ANTHROPIC_API_KEY":
+      return process.env.ANTHROPIC_API_KEY;
     case "CRON_SECRET":
       return process.env.CRON_SECRET;
     case "DATABASE_URL":

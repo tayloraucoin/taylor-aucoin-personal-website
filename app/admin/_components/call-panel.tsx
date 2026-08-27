@@ -7,7 +7,8 @@ import {
   logAttemptAction,
   saveNotesAction,
 } from "@/app/admin/(protected)/queue/_actions/queue";
-import { DISPOSITION_LABELS, DISPOSITION_ORDER } from "@/lib/crm/constants";
+import { DISPOSITION_LABELS, DISPOSITION_ORDER, CALLBACK_CHIPS } from "@/lib/crm/constants";
+import { startOfNextHour, toDatetimeLocalValue } from "@/lib/crm/datetime-local";
 import { adminRoutes } from "@/lib/routes";
 import type { CallDisposition } from "@/lib/types/crm";
 import type { ScheduleToken } from "@/server/services/calls";
@@ -60,15 +61,11 @@ export type CallPhase =
 
 type Payload = Parameters<typeof logAttemptAction>[0];
 
-/** Chips that refine an already-logged call — never a second attempt row. */
-const CALLBACK_CHIPS: { token: ScheduleToken; label: string }[] = [
-  { token: "this_afternoon", label: "This afternoon" },
-  { token: "tomorrow_am", label: "Tomorrow AM" },
-  { token: "tomorrow_pm", label: "Tomorrow PM" },
-  { token: "next_week", label: "Next week" },
-];
-
 const RETRY_CHIPS: { token: ScheduleToken; label: string }[] = [
+  { token: "in_30_min", label: "In 30 min" },
+  { token: "today_early_afternoon", label: "Today early afternoon" },
+  { token: "today_late_afternoon", label: "Today late afternoon" },
+  { token: "today_early_evening", label: "Today early evening" },
   { token: "tomorrow_am", label: "Tomorrow AM" },
   { token: "in_2_days", label: "In 2 days" },
   { token: "next_week", label: "Next week" },
@@ -163,42 +160,56 @@ export function CallPanel({
     retryReview.current = review;
 
     startTransition(async () => {
-      const result = await logAttemptAction(payload);
+      try {
+        const result = await logAttemptAction(payload);
 
-      if (result.ok) {
-        setFailure(null);
-        // Pin before revalidation lands, or the list drops this lead and
-        // takes the panel with it mid-follow-up.
-        onHold(lead);
+        if (result.ok) {
+          setFailure(null);
+          // Pin before revalidation lands, or the list drops this lead and
+          // takes the panel with it mid-follow-up.
+          onHold(lead);
 
-        if (!review) {
-          onPhase({
-            kind: "logged",
-            disposition: payload.disposition,
-            attemptId: result.attemptId,
-          });
-          return;
+          if (!review) {
+            onPhase({
+              kind: "logged",
+              disposition: payload.disposition,
+              attemptId: result.attemptId,
+            });
+            return;
+          }
+
+          // The committed date comes back from the write, so the receipt
+          // reports what the database actually holds rather than restating
+          // what was asked for.
+          const summary = { ...review, nextActionAt: result.nextActionAt };
+          const owed = owedFor(review.interestTags);
+
+          onPhase(
+            owed.info || owed.intake
+              ? {
+                  kind: "postcall",
+                  attemptId: result.attemptId,
+                  owed,
+                  summary,
+                }
+              : {
+                  kind: "review",
+                  attemptId: result.attemptId,
+                  summary,
+                  completed: [],
+                },
+          );
+        } else {
+          // Keep the exact payload so one click retries it verbatim.
+          setFailure({ payload, message: result.message });
         }
-
-        // The committed date comes back from the write, so the receipt
-        // reports what the database actually holds rather than restating
-        // what was asked for.
-        const summary = { ...review, nextActionAt: result.nextActionAt };
-        const owed = owedFor(review.interestTags);
-
-        onPhase(
-          owed.info || owed.intake
-            ? {
-                kind: "postcall",
-                attemptId: result.attemptId,
-                owed,
-                summary,
-              }
-            : { kind: "review", attemptId: result.attemptId, summary, completed: [] },
-        );
-      } else {
-        // Keep the exact payload so one click retries it verbatim.
-        setFailure({ payload, message: result.message });
+      } catch {
+        // A thrown server action becomes Next's `undefined.call` overlay,
+        // which hides the form. Keep the payload so Retry still works.
+        setFailure({
+          payload,
+          message: "Couldn't save that call. Try again.",
+        });
       }
     });
   };
@@ -284,7 +295,11 @@ export function CallPanel({
 
   const adjust = (input: Parameters<typeof adjustFollowUpAction>[0]) => {
     startTransition(async () => {
-      await adjustFollowUpAction(input);
+      try {
+        await adjustFollowUpAction(input);
+      } catch {
+        // Chip clicks must not take down the logged panel.
+      }
     });
   };
 
@@ -318,7 +333,7 @@ export function CallPanel({
           <button
             type="button"
             onClick={() => onPhase({ kind: "dialing" })}
-            className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+            className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
           >
             Call now
           </button>
@@ -470,6 +485,8 @@ export function CallPanel({
           attemptId={phase.attemptId}
           owed={phase.owed}
           channel={phase.summary.preferredChannel}
+          capturedEmail={phase.summary.contactEmail}
+          forDecisionMaker={phase.summary.interestTags.includes("decision_maker")}
           onDone={(completed) =>
             onPhase({
               kind: "review",
@@ -591,21 +608,42 @@ function LoggedPanel({
   onAdjust: (input: {
     leadId: string;
     schedule?: ScheduleToken;
+    nextActionAt?: Date;
     closedReason?: string;
   }) => void;
   onAdvance: () => void;
 }) {
   const [adjusted, setAdjusted] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
+  const [pickedAt, setPickedAt] = useState("");
 
   const scheduleChips =
     phase.disposition === "busy_callback"
       ? CALLBACK_CHIPS
-      : phase.disposition === "no_answer" || phase.disposition === "voicemail"
+      : phase.disposition === "no_answer" ||
+          phase.disposition === "voicemail" ||
+          phase.disposition === "hung_up"
         ? RETRY_CHIPS
         : [];
 
   const reasons =
     phase.disposition === "not_interested" ? NOT_INTERESTED_REASONS : [];
+
+  const applyPicked = (value: string) => {
+    if (!value) return;
+    onAdjust({ leadId: lead.id, nextActionAt: new Date(value) });
+    setAdjusted("at the time you picked");
+  };
+
+  const field =
+    "min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
+
+  const chip = (active: boolean) =>
+    `min-h-[44px] rounded-(--radius) border px-3 text-sm disabled:opacity-50 ${
+      active
+        ? "border-(--color-c2)/60 bg-white/5 text-(--color-ink)"
+        : "border-white/20 text-(--color-ink) hover:border-(--color-c2)/60"
+    }`;
 
   return (
     <div className="flex flex-col gap-3 rounded-(--radius) border border-(--color-c2)/40 p-4">
@@ -627,20 +665,45 @@ function LoggedPanel({
                 type="button"
                 disabled={disabled}
                 onClick={() => {
+                  setPicking(false);
                   onAdjust({ leadId: lead.id, schedule: option.token });
                   setAdjusted(option.label);
                 }}
-                aria-pressed={adjusted === option.label}
-                className={`min-h-[44px] rounded-(--radius) border px-3 text-sm disabled:opacity-50 ${
-                  adjusted === option.label
-                    ? "border-(--color-c2)/60 bg-white/5 text-(--color-ink)"
-                    : "border-white/20 text-(--color-ink) hover:border-(--color-c2)/60"
-                }`}
+                aria-pressed={!picking && adjusted === option.label}
+                className={chip(!picking && adjusted === option.label)}
               >
                 {option.label}
               </button>
             ))}
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                const value = toDatetimeLocalValue(startOfNextHour());
+                setPickedAt(value);
+                setPicking(true);
+                applyPicked(value);
+              }}
+              aria-pressed={picking}
+              className={chip(picking)}
+            >
+              Pick a time
+            </button>
           </div>
+          {picking ? (
+            <input
+              type="datetime-local"
+              value={pickedAt}
+              onChange={(event) => {
+                const value = event.target.value;
+                setPickedAt(value);
+                applyPicked(value);
+              }}
+              aria-label="Callback time"
+              data-typing
+              className={field}
+            />
+          ) : null}
         </div>
       ) : null}
 
@@ -677,7 +740,7 @@ function LoggedPanel({
         <button
           type="button"
           onClick={onAdvance}
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
         >
           Next lead
         </button>
