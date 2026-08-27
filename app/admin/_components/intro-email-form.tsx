@@ -296,7 +296,7 @@ export function IntroEmailForm({
           type="button"
           disabled={pending || loading || !to}
           onClick={send}
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
         >
           {pending ? "Working…" : confirming ? "Yes, send again" : "Send"}
         </button>

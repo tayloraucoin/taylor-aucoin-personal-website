@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { socialCard } from "@/lib/metadata";
 import { INTAKE_COLUMN } from "../../intake/_lib/column";
 
 /**
@@ -16,10 +18,19 @@ import { INTAKE_COLUMN } from "../../intake/_lib/column";
  */
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+/**
+ * Neutral by design, same reasoning as the durable track's layout: `robots`
+ * stops search but not link unfurls, and a resume URL is exactly the kind of
+ * link a client forwards without thinking. The card names no client, no price,
+ * and no track, and it never inherits the root layout's job-search pitch.
+ */
+const description = "A private questionnaire for a website build.";
+
+export const metadata: Metadata = {
   title: "Portfolio intake",
-  // Nothing here should ever be indexed or previewed in a link unfurl.
+  description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Portfolio intake", description }),
 };
 
 export default function ShowcaseIntakeLayout({

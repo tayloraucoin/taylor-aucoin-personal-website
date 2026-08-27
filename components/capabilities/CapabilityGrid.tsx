@@ -104,7 +104,7 @@ export default function CapabilityGrid() {
                 {c.tech}
               </span>
               {c.proof && (
-                <span className="mt-3.5 font-mono text-[9px] uppercase tracking-[.2em] text-[rgb(232_185_97/.55)]">
+                <span className="mt-3.5 font-mono text-[9px] uppercase tracking-[.2em] text-(--color-proof-label)">
                   {c.proof.map((p) => p.label).join(" · ")}
                 </span>
               )}
@@ -149,7 +149,7 @@ export default function CapabilityGrid() {
                   !p.href ? (
                     <span
                       key={p.label}
-                      className="font-mono text-[10px] uppercase tracking-[.18em] text-[rgb(232_185_97/.55)]"
+                      className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-proof-label)"
                     >
                       {p.label}
                     </span>

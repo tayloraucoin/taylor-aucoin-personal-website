@@ -29,6 +29,7 @@ import {
 } from "@/content/websites-coded";
 import { codedCase } from "@/content/websites-coded-case";
 import { BOOKING_URL } from "@/lib/config";
+import { socialCard } from "@/lib/metadata";
 
 /**
  * `/websites/coded` — bespoke sites in real code, for people whose work is the
@@ -77,10 +78,20 @@ import { BOOKING_URL } from "@/lib/config";
 const description =
   "Portfolio sites for creative work, built in code you own. $2,000 flat, first look in three days, and hosting that costs nothing to run.";
 
+/**
+ * The social card matters more on this track than on any other page of the
+ * site. This URL is distributed by Taylor DMing it to a creative, so the unfurl
+ * in that DM is the entire first impression, arriving before the page does.
+ * `noindex` does not suppress it: Slack, iMessage, and WhatsApp fetch Open
+ * Graph regardless. Inheriting the root layout's card would introduce Taylor to
+ * a filmmaker as a senior/staff product engineer seeking employment, which
+ * sells the wrong thing and exposes the job search to a client.
+ */
 export const metadata: Metadata = {
   title: "Websites for creative work",
   description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Websites for creative work", description }),
 };
 
 export default function CodedWebsitesPage() {

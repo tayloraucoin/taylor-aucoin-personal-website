@@ -14,6 +14,7 @@ import UpFront from "@/components/websites/UpFront";
 import WebsitesClose from "@/components/websites/WebsitesClose";
 import WebsitesHero from "@/components/websites/WebsitesHero";
 import { faq } from "@/content/websites";
+import { socialCard } from "@/lib/metadata";
 
 /**
  * `/websites/platform` — the local-business website service.
@@ -49,10 +50,19 @@ import { faq } from "@/content/websites";
 const description =
   "Websites for local businesses in Metro Vancouver. $1,200 flat, live in about a week, and you own the domain, the hosting, and the customer list.";
 
+/**
+ * The social card is not optional here. `noindex` keeps this out of search but
+ * does nothing about link unfurls, and a handed-out URL is the whole
+ * distribution model — Taylor texts this address after a call, so the preview
+ * card IS the first impression. Without its own, the page inherits the root
+ * layout's, which introduces Taylor as a senior/staff engineer looking for
+ * work: wrong pitch for a detailer, and it shows a client the job search.
+ */
 export const metadata: Metadata = {
   title: "Websites for local businesses",
   description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Websites for local businesses", description }),
 };
 
 export default function WebsitesPage() {

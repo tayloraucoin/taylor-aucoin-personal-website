@@ -4,6 +4,7 @@ import Footer from "@/components/sections/Footer";
 import TrackDoors from "@/components/websites/TrackDoors";
 import TrackPicker from "@/components/websites/TrackPicker";
 import { chooser, chooserFallback } from "@/content/websites-chooser";
+import { socialCard } from "@/lib/metadata";
 import { AGORA } from "@/lib/config";
 
 /**
@@ -34,10 +35,22 @@ import { AGORA } from "@/lib/config";
 const description =
   "Two ways I build websites: a site on a managed platform you run yourself, or a site built in code that you own outright.";
 
+/**
+ * `noindex` keeps this out of search. It does NOT stop a link unfurl: Slack,
+ * iMessage, and WhatsApp fetch Open Graph regardless. Since handing out the URL
+ * IS the distribution model here, the unfurl is the first impression rather than
+ * an edge case, and without its own card this page inherits the root layout's —
+ * which introduces Taylor as a senior/staff product engineer looking for work.
+ * That is the wrong pitch to a client and it leaks the job search to them.
+ *
+ * The card title is the h1 rather than the `<title>`, per `socialCard`'s
+ * contract: "Websites" alone is a fine tab label and a useless preview.
+ */
 export const metadata: Metadata = {
   title: "Websites",
   description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Two ways I build websites", description }),
 };
 
 export default function WebsitesChooserPage() {

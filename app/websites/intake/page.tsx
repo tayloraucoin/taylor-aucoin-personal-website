@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { socialCard } from "@/lib/metadata";
 import { intakeRoutes, legalRoutes } from "@/lib/routes";
 import {
   EngagementNotFoundError,
@@ -8,9 +9,17 @@ import { readResumeCookie } from "./_actions/start";
 import { Eyebrow } from "./_components/eyebrow";
 import { StartForm } from "./_components/start-form";
 
+/* This page is public and tokenless, so unlike the layout's neutral card it
+ * can say something useful. It is still noindex: the URL is handed out, never
+ * found. */
+const description =
+  "A few details to get set up, then the questionnaire. Nothing is charged until you've seen what you're starting.";
+
 export const metadata = {
   title: "Start your website build",
+  description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Start your website build", description }),
 };
 
 /**

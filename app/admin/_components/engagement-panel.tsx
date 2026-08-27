@@ -88,7 +88,7 @@ export function EngagementPanel({
               void navigator.clipboard.writeText(createdUrl);
               setCopied(true);
             }}
-            className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+            className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
           >
             {copied ? "Copied" : "Copy link"}
           </button>
@@ -186,7 +186,7 @@ export function EngagementPanel({
           type="button"
           disabled={pending || !contactName || !contactEmail.includes("@")}
           onClick={create}
-          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
         >
           {pending ? "Creating…" : "Create intake link"}
         </button>

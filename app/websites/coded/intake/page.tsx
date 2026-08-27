@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { socialCard } from "@/lib/metadata";
 import { eyebrowFor } from "@/lib/intake/tracks";
 import { legalRoutes, showcaseIntakeRoutes } from "@/lib/routes";
 import {
@@ -9,9 +10,17 @@ import { Eyebrow } from "../../intake/_components/eyebrow";
 import { readShowcaseResumeCookie } from "./_actions/start";
 import { ShowcaseStartForm } from "./_components/showcase-start-form";
 
+/* This page is public and tokenless, so unlike the layout's neutral card it
+ * can say something useful. It is still noindex: the URL is handed out, never
+ * found. */
+const description =
+  "A few details to get set up, then the questionnaire. Nothing is charged until you've seen what you're starting.";
+
 export const metadata = {
   title: "Start your portfolio build",
+  description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Start your portfolio build", description }),
 };
 
 /**

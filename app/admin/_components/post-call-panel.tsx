@@ -237,7 +237,7 @@ function TextBlock({
             record(true);
             onSent();
           }}
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 py-2.5 text-sm font-medium text-white lg:hidden"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 py-2.5 text-sm font-medium text-white lg:hidden"
         >
           Open in Messages
         </a>
@@ -252,7 +252,7 @@ function TextBlock({
             record(true);
             onSent();
           }}
-          className="hidden min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60 lg:block"
+          className="hidden min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60 lg:block"
         >
           {copied ? "Copied" : "Copy text"}
         </button>
@@ -307,7 +307,7 @@ function IntakeBlock({
             void navigator.clipboard.writeText(url);
             setCopied(true);
           }}
-          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+          className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
         >
           {copied ? "Copied" : "Copy link"}
         </button>
@@ -383,7 +383,7 @@ function IntakeBlock({
             }
           })
         }
-        className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+        className="min-h-[44px] w-fit rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
       >
         {pending ? "Creating…" : "Create intake link"}
       </button>

@@ -278,6 +278,6 @@ function Btn({
 
 function Key({ children }: { children: React.ReactNode }) {
   return (
-    <span className="ml-1 text-(--color-dim) opacity-70">[{children}]</span>
+    <span className="ml-1 text-(--color-dim)">[{children}]</span>
   );
 }

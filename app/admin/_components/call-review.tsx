@@ -147,7 +147,7 @@ export function CallReview({
         <button
           type="button"
           onClick={onAdvance}
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
         >
           Next lead
         </button>

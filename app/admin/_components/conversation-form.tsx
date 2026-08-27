@@ -267,7 +267,7 @@ export function ConversationForm({
               nextActionAt: picking && pickedAt ? new Date(pickedAt) : null,
             })
           }
-          className="min-h-[44px] rounded-(--radius) bg-(--color-c1) px-4 text-sm font-medium text-white disabled:opacity-60"
+          className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
         >
           {disabled ? "Saving…" : "Save"}
         </button>
