@@ -3,6 +3,7 @@ import LegalArticle from "@/components/websites/legal/LegalArticle";
 import LegalPageShell from "@/components/websites/legal/LegalPageShell";
 import { privacy } from "@/content/legal";
 import { legalRoutes } from "@/lib/routes";
+import { socialCard } from "@/lib/metadata";
 
 /**
  * `/websites/privacy` — the privacy policy for the website-build service,
@@ -13,11 +14,16 @@ import { legalRoutes } from "@/lib/routes";
  * two documents share a version identity and are accepted together at the
  * deposit.
  */
+const description =
+  "How Agora Network Technologies handles information in its website-build service.";
+
+/** Same reasoning as the terms page: read mid-payment, forwarded without
+ *  thinking, and it must unfurl as Agora rather than as Taylor's job search. */
 export const metadata: Metadata = {
   title: "Privacy policy",
-  description:
-    "How Agora Network Technologies handles information in its website-build service.",
+  description,
   robots: { index: false, follow: false },
+  ...socialCard({ title: "Privacy policy", description }),
 };
 
 export default function PrivacyPage() {
