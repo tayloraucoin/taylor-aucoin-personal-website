@@ -1,4 +1,5 @@
 import type { CaseStudy } from "./types";
+import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
 
 export const familyOfficePlatform = {
   slug: "family-office-platform",
@@ -250,5 +251,20 @@ export const familyOfficePlatform = {
       "A documentation suite that lets a non-technical team operate and extend the system",
     ],
   },
-  media: [],
+  media: [
+    {
+      label: "UNIFIED DATA LAYER",
+      items: [
+        {
+          src: architecture,
+          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          caption:
+            "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
+          // A light-background diagram, so it is inset on a dark field rather
+          // than butting against the page gradient.
+          frame: "panel",
+        },
+      ],
+    },
+  ],
 } satisfies CaseStudy;
