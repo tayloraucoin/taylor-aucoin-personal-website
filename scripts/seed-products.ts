@@ -16,14 +16,55 @@ applyTierEnv();
  *
  *   yarn db:seed
  *
- * Prices here are the client-facing numbers from how_we_work.pdf and
- * /websites. Stripe product/price ids are tier-aware: production gets the
- * live-mode ids, staging and local get the test-mode ids — the same
- * LIVE/STAGING rule `next.config.ts` uses for keys and database URLs.
+ * Prices here are the client-facing numbers published on `/websites/platform`
+ * (`content/websites.ts`) and `/websites/coded` (`content/websites-coded.ts`).
+ * Those two pages are the source; this file must not disagree with them.
  *
- * When a price changes, run `yarn stripe:catalogue --apply` to mint the new
- * Price in Stripe, paste the printed id into `STRIPE_CATALOGUE_IDS` below,
- * then re-seed the tier's database.
+ * ## Run order — this is the part that bites
+ *
+ *   1. `yarn db:seed`                    creates every row (ids may be null)
+ *   2. `yarn stripe:catalogue --apply`   mints Stripe objects AND writes their
+ *                                        ids onto the rows from step 1
+ *
+ * **Seed first, then apply.** `setup-stripe-catalogue.ts` updates
+ * `products` by `key`, so a row that does not exist yet is skipped with a
+ * warning and its id is never written — which looks exactly like a working run
+ * and leaves the pay screen with nothing sellable. If you have ever seen
+ * "No sellable build product", this order is the first thing to check.
+ *
+ * Re-running either step in either order afterwards is safe: the seed's
+ * `onConflictDoUpdate` refuses to overwrite an id it does not have.
+ *
+ * ## Two ways an id gets onto a row, and when to use which
+ *
+ * - **`stripe:catalogue --apply` writes it** — the normal path, and the only
+ *   one needed for a working environment. Nothing to paste, nothing to commit.
+ * - **`STRIPE_CATALOGUE_IDS` below** — a committed bootstrap so a fresh
+ *   database can be seeded to a known state without calling Stripe. Optional.
+ *   A key absent from that map is not a defect; it means nobody has pasted its
+ *   id in, and step 2 supplies it at runtime.
+ *
+ * Tier-aware either way: production gets live-mode ids, staging and local get
+ * test-mode — the same LIVE/STAGING rule `next.config.ts` uses.
+ *
+ * ## One product, or one product with two prices?
+ *
+ * The rule this catalogue follows, and the reason:
+ *
+ * - **Different products** when the thing being bought differs, *or* when the
+ *   same words would name a different thing to a different buyer. Checkout and
+ *   invoices print the **product** name on each line, so a coded client's
+ *   receipt reading "Website build" for their $2,000 build would be describing
+ *   the platform product. That is why `deposit` and `showcase_deposit` are
+ *   separate products rather than two prices under one — they are the same
+ *   *shape* of transaction, not the same thing.
+ * - **Same product, extra price** when the deliverable is identical and only
+ *   the amount moves: a promo grant, a negotiated rate, a discount. Hence
+ *   `changes_small_promo` sharing a product with `changes_small` at $0, and
+ *   `showcase_deposit_1600` sharing one with `showcase_deposit`.
+ *
+ * Applied consistently, this keeps Stripe's own product reporting split by
+ * line of business without anyone parsing price nicknames to get there.
  */
 
 const SEED_PRODUCT_IDS = {
@@ -51,6 +92,10 @@ const SEED_PRODUCT_IDS = {
   showcase_deposit_1600: "00000000-0000-4000-9000-000000000020",
   showcase_full_1600: "00000000-0000-4000-9000-000000000021",
   showcase_extra_page: "00000000-0000-4000-9000-000000000022",
+  showcase_animations: "00000000-0000-4000-9000-000000000023",
+  showcase_supabase_setup: "00000000-0000-4000-9000-000000000024",
+  showcase_seo_blog: "00000000-0000-4000-9000-000000000025",
+  showcase_seo_post: "00000000-0000-4000-9000-000000000026",
 } as const;
 
 export type SeedProductKey = keyof typeof SEED_PRODUCT_IDS;
@@ -187,26 +232,32 @@ const STRIPE_CATALOGUE_IDS: Partial<
     },
   },
 
-  // [NEEDS VALUE AT BUILD] The coded track's Stripe objects do not exist yet.
-  // Run `yarn stripe:catalogue --apply` against each tier, then paste the
-  // printed ids here as entries for: showcase_deposit · showcase_balance ·
-  // showcase_full · showcase_admin_panel · showcase_logo · showcase_booking ·
-  // showcase_deposit_1600 · showcase_full_1600. Until then those rows seed
-  // unsellable and the pay screen has nothing to charge — which is the
-  // correct behaviour, not a bug to work around.
-  //
-  // showcase_care_plan is deliberately never minted (M-PORT-6).
+  /* ── The coded track (internal key: showcase) ────────────────────────────
+     No entries here, deliberately. Every coded key has a full CATALOGUE spec
+     in `setup-stripe-catalogue.ts`, so `--apply` mints the objects and writes
+     their ids straight onto the seeded rows. Pasting them back here would be a
+     second, manual copy of a fact Stripe already told the database.
+
+     An earlier version of this file carried [NEEDS VALUE AT BUILD] markers and
+     four rows of empty-string ids, instructing a reader to run `--apply` first
+     and paste. That was backwards — `--apply` cannot write to a row that does
+     not exist yet — and it is the reason the coded pay screen rendered nothing
+     after an apply-then-seed run. Seed first. See the run order at the top.
+
+     `showcase_care_plan` is never minted at all (M-PORT-6): nothing recurring
+     is sold on this track until the offer is settled. It seeds inactive.
+     ──────────────────────────────────────────────────────────────────────── */
 };
 
 /**
  * LIVE for production, STAGING (sandbox/test mode) for staging and local.
  *
- * A key with no entry has not been minted in Stripe yet — the coded track's
- * rows, until `yarn stripe:catalogue --apply` runs. It seeds with null ids
- * rather than failing: a row without a price id is not sellable, so
- * `server/services/products.ts` drops it with a warning instead of rendering a
- * checkbox the checkout could not charge. The catalogue and the database stay
- * honest about what can actually take money.
+ * A key with no entry seeds with null ids, which is not a failure state: it
+ * means the committed bootstrap does not carry that id and step 2 of the run
+ * order will supply it. A row without a price id is simply not sellable —
+ * `server/services/products.ts` drops it with a warning rather than rendering
+ * a checkbox the checkout could not charge. The catalogue and the database
+ * stay honest about what can actually take money.
  */
 function stripeIdsFor(key: SeedProductKey) {
   const mode =
@@ -220,6 +271,16 @@ function stripeIdsFor(key: SeedProductKey) {
  * sentence case, no jargon.
  */
 const CATALOGUE_ROWS: NewProductRow[] = [
+  /* ── The platform track (internal key: durable) ──────────────────────────
+     Published on `/websites/platform`. `track` is omitted on these rows and
+     the column defaults to "durable", which is what keeps every pre-coded row
+     where it already was.
+
+     Covers, against `content/websites.ts`: the $1,200 build as deposit +
+     balance; the five add-ons (booking, Stripe, GBP, logo, extra page); both
+     change rounds and the $0 promo grant; the care plan. Plus
+     `admin_test_payment`, which is Taylor-only and never shown to a client.
+     ──────────────────────────────────────────────────────────────────────── */
   {
     id: SEED_PRODUCT_IDS.deposit,
     key: "deposit",
@@ -349,7 +410,16 @@ const CATALOGUE_ROWS: NewProductRow[] = [
     sortOrder: 40,
   },
 
-  /* ── The coded track (internal key: showcase) ──────────────────────────── */
+  /* ── The coded track (internal key: showcase) ────────────────────────────
+     Published on `/websites/coded`. Every row carries `track: "showcase"`, and
+     a pay screen never offers the other track's rows.
+
+     Covers, against `content/websites-coded.ts`: the $2,000 build as deposit +
+     balance, the $1,900 paid-in-full row, and the negotiated $1,600 pair
+     (promo-only, M-PORT-6); the eight add-ons (admin panel, logo, booking,
+     animations, Supabase, SEO blog, extra page, blog post). The care plan is
+     present but inactive and is never minted.
+     ──────────────────────────────────────────────────────────────────────── */
 
   {
     id: SEED_PRODUCT_IDS.showcase_deposit,
@@ -464,6 +534,58 @@ const CATALOGUE_ROWS: NewProductRow[] = [
     sortOrder: 115,
   },
   {
+    // Added 2026-09-01, per content/websites-coded.ts's addOns. Not yet
+    // sellable — see the [NEEDS VALUE AT BUILD] note above.
+    id: SEED_PRODUCT_IDS.showcase_animations,
+    key: "showcase_animations",
+    kind: "addon",
+    track: "showcase",
+    name: "Animations",
+    description:
+      "Standard motion, built with Framer Motion or similar. Bigger asks can cost more, and you'll describe what you want in the intake form.",
+    priceCents: 25000,
+    offeredAtCheckout: true,
+    sortOrder: 113,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_supabase_setup,
+    key: "showcase_supabase_setup",
+    kind: "addon",
+    track: "showcase",
+    name: "Supabase setup",
+    description:
+      "A database for your site when it needs one: logins, saved form entries, anything that has to persist beyond the pages themselves.",
+    priceCents: 25000,
+    offeredAtCheckout: true,
+    sortOrder: 114,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_seo_blog,
+    key: "showcase_seo_blog",
+    kind: "addon",
+    track: "showcase",
+    name: "SEO blog",
+    description:
+      "A blog section built into your site, with its own admin so you can publish and manage posts without touching code.",
+    priceCents: 75000,
+    offeredAtCheckout: true,
+    sortOrder: 116,
+  },
+  {
+    // Quantity-shaped like extra_page above: how many posts is not a
+    // pay-screen checkbox, so this is Taylor-minted only, same reasoning.
+    id: SEED_PRODUCT_IDS.showcase_seo_post,
+    key: "showcase_seo_post",
+    kind: "addon",
+    track: "showcase",
+    name: "Blog post, written for you",
+    description:
+      "You brain-dump what you know, I turn it into a polished post tuned for the keywords you're chasing. Priced per post.",
+    priceCents: 50000,
+    offeredAtCheckout: false,
+    sortOrder: 117,
+  },
+  {
     // Present but dark. Taylor's ruling: "don't charge for the maintenance
     // care plan until it's done" (M-PORT-6). Inactive and unoffered means it
     // renders nowhere and appears in no total; the v2 doc's row copy waits in
@@ -511,10 +633,23 @@ async function main(): Promise<void> {
           priceCents: row.priceCents,
           sortOrder: row.sortOrder ?? 0,
           track: row.track ?? "durable",
-          // Only overwrite ids we actually have: re-seeding must never wipe
-          // ids that `yarn stripe:catalogue --apply` wrote onto a row.
-          ...(stripe.productId ? { stripeProductId: stripe.productId } : {}),
-          ...(stripe.priceId ? { stripePriceId: stripe.priceId } : {}),
+          // Stripe is the source of truth for ids; this map is only a
+          // bootstrap. `coalesce` keeps whatever is already on the row and
+          // fills in only when it is null, so re-seeding after
+          // `yarn stripe:catalogue --apply` cannot undo it.
+          //
+          // The previous guard checked whether the *map* had a value rather
+          // than whether the row did, which meant a committed id silently beat
+          // the live one. That is not theoretical: `--apply` matches prices by
+          // nickname, and a drifted nickname archives the old price and mints a
+          // replacement — after which a re-seed would have written the archived
+          // id back over the working one and broken that product's checkout.
+          stripeProductId: stripe.productId
+            ? sql`coalesce(${products.stripeProductId}, ${stripe.productId})`
+            : sql`${products.stripeProductId}`,
+          stripePriceId: stripe.priceId
+            ? sql`coalesce(${products.stripePriceId}, ${stripe.priceId})`
+            : sql`${products.stripePriceId}`,
           updatedAt: sql`now()`,
         },
       });

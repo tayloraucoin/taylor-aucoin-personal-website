@@ -28,6 +28,21 @@ loadEnvConfig(path.dirname(fileURLToPath(import.meta.url)));
  */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
+  /**
+   * The build directory is overridable so a second Next process can run
+   * against this repo without destroying the first one's.
+   *
+   * `next build` clears and rewrites `.next` — including the manifests a
+   * running `next dev` re-reads on every request. Running a build while a dev
+   * server is up leaves that server alive but serving `ENOENT` on every route,
+   * which reads like a crash and needs a restart. Agent-driven runs set
+   * `NEXT_DIST_DIR` (see `dev:agent` / `build:agent`) so they get their own
+   * directory and cannot touch the one iTerm is using.
+   *
+   * Unset everywhere else, so Vercel and a plain `yarn dev` still use `.next`.
+   */
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   experimental: { optimizePackageImports: ["motion"] },
   // Screenshots are where AVIF pays off hardest — large flat UI regions.
   // Next defaults to WebP only; AVIF is tried first and WebP is the fallback.

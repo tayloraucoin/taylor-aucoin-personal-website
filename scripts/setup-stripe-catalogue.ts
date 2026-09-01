@@ -185,6 +185,34 @@ const CATALOGUE: ProductSpec[] = [
     taxCode: TAX_SERVICES,
     prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_BOOKING", dbKey: "showcase_booking" }],
   },
+  {
+    name: "Animations",
+    description:
+      "Standard motion for your site, built with Framer Motion or similar.",
+    taxCode: TAX_WEBSITE,
+    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_ANIMATIONS", dbKey: "showcase_animations" }],
+  },
+  {
+    name: "Supabase setup",
+    description:
+      "A database wired into your site, for logins, saved form entries, or anything else that needs to persist.",
+    taxCode: TAX_WEBSITE,
+    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_SUPABASE_SETUP", dbKey: "showcase_supabase_setup" }],
+  },
+  {
+    name: "SEO blog",
+    description:
+      "A blog section built into your site, with its own admin for publishing posts without touching code.",
+    taxCode: TAX_WEBSITE,
+    prices: [{ nickname: "Setup", amountCents: 75000, env: "PRICE_SHOWCASE_SEO_BLOG", dbKey: "showcase_seo_blog" }],
+  },
+  {
+    name: "Blog post, written for you",
+    description:
+      "A blog post written from your own brain dump and tuned for the keywords you're chasing. Priced per post.",
+    taxCode: TAX_SERVICES,
+    prices: [{ nickname: "Per post", amountCents: 50000, env: "PRICE_SHOWCASE_SEO_POST", dbKey: "showcase_seo_post" }],
+  },
 ];
 
 async function main(): Promise<void> {

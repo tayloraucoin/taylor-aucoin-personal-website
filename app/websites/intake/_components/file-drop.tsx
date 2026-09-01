@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MAX_UPLOAD_BYTES } from "@/lib/validators/intake";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 type Item = {
   key: string;
@@ -64,6 +65,17 @@ export function FileDrop({
   multiple?: boolean;
   existing?: readonly ExistingFile[];
 }) {
+  /**
+   * In preview there is no engagement to attach a file to, so the upload
+   * endpoint would reject the token and the client would watch a drop target
+   * accept a file and then fail. A control that says up front that it will not
+   * work is kinder than one that discovers it afterwards (ADM-2, UX spec §6).
+   *
+   * The prompt copy still renders, because reading the prompts is the entire
+   * point of the review surface.
+   */
+  const preview = useIsPreview();
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<Item[]>([]);
 
@@ -170,26 +182,39 @@ export function FileDrop({
 
   return (
     <div>
-      <input
-        ref={inputRef}
-        id={`file-${fieldKey}`}
-        type="file"
-        accept={accept}
-        multiple={multiple}
-        onChange={(event) => {
-          choose(event.target.files);
-          // Let the same file be chosen again after a failure.
-          event.target.value = "";
-        }}
-        className="sr-only"
-      />
+      {preview ? (
+        <>
+          <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)/60">
+            {label}
+          </p>
+          <p className="mt-2 text-xs text-(--color-dim)">
+            Uploads are disabled in preview.
+          </p>
+        </>
+      ) : (
+        <>
+          <input
+            ref={inputRef}
+            id={`file-${fieldKey}`}
+            type="file"
+            accept={accept}
+            multiple={multiple}
+            onChange={(event) => {
+              choose(event.target.files);
+              // Let the same file be chosen again after a failure.
+              event.target.value = "";
+            }}
+            className="sr-only"
+          />
 
-      <label
-        htmlFor={`file-${fieldKey}`}
-        className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-[rgb(232_185_97/.42)] hover:text-(--color-c2)"
-      >
-        {label}
-      </label>
+          <label
+            htmlFor={`file-${fieldKey}`}
+            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-[rgb(232_185_97/.42)] hover:text-(--color-c2)"
+          >
+            {label}
+          </label>
+        </>
+      )}
 
       {/* One announcement for a batch, not fifteen. */}
       <p aria-live="polite" className="sr-only">

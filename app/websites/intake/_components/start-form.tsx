@@ -5,6 +5,7 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { startIntake, type StartResult } from "../_actions/start";
 import { Field } from "./field";
 import { looksLikeEmail, TextField } from "./text-field";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 async function action(
   _previous: StartResult | null,
@@ -31,6 +32,8 @@ async function action(
  */
 export function StartForm({ promo }: { promo?: string }) {
   const [result, formAction, pending] = useActionState(action, null);
+  // Submitting would mint a real engagement and a real token.
+  const preview = useIsPreview();
   const [emailError, setEmailError] = useState<string | null>(null);
 
   return (
@@ -150,9 +153,14 @@ export function StartForm({ promo }: { promo?: string }) {
         </p>
       ) : null}
 
-      <GradientButton type="submit" disabled={pending}>
+      <GradientButton type="submit" disabled={pending || preview}>
         {pending ? "Starting…" : "Start →"}
       </GradientButton>
+      {preview ? (
+        <p className="mt-2 text-xs text-(--color-dim)">
+          Starting is disabled in preview.
+        </p>
+      ) : null}
     </form>
   );
 }

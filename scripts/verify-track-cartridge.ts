@@ -219,7 +219,7 @@ function checkShowcaseCopy(): void {
   check(
     "step 2 intro",
     steps[1]!.intro,
-    "A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.",
+    "This site isn't for you — it's for the person deciding whether to work with you. This step is about who that is.",
   );
   check(
     "step 3 intro",
@@ -229,12 +229,12 @@ function checkShowcaseCopy(): void {
   check(
     "step 5 intro",
     steps[4]!.intro,
-    "This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.",
+    "This is how we skip the part where a designer shows you three drafts you don't like. Below are real sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.",
   );
   check(
     "step 6 intro",
     steps[5]!.intro,
-    "Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.",
+    "Most bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.",
   );
   check(
     "step 7 intro",

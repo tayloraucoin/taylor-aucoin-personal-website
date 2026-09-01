@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import type { SaveState } from "../_components/save-indicator";
 import { saveStep } from "../[token]/_actions/save-step";
 
@@ -53,6 +54,50 @@ function clearLocal(key: string) {
 }
 
 /**
+ * Every side effect this hook can have, behind one object.
+ *
+ * This is the preview seam (M-ADM-1), and the shape is deliberate. The hook
+ * body no longer names `saveStep`, `readLocal`, `writeLocal`, or `clearLocal`
+ * directly — it only ever reaches through `io`. So the choice of
+ * implementation is made once, at one line, and a future edit that adds a
+ * write has to reach for `io` because the raw functions are not in scope
+ * anywhere below.
+ *
+ * The alternative the spec preferred — an early return to a separate
+ * preview-only hook — is not available: it would call a different set of hooks
+ * on the same component, which the rules of hooks forbid and
+ * `eslint-plugin-react-hooks` correctly rejects. Suppressing that rule to get
+ * a prettier seam would be trading a real guarantee for a cosmetic one.
+ *
+ * `PREVIEW_IO` is not a stub of a save. There is no engagement behind a
+ * preview, so there is nothing a save could mean.
+ */
+type StepIo = {
+  save: (
+    token: string,
+    stepKey: string,
+    answers: Record<string, unknown>,
+  ) => Promise<Awaited<ReturnType<typeof saveStep>>>;
+  read: (key: string) => Record<string, unknown> | null;
+  write: (key: string, values: Record<string, unknown>) => void;
+  clear: (key: string) => void;
+};
+
+const LIVE_IO: StepIo = {
+  save: saveStep,
+  read: readLocal,
+  write: writeLocal,
+  clear: clearLocal,
+};
+
+const PREVIEW_IO: StepIo = {
+  save: async () => ({ ok: true }),
+  read: () => null,
+  write: () => {},
+  clear: () => {},
+};
+
+/**
  * The no-loss contract, in one hook.
  *
  * The ordering that matters: every change is written to localStorage
@@ -80,6 +125,14 @@ export function useStepAutosave({
 }) {
   const key = storageKey(token, stepKey);
 
+  /**
+   * One line decides whether this hook can touch anything. Outside a
+   * `PreviewModeProvider` — which is to say, in every client questionnaire —
+   * `useIsPreview` returns false and nothing below changes.
+   */
+  const preview = useIsPreview();
+  const io = preview ? PREVIEW_IO : LIVE_IO;
+
   const [values, setValues] = useState<Record<string, unknown>>(initial);
   const [state, setState] = useState<SaveState>("idle");
 
@@ -96,15 +149,19 @@ export function useStepAutosave({
    * server copy here by definition: it exists only when a save did not land.
    */
   useEffect(() => {
-    const pending = readLocal(key);
+    const pending = io.read(key);
     if (!pending) return;
 
     setValues((current) => ({ ...current, ...pending }));
     dirtyRef.current = true;
-  }, [key]);
+  }, [io, key]);
 
   const attempt = useCallback(
     async (attemptNumber = 0): Promise<void> => {
+      // Cosmetic, not load-bearing: `io` already makes every line below a
+      // no-op in preview. This returns first so the save indicator never
+      // announces "Saving…" or "Saved" about a save that did not happen.
+      if (preview) return;
       if (inFlightRef.current) return;
       inFlightRef.current = true;
 
@@ -114,7 +171,7 @@ export function useStepAutosave({
       );
 
       const snapshot = valuesRef.current;
-      const result = await saveStep(token, stepKey, snapshot);
+      const result = await io.save(token, stepKey, snapshot);
 
       if (announceRef.current) clearTimeout(announceRef.current);
       inFlightRef.current = false;
@@ -125,7 +182,7 @@ export function useStepAutosave({
         // save carries the newer values.
         if (valuesRef.current === snapshot) {
           dirtyRef.current = false;
-          clearLocal(key);
+          io.clear(key);
         }
         setState("saved");
         return;
@@ -152,7 +209,7 @@ export function useStepAutosave({
 
       setState("error");
     },
-    [key, stepKey, token],
+    [io, key, preview, stepKey, token],
   );
 
   const flush = useCallback(() => {
@@ -183,7 +240,7 @@ export function useStepAutosave({
         const next = { ...current, [field]: resolved };
         valuesRef.current = next;
         // Safety net first, network second. This line is the no-loss promise.
-        writeLocal(key, next);
+        io.write(key, next);
         return next;
       });
 
@@ -192,16 +249,16 @@ export function useStepAutosave({
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => void attempt(), DEBOUNCE_MS);
     },
-    [attempt, key],
+    [attempt, io, key],
   );
 
   /** A step change unmounts this. Anything unsaved goes now, fire-and-forget. */
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      if (dirtyRef.current) void saveStep(token, stepKey, valuesRef.current);
+      if (dirtyRef.current) void io.save(token, stepKey, valuesRef.current);
     };
-  }, [stepKey, token]);
+  }, [io, stepKey, token]);
 
   /** Coming back online is the moment to retry, not a timer. */
   useEffect(() => {

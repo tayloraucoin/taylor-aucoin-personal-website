@@ -17,6 +17,8 @@ const AUDIENCES = [
   { value: "press", label: "Press" },
   { value: "recruiters", label: "Recruiters or employers" },
   { value: "peers", label: "Other people in my field" },
+  { value: "investors", label: "Investors" },
+  { value: "collaborators", label: "Prospective collaborators" },
 ] as const;
 
 /**

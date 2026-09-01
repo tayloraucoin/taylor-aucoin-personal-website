@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GhostButton } from "@/components/ui/GradientButton";
 import { mintEntryKey } from "@/lib/intake/entry-key";
 import { TextArea } from "../../../intake/_components/text-field";
@@ -61,6 +62,13 @@ export function ExtractionBlock({
   /** Hands new entries to the step, which appends them. Never saves here. */
   onEntries: (entries: Record<string, string>[]) => void;
 }) {
+  /**
+   * The extraction round-trips through a server action that resolves the
+   * engagement behind the token. A preview has neither, so the button is
+   * disabled and says why rather than failing on press (ADM-2, UX spec §6).
+   */
+  const preview = useIsPreview();
+
   const [state, setState] = useState<State>({ status: "idle" });
 
   const run = async () => {
@@ -120,13 +128,26 @@ export function ExtractionBlock({
       </div>
 
       <div className="mt-4">
-        <GhostButton disabled={running} onClick={() => void run()}>
+        <GhostButton
+          disabled={running || preview}
+          onClick={preview ? undefined : () => void run()}
+        >
           {running ? "Reading it through…" : "Sort this for me"}
         </GhostButton>
 
-        <p aria-live="polite" className="mt-3 max-w-[48ch]">
-          <Line state={state} afterLine={afterLine} onRetry={() => void run()} />
-        </p>
+        {preview ? (
+          <p className="mt-3 max-w-[48ch] text-xs text-(--color-dim)">
+            Sorting is disabled in preview.
+          </p>
+        ) : (
+          <p aria-live="polite" className="mt-3 max-w-[48ch]">
+            <Line
+              state={state}
+              afterLine={afterLine}
+              onRetry={() => void run()}
+            />
+          </p>
+        )}
       </div>
     </section>
   );

@@ -46,6 +46,7 @@ export async function startShowcaseIntake(
     whatYouDo: formData.get("whatYouDo") || undefined,
     siteKinds: formData.getAll("siteKinds").map(String),
     disciplines: formData.getAll("disciplines").map(String),
+    siteKindsOther: formData.get("siteKindsOther") || undefined,
     disciplinesOther: formData.get("disciplinesOther") || undefined,
     currentWebsite: formData.get("currentWebsite") || undefined,
     website: formData.get("website") || undefined,
@@ -92,6 +93,7 @@ export async function startShowcaseIntake(
     whatYouDo: parsed.data.whatYouDo,
     siteKinds: parsed.data.siteKinds,
     disciplines: parsed.data.disciplines,
+    siteKindsOther: parsed.data.siteKindsOther,
     disciplinesOther: parsed.data.disciplinesOther,
     currentWebsite: parsed.data.currentWebsite,
   });

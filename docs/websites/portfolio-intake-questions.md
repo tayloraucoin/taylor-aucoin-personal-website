@@ -1,7 +1,7 @@
 # Portfolio intake — full walkthrough
 
 Every screen, question, and line of copy, in the order a client experiences it.
-Field types in `backticks`. Conditional questions marked *(shows only if…)*.
+Field types in `backticks`. Conditional questions marked _(shows only if…)_.
 Every question is optional, always — same law as the existing intake.
 Placeholders are written for the film category; they swap per category cartridge.
 
@@ -21,23 +21,24 @@ Help: So Taylor can reach you about the build.
 Placeholder: Director and camera operator in Vancouver
 
 **What kind of site is this?** `check all that apply`
+
 - Portfolio — your creative work is the product
-- Consultant or coach *(coming soon — disabled)*
-- Speaker or author *(coming soon — disabled)*
-- Studio or small team *(coming soon — disabled)*
+- Consultant or coach _(coming soon — disabled)_
+- Speaker or author _(coming soon — disabled)_
+- Studio or small team _(coming soon — disabled)_
 
 Help: More categories open soon. If you're a mix, check everything that's true.
 
 **Current website** `url`
 Help: If you have one. Leave blank if you don't.
 
-*(Payment gate sits between the start form and step 1, same as the existing flow.)*
+_(Payment gate sits between the start form and step 1, same as the existing flow.)_
 
 ---
 
 ## Welcome screen — after payment
 
-**Nine steps. Every one of them optional.**
+**Nine steps. Every one of them optional but encouraged.**
 
 Budget about 45 minutes — longer if your back catalogue runs deep. It saves as you type, so leave and come back whenever; your link always brings you back to where you were.
 
@@ -50,11 +51,12 @@ Skip anything. A skipped question just means we ask on a call, or leave it out. 
 **Your name, as it should appear on the site** `text`
 Help: If you go by something different professionally, use that.
 
-**What you do, in one line** `text` *(prefilled from start form)*
+**What you do, in one line** `text` _(prefilled from start form)_
 Help: The line that sits under your name. "Director / Camera / Editor / Teacher" counts. So does something looser. We'll sharpen it together.
 
 **Your roles** `repeatable block` — add button: "Add another role"
 Per entry:
+
 - **Role** `text` — placeholder: Director
 
 **Which role leads?** `text`
@@ -67,11 +69,11 @@ Help: "Since 2008" or "about fifteen years" — either is fine.
 Placeholder: Vancouver, BC
 Help: And how far the work travels, if that matters — "Vancouver-based, works anywhere" is a common shape.
 
-**Who we'll be dealing with** `text` *(prefilled)*
+**Who we'll be dealing with** `text` _(prefilled)_
 
-**Best phone number** `phone` *(prefilled)*
+**Best phone number** `phone` _(prefilled)_
 
-**Email** `email` *(prefilled)*
+**Email** `email` _(prefilled)_
 
 **Union or guild memberships** `long text`
 Help: IATSE, DGC, a guild, a professional college — with the category or number if it matters. We only list what's current.
@@ -83,9 +85,10 @@ Help: Agent, manager, or rep — who they are, and whether enquiries should go t
 
 ## Step 2 of 9 — Who this site is for
 
-*Step intro:* A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.
+_Step intro:_ A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.
 
 **Who ends up on your site?** `check all that apply`
+
 - Producers or production companies
 - Agencies or brands
 - Direct clients
@@ -122,11 +125,12 @@ Help: The impression, in your own words. "Someone you'd trust with a crew" reads
 
 ## Step 3 of 9 — Experience and proof
 
-*Step intro:* The career itself — positions, memberships, awards, and the third-party proof that does your bragging for you.
+_Step intro:_ The career itself — positions, memberships, awards, and the third-party proof that does your bragging for you.
 
 **Your experience** `repeatable block` — add button: "Add another"
 Help: Positions, ongoing roles, things you founded, programs you run. Not individual projects — those are the next step. "Feature this" marks the ones that should be impossible to miss.
 Per entry:
+
 - **What it is** `text` — placeholder: Instructor — Film Production
 - **Where** `text` — placeholder: LaSalle College
 - **When** `text` — placeholder: 2019–now
@@ -153,10 +157,11 @@ Help: Clients, companies, or people you've worked with that carry weight — and
 
 ## Step 4 of 9 — The work
 
-*Step intro:* The heart of the site. Don't aim for complete — aim for the work you'd show first. The build includes up to twelve fully produced projects; a deeper archive is a small add-on we can sort out later.
+_Step intro:_ The heart of the site. Don't aim for complete — aim for the work you'd show first. The build includes up to twelve fully produced projects; a deeper archive is a small add-on we can sort out later.
 
 **Your projects** `repeatable block` — add button: "Add another project"
 Per entry:
+
 - **Title** `text`
 - **Year** `text`
 - **Your role on it** `text` — placeholder: Director · or: Camera op / editor
@@ -174,19 +179,20 @@ Per entry:
   - Yes — it's public
   - Yes, but there are rules — ask me
   - Not sure — check with me
-  Help: Studio and client work sometimes comes with strings. We'd rather ask than get you in trouble.
+    Help: Studio and client work sometimes comes with strings. We'd rather ask than get you in trouble.
 - **Where it belongs** `pick one`
   - Front and centre
   - In the archive
   - Leave it off for now
 
-**Which piece is *the* reel?** `text`
+**Which piece is _the_ reel?** `text`
 Help: The one video a stranger should see first. If you don't have a current reel, say so — the site can lead with your best piece instead, and we'll note the reel needs a refresh.
 
 **If you could only show five** `long text`
 Help: Which five, in what order? This tells us more than any rating.
 
 **How should the work be organized?** `check all that apply`
+
 - By role — directing, camera, editing
 - By type — films, commercials, music videos
 - One curated grid, no filters
@@ -202,10 +208,11 @@ Help: How you imagine someone moving through the work. Checked more than one abo
 
 ## Step 5 of 9 — Taste
 
-*Step intro:* This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.
+_Step intro:_ This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.
 
 **The gallery** `custom block — one card per example site`
 Each card shows a screenshot set and a "Visit site" link, plus two actions:
+
 - **Add to favourites** `toggle`
 - **Add a note** `long text, revealed on tap`
   Placeholder: What catches you — good or bad. A detail, a feeling, the type, the way it moves.
@@ -215,17 +222,20 @@ Instruction copy: Drag your favourites into order, best first. Then tell us why 
 Each favourite shows its note, open for editing.
 
 **Dark or light?** `pick one`
+
 - Dark
 - Light
 - Could go either way
-Help: Most film sites run dark so the footage glows. Yours doesn't have to.
+  Help: Most film sites run dark so the footage glows. Yours doesn't have to.
 
 **How still should it be?** `pick one`
+
 - Dead still — nothing moves
 - Quiet — small, settled movement
 - Alive — motion is part of the personality
 
 **How much on screen at once?** `pick one`
+
 - Almost nothing — one thing at a time
 - Balanced
 - Rich — I like density
@@ -245,7 +255,7 @@ Help: Pet hates. Autoplay music, tiny grey text, whatever it is.
 
 ## Step 6 of 9 — Your words
 
-*Step intro:* Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.
+_Step intro:_ Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.
 
 **Voice note** `file upload — the one gradient-ring moment, same as the existing flow`
 Prompt copy: Record a 2–3 minute voice memo on your phone answering two things: how did you get into this, and what's a piece of work you're proud of — and why? Don't script it. This is the single most useful thing you can give us.
@@ -259,10 +269,11 @@ Box label: Where I've written something myself — bio, project notes, experienc
 Help: Unchecked, we treat everything you've pasted as raw material and write from it.
 
 **First person or third?** `pick one`
+
 - First — "I direct…"
 - Third — "Kryshan directs…"
 - Not sure — you pick
-Help: Third person reads like a program note; first person reads like a letter. Both work.
+  Help: Third person reads like a program note; first person reads like a letter. Both work.
 
 **Anything you've written** `file upload, multiple`
 Help: Artist statements, director's notes, grant applications, captions — anything in your own words.
@@ -280,7 +291,7 @@ Box label: Yes — we use it to make the writing sound like you.
 
 ## Step 7 of 9 — Media
 
-*Step intro:* Everything you want considered. Original files beat compressed copies; public links beat uploads for video.
+_Step intro:_ Everything you want considered. Original files beat compressed copies; public links beat uploads for video.
 
 **A photo of you** `file upload, image`
 Help: For the about page. A real photo beats a stock one every time — a still of you working is even better.
@@ -295,12 +306,13 @@ Help: You on set, behind a camera, teaching. This is where the site gets its hum
 Help: Festivals send these as PNGs. Whatever you've got.
 
 **Do you have a logo or wordmark?** `pick one`
+
 - Yes, I have one
 - No — my name in good type is fine
 - Have one, but I hate it
-Help: Most portfolio sites don't need a logo — a well-set name usually does it better.
+  Help: Most portfolio sites don't need a logo — a well-set name usually does it better.
 
-**Your logo file** `file upload` *(shows only if "Yes" or "hate it")*
+**Your logo file** `file upload` _(shows only if "Yes" or "hate it")_
 Help: The original file if you have it — otherwise any version.
 
 **Anything else with your name on it** `file upload, multiple`
@@ -315,9 +327,10 @@ Help: Colours, styles, or a site that makes you cringe.
 
 ## Step 8 of 9 — The site itself
 
-*Step intro:* The shape of the thing — what pages exist and what each one is for.
+_Step intro:_ The shape of the thing — what pages exist and what each one is for.
 
 **Pages you're imagining** `check all that apply`
+
 - Home
 - Work / projects
 - A reel page
@@ -334,17 +347,19 @@ Help (under the group): Check what feels right — we'll push back if something'
 Help: A producer looking at your reel and a parent looking at your film camp want different things. Different pages? Different sections? Or does one of them belong on a separate site entirely?
 
 **How should people reach you?** `pick one`
+
 - An email link — no form
 - A short form
 - Both
 - Through my rep
-Help: Forms filter people; a bare email converts. For portfolios we usually recommend the email.
+  Help: Forms filter people; a bare email converts. For portfolios we usually recommend the email.
 
 **Should the site say whether you're available?** `pick one`
+
 - Yes — show availability
 - No
 - Not sure
-Help: "Booking for fall 2026" can prompt the email. It also needs updating — only say yes if you'll actually update it.
+  Help: "Booking for fall 2026" can prompt the email. It also needs updating — only say yes if you'll actually update it.
 
 **Your old site: what must survive?** `long text`
 Help: Anything on the current site that has to carry over — and anything that should die with it.
@@ -356,43 +371,48 @@ Help: If your site's been up for years, links to it live in old emails, articles
 
 ## Step 9 of 9 — Accounts and access
 
-*Callout at top, carried over verbatim:*
+_Callout at top, carried over verbatim:_
 **No passwords · ever** — We never ask for account passwords. Everything below is either something you send us an invite to, or something we set up together on a call.
 
 **Do you own a domain?** `pick one`
 Help: A web address you've already bought — yourname.com, or similar.
+
 - Yes
 - No
 - Not sure
 
-**Which one?** `text` *(label changes by answer, carried over: Yes → "Which one?" · Not sure → "What do you think it is?" with help "A guess is fine — we can look it up from there." · No → "Any address you'd want?" with help "Registering it is part of the build. If you haven't thought about it, skip this.")*
+**Which one?** `text` _(label changes by answer, carried over: Yes → "Which one?" · Not sure → "What do you think it is?" with help "A guess is fine — we can look it up from there." · No → "Any address you'd want?" with help "Registering it is part of the build. If you haven't thought about it, skip this.")_
 Placeholder: yourname.com
 
-**Where did you buy it?** `text` *(shows only if Yes)*
+**Where did you buy it?** `text` _(shows only if Yes)_
 Help: GoDaddy, Namecheap, Squarespace — or "not sure."
 
-**How would you rather handle access?** `pick one` *(shows only if Yes)*
+**How would you rather handle access?** `pick one` _(shows only if Yes)_
+
 - Invite you to my domain account
 - Send me what to add and I'll do it
 - Not sure — let's sort it on the call
 
 **Do you use email at that domain?** `pick one`
 Help: Important — we need to know so your email keeps working.
+
 - Yes
 - No
 - Not sure
 
 **Where does your video live?** `check all that apply`
+
 - Vimeo
 - YouTube
 - A drive or Dropbox
-Help: The site embeds from Vimeo or YouTube rather than hosting video itself — that's what keeps your hosting close to free.
+  Help: The site embeds from Vimeo or YouTube rather than hosting video itself — that's what keeps your hosting close to free.
 
 **Somewhere else?** `text`
 
 **Your accounts around the web** `repeatable block` — add button: "Add another account"
 Help: IMDb especially, if you have a page — people in film check it.
 Per entry:
+
 - **Platform** `text` — placeholder: Instagram, Vimeo, IMDb…
 - **Link or handle** `text`
 
@@ -400,18 +420,21 @@ Per entry:
 Help: Wix, Squarespace, WordPress — or "not sure."
 
 **After launch, how hands-on do you want to be?** `pick one`
+
 - Very — I'll edit it myself with Claude Code
 - A little — small tweaks myself, you for the rest
 - Not at all — I'll send you changes
-Help: No wrong answer — it shapes the handoff guide we write for you.
+  Help: No wrong answer — it shapes the handoff guide we write for you.
 
 **Want an admin panel?** `pick one`
+
 - Yes — tell me more
 - No
 - Not sure
-Help: An optional add-on: a private login where you change copy and swap images yourself, no code involved. Costs extra to build; most people do fine without it.
+  Help: An optional add-on: a private login where you change copy and swap images yourself, no code involved. Costs extra to build; most people do fine without it.
 
 **Best way to reach you** `pick one`
+
 - Text
 - Email
 - Phone
@@ -428,7 +451,7 @@ Help: Anything I haven't asked — something you want on the site, something you
 
 Taylor reads all of it — every note, every rating, every file. Next comes the first look at your site. If anything below is easy to answer by text, it all helps.
 
-*(Skipped-items list renders here, same as the existing flow.)*
+_(Skipped-items list renders here, same as the existing flow.)_
 
 ---
 

@@ -23,7 +23,12 @@ const ORGANIZATION = [
   { value: "grid", label: "One curated grid, no filters" },
   { value: "audience", label: "By who it's for" },
   { value: "trust", label: "You decide — I trust the design" },
+  { value: "other", label: "Something else" },
 ] as const;
+
+function asList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v) => typeof v === "string") : [];
+}
 
 function asProjects(value: unknown): ProjectEntry[] {
   return Array.isArray(value) ? (value as ProjectEntry[]) : [];
@@ -142,7 +147,17 @@ export function StepWork({
         multiple
       />
 
-      <TextAnswer form={form} name="organizationOther" label="Anything else?" />
+      {/* Paired with the "Something else" option above rather than standing
+          open. A permanently visible "Anything else?" under a list of concrete
+          choices reads as a second, vaguer question; asked only when someone
+          has said the list did not cover them, it reads as a follow-up. */}
+      {asList(form.values.organization).includes("other") ? (
+        <TextAnswer
+          form={form}
+          name="organizationOther"
+          label="Tell us how"
+        />
+      ) : null}
 
       <LongAnswer
         form={form}

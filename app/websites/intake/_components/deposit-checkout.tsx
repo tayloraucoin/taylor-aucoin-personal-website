@@ -10,6 +10,7 @@ import { AddonInfo } from "./addon-info";
 import { LegalAgreement } from "./legal-agreement";
 import { PayButton } from "./pay-button";
 import { PromoRail } from "./promo-rail";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 /** What the server hands this surface per product: render + total math only. */
 export type CheckoutAddonView = {
@@ -72,6 +73,8 @@ export function DepositCheckout({
   /** From `?admin_test_payment=1` — hides add-ons/promo; charge is server-gated. */
   isAdminTest?: boolean;
 }) {
+  // Promo validation round-trips to a server action against a real token.
+  const preview = useIsPreview();
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [agreed, setAgreed] = useState(false);
 
@@ -81,6 +84,7 @@ export function DepositCheckout({
   const autoApplied = useRef(false);
 
   const applyPromo = async (code: string) => {
+    if (preview) return;
     if (!code.trim()) return;
     setPromo({ status: "checking" });
     try {

@@ -43,7 +43,7 @@ export function ShowcaseWelcome({
       </h1>
 
       <p className="mt-6 font-display text-[22px] font-medium leading-[1.2] tracking-[-.02em] text-(--color-ink)">
-        Nine steps. Every one of them optional.
+        Nine steps. Every one of them optional but encouraged.
       </p>
 
       <div className="mt-5 max-w-[48ch] space-y-4 font-body text-[16px] font-light leading-[1.66] text-(--color-body)">

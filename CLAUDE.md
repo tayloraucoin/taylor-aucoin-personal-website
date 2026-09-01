@@ -24,7 +24,7 @@ Before you touch anything visual, read `docs/TASTE-PROFILE.md`. It records what 
 **Package manager is Yarn 4** (`yarn.lock`, `.yarnrc.yml`, `packageManager` in `package.json`). Never run `npm install` or `npm add` — it writes a `package-lock.json` beside the yarn lockfile and resolves a different dependency tree. Installs are `yarn add` (use `--exact` for anything the docs call pinned).
 
 ```bash
-yarn dev         # localhost:3000
+yarn dev         # localhost:3000 — Taylor's server, in iTerm
 yarn build       # must pass before any PR
 yarn lint
 npx tsc --noEmit # strict — must be clean
@@ -73,6 +73,8 @@ thumbnails do) is immune; only `w-auto` exposes this.
 
 ## Working method
 
-Work **one ticket at a time** from `docs/TICKETS.md`. Do not batch. After each ticket: `npm run build && npx tsc --noEmit`, then stop and report.
+Work **one ticket at a time** from `docs/TICKETS.md`. Do not batch. After each ticket: `yarn build:agent && npx tsc --noEmit`, then stop and report.
+
+**Never run `yarn dev` or `yarn build` — use `dev:agent` / `build:agent`.** Taylor keeps a dev server up in iTerm on port 3000. Every Next process in this repo shares one `.next`, so `next build` clears and rewrites the manifests that running server re-reads per request: it stays alive but serves `ENOENT` on every route until restarted. The `:agent` scripts set `NEXT_DIST_DIR` (`.next-agent`, `.next-build`) and port **4300**, deliberately far from the 3000-3010 block Taylor runs his own dev servers in, so agent work cannot reach any of them. Same reason `.claude/launch.json` launches `dev:agent`. Do not go hunting for a process on 3000 and do not kill it.
 
 Copy in the repo today is placeholder. Taylor is writing the real copy himself. Do not "improve" it unprompted.

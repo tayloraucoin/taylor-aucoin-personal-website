@@ -17,10 +17,10 @@ const description =
   "A few details to get set up, then the questionnaire. Nothing is charged until you've seen what you're starting.";
 
 export const metadata = {
-  title: "Start your portfolio build",
+  title: "Start your build",
   description,
   robots: { index: false, follow: false },
-  ...socialCard({ title: "Start your portfolio build", description }),
+  ...socialCard({ title: "Start your build", description }),
 };
 
 /**

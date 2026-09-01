@@ -105,7 +105,7 @@ export function StepMedia({
         form={form}
         name="logoStatus"
         label="Do you have a logo or wordmark?"
-        help="Most portfolio sites don't need a logo — a well-set name usually does it better."
+        help="Most sites like this don't need a logo — a well-set name usually does it better."
         options={LOGO_STATUS}
       />
 

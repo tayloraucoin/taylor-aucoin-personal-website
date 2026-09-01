@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 /**
  * Hairline-divided rows: a wide-tracked mono lead label against plain body
  * copy. The inscription register — this is what keeps a list of facts from
@@ -11,7 +13,11 @@
  * caveats and terms. Gold is rationed to the former — a caveat in gold reads
  * as a feature, which is the wrong promise.
  */
-export type LabelRow = { label: string; body: string };
+export type LabelPart = string | { text: string; href: string };
+export type LabelRow = { label: string; body: string | LabelPart[] };
+
+const linkClass =
+  "text-(--color-c2) underline decoration-(--color-faint) underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-c3)";
 
 const toneClass = {
   accent: "text-(--color-c2)",
@@ -38,7 +44,27 @@ export default function LabelRows({
             {row.label}
           </span>
           <p className="max-w-[56ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
-            {row.body}
+            {typeof row.body === "string"
+              ? row.body
+              : row.body.map((part, i) =>
+                  typeof part === "string" ? (
+                    <span key={i}>{part}</span>
+                  ) : part.href.startsWith("/") ? (
+                    <Link key={i} href={part.href} className={linkClass}>
+                      {part.text}
+                    </Link>
+                  ) : (
+                    <a
+                      key={i}
+                      href={part.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={linkClass}
+                    >
+                      {part.text}
+                    </a>
+                  ),
+                )}
           </p>
         </div>
       ))}

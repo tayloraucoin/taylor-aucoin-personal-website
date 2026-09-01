@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startDepositCheckout } from "../[token]/_actions/pay";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 /**
  * The one disabled button in the entire flow.
@@ -35,13 +36,21 @@ export function PayButton({
    */
   disabled?: boolean;
 }) {
+  /**
+   * Preview never opens Checkout. This is the one place a Stripe session
+   * can be started from this screen, so it is the one place that has to
+   * refuse — a disabled button here is worth more than a rule written
+   * anywhere else (ADM-4).
+   */
+  const preview = useIsPreview();
+
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
 
   return (
     <div>
       <GradientButton
-        disabled={disabled || pending}
+        disabled={disabled || pending || preview}
         onClick={() => {
           setFailed(false);
           startTransition(async () => {

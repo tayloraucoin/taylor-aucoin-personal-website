@@ -40,7 +40,19 @@ export const stepAboutSchema = z.object({
   leadRole: text,
   howLong: text,
   basedIn: text,
+
+  /**
+   * Broadened from "Union or guild memberships" to cover education, training,
+   * and certification (Taylor, 2026-09-01). `unions` stays in the schema and in
+   * the label map even though no input writes it any more: an engagement
+   * answered before the change still holds one, and dropping the key here would
+   * silently delete that answer from the document the next time the step saved.
+   *
+   * @deprecated Superseded by `credentials`. Read-only; do not add an input.
+   */
   unions: text,
+  credentials: text,
+  affiliations: text,
   representation: text,
 
   /** Which category of site, from the start form's first checkbox group. */
@@ -283,6 +295,7 @@ export const startShowcaseIntakeInput = z.object({
   contactPhone: z.string().trim().min(1).optional(),
   whatYouDo: z.string().trim().optional(),
   siteKinds: z.array(z.string()).optional(),
+  siteKindsOther: z.string().trim().optional(),
   disciplines: z.array(z.string()).optional(),
   disciplinesOther: z.string().trim().optional(),
   currentWebsite: z.string().trim().optional(),

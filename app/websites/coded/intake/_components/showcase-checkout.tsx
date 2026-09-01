@@ -8,6 +8,7 @@ import { PromoRail } from "../../../intake/_components/promo-rail";
 import type { CheckoutAddonView } from "../../../intake/_components/deposit-checkout";
 import { checkShowcasePromoCode } from "../_actions/promo";
 import { ShowcasePayButton } from "./showcase-pay-button";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 type PromoState =
   | { status: "idle" }
@@ -55,6 +56,8 @@ export function ShowcaseCheckout({
   addons: CheckoutAddonView[];
   initialPromoCode?: string;
 }) {
+  // Promo validation round-trips to a server action against a real token.
+  const preview = useIsPreview();
   const [plan, setPlan] = useState<"half" | "full" | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [agreed, setAgreed] = useState(false);
@@ -65,6 +68,7 @@ export function ShowcaseCheckout({
   const autoApplied = useRef(false);
 
   const applyPromo = async (code: string) => {
+    if (preview) return;
     if (!code.trim()) return;
     setPromo({ status: "checking" });
     try {

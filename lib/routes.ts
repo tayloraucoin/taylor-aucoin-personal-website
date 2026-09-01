@@ -154,6 +154,16 @@ export const adminRoutes = {
   sync: `${ADMIN_PREFIX}/sync`,
   scoreboard: `${ADMIN_PREFIX}/scoreboard`,
   transcripts: `${ADMIN_PREFIX}/transcripts`,
+
+  /**
+   * Named here before they are built, because the admin rail lists them as
+   * dimmed labels (D-ADM-7) and a nav entry still needs a stable identity to
+   * key on. `intakeQuestions` becomes a real route in ADM-2; `revenue` has no
+   * ticket yet. Neither is linked until its surface exists — see
+   * `app/admin/_components/admin-nav.ts`.
+   */
+  intakeQuestions: `${ADMIN_PREFIX}/intake/questions`,
+  revenue: `${ADMIN_PREFIX}/finances/revenue`,
 } as const;
 
 /**

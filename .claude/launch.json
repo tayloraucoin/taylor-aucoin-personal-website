@@ -4,16 +4,16 @@
     {
       "name": "dev",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["dev"],
-      "port": 3000,
-      "autoPort": true
+      "runtimeArgs": ["dev:agent"],
+      "port": 4300,
+      "autoPort": false
     },
     {
       "name": "prod",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["start"],
-      "port": 3100,
-      "autoPort": true
+      "runtimeArgs": ["start:agent"],
+      "port": 4310,
+      "autoPort": false
     }
   ]
 }

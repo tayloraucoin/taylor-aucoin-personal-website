@@ -118,7 +118,7 @@ export function showcaseSteps(
       number: 2,
       title: "Who this site is for",
       intro:
-        "A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.",
+        "This site isn't for you — it's for the person deciding whether to work with you. This step is about who that is.",
     },
     {
       key: "experience",
@@ -138,14 +138,14 @@ export function showcaseSteps(
       number: 5,
       title: "Taste",
       intro:
-        "This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.",
+        "This is how we skip the part where a designer shows you three drafts you don't like. Below are real sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.",
     },
     {
       key: "words",
       number: 6,
       title: "Your words",
       intro:
-        "Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.",
+        "Most bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.",
     },
     {
       key: "media",

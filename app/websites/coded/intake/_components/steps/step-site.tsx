@@ -96,7 +96,7 @@ export function StepSite({
         form={form}
         name="howToReach"
         label="How should people reach you?"
-        help="Forms filter people; a bare email converts. For portfolios we usually recommend the email."
+        help="Forms filter people; a bare email converts. For sites like this we usually recommend the email."
         options={HOW_TO_REACH}
       />
 

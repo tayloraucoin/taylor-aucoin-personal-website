@@ -20,9 +20,13 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   leadRole: "The role that leads",
   howLong: "How long they have been doing this",
   basedIn: "Based in",
+  /** @deprecated Kept so pre-2026-09-01 answers still read as words. */
   unions: "Union or guild memberships",
+  credentials: "Memberships and credentials",
+  affiliations: "Affiliations and partnerships",
   representation: "Representation",
   siteKinds: "Kind of site",
+  siteKindsOther: "Other kind of site",
   disciplines: "Disciplines",
   disciplinesOther: "Other discipline",
   currentWebsite: "Current website",

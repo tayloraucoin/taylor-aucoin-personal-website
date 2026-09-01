@@ -160,6 +160,42 @@ export function fieldKeysFor(
   return schema?.shape ? Object.keys(schema.shape) : [];
 }
 
+/**
+ * The subset of a step's fields that hold free text.
+ *
+ * The second consumer of a Zod object's shape, and it lives here for the same
+ * reason the first one does (M-PORT-8): reaching into a validator's internals
+ * is a thing this codebase does in exactly one module, so a Zod upgrade that
+ * moves `_def` breaks one file rather than every caller who guessed.
+ *
+ * "Free text" means a string field, optional or not — never an array, a
+ * boolean, or a record. The business primer (PORT-10) proposes only into these:
+ * a checkbox group has an enumerated option set that a free-text proposal would
+ * miss, and the shape guard would silently drop the answer on save.
+ */
+export function textFieldKeysFor(
+  track: IntakeTrackKey,
+  stepKey: string,
+): readonly string[] {
+  const schema = schemaFor(track, stepKey) as
+    | { shape?: Record<string, unknown> }
+    | undefined;
+
+  if (!schema?.shape) return [];
+
+  return Object.entries(schema.shape)
+    .filter(([, field]) => isStringField(field))
+    .map(([key]) => key);
+}
+
+/** Unwraps one optional layer and asks whether what is left is a string. */
+function isStringField(field: unknown): boolean {
+  const def = (field as { _def?: { type?: string; innerType?: unknown } })?._def;
+  if (!def) return false;
+  if (def.type === "string") return true;
+  return def.innerType ? isStringField(def.innerType) : false;
+}
+
 /** The document's label for an answer key. Falls back to the raw key. */
 export function labelFor(track: IntakeTrackKey, key: string): string {
   return registryFor(track, "generic").labels[key] ?? key;
@@ -191,7 +227,7 @@ export function flavourFor(
  */
 export function eyebrowFor(track: IntakeTrackKey): string {
   return track === "showcase"
-    ? "Agora · Portfolio build"
+    ? "Agora · Custom build"
     : "Agora · Website build";
 }
 

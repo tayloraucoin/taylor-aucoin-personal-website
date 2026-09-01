@@ -10,6 +10,7 @@ import {
   TextField,
 } from "../../../intake/_components/text-field";
 import { startShowcaseIntake, type StartResult } from "../_actions/start";
+import { useIsPreview } from "@/components/intake/preview-mode";
 
 async function action(
   _previous: StartResult | null,
@@ -45,17 +46,10 @@ async function action(
  */
 const SITE_KINDS: readonly Choice[] = [
   { value: "portfolio", label: "Portfolio — your creative work is the product" },
-  {
-    value: "consultant",
-    label: "Consultant or coach (coming soon)",
-    disabled: true,
-  },
-  {
-    value: "speaker",
-    label: "Speaker or author (coming soon)",
-    disabled: true,
-  },
-  { value: "studio", label: "Studio or small team (coming soon)", disabled: true },
+  { value: "consultant", label: "Consultant or coach" },
+  { value: "speaker", label: "Speaker or author" },
+  { value: "studio", label: "Studio or small team" },
+  { value: "other", label: "Something else" },
 ];
 
 const DISCIPLINES: readonly Choice[] = SHOWCASE_DISCIPLINES.map((d) => ({
@@ -65,6 +59,8 @@ const DISCIPLINES: readonly Choice[] = SHOWCASE_DISCIPLINES.map((d) => ({
 
 export function ShowcaseStartForm({ promo }: { promo?: string }) {
   const [result, formAction, pending] = useActionState(action, null);
+  // Submitting would mint a real engagement and a real token.
+  const preview = useIsPreview();
   const [emailError, setEmailError] = useState<string | null>(null);
   const [siteKinds, setSiteKinds] = useState<string[]>([]);
   const [disciplines, setDisciplines] = useState<string[]>([]);
@@ -132,14 +128,14 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
         <TextField
           id="whatYouDo"
           name="whatYouDo"
-          placeholder="Director and camera operator in Vancouver"
+          placeholder="Founder and product designer in Vancouver"
         />
       </Field>
 
       <Field
         id="siteKinds"
         label="What kind of site is this?"
-        help="More categories open soon. If you're a mix, check everything that's true."
+        help="If you're a mix, check everything that's true."
       >
         <ChoiceGroup
           legend="What kind of site is this?"
@@ -150,6 +146,18 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
           multiple
         />
       </Field>
+
+      {/* Only asked once "Something else" is checked — an always-visible box
+          under a list nobody picked from is a question about nothing. */}
+      {siteKinds.includes("other") ? (
+        <Field id="siteKindsOther" label="Tell us what kind">
+          <TextField
+            id="siteKindsOther"
+            name="siteKindsOther"
+            helpId="siteKindsOther-help"
+          />
+        </Field>
+      ) : null}
 
       <Field id="disciplines" label="What's the work?">
         <ChoiceGroup
@@ -211,9 +219,14 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
         </p>
       ) : null}
 
-      <GradientButton type="submit" disabled={pending}>
+      <GradientButton type="submit" disabled={pending || preview}>
         {pending ? "Starting…" : "Start →"}
       </GradientButton>
+      {preview ? (
+        <p className="mt-2 text-xs text-(--color-dim)">
+          Starting is disabled in preview.
+        </p>
+      ) : null}
     </form>
   );
 }

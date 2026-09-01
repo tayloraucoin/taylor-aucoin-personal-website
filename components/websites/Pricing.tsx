@@ -181,6 +181,19 @@ export default function Pricing({
             >
               <dt className="max-w-[56ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
                 {row.label}
+                {row.link ? (
+                  <>
+                    {" "}
+                    <a
+                      href={row.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="whitespace-nowrap text-(--color-c2) underline decoration-(--color-faint) underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-c3)"
+                    >
+                      {row.link.label} →
+                    </a>
+                  </>
+                ) : null}
               </dt>
               <dd className="m-0 shrink-0 font-mono text-[12px] tabular-nums tracking-[.08em] text-(--color-c2)">
                 {row.price}
