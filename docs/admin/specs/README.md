@@ -8,14 +8,14 @@ single-scroll review of every question the intake asks.
 
 ## Folder layout
 
-| Path                                                       | What                                                                            |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `../ADMIN-UX-SPEC.md`                                      | Governing UX handoff (Vesper). **§8 decision log is binding** — cite `D-ADM-n`  |
-| `../TECH-SCOPE.md`                                         | Architecture pass (Mason). Placement map §3 is the placement law                 |
-| `../../intake/ADMIN-HANDOFF.md`                            | Vesper's deferred-admin content notes. Its cautions bind this track              |
-| `00-build-order.md`                                        | The ordered, checkable queue                                                     |
-| `ADM-*.md`                                                 | One implementable slice each                                                     |
-| `PROGRESS.md` / `DEVIATIONS.md` / `TECHNICAL-DECISIONS.md` | The records. `PROGRESS.md` is the only source of truth for Complete              |
+| Path                                                       | What                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `../ADMIN-UX-SPEC.md`                                      | Governing UX handoff (Vesper). **§8 decision log is binding** — cite `D-ADM-n` |
+| `../TECH-SCOPE.md`                                         | Architecture pass (Mason). Placement map §3 is the placement law               |
+| `../../intake/ADMIN-HANDOFF.md`                            | Vesper's deferred-admin content notes. Its cautions bind this track            |
+| `00-build-order.md`                                        | The ordered, checkable queue                                                   |
+| `ADM-*.md`                                                 | One implementable slice each                                                   |
+| `PROGRESS.md` / `DEVIATIONS.md` / `TECHNICAL-DECISIONS.md` | The records. `PROGRESS.md` is the only source of truth for Complete            |
 
 Ticket format is `docs/intake/specs/_templates/slice-spec.md`. This folder does
 not keep its own copy.
@@ -42,8 +42,9 @@ not keep its own copy.
 - **Questions stay hardcoded.** No `questions` table, no CMS, no admin editing
   of question copy. Taylor's explicit call, 2026-09-01. Any ticket that proposes
   a schema for questions is out of scope by definition.
-- **No new dependency beyond `lucide-react`.** That one is ratified (D-ADM-1,
-  2026-09-01) for `/admin` icons. No `@dnd-kit`, no shadcn registry, no icon on
+- **No new dependency beyond `lucide-react` and `next-themes`.** The first is
+  ratified (D-ADM-1, 2026-09-01) for `/admin` icons; the second carries the
+  theme control (D-ADM-13, M-ADM-8, 2026-09-03), ratification pending. No `@dnd-kit`, no shadcn registry, no icon on
   a public surface. The rail is hand-built; the only overlay is the vendored
   Radix sheet.
 - **No CRM behavior changes.** ADM-1 moves links. It does not touch the queue,
@@ -90,7 +91,7 @@ CONSTRAINTS
 - Client leaves in _components/ with 'use client' on line 1. Server Components default.
 - Repo CLAUDE.md invariants apply (v4 token syntax; no gradient behind body copy;
   prefers-reduced-motion; focus-visible rings).
-- No new npm dependency beyond ratified `lucide-react`. If you believe you need
+- No new npm dependency beyond `lucide-react` and `next-themes`. If you believe you need
   another, STOP and ask. Installs are `yarn add` — never npm.
 
 DEFINITION OF DONE

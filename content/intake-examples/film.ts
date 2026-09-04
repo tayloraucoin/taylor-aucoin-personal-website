@@ -1,105 +1,56 @@
-import type { ExampleSite } from "./types";
+import type { ExampleSet } from "./types";
 
 /**
- * ⚠ STUB SET — NOT REAL SITES. Taylor curates and captures these.
+ * The taste gallery for the **film** pack — a filmmaker's portfolio.
  *
- * Six placeholders so the gallery, the favourites toggle, and the drag-rank
- * can be built and verified against a real list rather than a mock. Every
- * entry below is invented scaffolding: the names are not real studios, the
- * URLs go nowhere real, and the captures are generated placeholder frames.
- * **Nothing here may ship to a client.**
+ * ## Not curated yet
  *
- * Replacing this file is content work, not code work: keep the shape, swap the
- * contents. Nothing in the step reads anything but `ExampleSite`.
+ * `curated: false` and no sites, which is a real state rather than a gap: the
+ * taste step renders *without* a gallery until Taylor has chosen these, and
+ * says so in one honest line (D-PORT-12). It does not render an empty grid, and
+ * it never renders a placeholder — the set this replaced was six invented sites
+ * whose own header forbade showing them to a client, and they shipped in the
+ * gallery for a week regardless.
  *
- * Curation guidance (from the intake handoff, decision 7): 12–24 sites per
- * discipline, chosen to span axes deliberately — dark/light, video-first vs
- * grid-first, animated vs still, personality-forward vs work-only. The
- * favourites pattern only triangulates a style vector if the set actually
- * spreads across it; twenty beautiful dark sites teach us nothing except that
- * the person likes what we already showed them.
+ * Flipping this on is content work, not code work: add the sites, set
+ * `curated: true`. Nothing in the step reads anything but `ExampleSet`.
  *
- * Captures: the first is the site's opening view at a consistent aspect ratio
- * (16:10 recommended), then two or three more scrolling inside the card. Real
- * intrinsic pixel dimensions are required — see `types.ts`.
+ * ## What to choose
+ *
+ * **12–24 sites**, spread deliberately across the axes rather than gathered at
+ * the end of one. The picks only triangulate a style vector if the set
+ * actually spans one — twenty beautiful dark sites teach us nothing except
+ * that the client likes what we already showed them.
+ *
+ * Spread them across the six groups in `taxonomy.ts` as well as across the
+ * three axes (`dark`/`light`/`warm` · `still`/`quiet`/`alive` ·
+ * `sparse`/`balanced`/`dense`). A group with no sites in this pack simply does
+ * not render, so an empty group is a choice rather than a gap — but a set that
+ * fills only two groups is a set that has already decided for the client.
+ *
+ * **Every field on `ExampleSite` is required**, and three of them are yours to
+ * judge rather than to read off the page: `group`, `axes`, and `styles` (at
+ * most three, from the closed list). `build` is what it would take to reach
+ * this site's level and **never reaches a client** — it is there so a favourite
+ * tells you what the build costs. `embed` stays `false` until you have opened
+ * the site inside the overlay and watched it render; most hosts refuse to be
+ * framed and nothing in the app can detect that (D-PORT-17). `checkedOn` is the
+ * day you last confirmed the link is live — personal sites go dark often, and a
+ * picked site with a stale check is flagged in the intake document.
+ *
+ * Film-specific: most run dark so the footage carries. Include at least a few
+ * that do not, or the set only proves the convention it already assumes.
+ *
+ * **Captures:** the first is the site's opening view at the MacBook Pro 14"
+ * aspect — **1512 × 982**, shot at 2× (3024 × 1964) — then two or three more
+ * scrolling, which the overlay pages through. The first capture's aspect is
+ * checked by `yarn verify:tracks`; it matches the box the overlay's live frame
+ * uses, so a capture and a frame are never different shapes. Real intrinsic
+ * pixel dimensions are required and are not optional — see `types.ts` for why
+ * (this repo has shipped that bug once). `yarn capture:example` shoots one at
+ * the right size and prints the entry, once that tooling lands (PORT-27).
  */
-export const FILM_EXAMPLES: readonly ExampleSite[] = [
-  {
-    key: "stub-film-1",
-    name: "Placeholder — dark, video-first",
-    url: "https://example.test/stub-film-1",
-    captures: [
-      {
-        src: "/intake-examples/stub-1.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-  {
-    key: "stub-film-2",
-    name: "Placeholder — light, grid-first",
-    url: "https://example.test/stub-film-2",
-    captures: [
-      {
-        src: "/intake-examples/stub-2.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-  {
-    key: "stub-film-3",
-    name: "Placeholder — still, work-only",
-    url: "https://example.test/stub-film-3",
-    captures: [
-      {
-        src: "/intake-examples/stub-3.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-  {
-    key: "stub-film-4",
-    name: "Placeholder — animated, personality-forward",
-    url: "https://example.test/stub-film-4",
-    captures: [
-      {
-        src: "/intake-examples/stub-4.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-  {
-    key: "stub-film-5",
-    name: "Placeholder — dense, editorial",
-    url: "https://example.test/stub-film-5",
-    captures: [
-      {
-        src: "/intake-examples/stub-5.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-  {
-    key: "stub-film-6",
-    name: "Placeholder — sparse, one thing at a time",
-    url: "https://example.test/stub-film-6",
-    captures: [
-      {
-        src: "/intake-examples/stub-6.svg",
-        width: 1600,
-        height: 1000,
-        alt: "Placeholder capture for a stub example site",
-      },
-    ],
-  },
-];
+export const FILM_EXAMPLES: ExampleSet = {
+  curated: false,
+  sites: [],
+};

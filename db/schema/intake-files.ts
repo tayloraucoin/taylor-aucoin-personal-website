@@ -46,6 +46,40 @@ export const intakeFiles = pgTable(
     sizeBytes: integer("size_bytes"),
     step: integer("step"),
     storagePath: text("storage_path").notNull(),
+
+    /**
+     * The voice note, written out — and the four columns that say how much to
+     * trust it.
+     *
+     * The transcript lives here rather than in the answers document because it
+     * is derived from *this file*, not typed by the client (M-PORT-29). Two
+     * recordings are two rows with two transcripts, and neither overwrites the
+     * other; an answer key could only ever hold the last one. It also has
+     * states an answer cannot have — never attempted, running, failed — and
+     * `saveStepAnswers` replaces a step's object wholesale, so a transcript
+     * parked in the document would be at the mercy of every later save.
+     *
+     * `transcriptStatus` null means **never attempted**, which is every row
+     * that exists today and every upload that is not audio. `transcript` is
+     * null until one lands. `transcriptEditedAt` null on a delivered
+     * transcript means no human has read it, and the intake document says so
+     * rather than presenting a machine's guess at a festival name as fact
+     * (D-PORT-3).
+     *
+     * `transcriptAttempts` is this feature's whole budget, and it is per file
+     * rather than per engagement (M-PORT-30): retry is a per-file action, and
+     * a client who has spent their extraction runs must still be able to
+     * transcribe.
+     */
+    transcribedAt: timestamp("transcribed_at", { withTimezone: true }),
+    transcript: text("transcript"),
+    transcriptAttempts: integer("transcript_attempts").notNull().default(0),
+    transcriptEditedAt: timestamp("transcript_edited_at", {
+      withTimezone: true,
+    }),
+    transcriptModel: text("transcript_model"),
+    transcriptStatus: text("transcript_status"),
+
     uploadedAt: timestamp("uploaded_at", { withTimezone: true }),
 
     engagementId: uuid("engagement_id")

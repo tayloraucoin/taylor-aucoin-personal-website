@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AccordionSection } from "./accordion";
 
 /**
  * One labelled band in the review scroll.
@@ -8,6 +9,10 @@ import type { ReactNode } from "react";
  * where the upsell happens. Reviewing the steps alone hid both. Each band says
  * plainly where it sits in the flow, so the order and the payment boundary are
  * legible at a glance (Taylor, 2026-09-01).
+ *
+ * Each band collapses, open by default, its own heading acting as the toggle —
+ * see `AccordionSection` for why the eyebrow and title are spans rather than
+ * the elements they look like.
  */
 export function FlowSection({
   stage,
@@ -22,16 +27,27 @@ export function FlowSection({
 }>) {
   return (
     <section className="border-t border-(--color-faint) py-10 first:border-t-0">
-      <p className="font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-        {stage}
-      </p>
-      <h2 className="mt-2 font-(family-name:--font-display) text-[24px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)">
-        {title}
-      </h2>
-      {note ? (
-        <p className="mt-2 max-w-[60ch] text-sm text-(--color-dim)">{note}</p>
-      ) : null}
-      <div className="mt-6 max-w-2xl">{children}</div>
+      <AccordionSection
+        header={
+          <>
+            <span className="block font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+              {stage}
+            </span>
+            <span data-md="section" className="mt-2 block font-(family-name:--font-display) text-[24px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)">
+              {title}
+            </span>
+          </>
+        }
+        note={
+          note ? (
+            <p className="mt-2 max-w-[60ch] text-sm text-(--color-dim)">
+              {note}
+            </p>
+          ) : undefined
+        }
+      >
+        <div className="mt-6 max-w-2xl">{children}</div>
+      </AccordionSection>
     </section>
   );
 }

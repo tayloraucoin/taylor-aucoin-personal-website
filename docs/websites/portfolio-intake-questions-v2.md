@@ -577,3 +577,203 @@ coded track, including the pay and welcome screens a consultant sees. Changed
 to "Agora · Custom build" as a reversible default. "Custom" is category-neutral
 and true of the deliverable; "Coded" is the public slug but reads as jargon to
 a client. Overrule if you want different words — it is one string.
+
+---
+
+## Amendments — 2026-09-03 (Taylor)
+
+**Start form — what's the work?** The five-row discipline list widens to eleven
+and one label narrows. Keys are storage and none changed. `[COPY — pending
+Taylor]` on every row not marked v2:
+
+- Film or video *(v2)*
+- Photography *(v2)*
+- Design *(v2)*
+- Illustration or fine art *(v2)*
+- Music — playing, producing, composing *(was "Music or performance"; narrowed
+  because it overlapped both new performance rows)*
+- DJing
+- Performing arts — dance, theatre, flow
+- Modelling
+- Fashion, styling, or makeup
+- Craft — ceramics, textiles, woodwork
+- Writing
+
+"Something else?" stays as the free-text row beneath. Only film has a copy pack;
+every other discipline reads the generic copy and meets the generic example-site
+set until a pack or a set of its own is written (D-PORT-5).
+
+**Step 1 — the fast way.** The invitation above the paste box now flexes by
+kind, from `lib/intake/showcase-copy.ts` (`primerIntro`). The portfolio floor:
+*"Anything that already explains you and your work — an old About page, an
+artist statement, a bio from a programme or a festival, an email where you put
+it well. Paste it below, send the file, or both. Skip the career timeline
+itself; there's a step for that."* `[COPY — pending Taylor]`. PORT-18 replaces
+this block with a step of its own before "About you".
+
+**Ten steps (PORT-18, ratified by Taylor 2026-09-03).** A new step leads the
+questionnaire and every step after it renumbers: "About you" is step 2,
+"Accounts and access" is step 10. The welcome screen's "Nine steps." becomes
+"Ten steps." and now reads the count from the registry. Every other string on
+the welcome screen is unchanged.
+
+## Step 1 of 10 — Everything you already have
+
+_Step intro:_ One job on this screen: give us everything you already have, once.
+We read it and fill in as much of the rest of this form as it honestly supports
+— so the steps ahead open mostly answered, and you correct instead of compose.
+
+Copy above the box _(flexes by kind — this is the portfolio floor)_: An old
+About page, an artist statement, a bio from a programme or a festival, the text
+off your current site, a CV, an email where you put it well. Paste it all in one
+go — don't tidy it.
+
+Go wide, not deep. Your work history and the individual pieces each get a box
+of their own later, with the same trick — so a line or two on each is plenty
+here.
+
+**Words now, pictures later** _(callout)_ — Photos, video, logos, and anything
+you want on the site itself come later, in the steps that place them. This step
+reads text.
+
+**Paste it all here** `long text`
+Help: One big messy paste is perfect. It saves as you type.
+Placeholder: Paste it all here — don't tidy it.
+
+**Pages worth reading** `long text` — key: `links`
+Help: One per line. Your old site, an interview, a festival page, a profile. We
+read the page itself; we don't follow anything on it. Anything behind a login —
+Instagram, LinkedIn, a private drive — can't be read from outside, so paste
+what it says instead.
+Placeholder: https://your-old-site.com
+
+**Or send the files themselves** `file upload, multiple`
+Help: A deck, a PDF, a doc, a scan — anything too long to paste. We read what
+we can and store all of it either way, and Taylor reads what we can't.
+
+**What we've got so far** _(appears once anything has been sent)_
+One line per file and page: *Reading it…* · *Read* · *We can't read this kind
+of file — it's stored, and Taylor reads it himself.* · *Too big for us to read
+through — it's stored, and Taylor reads it himself.* · *That one didn't read.*
+with *Try reading it again* · *Couldn't open that page from outside. Paste what
+it says instead, if it matters.*
+
+A file that was read offers **See what we read**, which opens the text with the
+line: *This is what we made of it — a machine's reading, not your words. Fix
+anything it got wrong and we'll use your version.* Corrections are saved and
+used in place of the reading.
+
+Button: **Read it all**
+
+On press, a confirmation card: **Ready to run this?** — "This runs once. It
+reads everything above and fills in what it can across the steps ahead;
+anything it can't find, you type as you go. If there's more to add, add it
+first — there's no second pass." · **Yes, read it** · **Not yet**
+
+While it runs, a focus-trapped overlay: **Reading it through** — "Usually under
+a minute. A big paste can take a few. You can close this tab — if it finishes
+while you're gone, the form will be filled in when you come back."
+
+Afterwards the step becomes a record of what was sent: the paste read-only, and
+one line saying what happened — how many answers were filled, or that nothing
+in it could be turned into one, or that part of the run didn't land. It does
+not run twice.
+
+Every value it fills carries **Filled in from what you sent** wherever it
+appears, with the sentence it came from, until the client edits it.
+
+The confirmation, in-progress, completed, and failure copy all live in
+`lib/intake/showcase-copy.ts` under `ingestion`, all `[COPY — pending Taylor]`.
+
+**Step 2's "The fast way" box is retired** (PORT-18). It asked for one document
+and proposed into free-text fields; this step asks for everything and fills the
+form from it, so the two were the same question. Answers already given to it
+still appear in the intake document.
+
+Every string in this step is `[COPY — pending Taylor]`.
+
+## Amendments — 2026-09-03, second read (Taylor · shipped as PORT-19)
+
+Taylor read the whole coded flow at `/admin/intake/questions` and superseded
+eleven approved strings. Each one below **replaces** the v2 line it names; the
+old wording is no longer client-facing and its `(v2)` marker is gone. Every new
+string is `[COPY — pending Taylor]`.
+
+**Step 2 — About you.** *"What do you actually want out of this?"* → **"What do
+you want this site to do for you?"** Help: *"Before the questions start
+narrowing it down — say the thing you came here wanting to say. New site or a
+rebuild, and either way: what isn't working now, who you need to reach, what
+you're sick of explaining, and what has to be true a year from now for this to
+have been worth the money. Ramble."* The old label read as a question about
+life rather than about the site.
+
+**Step 3 — Who this site is for.** *"What should they do next?"* → **"What do
+you want a visitor to actually do?"** Help: *"The buttons, in other words. For
+each kind of visitor: watch something, email you, book a call, download the
+deck, pass your name along. Plain words are fine — name the action, not the
+feeling."* It was always the CTA question and now says so.
+
+**Step 5 — The work · videos.** *"Where to watch"* and *"Password, if the link
+has one"* were one link and one password per project. They become a repeatable
+list: **"Where to watch it"** — *"Every version worth seeing — the film, the
+trailer, a cutdown. Tell us what each one is, and tick the one to lead with."*
+Each video carries **"Link"**, **"What it is"** *("A few words — the film, the
+trailer, a two-minute teaser, the Q&A after the screening.")*, the same share
+password field, and **"Lead with this one"** *("Goes to the top of the project,
+highlighted. One per project, and none at all is a fine answer.")*.
+
+**Step 5 — The work · the box.** A project box now ends with **Save and close**,
+which saves and collapses the card. Presentation only.
+
+**Step 5 — The work · the reel.** *"Which piece is the reel?"* / *"Which piece
+leads?"* — **withdrawn.** A project's lead-with tick answers it inside the
+project, and the new home block on step 9 answers it for the site.
+
+**Step 5 — The work · the five.** *"If you could only show five"* keeps its
+label and stops being a text box. The project rows render and the client ticks
+five, in order; the order is the rank. Help: *"Tick five, in the order you'd
+show them. This tells us more than any rating."* A sixth tick is refused with a
+visible line rather than ignored.
+
+**Step 8 — Media · videos.** New: **"Videos that don't belong to one project"**
+— *"A showreel, a sizzle, a teaser, a talk you gave. Anything on Vimeo or
+YouTube — the site embeds from there rather than hosting video itself, which is
+what keeps your hosting close to free."* Same rows as a project's videos, minus
+the lead-with tick.
+
+**Step 8 — Media · the logo.** *"Have one, but I hate it"* → **"Have one, but I
+want a new one"**. The stored value is unchanged.
+
+**Step 9 — The site itself · the home page.** New, replacing the reel question:
+**"What should be on the home page?"** — *"However it comes out. The one thing
+someone should hit first, what has to be above the fold, what you want them
+feeling ten seconds in — and anything that must not be there."* Followed by
+**"Anything from what you've given us that belongs there"** — *"A shortlist, not
+a running order. We'll design the home page from everything on this form — this
+is you pointing at the pieces worth considering first."* It shows every video
+they have entered, as a YouTube or Vimeo embed labelled with the line they
+wrote about it, and every image they have uploaded, by name.
+
+**Step 9 — The site itself · pages.** The help line's *"before anything goes
+past the five included"* becomes *"before anything goes past what's included"*,
+because what is included is five plus whatever they bought. The group now shows
+a running **`n/allowance` pages** count at all times rather than only once they
+are over, and carries a standing note: *"We take this as input rather than
+instruction. If a different set of pages serves you better, we'll say so —
+having read everything you've told us, not just this list."*
+
+**Step 9 — The site itself · availability.** *"Should the site say whether
+you're available?"* keeps its label and gains a follow-up, revealed on **yes**
+and on **not sure**: **"What should it say?"** — *"'Booking for fall 2026',
+'Taking two projects this quarter', 'Currently on a feature until March' — and
+tell us when it stops being true."*
+
+**Step 10 — Accounts and access.** *"Where does your video live?"* and
+*"Somewhere else?"* — **withdrawn.** The client pastes video links on every
+project card and on Media, and their domains answer it. The kinds that were
+asked the tools checklist instead are unaffected; a portfolio and a studio now
+meet nothing at that point.
+
+**Not amended here.** Step 6 (Taste) is Taylor's own separate pass. Step 7's
+voice-memo prompt stands as written until the browser-recording work lands —
+see `VOICE-NOTE-TRANSCRIPTION-PRIMER.md`.

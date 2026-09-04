@@ -1,5 +1,7 @@
 "use client";
 
+import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
+import { copyPackFor } from "@/lib/intake/tracks";
 import {
   ChoiceAnswer,
   LongAnswer,
@@ -7,19 +9,6 @@ import {
 } from "../../../../intake/_components/answer-inputs";
 import { useReportSaveState } from "../../../../intake/_lib/save-state";
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
-
-const AUDIENCES = [
-  { value: "producers", label: "Producers or production companies" },
-  { value: "agencies", label: "Agencies or brands" },
-  { value: "direct", label: "Direct clients" },
-  { value: "festivals", label: "Festivals or programmers" },
-  { value: "students", label: "Students or their parents" },
-  { value: "press", label: "Press" },
-  { value: "recruiters", label: "Recruiters or employers" },
-  { value: "peers", label: "Other people in my field" },
-  { value: "investors", label: "Investors" },
-  { value: "collaborators", label: "Prospective collaborators" },
-] as const;
 
 /**
  * Step 2 — Who this site is for.
@@ -36,10 +25,13 @@ const AUDIENCES = [
 export function StepAudience({
   token,
   initial,
+  flavour,
 }: {
   token: string;
   initial: Record<string, unknown>;
+  flavour: ShowcaseFlavour;
 }) {
+  const pack = copyPackFor(flavour);
   const form = useStepAutosave({ token, stepKey: "audience", initial });
   useReportSaveState(form.state, form.retry);
 
@@ -49,7 +41,7 @@ export function StepAudience({
         form={form}
         name="audiences"
         label="Who ends up on your site?"
-        options={AUDIENCES}
+        options={pack.audiences}
         multiple
       />
 
@@ -66,22 +58,22 @@ export function StepAudience({
         <LongAnswer
           form={form}
           name="whatShouldTheyDo"
-          label="What should they do next?"
-          help="For each kind of visitor — watch the reel, email you, book a call, pass your name along. Plain words are fine."
+          label="What do you want a visitor to actually do?"
+          help="The buttons, in other words. For each kind of visitor: watch something, email you, book a call, download the deck, pass your name along. Plain words are fine — name the action, not the feeling."
         />
 
         <LongAnswer
           form={form}
           name="wantMoreOf"
-          label="What work do you want more of?"
-          help="The site's job is shaping what comes next, not cataloguing what came before. What do you want the phone ringing about?"
+          label={pack.wantMoreOf.label}
+          help={pack.wantMoreOf.help}
         />
 
         <LongAnswer
           form={form}
           name="stopAttracting"
-          label="What do you want to stop attracting?"
-          help="Work you'd rather age out of — even if it pays."
+          label={pack.stopAttracting.label}
+          help={pack.stopAttracting.help}
         />
       </Group>
 
@@ -97,14 +89,14 @@ export function StepAudience({
           form={form}
           name="whatYouAreNot"
           label="What are you not?"
-          help={`"I'm not the cheap option" or "I'm not a corporate video guy" — whatever's true.`}
+          help={pack.whatYouAreNotHelp}
         />
 
         <LongAnswer
           form={form}
           name="afterOneVisit"
           label="After one visit, what should someone think of you?"
-          help={`The impression, in your own words. "Someone you'd trust with a crew" reads differently from "someone who makes strange, beautiful things" — both are good answers.`}
+          help={pack.afterOneVisitHelp}
         />
       </Group>
     </>

@@ -4,7 +4,7 @@
 **Slice type:** A second AI touchpoint, earlier and broader than PORT-6's. Risks: fabricated facts reaching a client's live site; a client's document dump leaking into a log; a prediction that reads as a decision.
 **Review:** **Loom — prompt contract and eval set, before the prompt is written. Mason — the write path and the `answers` merge.**
 
-**Status:** Not started — scope only. Written to be executed in a fresh thread.
+**Status:** Complete (2026-09-01) — the paste box on step 1, the grounded service, per-step proposals met beside the questions they answer, and accept/dismiss. **The quote is verified against the document server-side, not trusted from the model**; all six drop rules exercised directly. Proposals live at `answers.primer` and are invisible to the intake document by construction. **Live eval run and clean**: 11 cases, 9 graded, 65 proposals, 0 hard findings, 0 soft. Full recall on case 1 (14 of 14, none missed); the CV pasted in error produced 0 proposals; both empty cases refused before reaching the model.
 
 > **Loom — cognition review.** This slice's failure mode is not a bad UX. It is a plausible sentence about a real business that nobody said, surviving into a live website. Everything below is arranged around that one risk.
 

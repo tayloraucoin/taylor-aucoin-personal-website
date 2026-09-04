@@ -116,7 +116,7 @@ export function PostCallPanel({
                 : completed,
             )
           }
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 text-sm text-(--color-ink)"
         >
           Done
         </button>
@@ -220,7 +220,7 @@ function TextBlock({
         rows={6}
         aria-label="Text message"
         data-typing
-        className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+        className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
       />
 
       {message ? (
@@ -289,7 +289,7 @@ function IntakeBlock({
   const [pending, startTransition] = useTransition();
 
   const field =
-    "min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
+    "min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
 
   if (url) {
     return (
@@ -352,7 +352,7 @@ function IntakeBlock({
           onChange={(event) => setSummary(event.target.value)}
           rows={3}
           data-typing
-          className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+          className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
         />
       </label>
 

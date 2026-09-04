@@ -27,11 +27,11 @@ export function DayStrip({ nowHours }: { nowHours: number }) {
               {profile.label}
             </span>
 
-            <div className="relative h-3 flex-1 rounded-(--radius) bg-white/5">
+            <div className="relative h-3 flex-1 rounded-(--radius) bg-(--color-tint)">
               {profile.fair.map((range) => (
                 <span
                   key={`fair-${range.from}`}
-                  className="absolute inset-y-0 rounded-(--radius) bg-white/15"
+                  className="absolute inset-y-0 rounded-(--radius) bg-(--color-tint-strong)"
                   style={{
                     left: `${pct(range.from)}%`,
                     width: `${((range.to - range.from) / SPAN) * 100}%`,
@@ -41,7 +41,7 @@ export function DayStrip({ nowHours }: { nowHours: number }) {
               {profile.best.map((range) => (
                 <span
                   key={`best-${range.from}`}
-                  className="absolute inset-y-0 rounded-(--radius) bg-(--color-c2)/70"
+                  className="absolute inset-y-0 rounded-(--radius) bg-(--color-gold-500)/70"
                   style={{
                     left: `${pct(range.from)}%`,
                     width: `${((range.to - range.from) / SPAN) * 100}%`,

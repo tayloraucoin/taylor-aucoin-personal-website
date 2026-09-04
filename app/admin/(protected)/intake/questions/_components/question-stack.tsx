@@ -1,7 +1,13 @@
-import { stepsFor } from "@/lib/intake/tracks";
-import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import type { IntakeTrackKey } from "@/lib/types/intake";
-
+import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
+import { StepAccess as ShowcaseAccess } from "@/app/websites/coded/intake/_components/steps/step-access";
+import { StepAudience } from "@/app/websites/coded/intake/_components/steps/step-audience";
+import { StepExperience } from "@/app/websites/coded/intake/_components/steps/step-experience";
+import { StepIngest } from "@/app/websites/coded/intake/_components/steps/step-ingest";
+import { StepMedia } from "@/app/websites/coded/intake/_components/steps/step-media";
+import { StepSite } from "@/app/websites/coded/intake/_components/steps/step-site";
+import { StepTaste } from "@/app/websites/coded/intake/_components/steps/step-taste";
+import { StepWords } from "@/app/websites/coded/intake/_components/steps/step-words";
+import { StepWork } from "@/app/websites/coded/intake/_components/steps/step-work";
 import { StepAccess } from "@/app/websites/intake/_components/steps/step-access";
 import { StepBusiness } from "@/app/websites/intake/_components/steps/step-business";
 import { StepOperations } from "@/app/websites/intake/_components/steps/step-operations";
@@ -11,16 +17,12 @@ import { StepPricing } from "@/app/websites/intake/_components/steps/step-pricin
 import { StepReviews } from "@/app/websites/intake/_components/steps/step-reviews";
 import { StepTeam } from "@/app/websites/intake/_components/steps/step-team";
 import { StepVoice } from "@/app/websites/intake/_components/steps/step-voice";
-
-import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
-import { StepAccess as ShowcaseAccess } from "@/app/websites/coded/intake/_components/steps/step-access";
-import { StepAudience } from "@/app/websites/coded/intake/_components/steps/step-audience";
-import { StepExperience } from "@/app/websites/coded/intake/_components/steps/step-experience";
-import { StepMedia } from "@/app/websites/coded/intake/_components/steps/step-media";
-import { StepSite } from "@/app/websites/coded/intake/_components/steps/step-site";
-import { StepTaste } from "@/app/websites/coded/intake/_components/steps/step-taste";
-import { StepWords } from "@/app/websites/coded/intake/_components/steps/step-words";
-import { StepWork } from "@/app/websites/coded/intake/_components/steps/step-work";
+import { examplesFor } from "@/content/intake-examples";
+import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
+import { stepsFor } from "@/lib/intake/tracks";
+import type { IntakeTrackKey } from "@/lib/types/intake";
+import { AccordionSection } from "./accordion";
 
 /**
  * Every step of one track, stacked, in order.
@@ -37,6 +39,11 @@ import { StepWork } from "@/app/websites/coded/intake/_components/steps/step-wor
  * something whose other consumer is an admin screen; the client route is the
  * one that must stay simple.
  *
+ * Each step collapses independently of the flow band around it, which is what
+ * makes comparing step 3's wording against step 4's a scroll of one screen
+ * rather than six (Taylor, 2026-09-03). The body is unmounted while closed, so
+ * a collapsed step costs nothing — these are live autosave components.
+ *
  * Every prop is empty. There is no engagement behind a preview, so `token` is
  * the empty string, answers are `{}`, files are empty lists, and prefill is
  * blank strings — never a sample business, which `docs/intake/ADMIN-HANDOFF.md`
@@ -45,7 +52,13 @@ import { StepWork } from "@/app/websites/coded/intake/_components/steps/step-wor
 export function QuestionStack({
   track,
   flavour,
-}: Readonly<{ track: IntakeTrackKey; flavour: ShowcaseFlavour }>) {
+  kind,
+}: Readonly<{
+  track: IntakeTrackKey;
+  flavour: ShowcaseFlavour;
+  /** What the site is for. Decides which field groups exist at all. */
+  kind: ShowcaseKind;
+}>) {
   const steps = stepsFor(track, flavour);
 
   return (
@@ -55,29 +68,47 @@ export function QuestionStack({
           key={step.key}
           className="border-t border-(--color-faint) py-10 first:border-t-0 first:pt-0"
         >
-          <p className="font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            Step {step.number} of {steps.length} · {step.key}
-          </p>
-
-          <h2 className="mt-2 font-(family-name:--font-display) text-[28px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)">
-            {step.title}
-          </h2>
-
-          {step.intro ? (
-            <p
-              className={`mt-3 max-w-[48ch] text-[16px] font-light leading-[1.6] ${
-                step.emphasis === "ink"
-                  ? "text-(--color-ink)"
-                  : "text-(--color-body)"
-              }`}
-            >
-              {step.intro}
-            </p>
-          ) : null}
-
-          <div className="mt-6 max-w-2xl">
-            <StepBody track={track} stepKey={step.key} flavour={flavour} />
-          </div>
+          <AccordionSection
+            header={
+              <>
+                <span
+                  data-md="eyebrow"
+                  className="block font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+                >
+                  Step {step.number} of {steps.length} · {step.key}
+                </span>
+                <span
+                  data-md="section"
+                  className="mt-2 block font-(family-name:--font-display) text-[28px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)"
+                >
+                  {step.title}
+                </span>
+              </>
+            }
+            note={
+              step.intro ? (
+                <p
+                  key={`${step.key}-intro`}
+                  className={`mt-3 max-w-[48ch] text-[16px] font-light leading-[1.6] ${
+                    step.emphasis === "ink"
+                      ? "text-(--color-ink)"
+                      : "text-(--color-body)"
+                  }`}
+                >
+                  {step.intro}
+                </p>
+              ) : undefined
+            }
+          >
+            <div key={`${step.key}-body`} className="mt-6 max-w-2xl">
+              <StepBody
+                track={track}
+                stepKey={step.key}
+                flavour={flavour}
+                kind={kind}
+              />
+            </div>
+          </AccordionSection>
         </li>
       ))}
     </ol>
@@ -92,10 +123,12 @@ function StepBody({
   track,
   stepKey,
   flavour,
+  kind,
 }: Readonly<{
   track: IntakeTrackKey;
   stepKey: string;
   flavour: ShowcaseFlavour;
+  kind: ShowcaseKind;
 }>) {
   const shared = { token: NO_TOKEN, initial: NO_ANSWERS };
 
@@ -154,50 +187,87 @@ function StepBody({
   }
 
   switch (stepKey) {
+    case "ingest":
+      // The paste box, the drop, and the action with its confirmation. No
+      // record: a preview has no engagement and therefore no run, so this
+      // reviews the step a client meets first rather than its completed
+      // state. The action itself refuses in preview, as every write path
+      // beneath this surface does.
+      return <StepIngest {...shared} flavour={flavour} files={NO_FILES} />;
     case "about":
       return (
         <StepAbout
           {...shared}
+          initialKind={kind}
           prefill={{ contactName: "", contactEmail: "", contactPhone: null }}
+          headshots={NO_FILES}
         />
       );
     case "audience":
-      return <StepAudience {...shared} />;
+      return <StepAudience {...shared} flavour={flavour} />;
     case "experience":
-      return <StepExperience {...shared} />;
+      // No roster: a preview has no engagement and therefore no people, so the
+      // step renders its one-subject shape. The per-person grouping is
+      // reachable here only by filling step 1's roster above, which is exactly
+      // how a client reaches it too.
+      return <StepExperience {...shared} flavour={flavour} />;
     case "work":
       return (
-        <StepWork {...shared} flavour={flavour} projectFiles={NO_FILES} />
+        <StepWork
+          {...shared}
+          flavour={flavour}
+          kind={kind}
+          projectFiles={NO_FILES}
+          pieceFiles={NO_FILES}
+        />
       );
     case "words":
       return (
-        <StepWords {...shared} files={{ voiceNote: NO_FILES, writing: NO_FILES }} />
+        // No `displayName`: this surface reviews the questions, not one
+        // client's answers, so the third-person example renders its
+        // no-name form ("They make…") rather than borrowing a name.
+        <StepWords
+          {...shared}
+          flavour={flavour}
+          files={{ voiceNote: NO_FILES, writing: NO_FILES }}
+        />
       );
     case "taste":
       return (
+        // The set for this pack as it stands. Uncurated sets render the taste
+        // step's absent state here too, which is the point: this surface is
+        // for reviewing what a client actually meets.
         <StepTaste
           {...shared}
           flavour={flavour}
+          gallery={examplesFor(flavour)}
           files={{ inspiration: NO_FILES }}
+          // A preview buys nothing and quotes nothing: the document renders
+          // both add-on states under a line naming what opens each.
+          motion={{ priceCents: null, currency: "cad" }}
         />
       );
     case "media":
       return (
         <StepMedia
           {...shared}
+          flavour={flavour}
+          kind={kind}
           files={{
             portrait: NO_FILES,
             behindScenes: NO_FILES,
             laurels: NO_FILES,
             logo: NO_FILES,
             brandAssets: NO_FILES,
+            place: NO_FILES,
+            documents: NO_FILES,
           }}
         />
       );
     case "site":
-      return <StepSite {...shared} />;
+      return <StepSite {...shared} flavour={flavour} kind={kind} />;
     case "access":
-      return <ShowcaseAccess {...shared} flavour={flavour} />;
+      return <ShowcaseAccess {...shared} flavour={flavour} kind={kind} />;
     default:
       return <UnrenderedStep stepKey={stepKey} />;
   }

@@ -34,6 +34,7 @@ export function ShowcasePayGate({
   half,
   full,
   addons,
+  extraPage,
   promoCode,
 }: {
   engagement: Engagement;
@@ -42,14 +43,18 @@ export function ShowcasePayGate({
   half: SellableProduct;
   full: SellableProduct | null;
   addons: SellableProduct[];
+  /** Priced per page, so it is counted rather than ticked. Null if unsellable. */
+  extraPage: SellableProduct | null;
   promoCode?: string;
 }) {
-  const addonViews: CheckoutAddonView[] = addons.map((a) => ({
-    key: a.key,
-    name: a.name,
-    description: a.description,
-    amountCents: a.priceCents,
-  }));
+  const toView = (product: SellableProduct): CheckoutAddonView => ({
+    key: product.key,
+    name: product.name,
+    description: product.description,
+    amountCents: product.priceCents,
+  });
+
+  const addonViews: CheckoutAddonView[] = addons.map(toView);
 
   return (
     <div>
@@ -61,9 +66,10 @@ export function ShowcasePayGate({
 
       <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
         Five pages, your work fully produced, real code you own, hosting that
-        costs close to nothing. Extra pages are $150 each — you&apos;ll pick
-        pages inside, and nothing extra is ever charged without a conversation
-        first.
+        costs close to nothing. Extra pages are $150 each — add them below if
+        you already know you need them, or leave it: you&apos;ll pick pages
+        inside, and nothing beyond what you pay for today is ever charged
+        without a conversation first.
       </p>
 
       {canceled ? (
@@ -81,6 +87,7 @@ export function ShowcasePayGate({
         // derived from the deposit — a price nothing could actually charge.
         fullCents={full?.priceCents ?? null}
         addons={addonViews}
+        extraPage={extraPage ? toView(extraPage) : null}
         initialPromoCode={promoCode}
       />
 

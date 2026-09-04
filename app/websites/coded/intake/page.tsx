@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { socialCard } from "@/lib/metadata";
 import { eyebrowFor } from "@/lib/intake/tracks";
+import { socialCard } from "@/lib/metadata";
 import { legalRoutes, showcaseIntakeRoutes } from "@/lib/routes";
 import {
   EngagementNotFoundError,

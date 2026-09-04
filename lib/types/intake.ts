@@ -44,14 +44,19 @@ export const INTAKE_TRACK_KEYS = ["durable", "showcase"] as const;
 export type IntakeTrackKey = (typeof INTAKE_TRACK_KEYS)[number];
 
 /**
- * The showcase track's nine steps, in order.
+ * The showcase track's ten steps, in order.
  *
  * Its own key space, sitting in the same answers document as the durable
  * track's. `access` appears in both by coincidence of subject, not by sharing:
  * each track resolves its own schema and labels for that key through
  * `lib/intake/tracks.ts`, so the two never meet.
+ *
+ * `ingest` leads (PORT-18, 2026-09-03): the one screen that takes everything a
+ * client already has and fills the rest of the form from it. Nine became ten
+ * here and nowhere else — every count downstream derives from this list.
  */
 export const SHOWCASE_STEP_KEYS = [
+  "ingest",
   "about",
   "audience",
   "experience",

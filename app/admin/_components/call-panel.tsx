@@ -363,7 +363,7 @@ export function CallPanel({
           onBlur={persistNotes}
           rows={4}
           data-typing
-          className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+          className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
         />
       </label>
 
@@ -383,7 +383,7 @@ export function CallPanel({
             rows={transcript ? 8 : 3}
             placeholder="Paste a transcript here if you recorded this call — speaker phone plus a transcription tool works well."
             data-typing
-            className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
       )}
@@ -531,7 +531,7 @@ function DispositionRow({
             type="button"
             disabled={disabled}
             onClick={() => onPick(disposition)}
-            className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-ink) hover:border-(--color-c2)/60 disabled:opacity-50"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-ink) hover:border-(--color-c2)/60 disabled:opacity-50"
           >
             <span className="mr-1.5 text-xs text-(--color-dim)">
               {index + 1}
@@ -636,13 +636,13 @@ function LoggedPanel({
   };
 
   const field =
-    "min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
+    "min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
 
   const chip = (active: boolean) =>
     `min-h-[44px] rounded-(--radius) border px-3 text-sm disabled:opacity-50 ${
       active
-        ? "border-(--color-c2)/60 bg-white/5 text-(--color-ink)"
-        : "border-white/20 text-(--color-ink) hover:border-(--color-c2)/60"
+        ? "border-(--color-c2)/60 bg-(--color-tint) text-(--color-ink)"
+        : "border-(--color-line-strong) text-(--color-ink) hover:border-(--color-c2)/60"
     }`;
 
   return (
@@ -725,8 +725,8 @@ function LoggedPanel({
                 aria-pressed={adjusted === reason}
                 className={`min-h-[44px] rounded-(--radius) border px-3 text-sm disabled:opacity-50 ${
                   adjusted === reason
-                    ? "border-(--color-c2)/60 bg-white/5 text-(--color-ink)"
-                    : "border-white/20 text-(--color-ink) hover:border-(--color-c2)/60"
+                    ? "border-(--color-c2)/60 bg-(--color-tint) text-(--color-ink)"
+                    : "border-(--color-line-strong) text-(--color-ink) hover:border-(--color-c2)/60"
                 }`}
               >
                 {reason}

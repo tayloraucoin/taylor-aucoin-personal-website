@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MAX_UPLOAD_BYTES } from "@/lib/validators/intake";
-import { useIsPreview } from "@/components/intake/preview-mode";
+import { useIsDocument, useIsPreview } from "@/components/intake/preview-mode";
+import { uploadIntakeFile } from "../_lib/upload-file";
+import { DocHint, DocTag } from "./document";
 
 type Item = {
   key: string;
@@ -47,6 +49,7 @@ export function FileDrop({
   accept,
   multiple = false,
   existing = [],
+  onUploaded,
 }: {
   token: string;
   stepKey: string;
@@ -64,6 +67,18 @@ export function FileDrop({
   accept?: string;
   multiple?: boolean;
   existing?: readonly ExistingFile[];
+  /**
+   * Told the row id once a file has landed and been confirmed.
+   *
+   * Added at PORT-20 for step 7's voice-note drop, so a phone memo a client
+   * uploads is written out in the same visit rather than on their next one.
+   * PORT-21 is the second caller: step 1's document drop reads a deck the
+   * moment its bytes land, for the same reason and on the same seam.
+   *
+   * Optional, and the durable track's drops pass nothing — they behave exactly
+   * as they always have.
+   */
+  onUploaded?: (fileId: string) => void;
 }) {
   /**
    * In preview there is no engagement to attach a file to, so the upload
@@ -75,6 +90,23 @@ export function FileDrop({
    * point of the review surface.
    */
   const preview = useIsPreview();
+  const document = useIsDocument();
+
+  /**
+   * Unique per entry, not just per field — a label finds its input by id, and
+   * `getElementById` returns the first match in the document.
+   *
+   * Three drops are entry-keyed (`project_images`, `piece_images`, `headshot`)
+   * and each renders once per repeatable entry. Without the key in the id, a
+   * client with three projects had three inputs all called
+   * `file-project_images`, so every "Add images" label opened the *first*
+   * project's picker and the chosen stills uploaded under the first project's
+   * entry key. Silent, and wrong in the answers document rather than on screen.
+   *
+   * Unkeyed drops keep exactly the id they had. The key is twelve characters of
+   * `[a-z0-9]` from `mintEntryKey`, so it is safe in an id without escaping.
+   */
+  const inputId = entryKey ? `file-${fieldKey}-${entryKey}` : `file-${fieldKey}`;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<Item[]>([]);
@@ -97,61 +129,26 @@ export function FileDrop({
     );
   }
 
+  /**
+   * The issue → PUT → confirm ladder moved to `../_lib/upload-file.ts` at
+   * PORT-20 so the voice recorder could climb the same one rather than grow a
+   * second. Behaviour here is unchanged, including that a failed confirm is
+   * not surfaced — see the note on `confirmed` in that module.
+   */
   async function send(item: Item) {
     const file = item.file;
     if (!file) return;
 
     try {
-      const issued = await fetch("/api/intake/upload", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          token,
-          stepKey,
-          fieldKey,
-          entryKey,
-          filename: file.name,
-          mimeType: file.type || undefined,
-          sizeBytes: file.size,
-        }),
-      });
-
-      if (!issued.ok) {
-        patch(item.key, { status: "failed" });
-        return;
-      }
-
-      const { fileId, uploadUrl } = (await issued.json()) as {
-        fileId: string;
-        uploadUrl: string;
-      };
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", uploadUrl);
-        xhr.upload.addEventListener("progress", (event) => {
-          if (event.lengthComputable) {
-            patch(item.key, {
-              progress: Math.round((event.loaded / event.total) * 100),
-            });
-          }
-        });
-        xhr.addEventListener("load", () =>
-          xhr.status >= 200 && xhr.status < 300
-            ? resolve()
-            : reject(new Error(String(xhr.status))),
-        );
-        xhr.addEventListener("error", () => reject(new Error("network")));
-        xhr.send(file);
-      });
-
-      await fetch("/api/intake/upload", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token, confirm: fileId }),
-      });
+      const { fileId } = await uploadIntakeFile(
+        { token, stepKey, fieldKey, entryKey },
+        file,
+        file.name,
+        (progress) => patch(item.key, { progress }),
+      );
 
       patch(item.key, { status: "done", progress: 100 });
+      onUploaded?.(fileId);
     } catch {
       patch(item.key, { status: "failed" });
     }
@@ -180,6 +177,21 @@ export function FileDrop({
 
   const inFlight = items.filter((i) => i.status === "uploading").length;
 
+  /**
+   * Whether one file is wanted or many changes what the question is asking
+   * for, so it rides in the tag. The drop label ("Add a photo") is real client
+   * copy and belongs in a review of the copy, even though it is not the
+   * question — hence a hint rather than a heading.
+   */
+  if (document) {
+    return (
+      <>
+        <DocTag>{multiple ? "Upload · multiple" : "Upload"}</DocTag>
+        <DocHint>{label}</DocHint>
+      </>
+    );
+  }
+
   return (
     <div>
       {preview ? (
@@ -195,7 +207,7 @@ export function FileDrop({
         <>
           <input
             ref={inputRef}
-            id={`file-${fieldKey}`}
+            id={inputId}
             type="file"
             accept={accept}
             multiple={multiple}
@@ -208,7 +220,7 @@ export function FileDrop({
           />
 
           <label
-            htmlFor={`file-${fieldKey}`}
+            htmlFor={inputId}
             className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-[rgb(232_185_97/.42)] hover:text-(--color-c2)"
           >
             {label}

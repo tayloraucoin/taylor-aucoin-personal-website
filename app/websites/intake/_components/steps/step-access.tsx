@@ -8,6 +8,7 @@ import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { RepeatableBlock } from "../repeatable-block";
 import { TextField } from "../text-field";
+import { Reveal } from "../reveal";
 
 const YES_NO_UNSURE = [
   { value: "yes", label: "Yes" },
@@ -98,11 +99,6 @@ export function StepAccess({
   const form = useStepAutosave({ token, stepKey: "access", initial });
   useReportSaveState(form.state, form.retry);
 
-  const ownsDomain = form.values.ownsDomain;
-  const purchased = new Set(purchasedExtras);
-  const wantsBooking = purchased.has("booking");
-  const wantsStripe = purchased.has("stripe");
-
   return (
     <>
       <div className={CALLOUT_CLASS}>
@@ -121,7 +117,7 @@ export function StepAccess({
         options={YES_NO_UNSURE}
       />
 
-      {ownsDomain === "yes" ? (
+      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "yes" }}>
         <>
           <TextAnswer
             form={form}
@@ -144,9 +140,9 @@ export function StepAccess({
             options={DOMAIN_ACCESS}
           />
         </>
-      ) : null}
+      </Reveal>
 
-      {ownsDomain === "unsure" ? (
+      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "unsure" }}>
         <TextAnswer
           form={form}
           name="domainName"
@@ -154,9 +150,9 @@ export function StepAccess({
           help="A guess is fine — we can look it up from there."
           placeholder="yourbusiness.ca"
         />
-      ) : null}
+      </Reveal>
 
-      {ownsDomain === "no" ? (
+      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "no" }}>
         <TextAnswer
           form={form}
           name="domainName"
@@ -164,7 +160,7 @@ export function StepAccess({
           help="Registering it is part of the build. If you haven't thought about it, skip this."
           placeholder="yourbusiness.ca"
         />
-      ) : null}
+      </Reveal>
 
       <ChoiceAnswer
         form={form}
@@ -243,7 +239,7 @@ export function StepAccess({
         label="Booking or scheduling tool you use"
       />
 
-      {wantsBooking ? (
+      <Reveal extras={purchasedExtras} dependsOn={{ extra: "booking" }}>
         <>
           <div className={CALLOUT_CLASS}>
             <p className={CALLOUT_EYEBROW_CLASS}>
@@ -278,9 +274,9 @@ export function StepAccess({
             help="Google Calendar syncs automatically. Apple, Outlook, or none — tell me anyway, I'll set your hours by hand instead."
           />
         </>
-      ) : null}
+      </Reveal>
 
-      {wantsStripe ? (
+      <Reveal extras={purchasedExtras} dependsOn={{ extra: "stripe" }}>
         <>
           <div className={CALLOUT_CLASS}>
             <p className={CALLOUT_EYEBROW_CLASS}>
@@ -301,13 +297,16 @@ export function StepAccess({
               admin. That&apos;s the step that lets me build the rest.
             </p>
 
-            {form.values.hasStripe === "yes" ? (
+            <Reveal
+              values={form.values}
+              dependsOn={{ field: "hasStripe", equals: "yes" }}
+            >
               <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)">
                 You said you already have a Stripe account — tell me before you
                 make a second one. Depending on what it was for, we may be able
                 to use it.
               </p>
-            ) : null}
+            </Reveal>
 
             <p className="mt-4">
               <a
@@ -335,7 +334,7 @@ export function StepAccess({
             help="Usually your business name, up to 22 characters. Make it recognisable or you'll get calls asking what the charge was."
           />
         </>
-      ) : null}
+      </Reveal>
 
       <ChoiceAnswer
         form={form}

@@ -49,6 +49,14 @@ export async function settleDepositSession(
     return;
   }
 
+  // An add-on the client bought for themselves mid-questionnaire (PORT-26).
+  // Same rule, same reason: it stamps its own basket row and leaves `paid_at`
+  // alone.
+  if (session.metadata?.charge_kind === "addon") {
+    await settleAddon(event, session, engagementId);
+    return;
+  }
+
   const paymentIntentId =
     typeof session.payment_intent === "string"
       ? session.payment_intent
@@ -92,6 +100,50 @@ export async function settleDepositSession(
     ``,
     `They now have the questionnaire and their paid invoice email. You will`,
     `get the intake document when they finish it.`,
+  ]);
+}
+
+/**
+ * Settles an add-on the client bought mid-questionnaire.
+ *
+ * Quieter than a deposit and quieter than extra pages: no invoice, no
+ * questionnaire handover, and no client email beyond Stripe's own receipt —
+ * they are sitting on the step this returns them to and the block above the
+ * questions will have changed by the time they look up. What it does do is
+ * stamp the basket, so the engagement's record shows what was actually bought,
+ * and tell Taylor, because the work is now owed.
+ */
+async function settleAddon(
+  event: Stripe.Event,
+  session: Stripe.Checkout.Session,
+  engagementId: string,
+): Promise<void> {
+  const productKey = session.metadata?.product_key;
+
+  if (!productKey) {
+    console.warn(`[stripe] ${event.id}: add-on session without product_key`);
+    return;
+  }
+
+  const outcome = await settleAncillaryPurchase(engagementId, productKey);
+  console.info(`[stripe] ${event.id}: ${engagementId} add-on → ${outcome}`);
+
+  // A replay has already been announced once.
+  if (outcome !== "settled") return;
+
+  const amount =
+    session.amount_total === null
+      ? "unknown amount"
+      : formatMoney(session.amount_total, session.currency ?? "cad");
+
+  await notifyOps(`Add-on paid — ${amount}`, [
+    `A client bought an add-on from inside the questionnaire.`,
+    ``,
+    `Add-on:     ${productKey}`,
+    `Amount:     ${amount}`,
+    `Engagement: ${engagementId}`,
+    ``,
+    `Their deposit state is untouched by this.`,
   ]);
 }
 

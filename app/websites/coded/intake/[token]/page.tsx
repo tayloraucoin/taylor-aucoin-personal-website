@@ -7,11 +7,11 @@ import {
   requireEngagement,
 } from "@/server/services/engagement";
 import { findSellableProductByKey } from "@/server/services/products";
+import { ShowcasePayGate } from "../_components/showcase-pay-gate";
+import { ShowcaseWelcome } from "../_components/showcase-welcome";
 import { LinkUnavailable } from "../../../intake/_components/link-unavailable";
 import { PaymentConfirming } from "../../../intake/_components/payment-confirming";
 import { ResumeList } from "../../../intake/_components/resume-list";
-import { ShowcasePayGate } from "../_components/showcase-pay-gate";
-import { ShowcaseWelcome } from "../_components/showcase-welcome";
 
 /**
  * The showcase track's entry point, routed by where the engagement is.
@@ -63,11 +63,11 @@ export default async function ShowcaseIntakeEntryPage({
     // The plan cards are priced from the catalogue's own rows. `half` is the
     // one row this screen cannot render without; `full` is optional and simply
     // is not offered when it is not sellable.
-    const { deposit: half, addons } = await getCheckoutCatalogue(
-      false,
-      engagement.track,
-      "half",
-    );
+    const {
+      deposit: half,
+      addons,
+      extraPage,
+    } = await getCheckoutCatalogue(false, engagement.track, "half");
     const full = await findSellableProductByKey("showcase_full");
 
     return (
@@ -78,6 +78,7 @@ export default async function ShowcaseIntakeEntryPage({
         half={half}
         full={full}
         addons={addons}
+        extraPage={extraPage}
         promoCode={promo}
       />
     );

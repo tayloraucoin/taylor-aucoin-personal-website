@@ -57,7 +57,7 @@ function renderBlock(text: string, key: string) {
   if (text === "") return null;
 
   if (text === "---") {
-    return <hr key={key} className="border-white/10" />;
+    return <hr key={key} className="border-(--color-line-soft)" />;
   }
 
   if (text.startsWith("# ")) {
@@ -134,7 +134,7 @@ function renderBlock(text: string, key: string) {
                 <th
                   key={`${key}-h${index}`}
                   scope="col"
-                  className="border-b border-white/15 px-3 py-2 text-left text-xs tracking-wide text-(--color-dim) uppercase"
+                  className="border-b border-(--color-line) px-3 py-2 text-left text-xs tracking-wide text-(--color-dim) uppercase"
                 >
                   {inline(cell, `${key}-h${index}`)}
                 </th>
@@ -147,7 +147,7 @@ function renderBlock(text: string, key: string) {
                 {row.map((cell, cellIndex) => (
                   <td
                     key={`${key}-r${rowIndex}-${cellIndex}`}
-                    className="border-b border-white/5 px-3 py-2 align-top leading-relaxed text-(--color-body)"
+                    className="border-b border-(--color-line-soft)/50 px-3 py-2 align-top leading-relaxed text-(--color-body)"
                   >
                     {inline(cell, `${key}-r${rowIndex}-${cellIndex}`)}
                   </td>

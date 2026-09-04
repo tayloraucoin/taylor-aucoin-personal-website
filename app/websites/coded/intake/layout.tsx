@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { socialCard } from "@/lib/metadata";
 import { INTAKE_COLUMN } from "../../intake/_lib/column";
 

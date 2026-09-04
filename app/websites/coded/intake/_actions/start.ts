@@ -32,9 +32,11 @@ const RESUME_COOKIE_MAX_AGE = 60 * 60 * 24 * 60;
  * -than-duplicate rule, same honeypot handling. What differs is the track it
  * stamps and where the answers land.
  *
- * `businessName` carries the client's own name here. The column is notNull and
- * a creative's practice is usually themselves; asking separately for a
- * "business name" would be asking for the same string twice (D-INT-8, M-PORT-3).
+ * `businessName` carries whatever the thing is actually called. For a portfolio
+ * that is the client's own name — a creative's practice is usually themselves,
+ * and asking twice would be the D-INT-8 failure in miniature (M-PORT-3). For
+ * every other kind the form asks, because a venture with three founders and a
+ * property in Italy is not called Amy.
  */
 export async function startShowcaseIntake(
   formData: FormData,
@@ -44,9 +46,9 @@ export async function startShowcaseIntake(
     contactEmail: formData.get("contactEmail"),
     contactPhone: formData.get("contactPhone") || undefined,
     whatYouDo: formData.get("whatYouDo") || undefined,
-    siteKinds: formData.getAll("siteKinds").map(String),
+    siteKind: formData.get("siteKind") || undefined,
+    entityName: formData.get("entityName") || undefined,
     disciplines: formData.getAll("disciplines").map(String),
-    siteKindsOther: formData.get("siteKindsOther") || undefined,
     disciplinesOther: formData.get("disciplinesOther") || undefined,
     currentWebsite: formData.get("currentWebsite") || undefined,
     website: formData.get("website") || undefined,
@@ -76,8 +78,14 @@ export async function startShowcaseIntake(
     redirect(withPromo(showcaseIntakeRoutes.entry(existing.token)));
   }
 
+  // The thing's own name when it has one, the contact's when it does not.
+  // Never an empty string: the column is notNull and a blank business name
+  // reads as a bug in every admin surface that lists it.
+  const entityName = parsed.data.entityName?.trim();
+  const businessName = entityName || parsed.data.contactName;
+
   const { engagement, token } = await createEngagement({
-    businessName: parsed.data.contactName,
+    businessName,
     contactName: parsed.data.contactName,
     contactEmail: parsed.data.contactEmail,
     contactPhone: parsed.data.contactPhone,
@@ -91,18 +99,25 @@ export async function startShowcaseIntake(
   // lives on the engagement's own columns and step 1 renders it from there.
   await saveStepAnswers(token, "about", {
     whatYouDo: parsed.data.whatYouDo,
-    siteKinds: parsed.data.siteKinds,
+    siteKind: parsed.data.siteKind,
     disciplines: parsed.data.disciplines,
-    siteKindsOther: parsed.data.siteKindsOther,
     disciplinesOther: parsed.data.disciplinesOther,
     currentWebsite: parsed.data.currentWebsite,
+
+    // Seeded only when the thing has a name of its own, so step 1 opens with
+    // it filled rather than asking a second time. A portfolio's display name
+    // stays blank here: step 1 asks it properly, and pre-filling it with the
+    // contact's name would put a decision in their mouth.
+    ...(entityName ? { displayName: entityName } : {}),
   });
 
   await setResumeCookie(token);
 
   // Best effort: they are about to be redirected there anyway, and a failed
   // send must not cost them the engagement they just created.
-  void sendResumeLink(engagement, buildShowcaseIntakeUrl(token)).catch(() => {});
+  void sendResumeLink(engagement, buildShowcaseIntakeUrl(token)).catch(
+    () => {},
+  );
 
   redirect(withPromo(showcaseIntakeRoutes.entry(token)));
 }

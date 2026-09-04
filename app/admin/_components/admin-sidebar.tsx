@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { adminRoutes } from "@/lib/routes";
-import { AdminNavSection } from "./admin-nav-section";
 import { NAV_SECTIONS } from "./admin-nav";
+import { AdminNavSection } from "./admin-nav-section";
+import { ThemeToggle } from "./theme-toggle";
 
 /**
  * The rail. Rendered twice: as the persistent desktop column, and inside the
@@ -101,6 +102,10 @@ export function AdminSidebar({
             )}
           </button>
         ) : null}
+
+        <div className="mt-2 mb-2 px-2">
+          <ThemeToggle collapsed={collapsed} />
+        </div>
 
         <form action={signOut}>
           {collapsed ? null : (

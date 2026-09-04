@@ -1,7 +1,10 @@
 "use server";
 
 import { promoCodeInput } from "@/lib/validators/intake";
-import { describePromo, type PromoDescription } from "@/server/services/deposit";
+import {
+  describePromo,
+  type PromoDescription,
+} from "@/server/services/deposit";
 import { requireEngagement } from "@/server/services/engagement";
 
 /**

@@ -86,7 +86,7 @@ export default async function EngagementDetailPage({
         <h2 className="text-sm text-(--color-ink)">Where they are</h2>
         <EngagementState summary={summary} />
         {detail.projectSummary ? (
-          <p className="mt-1 border-l-2 border-white/10 pl-3 text-sm text-(--color-body)">
+          <p className="mt-1 border-l-2 border-(--color-line-soft) pl-3 text-sm text-(--color-body)">
             {detail.projectSummary}
           </p>
         ) : null}
@@ -111,7 +111,7 @@ export default async function EngagementDetailPage({
       <section className="flex flex-col gap-2">
         <h2 className="text-sm text-(--color-ink)">Their answers</h2>
         {markdown ? (
-          <pre className="overflow-x-auto rounded-(--radius) border border-white/10 bg-black/30 p-4 font-(family-name:--font-mono) text-xs leading-relaxed whitespace-pre-wrap text-(--color-body)">
+          <pre className="overflow-x-auto rounded-(--radius) border border-(--color-line-soft) bg-(--color-well) p-4 font-(family-name:--font-mono) text-xs leading-relaxed whitespace-pre-wrap text-(--color-body)">
             {markdown}
           </pre>
         ) : (

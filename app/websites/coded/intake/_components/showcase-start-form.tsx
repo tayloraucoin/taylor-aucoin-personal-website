@@ -1,16 +1,24 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { SHOWCASE_DISCIPLINES } from "@/lib/intake/showcase-steps";
-import { ChoiceGroup, type Choice } from "../../../intake/_components/choice-group";
+import {
+  copyPackFor,
+  flavourForKind,
+  showcaseDisciplines,
+  showcaseKinds,
+} from "@/lib/intake/tracks";
+import { startShowcaseIntake, type StartResult } from "../_actions/start";
+import {
+  ChoiceGroup,
+  type Choice,
+} from "../../../intake/_components/choice-group";
 import { Field } from "../../../intake/_components/field";
 import {
   looksLikeEmail,
   TextField,
 } from "../../../intake/_components/text-field";
-import { startShowcaseIntake, type StartResult } from "../_actions/start";
-import { useIsPreview } from "@/components/intake/preview-mode";
 
 async function action(
   _previous: StartResult | null,
@@ -37,22 +45,29 @@ async function action(
  */
 
 /**
- * The categories, with three not yet open.
+ * What the site is for — one answer, and the one the whole cartridge reads.
  *
- * They render as real, focusable, announced options that cannot be chosen —
- * the roadmap is the point, and hiding it behind a tooltip would show it to
- * sighted mouse users only. Whether they appear at all is Taylor's open item;
- * dropping them is deleting three lines of this array.
+ * This replaced a multi-select whose answer was stored and consumed by nothing
+ * (`CODED-INTAKE-CATEGORY-AUDIT.md` B2). Single-select is the point: a person
+ * can have several disciplines, but a site has one job that leads, and one
+ * answer is what lets every string downstream be certain (D-PORT-8).
+ *
+ * The labels live with the kinds themselves, so the picker, the copy resolver,
+ * and step 1's kind line cannot disagree about what "venture" means.
  */
-const SITE_KINDS: readonly Choice[] = [
-  { value: "portfolio", label: "Portfolio — your creative work is the product" },
-  { value: "consultant", label: "Consultant or coach" },
-  { value: "speaker", label: "Speaker or author" },
-  { value: "studio", label: "Studio or small team" },
-  { value: "other", label: "Something else" },
-];
+const KINDS = showcaseKinds();
+const KIND_OPTIONS: readonly Choice[] = KINDS.map((kind) => ({
+  value: kind.key,
+  label: kind.label,
+}));
 
-const DISCIPLINES: readonly Choice[] = SHOWCASE_DISCIPLINES.map((d) => ({
+/**
+ * Widened past the v2 doc's five on 2026-09-03 (Taylor). The list is the
+ * registry's, through the seam, so the form and the flavour resolver cannot
+ * disagree about which keys exist — see `SHOWCASE_DISCIPLINES` for why only
+ * `film` earns a pack of its own.
+ */
+const DISCIPLINES: readonly Choice[] = showcaseDisciplines().map((d) => ({
   value: d.key,
   label: d.label,
 }));
@@ -62,8 +77,17 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
   // Submitting would mint a real engagement and a real token.
   const preview = useIsPreview();
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [siteKinds, setSiteKinds] = useState<string[]>([]);
+  const [siteKind, setSiteKind] = useState<string>("");
   const [disciplines, setDisciplines] = useState<string[]>([]);
+
+  // Everything below the kind question is shaped by it: whether we ask about
+  // disciplines, whether the thing has a name of its own, and what the
+  // one-liner is even called. Nothing is gated on it — an unanswered picker
+  // simply leaves the questionnaire on its generic floor.
+  const kind = KINDS.find((entry) => entry.key === siteKind);
+  const pack = copyPackFor(
+    kind ? flavourForKind(kind.key, disciplines) : "generic",
+  );
 
   return (
     <form action={formAction}>
@@ -73,9 +97,9 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
 
       {/* The checkbox groups are controlled React state, so their values reach
           the action as hidden fields rather than as native checkbox entries. */}
-      {siteKinds.map((value) => (
-        <input key={value} type="hidden" name="siteKinds" value={value} />
-      ))}
+      {siteKind ? (
+        <input type="hidden" name="siteKind" value={siteKind} />
+      ) : null}
       {disciplines.map((value) => (
         <input key={value} type="hidden" name="disciplines" value={value} />
       ))}
@@ -124,7 +148,32 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
         />
       </Field>
 
-      <Field id="whatYouDo" label="What you do, in one line">
+      <Field id="siteKind" label={pack.kindLabel} help={pack.kindHelp}>
+        {/* Copy comes from the pack and the kind registry, never from here —
+            Taylor's human-hand pass edits one file (`showcase-copy.ts`), and a
+            literal on this screen would be a second home it never reaches. */}
+        <ChoiceGroup
+          legend={pack.kindLabel}
+          name="siteKindChoice"
+          options={KIND_OPTIONS}
+          value={siteKind ? [siteKind] : []}
+          onChange={(next) => setSiteKind(next[0] ?? "")}
+        />
+      </Field>
+
+      {/* Asked of everything but a portfolio, where the practice is the person
+          and the engagement's name is already their own (M-PORT-3). */}
+      {kind?.asksName ? (
+        <Field id="entityName" label={pack.entityNameLabel}>
+          <TextField
+            id="entityName"
+            name="entityName"
+            placeholder={pack.entityNamePlaceholder}
+          />
+        </Field>
+      ) : null}
+
+      <Field id="whatYouDo" label={pack.whatYouDoLabel}>
         <TextField
           id="whatYouDo"
           name="whatYouDo"
@@ -132,55 +181,32 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
         />
       </Field>
 
-      <Field
-        id="siteKinds"
-        label="What kind of site is this?"
-        help="If you're a mix, check everything that's true."
-      >
-        <ChoiceGroup
-          legend="What kind of site is this?"
-          name="siteKindsChoice"
-          options={SITE_KINDS}
-          value={siteKinds}
-          onChange={setSiteKinds}
-          multiple
-        />
-      </Field>
+      {/* Only the two kinds whose pack a discipline can change. A consultant
+          answering this would be answering a question with no consequence. */}
+      {kind?.asksDisciplines ? (
+        <>
+          <Field
+            id="disciplines"
+            label="What's the work?"
+            help="This decides which example sites you'll review later, and how we talk about your work inside. Check everything that's true."
+          >
+            {/* The help line moved up here from the free-text field below it:
+                the reason to answer belongs beside the answer, not past it. */}
+            <ChoiceGroup
+              legend="What's the work?"
+              name="disciplinesChoice"
+              options={DISCIPLINES}
+              value={disciplines}
+              onChange={setDisciplines}
+              multiple
+            />
+          </Field>
 
-      {/* Only asked once "Something else" is checked — an always-visible box
-          under a list nobody picked from is a question about nothing. */}
-      {siteKinds.includes("other") ? (
-        <Field id="siteKindsOther" label="Tell us what kind">
-          <TextField
-            id="siteKindsOther"
-            name="siteKindsOther"
-            helpId="siteKindsOther-help"
-          />
-        </Field>
+          <Field id="disciplinesOther" label="Something else?">
+            <TextField id="disciplinesOther" name="disciplinesOther" />
+          </Field>
+        </>
       ) : null}
-
-      <Field id="disciplines" label="What's the work?">
-        <ChoiceGroup
-          legend="What's the work?"
-          name="disciplinesChoice"
-          options={DISCIPLINES}
-          value={disciplines}
-          onChange={setDisciplines}
-          multiple
-        />
-      </Field>
-
-      <Field
-        id="disciplinesOther"
-        label="Something else?"
-        help="This decides which example sites you'll review later, and how we talk about your work inside. Check everything that's true."
-      >
-        <TextField
-          id="disciplinesOther"
-          name="disciplinesOther"
-          helpId="disciplinesOther-help"
-        />
-      </Field>
 
       <Field
         id="currentWebsite"

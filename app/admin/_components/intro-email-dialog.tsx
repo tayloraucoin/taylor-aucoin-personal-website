@@ -30,7 +30,7 @@ export function IntroEmailDialog({
         role="dialog"
         aria-modal="true"
         aria-label={`Intro email to ${businessName}`}
-        className="w-full max-w-2xl rounded-(--radius) border border-white/15 bg-(--color-ground-a) p-6"
+        className="w-full max-w-2xl rounded-(--radius) border border-(--color-line) bg-(--color-ground-a) p-6"
       >
         <div className="mb-5 flex items-baseline justify-between gap-4">
           <h2 className="font-(family-name:--font-display) text-lg text-(--color-ink)">

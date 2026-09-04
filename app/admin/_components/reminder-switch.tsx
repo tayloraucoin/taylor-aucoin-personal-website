@@ -80,7 +80,7 @@ export function ReminderSwitch({
         type="button"
         disabled={pending}
         onClick={toggle}
-        className="min-h-[44px] w-fit rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-ink) disabled:opacity-60"
+        className="min-h-[44px] w-fit rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-ink) disabled:opacity-60"
       >
         {off ? "Turn reminders back on" : "Stop reminders for this client"}
       </button>

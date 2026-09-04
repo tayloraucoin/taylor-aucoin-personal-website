@@ -1,6 +1,8 @@
 "use client";
 
 import type { ComponentProps } from "react";
+import { useIsDocument } from "@/components/intake/preview-mode";
+import { DocHint, DocTag } from "./document";
 
 /**
  * The 16px minimum is not a type-scale preference — it is the threshold below
@@ -93,6 +95,23 @@ export function TextField({
   invalid?: boolean;
   onValueChange?: (value: string) => void;
 } & Omit<ComponentProps<"input">, "id" | "className" | "type">) {
+  /**
+   * The mode rides along in the tag when it is not plain text. It is not
+   * decoration: `email` and `tel` change the keyboard a phone offers and the
+   * autofill a browser suggests, which is a real difference between two
+   * questions that otherwise look identical on a page.
+   */
+  if (useIsDocument()) {
+    return (
+      <>
+        <DocTag>{mode === "text" ? "Short text" : `Short text · ${mode}`}</DocTag>
+        {typeof rest.placeholder === "string" && rest.placeholder ? (
+          <DocHint>e.g. {rest.placeholder}</DocHint>
+        ) : null}
+      </>
+    );
+  }
+
   return (
     <input
       {...modeAttributes(mode)}
@@ -126,6 +145,17 @@ export function TextArea({
   ComponentProps<"textarea">,
   "id" | "className"
 >) {
+  if (useIsDocument()) {
+    return (
+      <>
+        <DocTag>Long text</DocTag>
+        {typeof rest.placeholder === "string" && rest.placeholder ? (
+          <DocHint>e.g. {rest.placeholder}</DocHint>
+        ) : null}
+      </>
+    );
+  }
+
   return (
     <textarea
       {...rest}

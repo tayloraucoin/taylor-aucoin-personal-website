@@ -7,6 +7,7 @@ import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { RepeatableBlock } from "../repeatable-block";
 import { TextField } from "../text-field";
+import { Reveal } from "../reveal";
 
 const JUST_YOU = [
   { value: "yes", label: "Just me" },
@@ -41,8 +42,6 @@ export function StepTeam({
   const form = useStepAutosave({ token, stepKey: "team", initial });
   useReportSaveState(form.state, form.retry);
 
-  const hasTeam = form.values.justYou === "no";
-
   return (
     <>
       <ChoiceAnswer
@@ -52,7 +51,7 @@ export function StepTeam({
         options={JUST_YOU}
       />
 
-      {hasTeam ? (
+      <Reveal values={form.values} dependsOn={{ field: "justYou", equals: "no" }}>
         <>
           <TextAnswer form={form} name="headcount" label="How many of you?" />
 
@@ -70,7 +69,10 @@ export function StepTeam({
             options={SHOW_TEAM}
           />
 
-          {form.values.showTeam === "yes" ? (
+          <Reveal
+            values={form.values}
+            dependsOn={{ field: "showTeam", equals: "yes" }}
+          >
             <Field id="f-team" label="Names and roles">
               <RepeatableBlock<TeamMemberAnswer>
                 items={asTeam(form.values.team)}
@@ -103,9 +105,9 @@ export function StepTeam({
                 )}
               />
             </Field>
-          ) : null}
+          </Reveal>
         </>
-      ) : null}
+      </Reveal>
 
       <LongAnswer
         form={form}

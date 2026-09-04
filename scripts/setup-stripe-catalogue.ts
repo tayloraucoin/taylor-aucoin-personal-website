@@ -25,195 +25,92 @@ applyTierEnv();
  */
 
 /** Website Design — for the site itself and work on it. */
-const TAX_WEBSITE = "txcd_10701200";
-/** General - Services — Stripe's catch-all for labour. */
-const TAX_SERVICES = "txcd_20030000";
+import {
+  CATALOGUE_ROWS,
+  STRIPE_PRODUCTS,
+  type StripeProductName,
+} from "./seed-products";
 
 type PriceSpec = {
   nickname: string;
   amountCents: number;
   env: string;
-  /**
-   * The `products.key` this price belongs to. `--apply` writes the Stripe
-   * product/price ids and the amount onto that row, so the database and the
-   * Stripe catalogue change in one motion and cannot drift apart. A price
-   * without a dbKey (none today) would be env-only.
-   */
-  dbKey?: string;
-  /** Present for the Care Plan, which is the only recurring thing sold. */
+  /** The `products.key` this price belongs to. `--apply` writes the Stripe ids and the amount onto that row. */
+  dbKey: string;
   recurring?: "month";
 };
 
 type ProductSpec = {
   name: string;
+  /**
+   * What this Product was called before the Platform/Coded rename. Products are
+   * matched by name, so without this a rename would leave the original orphaned
+   * and mint a duplicate alongside it — carrying none of the payment history.
+   */
+  previousName?: string;
   description: string;
   taxCode: string;
   prices: PriceSpec[];
 };
 
 /**
- * One Product per thing a client can buy, rather than many prices under one
- * product. Invoices and Checkout display the *product* name on each line, so
- * sharing a product across unrelated items makes a client's invoice read as
- * the same thing repeated.
+ * The Stripe shape of the catalogue, derived from `seed-products.ts`.
  *
- * The build is the deliberate exception: its two prices are two halves of one
- * purchase, so they belong to one product and the invoice line carries its own
- * description.
+ * That file is the single source of truth: it declares every row, its price,
+ * its client-facing name and description, its tax code, and which Stripe
+ * Product its Price hangs under. This function only regroups those rows —
+ * flat, keyed by `products.key` — into Stripe's Product-with-Prices shape.
+ *
+ * Nothing here restates an amount, a name, or a description. An earlier version
+ * of this script kept its own parallel catalogue, which meant every price
+ * existed twice and the two copies could disagree silently.
+ *
+ * Products are walked in `STRIPE_PRODUCTS` declaration order; prices within a
+ * product follow `CATALOGUE_ROWS` order.
  */
-const CATALOGUE: ProductSpec[] = [
-  {
-    name: "Website build",
-    description:
-      "Five-page website built from your questionnaire answers. $1,200 + GST, half to start and half before it goes live.",
-    taxCode: TAX_WEBSITE,
-    prices: [
-      { nickname: "Deposit — half to start", amountCents: 60000, env: "PRICE_DEPOSIT", dbKey: "deposit" },
-      { nickname: "Balance — before go-live", amountCents: 60000, env: "PRICE_BALANCE", dbKey: "balance" },
-    ],
-  },
-  {
-    name: "Website changes — standard round",
-    description:
-      "New sections, layout changes, rewritten copy, or a new page. Batched into one round.",
-    taxCode: TAX_WEBSITE,
-    prices: [
-      { nickname: "Standard round", amountCents: 50000, env: "PRICE_CHANGES_STANDARD", dbKey: "changes_standard" },
-    ],
-  },
-  {
-    name: "Website changes — small round",
-    description: "A few text edits, swapping photos, updating hours. Batched into one round.",
-    taxCode: TAX_WEBSITE,
-    prices: [
-      { nickname: "Small round", amountCents: 25000, env: "PRICE_CHANGES_SMALL", dbKey: "changes_small" },
-      // $0 price under the same product: the promo grant. Checkout accepts
-      // zero-amount lines as long as the session total is positive, and the
-      // client's invoice then carries the included round as a real line.
-      { nickname: "Included with build — promo", amountCents: 0, env: "PRICE_CHANGES_SMALL_PROMO", dbKey: "changes_small_promo" },
-    ],
-  },
-  {
-    name: "Extra page",
-    description: "An additional page beyond the standard five. Priced per page.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Per page", amountCents: 15000, env: "PRICE_EXTRA_PAGE", dbKey: "extra_page" }],
-  },
-  {
-    name: "Online booking setup",
-    description: "Your services, hours, and calendar synced to online booking.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_BOOKING_SETUP", dbKey: "booking_setup" }],
-  },
-  {
-    name: "Stripe payments setup",
-    description: "Your Stripe account connected, products and checkout built.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_STRIPE_SETUP", dbKey: "stripe_setup" }],
-  },
-  {
-    name: "Google Business Profile deep clean",
-    description: "Photos, categories, and description brought up to scratch.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Deep clean", amountCents: 30000, env: "PRICE_GBP_CLEAN", dbKey: "gbp_clean" }],
-  },
-  {
-    name: "Logo refresh",
-    description: "A refreshed logo for your business.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Refresh", amountCents: 25000, env: "PRICE_LOGO", dbKey: "logo_refresh" }],
-  },
-  {
-    name: "Care Plan",
-    description:
-      "Google review replies, listing posts, one small round of website changes a month, and priority on bigger work. Month to month.",
-    taxCode: TAX_SERVICES,
-    prices: [
-      { nickname: "Monthly", amountCents: 25000, env: "PRICE_CARE_PLAN", dbKey: "care_plan", recurring: "month" },
-    ],
-  },
+function buildCatalogue(): ProductSpec[] {
+  const byProduct = new Map<StripeProductName, PriceSpec[]>();
 
-  /* ── The coded track (internal key: showcase) ────────────────────────────
-     Separate products from the platform track's, not extra prices under them:
-     Checkout and invoices display the *product* name on each line, and a
-     filmmaker's invoice reading "Website build" for a $2,000 coded site would
-     be describing the other product. Prices are R-5 and R-8 of
-     docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md, published.
+  for (const row of CATALOGUE_ROWS) {
+    // `stripe: null` is a row that exists in the database only — never minted.
+    if (!row.stripe) continue;
 
-     The Care Plan is deliberately absent. Taylor's ruling (M-PORT-6): nothing
-     recurring is sold on this track until the offer itself is settled, so
-     there is no Stripe object to mint and no row to charge.
-     ──────────────────────────────────────────────────────────────────────── */
-  {
-    name: "Portfolio website build",
-    description:
-      "Five-page portfolio site built in code, from your questionnaire answers. $2,000 + GST, half to start and half before launch — or $1,900 paid in full.",
-    taxCode: TAX_WEBSITE,
-    prices: [
-      { nickname: "Deposit — half to start", amountCents: 100000, env: "PRICE_SHOWCASE_DEPOSIT", dbKey: "showcase_deposit" },
-      { nickname: "Balance — before launch", amountCents: 100000, env: "PRICE_SHOWCASE_BALANCE", dbKey: "showcase_balance" },
-      { nickname: "Paid in full — 5% off", amountCents: 190000, env: "PRICE_SHOWCASE_FULL", dbKey: "showcase_full" },
-      // The negotiated-price rows a promo code substitutes in (lib/intake/promo.ts).
-      // Real prices on the same product, so what was charged stays auditable.
-      { nickname: "Deposit — negotiated $1,600", amountCents: 80000, env: "PRICE_SHOWCASE_DEPOSIT_1600", dbKey: "showcase_deposit_1600" },
-      { nickname: "Paid in full — negotiated $1,600", amountCents: 152000, env: "PRICE_SHOWCASE_FULL_1600", dbKey: "showcase_full_1600" },
-    ],
-  },
-  {
-    name: "Portfolio admin panel",
-    description:
-      "A private login for changing copy and swapping images yourself, no code involved.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Admin panel", amountCents: 50000, env: "PRICE_SHOWCASE_ADMIN_PANEL", dbKey: "showcase_admin_panel" }],
-  },
-  {
-    name: "Logo or wordmark refresh",
-    description: "A refreshed mark for your name, for when you want one.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Refresh", amountCents: 25000, env: "PRICE_SHOWCASE_LOGO", dbKey: "showcase_logo" }],
-  },
-  {
-    name: "Extra page (portfolio)",
-    description: "An additional page beyond the included five. Priced per page.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Per page", amountCents: 15000, env: "PRICE_SHOWCASE_EXTRA_PAGE", dbKey: "showcase_extra_page" }],
-  },
-  {
-    name: "Booking setup",
-    description:
-      "A booking page wired to your calendar, for coaching, teaching, or consults.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_BOOKING", dbKey: "showcase_booking" }],
-  },
-  {
-    name: "Animations",
-    description:
-      "Standard motion for your site, built with Framer Motion or similar.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_ANIMATIONS", dbKey: "showcase_animations" }],
-  },
-  {
-    name: "Supabase setup",
-    description:
-      "A database wired into your site, for logins, saved form entries, or anything else that needs to persist.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Setup", amountCents: 25000, env: "PRICE_SHOWCASE_SUPABASE_SETUP", dbKey: "showcase_supabase_setup" }],
-  },
-  {
-    name: "SEO blog",
-    description:
-      "A blog section built into your site, with its own admin for publishing posts without touching code.",
-    taxCode: TAX_WEBSITE,
-    prices: [{ nickname: "Setup", amountCents: 75000, env: "PRICE_SHOWCASE_SEO_BLOG", dbKey: "showcase_seo_blog" }],
-  },
-  {
-    name: "Blog post, written for you",
-    description:
-      "A blog post written from your own brain dump and tuned for the keywords you're chasing. Priced per post.",
-    taxCode: TAX_SERVICES,
-    prices: [{ nickname: "Per post", amountCents: 50000, env: "PRICE_SHOWCASE_SEO_POST", dbKey: "showcase_seo_post" }],
-  },
-];
+    const prices = byProduct.get(row.stripe.product) ?? [];
+    prices.push({
+      nickname: row.stripe.nickname,
+      amountCents: row.priceCents,
+      env: row.stripe.env,
+      dbKey: row.key,
+      ...(row.stripe.recurring ? { recurring: row.stripe.recurring } : {}),
+    });
+    byProduct.set(row.stripe.product, prices);
+  }
+
+  const specs: ProductSpec[] = [];
+
+  for (const [name, product] of Object.entries(STRIPE_PRODUCTS)) {
+    const prices = byProduct.get(name as StripeProductName);
+
+    // A product nobody sells is a declaration with no consequence. Surfacing it
+    // beats minting an empty Stripe Product that no row can ever charge.
+    if (!prices || prices.length === 0) {
+      console.warn(`  ! ${name} has no catalogue row — skipping`);
+      continue;
+    }
+
+    specs.push({
+      name,
+      previousName: product.previousName,
+      description: product.description,
+      taxCode: product.taxCode,
+      prices,
+    });
+  }
+
+  return specs;
+}
+
+const CATALOGUE: ProductSpec[] = buildCatalogue();
 
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { apply: { type: "boolean" } } });
@@ -263,6 +160,19 @@ async function main(): Promise<void> {
     // Matched by name: product ids do not carry across test and live mode.
     let product = allProducts.find((p) => p.name === spec.name);
 
+    // Not found under its current name? Try what it used to be called, and
+    // rename it in place. Renaming keeps the Product id, so every Price under
+    // it — and every payment already made on those Prices — stays attached.
+    if (!product && spec.previousName) {
+      const renamed = allProducts.find((p) => p.name === spec.previousName);
+      if (renamed) {
+        console.log(`~ product  ${spec.previousName}  ->  ${spec.name}`);
+        product = apply
+          ? await stripe.products.update(renamed.id, { name: spec.name })
+          : renamed;
+      }
+    }
+
     if (!product) {
       console.log(`+ product  ${spec.name}`);
       if (apply) {
@@ -275,6 +185,26 @@ async function main(): Promise<void> {
       }
     } else {
       console.log(`= product  ${spec.name}  (${product.id})`);
+
+      // `tax_code` was only ever sent on create, so a product that already
+      // existed kept whatever code it was born with — and every reassignment in
+      // the table above would have been a silent no-op against a live account.
+      // Products, unlike Prices, are mutable, so this is a plain update.
+      const currentTaxCode =
+        typeof product.tax_code === "string"
+          ? product.tax_code
+          : (product.tax_code?.id ?? null);
+
+      if (currentTaxCode !== spec.taxCode) {
+        console.log(
+          `  ~ tax code  ${currentTaxCode ?? "unset"} -> ${spec.taxCode}`,
+        );
+        if (apply) {
+          product = await stripe.products.update(product.id, {
+            tax_code: spec.taxCode,
+          });
+        }
+      }
     }
 
     const current = product

@@ -1,7 +1,19 @@
 import type { IntakeStep, ShowcaseStepKey } from "@/lib/types/intake";
+import { resolvePack, type ShowcaseFlavour } from "./showcase-copy";
 
 /**
- * The showcase track's registry: nine steps, and the copy that flexes.
+ * Re-exported so the components that already type a `flavour` prop keep their
+ * import path. The type and the packs themselves live in `showcase-copy.ts`
+ * (M-PORT-22); this file owns step identity and nothing else.
+ */
+export type { ShowcaseFlavour } from "./showcase-copy";
+
+/**
+ * The showcase track's registry: ten steps, and the copy that flexes.
+ *
+ * Ten since PORT-18 (2026-09-03): the ingestion step leads. Its title and
+ * intro come from the pack like step 4's do, and every count downstream is
+ * `stepCountFor`, never a literal.
  *
  * Every string here is `docs/websites/portfolio-intake-questions-v2.md`,
  * verbatim. It is approved client-facing copy and it does not get improved,
@@ -17,83 +29,55 @@ import type { IntakeStep, ShowcaseStepKey } from "@/lib/types/intake";
  * The stored value is the key; the label is what the client reads. One home for
  * both, so the form, the flavour resolver, and the intake document cannot
  * disagree about what "film" means.
+ *
+ * **Keys are storage and never change.** The first five are the v2 doc's list
+ * and every engagement answered before 2026-09-03 stores one of them; a
+ * renamed key would orphan that answer. Widened that day at Taylor's request
+ * ("modelling, DJing, performing arts, musician, photography — including but
+ * not limited to"). The `music` label narrowed at the same time, because
+ * "Music or performance" overlapped both new performance rows; its key stays.
+ *
+ * **Only `film` has a copy pack**, and that is not an oversight to fix by
+ * adding keys to `DISCIPLINE_FLAVOURS`. A discipline earns a pack when someone
+ * writes one; every other discipline reads generic, which is the honest floor
+ * (D-PORT-5). Nothing here feeds the taste gallery either — `examplesFor` is
+ * keyed by pack, so a DJ and a ceramicist both meet the generic set until a
+ * set of their own is curated.
+ *
+ * The labels on the six new rows and the narrowed `music` label are
+ * `[COPY — pending Taylor]`; the other five are v2, verbatim.
  */
 export const SHOWCASE_DISCIPLINES = [
-  { key: "film", label: "Film or video" },
-  { key: "photography", label: "Photography" },
-  { key: "design", label: "Design" },
-  { key: "illustration", label: "Illustration or fine art" },
-  { key: "music", label: "Music or performance" },
+  { key: "film", label: "Film or video" }, // (v2)
+  { key: "photography", label: "Photography" }, // (v2)
+  { key: "design", label: "Design" }, // (v2)
+  { key: "illustration", label: "Illustration or fine art" }, // (v2)
+  // [COPY — pending Taylor] — was "Music or performance" (v2); see above.
+  { key: "music", label: "Music — playing, producing, composing" },
+  // [COPY — pending Taylor] — every row below.
+  { key: "dj", label: "DJing" },
+  { key: "performing", label: "Performing arts — dance, theatre, flow" },
+  { key: "modelling", label: "Modelling" },
+  { key: "fashion", label: "Fashion, styling, or makeup" },
+  { key: "craft", label: "Craft — ceramics, textiles, woodwork" },
+  { key: "writing", label: "Writing" },
 ] as const;
 
 export type ShowcaseDisciplineKey =
   (typeof SHOWCASE_DISCIPLINES)[number]["key"];
 
 /**
- * A shipped copy pack. Film first; generic is the permanent floor.
+ * Which disciplines have a pack of their own. Everything absent is generic.
  *
- * Photography and art variants are sketched in the v2 doc but are not written,
- * so they are not here. A discipline without a pack gets generic — never a
- * half-flavoured sentence, never an empty slot (D-PORT-5).
+ * This map only ever answers a *portfolio* engagement's question. Every other
+ * kind names its pack outright in `showcase-kinds.ts` and never consults a
+ * discipline (D-PORT-8).
  */
-export type ShowcaseFlavour = "film" | "generic";
-
-/** Which disciplines have a pack. Everything absent resolves to generic. */
 const DISCIPLINE_FLAVOURS: Partial<
   Record<ShowcaseDisciplineKey, ShowcaseFlavour>
 > = {
   film: "film",
 };
-
-/**
- * The copy that genuinely differs between packs.
- *
- * Only strings whose film and generic forms are different live here. Where the
- * v2 doc's base string already serves both — the dark/light help, for instance,
- * whose only variant is a photography one that has not been written — the
- * string stays with its step and there is nothing to resolve.
- */
-export type ShowcaseCopyPack = {
-  /** Opens step 4's intro; the rest of the paragraph is shared. */
-  workIntroLead: string;
-  /**
-   * The v2 doc italicises one word here — "Which piece is *the* reel?" — and
-   * this is stored as plain text because a field label is a string, not
-   * markup. The words are verbatim; only the emphasis is absent. Logged in
-   * `DEVIATIONS.md` so it can be restored deliberately rather than discovered.
-   */
-  reelLabel: string;
-  reelHelp: string;
-  accountsHelp: string;
-};
-
-export const SHOWCASE_COPY: Record<ShowcaseFlavour, ShowcaseCopyPack> = {
-  film: {
-    workIntroLead:
-      "Now the work itself — the films, videos, and projects the last step's career produced.",
-    reelLabel: "Which piece is the reel?",
-    reelHelp:
-      "The one video a stranger should see first. If you don't have a current reel, say so — the site can lead with your best piece instead, and we'll note the reel needs a refresh.",
-    accountsHelp: "IMDb especially, if you have a page — people in film check it.",
-  },
-  generic: {
-    workIntroLead:
-      "Now the work itself — the pieces the last step's career produced.",
-    reelLabel: "Which piece leads?",
-    reelHelp: "The one thing a stranger should see first.",
-    accountsHelp: "Wherever your work already lives — people will look.",
-  },
-};
-
-/**
- * The half of step 4's intro that does not flex.
- *
- * The v2 doc gives the flavour variants as a replacement for the opening
- * sentence only, with the rest elided; splitting the paragraph here is what
- * lets both halves stay verbatim instead of being restated per pack.
- */
-const WORK_INTRO_TAIL =
-  "Add as many as you want; there's no cap. Don't aim for polished — aim for honest, and lead with what you'd show first.";
 
 /**
  * The registry, resolved for one copy pack.
@@ -111,57 +95,64 @@ const WORK_INTRO_TAIL =
 export function showcaseSteps(
   flavour: ShowcaseFlavour = "generic",
 ): readonly IntakeStep<ShowcaseStepKey>[] {
+  const pack = resolvePack(flavour);
+
   return [
-    { key: "about", number: 1, title: "About you" },
+    {
+      key: "ingest",
+      number: 1,
+      title: pack.ingestion.title,
+      intro: pack.ingestion.intro,
+    },
+    { key: "about", number: 2, title: "About you" },
     {
       key: "audience",
-      number: 2,
+      number: 3,
       title: "Who this site is for",
-      intro:
-        "This site isn't for you — it's for the person deciding whether to work with you. This step is about who that is.",
+      intro: pack.audienceIntro,
     },
     {
       key: "experience",
-      number: 3,
+      number: 4,
       title: "Experience and proof",
       intro:
         "Think of this as the LinkedIn layer: positions, memberships, ongoing roles — the timeline your career sits on. The individual films and projects that timeline produced come in the next step. This one is where you've worked, taught, founded, and belonged.",
     },
     {
       key: "work",
-      number: 4,
-      title: "The work",
-      intro: `${SHOWCASE_COPY[flavour].workIntroLead} ${WORK_INTRO_TAIL}`,
+      number: 5,
+      title: pack.workTitle,
+      intro: `${pack.workIntroLead} ${pack.workIntroTail}`,
     },
     {
       key: "taste",
-      number: 5,
+      number: 6,
       title: "Taste",
       intro:
         "This is how we skip the part where a designer shows you three drafts you don't like. Below are real sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.",
     },
     {
       key: "words",
-      number: 6,
+      number: 7,
       title: "Your words",
       intro:
         "Most bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.",
     },
     {
       key: "media",
-      number: 7,
+      number: 8,
       title: "Media",
       intro:
         "Project images live with their projects back in step 4. This step is everything else — and original files beat compressed copies every time.",
     },
     {
       key: "site",
-      number: 8,
+      number: 9,
       title: "The site itself",
       intro:
         "The shape of the thing — what pages exist and what each one is for. Five pages are included in the build; extra pages are $150 each, and we'll always confirm with you before anything is charged. Project detail pages don't count — they come with the work section.",
     },
-    { key: "access", number: 9, title: "Accounts and access" },
+    { key: "access", number: 10, title: "Accounts and access" },
   ] as const;
 }
 
@@ -180,4 +171,50 @@ export function flavourFromDisciplines(
 
   const only = disciplines[0] as ShowcaseDisciplineKey;
   return DISCIPLINE_FLAVOURS[only] ?? "generic";
+}
+
+/**
+ * The subject a third-person example uses before we know the client's name.
+ *
+ * They/them, and therefore the plain verb — "They make…", never "They makes…".
+ * That is why the pack stores `personVerb` and `personVerbThird` separately.
+ */
+const UNNAMED_SUBJECT = "They";
+
+/** One option on step 6's person-voice question. */
+export type PersonVoiceOption = { value: string; label: string };
+
+/**
+ * Step 6's person-voice options, written with this client's own name.
+ *
+ * The third option used to name one client, shipped to every client, on a track
+ * sold to consultants and ventures as well as filmmakers. The name is now the
+ * one on step 1 and the verb is the copy pack's, so no client reads another
+ * client's name and no non-film client reads a film verb (D-PORT-14).
+ *
+ * A blank name is the ordinary case, not an edge one: step 6 comes five steps
+ * after step 1 and every field on this form is optional. It renders the pronoun
+ * rather than an empty quotation, which is what an interpolation that assumed a
+ * name would leave behind.
+ */
+export function personVoiceOptions(
+  flavour: ShowcaseFlavour,
+  displayName?: string,
+): readonly PersonVoiceOption[] {
+  const pack = resolvePack(flavour);
+  const name = displayName?.trim();
+
+  return [
+    {
+      value: "first",
+      label: `First — "${pack.personSubject} ${pack.personVerb}…"`,
+    },
+    {
+      value: "third",
+      label: name
+        ? `Third — "${name} ${pack.personVerbThird}…"`
+        : `Third — "${UNNAMED_SUBJECT} ${pack.personVerb}…"`,
+    },
+    { value: "unsure", label: "Not sure — you pick" },
+  ];
 }

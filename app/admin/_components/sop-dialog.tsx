@@ -34,7 +34,7 @@ export function SopDialog() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-body) hover:text-(--color-ink)"
+        className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-body) hover:text-(--color-ink)"
       >
         How to work the queue
       </button>
@@ -45,7 +45,7 @@ export function SopDialog() {
             role="dialog"
             aria-modal="true"
             aria-label="How to work the queue"
-            className="w-full max-w-2xl rounded-(--radius) border border-white/15 bg-(--color-ground-a) p-6"
+            className="w-full max-w-2xl rounded-(--radius) border border-(--color-line) bg-(--color-ground-a) p-6"
           >
             <div className="mb-5 flex items-baseline justify-between gap-4">
               <h2 className="font-(family-name:--font-display) text-lg text-(--color-ink)">

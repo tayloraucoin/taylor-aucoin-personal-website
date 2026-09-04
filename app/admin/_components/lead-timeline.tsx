@@ -43,7 +43,7 @@ export function LeadTimeline({
       {entries.map((entry, index) => (
         <li
           key={`${entry.kind}-${entry.at.toISOString()}-${index}`}
-          className="flex flex-col gap-1 border-l border-white/10 py-3 pl-4"
+          className="flex flex-col gap-1 border-l border-(--color-line-soft) py-3 pl-4"
         >
           <span className="text-xs text-(--color-dim)">
             {WHEN.format(entry.at)}

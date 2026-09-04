@@ -59,7 +59,7 @@ export default async function EngagementsPage() {
             <li key={summary.id}>
               <Link
                 href={adminRoutes.engagement(summary.id)}
-                className="flex min-h-[44px] flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-transparent px-3 py-2 hover:border-(--color-c2) hover:bg-white/[0.03]"
+                className="flex min-h-[44px] flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-transparent px-3 py-2 hover:border-(--color-c2) hover:bg-(--color-tint)/60"
               >
                 <span className="text-sm text-(--color-ink)">
                   {summary.businessName}

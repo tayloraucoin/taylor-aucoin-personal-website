@@ -227,6 +227,58 @@ export class UploadTooLargeError extends Error {
 }
 
 /**
+ * Writes a text object we produced ourselves into the same private bucket, and
+ * records it as a delivered file (PORT-21).
+ *
+ * A fetched page is a source like any other, so it gets the shape every other
+ * source has: an object in the bucket and a row that points at it. One shape
+ * means one query lists every source, one renderer prints them in the intake
+ * document, and one card shows the client what happened to each.
+ *
+ * Unlike `issueUploadTicket` this writes the bytes itself, because they never
+ * belonged to the browser — nothing here is a client upload path and no signed
+ * URL is minted. The row is delivered on arrival for the same reason: there is
+ * no second party whose PUT we are waiting on.
+ */
+export async function writeSourceObject(input: {
+  engagementId: string;
+  fieldKey: string;
+  /** What the source was — a URL, for a fetched page. */
+  name: string;
+  text: string;
+}): Promise<{ fileId: string; storagePath: string }> {
+  const bytes = new TextEncoder().encode(input.text);
+  const storagePath = `${input.engagementId}/${input.fieldKey}/${randomUUID()}.txt`;
+
+  const { error } = await getStorage()
+    .storage.from(BUCKET)
+    .upload(storagePath, bytes, { contentType: "text/plain; charset=utf-8" });
+
+  if (error) {
+    throw new Error(`Could not store the source: ${error.message}`);
+  }
+
+  const [row] = await getDb()
+    .insert(intakeFiles)
+    .values({
+      engagementId: input.engagementId,
+      entryKey: null,
+      fieldKey: input.fieldKey,
+      mimeType: "text/plain",
+      originalName: input.name,
+      sizeBytes: bytes.byteLength,
+      step: null,
+      storagePath,
+      uploadedAt: new Date(),
+    })
+    .returning({ id: intakeFiles.id });
+
+  if (!row) throw new Error("Could not record the source.");
+
+  return { fileId: row.id, storagePath };
+}
+
+/**
  * Marks a reserved file as actually delivered.
  *
  * A row without `uploadedAt` is a started-and-abandoned upload. Keeping the
@@ -252,15 +304,47 @@ export async function confirmUpload(
     );
 }
 
-/** Files already delivered for one field, oldest first. */
+/**
+ * Pulls one uploaded object's bytes back out of the private bucket.
+ *
+ * The only reader is the transcription service, and it needs the bytes rather
+ * than a link because the vendor is sent a file, not a URL — which is also the
+ * safer arrangement: no signed URL to a client's voice note ever exists
+ * outside this process.
+ */
+export async function downloadUpload(storagePath: string): Promise<Uint8Array> {
+  const { data, error } = await getStorage()
+    .storage.from(BUCKET)
+    .download(storagePath);
+
+  if (error || !data) {
+    throw new Error(`Could not read the upload: ${error?.message ?? "unknown"}`);
+  }
+
+  return new Uint8Array(await data.arrayBuffer());
+}
+
+/**
+ * Files already delivered for one field, oldest first.
+ *
+ * The transcript columns ride along in the projection because the one surface
+ * that needs them — step 7's voice-note card — already calls this per field,
+ * and six more columns on a query that returns at most a handful of rows is
+ * free. There is nothing to join to.
+ */
 export async function listUploads(engagementId: string, fieldKey: string) {
   return getDb()
     .select({
       id: intakeFiles.id,
       entryKey: intakeFiles.entryKey,
+      mimeType: intakeFiles.mimeType,
       originalName: intakeFiles.originalName,
       sizeBytes: intakeFiles.sizeBytes,
       uploadedAt: intakeFiles.uploadedAt,
+      transcript: intakeFiles.transcript,
+      transcriptAttempts: intakeFiles.transcriptAttempts,
+      transcriptEditedAt: intakeFiles.transcriptEditedAt,
+      transcriptStatus: intakeFiles.transcriptStatus,
     })
     .from(intakeFiles)
     .where(
@@ -284,12 +368,18 @@ export async function linkUploads(
   expiresInSeconds: number,
 ): Promise<
   Array<{
+    /** The row id — what step 9's home shortlist stores when a file is ticked. */
+    id: string;
     fieldKey: string;
     entryKey: string | null;
     originalName: string | null;
     sizeBytes: number | null;
     uploadedAt: Date | null;
     url: string | null;
+    /** Null on every file that is not a transcribed voice note. */
+    transcript: string | null;
+    /** Null means no person has read what the machine wrote (D-PORT-3). */
+    transcriptEditedAt: Date | null;
   }>
 > {
   const rows = await getDb()
@@ -312,12 +402,15 @@ export async function linkUploads(
       }
 
       return {
+        id: row.id,
         fieldKey: row.fieldKey,
         entryKey: row.entryKey,
         originalName: row.originalName,
         sizeBytes: row.sizeBytes,
         uploadedAt: row.uploadedAt,
         url,
+        transcript: row.transcript,
+        transcriptEditedAt: row.transcriptEditedAt,
       };
     }),
   );

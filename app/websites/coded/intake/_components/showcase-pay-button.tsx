@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startShowcaseCheckout } from "../_actions/pay";
-import { useIsPreview } from "@/components/intake/preview-mode";
 
 /**
  * The coded track's pay button — the same contract as the platform track's.
@@ -21,6 +21,7 @@ export function ShowcasePayButton({
   label,
   plan,
   addonKeys = [],
+  extraPages = 0,
   promoCode,
   disabled = false,
 }: {
@@ -29,6 +30,8 @@ export function ShowcasePayButton({
   /** Null until the client picks; the button is disabled until they do. */
   plan: "half" | "full" | null;
   addonKeys?: string[];
+  /** How many pages beyond the included five. A count, never an amount. */
+  extraPages?: number;
   promoCode?: string;
   disabled?: boolean;
 }) {
@@ -52,7 +55,13 @@ export function ShowcasePayButton({
           setFailed(false);
           startTransition(async () => {
             try {
-              await startShowcaseCheckout(token, plan, addonKeys, promoCode);
+              await startShowcaseCheckout(
+                token,
+                plan,
+                addonKeys,
+                promoCode,
+                extraPages,
+              );
             } catch {
               // A redirect throws by design and unmounts this; anything that
               // lands here is a real failure to open Checkout.

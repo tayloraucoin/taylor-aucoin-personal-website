@@ -485,3 +485,7 @@ What I am not deciding: the ninety strings (Taylor's), the six gallery sets (Tay
 Tradeoff named: single-select kind costs the mixed client one gallery. It buys every client a form that is certain about who it is talking to. For this product, certainty is the brand.
 
 — Vesper
+
+---
+
+**Amended at ticket authoring, 2026-09-01 (Reeve).** §12's table is superseded by the tickets themselves in `specs/PORT-H1`, `PORT-11` … `PORT-17` and by `specs/00-build-order.md` § Phase 6. Two corrections: PORT-15 covers steps 2 · 3 · 5 · 6 · 7 · 8 · 9 (this scope's table omitted 3, 5, and 6, whose pack strings are in §6); and the dependency graph is PORT-11 → PORT-12 → (13 ∥ 15 ∥ 16) → 14 → 17, with PORT-13 and PORT-15 gating on PORT-12 because they read its strings. Where this section and a ticket's `## Depends on` disagree, the ticket wins.

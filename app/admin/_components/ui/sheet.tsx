@@ -75,7 +75,7 @@ const SheetContent = React.forwardRef<
         ref={ref}
         {...props}
         className={[
-          "fixed inset-y-0 z-[41] flex h-full w-full max-w-xl flex-col overflow-y-auto border-white/15 bg-(--color-ground-a) p-6 shadow-lg outline-none",
+          "fixed inset-y-0 z-[41] flex h-full w-full max-w-xl flex-col overflow-y-auto border-(--color-line) bg-(--color-ground-a) p-6 shadow-lg outline-none",
           SIDE_CLASSES[side],
           className ?? "",
         ].join(" ")}

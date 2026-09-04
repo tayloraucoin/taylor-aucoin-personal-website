@@ -1,5 +1,5 @@
 import { GradientButton } from "@/components/ui/GradientButton";
-import { eyebrowFor, stepsFor } from "@/lib/intake/tracks";
+import { eyebrowFor, stepCountFor, stepsFor } from "@/lib/intake/tracks";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 import type { Engagement } from "@/server/services/engagement";
 import { Eyebrow } from "../../../intake/_components/eyebrow";
@@ -21,6 +21,16 @@ import { SendMyLinkButton } from "../../../intake/_components/send-my-link-butto
  * payment landed before anything else is asked of them; one whose deposit was
  * waived is simply greeted (D-INT-9).
  */
+/**
+ * The count as a word, because the approved sentence opens with one. A count
+ * outside this table prints as digits rather than as nothing.
+ */
+const STEP_COUNT_WORDS: Record<number, string> = {
+  9: "Nine",
+  10: "Ten",
+  11: "Eleven",
+};
+
 export function ShowcaseWelcome({
   engagement,
   token,
@@ -42,8 +52,14 @@ export function ShowcaseWelcome({
           : `Hi ${firstName}.`}
       </h1>
 
+      {/* "Nine steps." was v2, verbatim, until PORT-18 added the ingestion
+          step (Taylor, 2026-09-03). The count is the registry's so this line
+          cannot drift from the shell's "Step 1 of N" again; the rest of the
+          sentence is v2. [COPY — pending Taylor] on the number word only. */}
       <p className="mt-6 font-display text-[22px] font-medium leading-[1.2] tracking-[-.02em] text-(--color-ink)">
-        Nine steps. Every one of them optional but encouraged.
+        {STEP_COUNT_WORDS[stepCountFor(engagement.track)] ??
+          String(stepCountFor(engagement.track))}{" "}
+        steps. Every one of them optional but encouraged.
       </p>
 
       <div className="mt-5 max-w-[48ch] space-y-4 font-body text-[16px] font-light leading-[1.66] text-(--color-body)">

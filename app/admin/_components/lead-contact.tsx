@@ -65,7 +65,7 @@ export function LeadContact({
           type="button"
           onClick={() => void navigator.clipboard.writeText(display)}
           disabled={!display}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-body) disabled:opacity-50"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-body) disabled:opacity-50"
         >
           Copy
         </button>
@@ -73,7 +73,7 @@ export function LeadContact({
         <button
           type="button"
           onClick={() => setDialogOpen(true)}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-ink)"
         >
           Intro email
         </button>
@@ -100,7 +100,7 @@ export function LeadContact({
             onBlur={() => {
               if (email !== (contactEmail ?? "")) save({ contactEmail: email });
             }}
-            className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
 
@@ -117,7 +117,7 @@ export function LeadContact({
               if (phone !== (phoneOverride ?? ""))
                 save({ phoneOverride: phone });
             }}
-            className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
       </div>

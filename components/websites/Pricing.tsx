@@ -86,7 +86,7 @@ export default function Pricing({
               className="font-display text-[clamp(38px,6vw,50px)] font-medium leading-none tracking-[-.03em]"
               style={{
                 background:
-                  "linear-gradient(102deg, var(--color-c2), var(--color-c3))",
+                  "linear-gradient(102deg, var(--color-gold-500), var(--color-gradient-hot))",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",

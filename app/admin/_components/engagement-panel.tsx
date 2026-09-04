@@ -120,7 +120,7 @@ export function EngagementPanel({
                   type="button"
                   disabled={pending}
                   onClick={() => link(suggestion.id)}
-                  className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-ink) disabled:opacity-50"
+                  className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-ink) disabled:opacity-50"
                 >
                   Link this
                 </button>
@@ -139,7 +139,7 @@ export function EngagementPanel({
             <input
               value={contactName}
               onChange={(event) => setContactName(event.target.value)}
-              className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+              className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
             />
           </label>
 
@@ -149,7 +149,7 @@ export function EngagementPanel({
               type="email"
               value={contactEmail}
               onChange={(event) => setContactEmail(event.target.value)}
-              className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+              className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
             />
           </label>
         </div>
@@ -160,7 +160,7 @@ export function EngagementPanel({
             type="tel"
             value={contactPhone}
             onChange={(event) => setContactPhone(event.target.value)}
-            className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
 
@@ -172,7 +172,7 @@ export function EngagementPanel({
             value={projectSummary}
             onChange={(event) => setProjectSummary(event.target.value)}
             rows={3}
-            className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
 
@@ -215,7 +215,7 @@ export function LinkedEngagement({
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href={adminRoutes.engagement(engagementId)}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 py-2.5 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 py-2.5 text-sm text-(--color-ink)"
         >
           Open engagement
         </Link>

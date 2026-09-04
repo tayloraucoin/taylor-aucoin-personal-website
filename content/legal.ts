@@ -338,6 +338,18 @@ export const privacy: LegalDoc = {
         {
           p: "I use paid, business-grade AI services to produce your deliverables. Your answers and files go to those services only as needed to build your site, under commercial terms that don't use your content to train public models.",
         },
+        {
+          p: "If you record or upload a voice note, the audio goes to OpenAI to be written out as text. Nothing identifying you goes with it, and you can read and correct the text before it becomes part of your brief.",
+        },
+        {
+          p: "On the first step of the questionnaire you can paste what you have, attach files, and list pages worth reading. What you paste goes to Anthropic to fill in as much of the rest of the form as it honestly can, and every answer it fills is marked as ours until you change it. Nothing identifying you goes with it.",
+        },
+        {
+          p: "Files you attach there are read too. A PDF or an image goes to Anthropic to be written out as text; a Word file, a slide deck, or a text file is read on my own server and goes nowhere. Anything else — a Keynote, a video, an archive — is stored and read by me, not by a machine. You can read and correct whatever was made of any file before it is used.",
+        },
+        {
+          p: "Pages you list are fetched by Anthropic rather than by me, and only the exact addresses you typed. Nothing follows a link on the page it fetched. Pages behind a login cannot be read this way, and are not attempted.",
+        },
       ],
     },
     {
@@ -349,6 +361,8 @@ export const privacy: LegalDoc = {
             "Supabase, for the database and file storage.",
             "Vercel, for hosting this site.",
             "Resend, for sending email.",
+            "OpenAI, for writing out voice notes.",
+            "Anthropic, for reading what you paste, attach, and link on the first step.",
             "AI providers, for producing the deliverables described above.",
           ],
         },

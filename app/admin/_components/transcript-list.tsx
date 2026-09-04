@@ -23,7 +23,7 @@ export function TranscriptList({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="flex max-w-prose flex-col gap-3 border-t border-white/10 pt-6">
+      <div className="flex max-w-prose flex-col gap-3 border-t border-(--color-line-soft) pt-6">
         <p className="text-sm text-(--color-ink)">
           No transcripts in this range yet.
         </p>
@@ -51,7 +51,7 @@ export function TranscriptList({
         {rows.map((row) => (
           <li
             key={row.attemptId}
-            className="border-l-2 border-white/10 px-3 py-2 hover:border-(--color-c2)"
+            className="border-l-2 border-(--color-line-soft) px-3 py-2 hover:border-(--color-c2)"
           >
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <Link
@@ -79,7 +79,7 @@ export function TranscriptList({
               <summary className="cursor-pointer text-sm text-(--color-dim) underline">
                 Read transcript
               </summary>
-              <pre className="mt-2 max-h-96 overflow-auto whitespace-pre-wrap rounded-(--radius) border border-white/10 bg-black/30 p-3 text-sm leading-relaxed text-(--color-ink)">
+              <pre className="mt-2 max-h-96 overflow-auto whitespace-pre-wrap rounded-(--radius) border border-(--color-line-soft) bg-(--color-well) p-3 text-sm leading-relaxed text-(--color-ink)">
                 {row.transcript}
               </pre>
             </details>

@@ -116,7 +116,7 @@ export function LeadFilterRail({
       className={`min-h-[44px] rounded-(--radius) border px-3 py-2.5 text-sm ${
         active
           ? "border-(--color-c2)/60 text-(--color-ink)"
-          : "border-white/15 text-(--color-body) hover:text-(--color-ink)"
+          : "border-(--color-line) text-(--color-body) hover:text-(--color-ink)"
       }`}
     >
       {label}
@@ -134,7 +134,7 @@ export function LeadFilterRail({
       value={value}
       onChange={(event) => onPick(event.target.value)}
       aria-label={label}
-      className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-2 text-sm text-(--color-body)"
+      className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body)"
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (
@@ -322,7 +322,7 @@ export function LeadFilterRail({
             )
           }
           aria-label="Sort leads"
-          className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-2 text-sm text-(--color-body)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body)"
         >
           {(Object.keys(SORT_LABELS) as LeadFilters["sort"][]).map((sort) => (
             <option key={sort} value={sort}>

@@ -6,6 +6,7 @@ import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { LongAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { FileDrop, type ExistingFile } from "../file-drop";
+import { CheckAnswer } from "../check-answer";
 
 /**
  * Step 5 — How you talk.
@@ -118,24 +119,15 @@ export function StepVoice({
         label="Words or phrases you'd never use"
       />
 
-      <Field
-        id="f-consent"
+      <CheckAnswer
+        form={form}
+        name="recordingConsent"
         label="Can we record our calls with you?"
         help="Only the calls about your site, and only so the writing sounds like you."
+        align="center"
       >
-        <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3 font-body text-[16px] font-light text-(--color-body)">
-          <input
-            type="checkbox"
-            checked={form.values.recordingConsent === true}
-            onChange={(event) => {
-              form.setValue("recordingConsent", event.target.checked);
-              form.flush();
-            }}
-            className="h-5 w-5 shrink-0 accent-(--color-c2)"
-          />
-          Yes — we use it to make the writing sound like you.
-        </label>
-      </Field>
+        Yes — we use it to make the writing sound like you.
+      </CheckAnswer>
     </>
   );
 }

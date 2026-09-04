@@ -82,7 +82,7 @@ export function TranscriptField({
         rows={value ? 8 : 3}
         placeholder="Paste a transcript here if you recorded this call — speaker phone plus a transcription tool works well."
         data-typing
-        className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+        className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
       />
     </label>
   );
