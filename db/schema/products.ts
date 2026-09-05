@@ -36,9 +36,12 @@ export const productKindEnum = pgEnum("product_kind", [
  * `stripe_price_id`, and what a client actually paid is recorded per purchase
  * on `engagement_products` — prices change, purchases don't.
  *
- * `offered_at_checkout` gates what P0 sells. Deliberately narrower than
- * `is_active`: extra pages are active products but quantity-shaped, and a
- * per-page count is questionnaire material, not a pay-screen checkbox.
+ * `offered_at_checkout` gates what the pay screen lists as **checkboxes**.
+ * Deliberately narrower than `is_active`, and narrower still than "sellable at
+ * checkout": extra pages are sold on the pay screen but are quantity-shaped,
+ * so they are resolved by key and rendered as a count rather than a tick, and
+ * this flag stays false for them. A row here means "put a checkbox on P0",
+ * not "this can be charged" (2026-09-03).
  */
 export const products = pgTable(
   "products",

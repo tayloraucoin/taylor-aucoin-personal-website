@@ -10,11 +10,31 @@ import { SHOWCASE_STEP_SCHEMAS } from "@/lib/validators/showcase-intake";
 import { ANSWER_LABELS } from "./answer-labels";
 import { SHOWCASE_ANSWER_LABELS } from "./showcase-answer-labels";
 import {
-  flavourFromDisciplines,
-  SHOWCASE_COPY,
-  showcaseSteps,
+  resolvePack,
+  SHOWCASE_COPY_SLOTS,
+  SHOWCASE_FLAVOURS,
   type ShowcaseCopyPack,
   type ShowcaseFlavour,
+} from "./showcase-copy";
+import {
+  groupsFor as groupsForKind,
+  kindAsks as kindAsksQuestion,
+  kindEntry,
+  kindFor,
+  packForKind,
+  SHOWCASE_KINDS,
+  workShapeFor as workShapeForKind,
+  type ShowcaseGroup,
+  type ShowcaseKind,
+  type ShowcaseKindQuestion,
+  type ShowcaseWorkShape,
+} from "./showcase-kinds";
+import {
+  flavourFromDisciplines,
+  personVoiceOptions,
+  SHOWCASE_DISCIPLINES,
+  showcaseSteps,
+  type PersonVoiceOption,
 } from "./showcase-steps";
 import { INTAKE_STEPS } from "./steps";
 
@@ -78,15 +98,18 @@ export function stepsFor(
 /**
  * How many steps a track has.
  *
- * Nine, on both tracks, and that is a promise made on each welcome screen
- * rather than a coincidence to hardcode (D-INT-5).
+ * Nine on the durable track and ten on the showcase track since PORT-18, and
+ * each is a promise made on its welcome screen rather than a coincidence to
+ * hardcode (D-INT-5) — the welcome reads this function too.
  */
 export function stepCountFor(track: IntakeTrackKey): number {
   return stepsFor(track).length;
 }
 
 /** Every step key in a track, for validating a slug or a save. */
-export function stepKeysFor(track: IntakeTrackKey): readonly AnyIntakeStepKey[] {
+export function stepKeysFor(
+  track: IntakeTrackKey,
+): readonly AnyIntakeStepKey[] {
   return stepsFor(track).map((step) => step.key);
 }
 
@@ -154,10 +177,45 @@ export function fieldKeysFor(
   stepKey: string,
 ): readonly string[] {
   const schema = schemaFor(track, stepKey) as
-    | { shape?: Record<string, unknown> }
-    | undefined;
+    { shape?: Record<string, unknown> } | undefined;
 
   return schema?.shape ? Object.keys(schema.shape) : [];
+}
+
+/**
+ * The subset of a step's fields that hold free text.
+ *
+ * The second consumer of a Zod object's shape, and it lives here for the same
+ * reason the first one does (M-PORT-8): reaching into a validator's internals
+ * is a thing this codebase does in exactly one module, so a Zod upgrade that
+ * moves `_def` breaks one file rather than every caller who guessed.
+ *
+ * "Free text" means a string field, optional or not — never an array, a
+ * boolean, or a record. The business primer (PORT-10) proposes only into these:
+ * a checkbox group has an enumerated option set that a free-text proposal would
+ * miss, and the shape guard would silently drop the answer on save.
+ */
+export function textFieldKeysFor(
+  track: IntakeTrackKey,
+  stepKey: string,
+): readonly string[] {
+  const schema = schemaFor(track, stepKey) as
+    { shape?: Record<string, unknown> } | undefined;
+
+  if (!schema?.shape) return [];
+
+  return Object.entries(schema.shape)
+    .filter(([, field]) => isStringField(field))
+    .map(([key]) => key);
+}
+
+/** Unwraps one optional layer and asks whether what is left is a string. */
+function isStringField(field: unknown): boolean {
+  const def = (field as { _def?: { type?: string; innerType?: unknown } })
+    ?._def;
+  if (!def) return false;
+  if (def.type === "string") return true;
+  return def.innerType ? isStringField(def.innerType) : false;
 }
 
 /** The document's label for an answer key. Falls back to the raw key. */
@@ -166,7 +224,112 @@ export function labelFor(track: IntakeTrackKey, key: string): string {
 }
 
 /**
+ * What an engagement's site is for. The one answer the cartridge branches on.
+ *
+ * Durable engagements have no kind and never will; callers on that track do not
+ * ask, and the resolver below is the only thing that reads this.
+ */
+export function kindOf(answers: IntakeAnswers): ShowcaseKind {
+  return kindFor(answers);
+}
+
+/** Which field groups a kind's questionnaire carries (PORT-13/14/15 read this). */
+export function groupsFor(kind: ShowcaseKind): ReadonlySet<ShowcaseGroup> {
+  return groupsForKind(kind);
+}
+
+/**
+ * Whether a kind is asked one of the five optional questions.
+ *
+ * The steps that flex by kind read this rather than comparing kind keys
+ * themselves. Three of them did compare — and two wrote the same comparison
+ * for different reasons, which is exactly how a registry and a component drift
+ * apart (M-ADM-7).
+ */
+export function kindAsks(
+  kind: ShowcaseKind,
+  question: ShowcaseKindQuestion,
+): boolean {
+  return kindAsksQuestion(kind, question);
+}
+
+/** Which array a kind's step 4 fills, and which entry card it renders. */
+export function workShapeFor(kind: ShowcaseKind): ShowcaseWorkShape {
+  return workShapeForKind(kind);
+}
+
+/**
+ * The cartridge's two enumerations, for `yarn verify:tracks`.
+ *
+ * Exported through this seam rather than imported from the registries directly,
+ * so the verifier proves the same resolver every surface uses rather than the
+ * modules behind it.
+ */
+export const showcaseFlavours = SHOWCASE_FLAVOURS;
+export const showcaseCopySlots = SHOWCASE_COPY_SLOTS;
+
+/** The kinds themselves, for the start form's picker and step 1's kind line. */
+export function showcaseKinds(): typeof SHOWCASE_KINDS {
+  return SHOWCASE_KINDS;
+}
+
+/** One kind's label, for the surfaces that show it back rather than ask it. */
+export function labelForKind(kind: ShowcaseKind): string {
+  return kindEntry(kind).label;
+}
+
+/**
+ * The disciplines a portfolio or a studio may check, for the start form.
+ *
+ * Through this seam rather than imported from the registry, for the reason
+ * every other registry fact comes through here: the start form was the one
+ * surface reaching into `showcase-steps.ts` directly (noted at ADM-4), and the
+ * cartridge verifier proves what the seam serves, not what a module exports.
+ */
+export function showcaseDisciplines(): typeof SHOWCASE_DISCIPLINES {
+  return SHOWCASE_DISCIPLINES;
+}
+
+/**
+ * The pack a kind earns, resolved against a disciplines answer.
+ *
+ * Exported for the start form, which needs a pack before an engagement exists —
+ * it is choosing the words on the very screen that mints one.
+ */
+export function flavourForKind(
+  kind: ShowcaseKind,
+  disciplines: readonly string[] | undefined,
+): ShowcaseFlavour {
+  return packForKind(kind, () => flavourFromDisciplines(disciplines));
+}
+
+/**
+ * Which example-site set an engagement's taste step should load.
+ *
+ * The same as its copy pack for every kind but a studio: a studio reads entity
+ * copy — it is an organisation — while its gallery may follow the discipline
+ * its work is in, because a design studio and a film studio do not need the
+ * same twenty sites. When the discipline has no set of its own, the entity set
+ * is the honest floor (kinds scope §2.1).
+ */
+export function galleryFlavourFor(
+  flavour: ShowcaseFlavour,
+  disciplines: readonly string[] | undefined,
+): ShowcaseFlavour {
+  if (flavour !== "entity") return flavour;
+
+  const byDiscipline = flavourFromDisciplines(disciplines);
+  return byDiscipline === "generic" ? "entity" : byDiscipline;
+}
+
+/**
  * Which copy pack an engagement has earned, from what it answered.
+ *
+ * The kind decides, and the discipline answer reaches exactly one branch: a
+ * portfolio's, where it always did (D-PORT-8). Before PORT-11 this read the
+ * disciplines alone, which is why a consultant and a filmmaker got the same
+ * words — the answer that said otherwise was stored and never read
+ * (`CODED-INTAKE-CATEGORY-AUDIT.md` B2).
  *
  * Durable has no packs and never asks; it is always generic, which for that
  * track means "the only copy there is".
@@ -178,7 +341,7 @@ export function flavourFor(
   if (track !== "showcase") return "generic";
 
   const about = answers.about as { disciplines?: string[] } | undefined;
-  return flavourFromDisciplines(about?.disciplines);
+  return flavourForKind(kindFor(answers), about?.disciplines);
 }
 
 /**
@@ -191,11 +354,25 @@ export function flavourFor(
  */
 export function eyebrowFor(track: IntakeTrackKey): string {
   return track === "showcase"
-    ? "Agora · Portfolio build"
+    ? "Agora · Custom build"
     : "Agora · Website build";
 }
 
 /** The flexing strings themselves, for the step slices that render them. */
 export function copyPackFor(flavour: ShowcaseFlavour): ShowcaseCopyPack {
-  return SHOWCASE_COPY[flavour];
+  return resolvePack(flavour);
+}
+
+/**
+ * Step 6's person-voice options, resolved for one client's pack and name.
+ *
+ * Re-exported through this seam rather than imported from the registry
+ * directly, for the same reason `copyPackFor` is: a step component asks one
+ * module what its copy is, and the registry keeps exactly one importer.
+ */
+export function personVoiceOptionsFor(
+  flavour: ShowcaseFlavour,
+  displayName?: string,
+): readonly PersonVoiceOption[] {
+  return personVoiceOptions(flavour, displayName);
 }

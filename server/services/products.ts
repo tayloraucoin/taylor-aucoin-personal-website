@@ -143,16 +143,70 @@ export async function getDepositProduct(): Promise<SellableProduct> {
 }
 
 /**
- * Catalogue key → the step-9 extras vocabulary. Two vocabularies exist
- * because the questionnaire predates the catalogue; this map is the one seam
- * where they meet, so neither side has to rename its stored values.
+ * Catalogue key → the questionnaire's extras vocabulary. Two vocabularies
+ * exist because the questionnaire predates the catalogue; this map is the one
+ * seam where they meet, so neither side has to rename its stored values.
+ *
+ * The coded half was missing entirely until 2026-09-03, which meant every
+ * coded add-on — up to $2,250 of work across six rows — was sold on the pay
+ * screen and then never asked a single question about. `showcase_animations`
+ * advertises "you'll describe what you want in the intake form" in its own
+ * catalogue description, and the intake did not ask.
+ *
+ * Extra pages are deliberately absent: they are a *count*, and the
+ * questionnaire reads that count through `paidExtraPages` rather than through
+ * a present-or-absent flag that could not say how many.
  */
 const PRODUCT_KEY_TO_EXTRA: Record<string, string> = {
+  // The durable track.
   booking_setup: "booking",
   stripe_setup: "stripe",
   gbp_clean: "gbp",
   logo_refresh: "logo",
+
+  // The coded track. `booking` and `logo` are the same words on purpose: the
+  // question each opens differs by track because the components differ, but
+  // the thing bought is the same thing, and two spellings of one concept is
+  // how a reveal ends up keyed to a string nothing ever sets.
+  showcase_booking: "booking",
+  showcase_logo: "logo",
+  showcase_admin_panel: "adminPanel",
+  showcase_animations: "animations",
+  showcase_supabase_setup: "supabase",
+  showcase_seo_blog: "seoBlog",
 };
+
+/**
+ * How many extra pages this engagement has paid for.
+ *
+ * Zero for almost everyone, and zero is the honest answer for an unpaid row
+ * too: a basket that was built and abandoned is not a purchase, and step 8's
+ * page allowance is a thing the client bought, not a thing they nearly bought.
+ *
+ * Read as a count rather than a boolean because that is what the questionnaire
+ * needs — five included plus what they bought is the number of pages the
+ * checklist may reach before it starts saying "that's over".
+ */
+export async function paidExtraPages(
+  engagementId: string,
+  track: IntakeTrackKey,
+): Promise<number> {
+  const key = track === "showcase" ? "showcase_extra_page" : "extra_page";
+
+  const rows = await getDb()
+    .select({ quantity: engagementProducts.quantity })
+    .from(engagementProducts)
+    .innerJoin(products, eq(engagementProducts.productId, products.id))
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        eq(products.key, key),
+        isNotNull(engagementProducts.paidAt),
+      ),
+    );
+
+  return rows.reduce((total, row) => total + (row.quantity ?? 0), 0);
+}
 
 /**
  * The step-9 extras this engagement already bought on the pay screen — so the

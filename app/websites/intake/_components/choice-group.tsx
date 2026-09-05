@@ -1,6 +1,8 @@
 "use client";
 
 import { useId } from "react";
+import { useIsDocument } from "@/components/intake/preview-mode";
+import { DocOptions, DocTag } from "./document";
 
 /**
  * Full-width tap-cards, not native 20px circles — selection has to be
@@ -27,13 +29,21 @@ import { useId } from "react";
  */
 export type Choice = { value: string; label: string; disabled?: boolean };
 
-const CARD_CLASS =
+/**
+ * The tap-card's classes, exported so a richer card can wear the same clothes.
+ *
+ * Step 9's video shortlist needs an embed above its label, which a `Choice`
+ * cannot carry — its label is a string. Exporting the classes is how that card
+ * matches this one exactly instead of approximating it with a second set of
+ * literals, and it is why the selected border's colour has one home.
+ */
+export const CARD_CLASS =
   "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left font-body text-[16px] font-light leading-[1.4] transition-colors duration-(--dur-fast) ease-(--ease-out)";
 
-const UNSELECTED_CLASS =
+export const UNSELECTED_CLASS =
   "border-(--color-faint) bg-(--color-card) text-(--color-body) hover:border-[rgb(232_185_97/.28)] hover:bg-(--color-card-hover)";
 
-const SELECTED_CLASS =
+export const SELECTED_CLASS =
   "border-[rgb(232_185_97/.55)] bg-(--color-card-hover) text-(--color-ink)";
 
 const DISABLED_CLASS =
@@ -59,6 +69,7 @@ export function ChoiceGroup({
   exclusiveValue?: string;
 }) {
   const groupId = useId();
+  const document = useIsDocument();
 
   function toggle(option: string) {
     if (options.find((o) => o.value === option)?.disabled) return;
@@ -79,6 +90,21 @@ export function ChoiceGroup({
       withoutExclusive.includes(option)
         ? withoutExclusive.filter((v) => v !== option)
         : [...withoutExclusive, option],
+    );
+  }
+
+  /**
+   * Whether the answer is one value or a list is the single most consequential
+   * thing about a choice question and the least visible on a page, so the tag
+   * says it outright. The options follow verbatim: a review of the questions is
+   * mostly a review of the answers on offer.
+   */
+  if (document) {
+    return (
+      <>
+        <DocTag>{multiple ? "Multiple choice" : "Single choice"}</DocTag>
+        <DocOptions options={options} exclusiveValue={exclusiveValue} />
+      </>
     );
   }
 

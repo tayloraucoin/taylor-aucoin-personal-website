@@ -4,6 +4,7 @@ import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
 import { intakeRoutesFor } from "@/lib/routes";
 import type { IntakeStep, IntakeTrackKey } from "@/lib/types/intake";
 import { INTAKE_COLUMN } from "../_lib/column";
+import { FooterEnd } from "../_lib/save-state";
 import { Eyebrow } from "./eyebrow";
 import { StepHeading } from "./step-heading";
 import { StepProgress } from "./step-progress";
@@ -103,11 +104,18 @@ export function StepShell({
           <div className="mt-2.5 flex min-h-4 items-center justify-between gap-3">
             <div>{saveSlot}</div>
 
-            {next ? (
-              <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-                Next · {next.title}
-              </p>
-            ) : null}
+            {/* A step may take this slot for a line of its own — the taste
+                step publishes its picks count here (D-PORT-16). Every step
+                that publishes nothing renders exactly what it always did. */}
+            <FooterEnd
+              fallback={
+                next ? (
+                  <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                    Next · {next.title}
+                  </p>
+                ) : null
+              }
+            />
           </div>
         </div>
       </footer>

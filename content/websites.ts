@@ -195,7 +195,13 @@ export const ownership = {
     " Your website, your domain, your customer list. I'm not the kind of web guy who holds your business hostage. That's on purpose.",
 } as const;
 
-export type PricedRow = { label: string; price: string };
+export type PricedRow = {
+  label: string;
+  price: string;
+  /** Optional outbound reference for the add-on, e.g. the library it's built
+   *  with. Rendered inline after the label. */
+  link?: { label: string; href: string };
+};
 
 export const addOns: PricedRow[] = [
   {
@@ -253,7 +259,7 @@ export const changeTiers: Array<PricedRow & { note: string }> = [
 export const changeRules: string[] = [
   "Changes come in batches, not messages. I send you a feedback form, you write down everything you want changed and submit it once, and I do it all in one focused session. What doesn't work is thirteen texts over four days. That's how projects turn into a mess and how prices go up.",
   "Each round is paid before I start it. No exceptions, and no new round starts while an old invoice is open.",
-  "I decide which tier a round falls into, and I tell you before you pay. If your “small” list is actually a big list, I'll say so and quote it properly rather than quietly doing it and resenting it. If you'd rather trim it back down to the smaller tier, that's completely fine. Your call.",
+  "The feedback form works out which tier your round falls into and shows you the price before you pay. I still read every submission myself, and if I think it got the call wrong, I'll correct it rather than let a bad number stand.",
 ];
 
 export const changesClosing =

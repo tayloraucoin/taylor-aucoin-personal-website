@@ -386,17 +386,17 @@ export function leadsHref(
 export function hasLeadFilters(filters: LeadFilters): boolean {
   return Boolean(
     filters.q ||
-      filters.preset ||
-      filters.stages.length ||
-      filters.thread ||
-      filters.niche ||
-      filters.city ||
-      filters.nextAction ||
-      filters.lastTouch ||
-      filters.websiteBucket ||
-      filters.hasEmail ||
-      filters.hasEngagement ||
-      filters.walkIn,
+    filters.preset ||
+    filters.stages.length ||
+    filters.thread ||
+    filters.niche ||
+    filters.city ||
+    filters.nextAction ||
+    filters.lastTouch ||
+    filters.websiteBucket ||
+    filters.hasEmail ||
+    filters.hasEngagement ||
+    filters.walkIn,
   );
 }
 

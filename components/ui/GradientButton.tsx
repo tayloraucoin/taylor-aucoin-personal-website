@@ -29,26 +29,47 @@ const GRADIENT_CLASS =
   "inline-flex items-center gap-2 rounded-(--radius) px-6 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-[#0a0714] transition-[transform,box-shadow] duration-(--dur-fast) ease-(--ease-out) hover:-translate-y-px hover:shadow-[0_10px_32px_-12px_var(--color-c2)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none";
 
 const GRADIENT_STYLE = {
-  background: "linear-gradient(102deg, var(--color-c2), var(--color-c3))",
+  background:
+    "linear-gradient(102deg, var(--color-gold-500), var(--color-gradient-hot))",
 };
 
 const GHOST_CLASS =
-  "inline-flex items-center rounded-(--radius) border border-[rgb(232_185_97/.42)] bg-[rgb(9_12_34/.55)] px-[22px] py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-[rgb(232_185_97/0.9)] backdrop-blur-[6px] transition-all duration-(--dur-fast) hover:border-[rgb(232_185_97/.72)] hover:bg-[rgb(9_12_34/.80)] hover:text-(--color-c3) disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center rounded-(--radius) border border-(--color-ghost-line) bg-(--color-ghost-fill) px-[22px] py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-(--color-c2)/90 backdrop-blur-[6px] transition-all duration-(--dur-fast) hover:border-(--color-ghost-line-hover) hover:bg-(--color-ghost-fill-hover) hover:text-(--color-c3) disabled:cursor-not-allowed disabled:opacity-60";
 
-/** Primary CTA. Gold→white fill. Must always be the brightest thing on screen. */
-export function GradientButton({ href, className, children, ...rest }: CtaProps) {
+/**
+ * Primary CTA. Gold→white fill. Must always be the brightest thing on screen.
+ * The fill reads `--color-gold-500` / `--color-gradient-hot`, not c2 / c3: in
+ * the admin light theme those two step to text-legal golds (D-ADM-13) and a
+ * fill must not follow them.
+ */
+export function GradientButton({
+  href,
+  className,
+  children,
+  ...rest
+}: CtaProps) {
   const classes = className ? `${GRADIENT_CLASS} ${className}` : GRADIENT_CLASS;
 
   if (href !== undefined) {
     return (
-      <Link href={href} {...externalProps(href)} className={classes} style={GRADIENT_STYLE}>
+      <Link
+        href={href}
+        {...externalProps(href)}
+        className={classes}
+        style={GRADIENT_STYLE}
+      >
         {children}
       </Link>
     );
   }
 
   return (
-    <button {...rest} type={rest.type ?? "button"} className={classes} style={GRADIENT_STYLE}>
+    <button
+      {...rest}
+      type={rest.type ?? "button"}
+      className={classes}
+      style={GRADIENT_STYLE}
+    >
       {children}
     </button>
   );

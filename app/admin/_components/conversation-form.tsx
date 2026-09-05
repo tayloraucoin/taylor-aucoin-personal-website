@@ -111,13 +111,13 @@ export function ConversationForm({
     );
 
   const field =
-    "min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
+    "min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
 
   const chip = (active: boolean) =>
     `min-h-[44px] rounded-(--radius) border px-3 text-sm disabled:opacity-50 ${
       active
-        ? "border-(--color-c2)/60 bg-white/5 text-(--color-ink)"
-        : "border-white/20 text-(--color-ink) hover:border-(--color-c2)/60"
+        ? "border-(--color-c2)/60 bg-(--color-tint) text-(--color-ink)"
+        : "border-(--color-line-strong) text-(--color-ink) hover:border-(--color-c2)/60"
     }`;
 
   return (

@@ -42,13 +42,21 @@ export function TextAnswer({
   mode?: FieldMode;
 }) {
   const id = `f-${name}`;
+  const value = asText(form.values[name]);
 
   return (
-    <Field id={id} label={label} help={help} note={note}>
+    <Field
+      id={id}
+      label={label}
+      help={help}
+      note={note}
+      fieldKey={name}
+      value={value}
+    >
       <TextField
         id={id}
         helpId={help ? `${id}-help` : undefined}
-        value={asText(form.values[name])}
+        value={value}
         onChange={(event) => form.setValue(name, event.target.value)}
         onBlur={form.flush}
         placeholder={placeholder}
@@ -72,13 +80,14 @@ export function LongAnswer({
   placeholder?: string;
 }) {
   const id = `f-${name}`;
+  const value = asText(form.values[name]);
 
   return (
-    <Field id={id} label={label} help={help}>
+    <Field id={id} label={label} help={help} fieldKey={name} value={value}>
       <TextArea
         id={id}
         helpId={help ? `${id}-help` : undefined}
-        value={asText(form.values[name])}
+        value={value}
         onChange={(event) => form.setValue(name, event.target.value)}
         onBlur={form.flush}
         placeholder={placeholder}
@@ -127,7 +136,7 @@ export function ChoiceAnswer({
       : [];
 
   return (
-    <Field id={id} label={label} help={help} note={note}>
+    <Field id={id} label={label} help={help} note={note} fieldKey={name}>
       <ChoiceGroup
         legend={label}
         name={name}

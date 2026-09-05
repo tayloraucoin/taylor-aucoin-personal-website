@@ -1,4 +1,5 @@
-import type { LabelledRow, PricedRow, ProcessStep } from "@/content/websites";
+import type { LabelRow } from "@/components/ui/LabelRows";
+import type { PricedRow, ProcessStep } from "@/content/websites";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 
 /**
@@ -40,7 +41,7 @@ export const ctaLabel = "Start your site →";
 export const hero = {
   eyebrow: "Built in code · Agora Network Technologies",
   title: "Websites for creative work",
-  sub: "Your work is the reason anyone hires you. Most portfolio sites bury it under a template that was designed for somebody else's work. I build one shaped around what you actually make, in code that belongs to you.",
+  sub: "Your work is the reason anyone hires you. Most professional websites use templates that were designed for somebody else's work. I build one shaped around what you actually do, in code that you get to keep.",
 } as const;
 
 /**
@@ -75,38 +76,52 @@ export const heroNote =
 
 /* ── What you get ─────────────────────────────────────────────────────── */
 
-export const deliverables: LabelledRow[] = [
+export const deliverables: LabelRow[] = [
   {
     label: "The site",
-    body: "Five pages, built around your work. What goes on them comes out of your questionnaire answers and a voice note, so the writing sounds like you rather than like a festival program bio. Project detail pages don't count against the five.",
+    body: "Five pages, built around your work. What goes onto each page is set by the answers you provide in the intake form, which includes steps to capture your authentic voice and the tone you want your audience to hear. Project detail pages don't count against the five.",
   },
   {
     label: "Your work, presented properly",
-    body: "Video embedded from Vimeo or YouTube so it plays properly on a phone on bad reception. Stills at full quality. Project pages carrying the credits, the awards, and the story behind the piece.",
+    body: "I take in your media library up front, either by access link or file upload. On your pages, video is embedded from Vimeo or YouTube so it plays properly on a phone with bad reception, and stills run at full quality. Each page represents your project, service, award, or whatever shows you at your best.",
   },
   {
+    label: "A style guide",
+    body: "The brand pillars, colours, typography, and the spacing and styling rules the site is built on, written down and handed over. It's what makes your brand look professional and stops the next thing with your name on it from looking like it came from a different person.",
+  },
+  {
+    // The GitHub repository lives here rather than as its own row (was "The
+    // repository") — it's part of what the stack is, not a separate deliverable.
     label: "Real code",
-    body: "Next.js and TypeScript, deployed on Vercel. No page builder, no theme, and no plugin that breaks the site when somebody else pushes an update to it.",
+    body: [
+      "Built on ",
+      { text: "Next.js", href: "https://nextjs.org" },
+      ", ",
+      { text: "TypeScript", href: "https://www.typescriptlang.org" },
+      ", and ",
+      { text: "Vercel", href: "https://vercel.com" },
+      ". Each is the top modern choice for a site like this, not something you'd find inside a template. If the site needs a database, that's ",
+      { text: "Supabase", href: "https://supabase.com" },
+      ", for the same reason. No page builder, no theme, and no plugin that breaks the site when somebody else pushes an update to it. Everything lives in a ",
+      { text: "GitHub", href: "https://github.com" },
+      " repository in your name. Every file, every change, and the full history of how it got built.",
+    ],
   },
   {
-    label: "The repository",
-    body: "The whole site as a Git repository in your name. Every file, every change, and the full history of how it got built.",
+    label: "Built for search",
+    body: "Clean markup, fast pages, and proper metadata from day one, so you've got the best shot at being found organically. The SEO blog add-ons build on that if you want more than the site on its own gives you.",
   },
   {
     label: "Your own accounts",
-    body: "Your domain and your Vercel account, both registered to you and paid by you. I don't sit in the middle of either one.",
+    body: "Your domain, your Vercel account, and Supabase if the site needs a database, all registered to you and paid by you. I don't sit in the middle of any of them.",
   },
   {
     label: "A guide to changing it yourself",
     body: "Written for your site specifically. It walks you through editing the site with Claude Code by describing the change you want in ordinary words. You do not have to learn to code to use it, and using it doesn't cost you a subscription to me.",
   },
   {
-    label: "A style guide",
-    body: "The colours, the type, and the spacing rules the site was built on, written down and handed over. It's what stops the next thing with your name on it looking like it came from a different person.",
-  },
-  {
     label: "Your old links keep working",
-    body: "If your current site has been up for years, people still reach it through old emails, festival pages, and articles somebody wrote in 2019. Those addresses get redirected to the right pages on the new site instead of dying with the old one.",
+    body: "If your current site has been up for years, people still reach it through old emails, other website pages, and articles somebody wrote in 2019. Those addresses get redirected to the right pages on the new site instead of dying with the old one.",
   },
 ];
 
@@ -121,14 +136,14 @@ export const processSteps: ProcessStep[] = [
   {
     title: "You fill out the questionnaire",
     system: "Structured intake",
-    body: "Nine steps, about forty-five minutes, longer if your back catalogue runs deep. It asks who your work is for, what you want more of, and what you'd rather stop being called about. Every question is optional and it saves as you type, so you can put it down and come back.",
+    body: "Nine steps, about forty-five minutes, longer if your back catalogue runs deep. It asks what you do, who you've done it for, who your audience is today, what you want more of, and what you'd rather stop being called about. Every question is optional and it saves as you type, so you can put it down and come back.",
   },
   {
-    title: "You go through the taste gallery",
+    title: "You go through the style taste gallery",
     system: "Taste extraction",
-    body: "This is the step that replaces a designer showing you three drafts you don't like. You look at real portfolio sites from across the whole spectrum, favourite the ones that catch you, and say what caught you. It works like picking a template, except the thing it collects is why you picked it.",
+    body: "This is the step that replaces a designer showing you three drafts you don't like. You look at real websites from across the whole spectrum, favourite the ones that resonate, and say what catches your eye about them. It works like picking a template, except the thing it collects is why you picked it.",
     detail: [
-      "Real sites, not mood boards. Every one is a working portfolio you can open and click around",
+      "Real sites, not mood boards. Every one is a working website you can open and click around",
       "Ranking. You put your favourites in order, and the order plus your notes is what the design gets built from",
       "The other direction. What makes you close a tab instantly turns out to be worth as much as what you like",
     ],
@@ -136,7 +151,7 @@ export const processSteps: ProcessStep[] = [
   {
     title: "You paste in whatever already exists",
     system: "Credits import",
-    body: "Your filmography, your CV, your IMDb page, the projects off your old site. Paste the whole mess in and press a button, and it comes back sorted into entries you can correct. Nothing is stored as fact until you've looked at it.",
+    body: "Your documents, your CV or résumé, your IMDb page, the projects off your old site, anything that feels helpful. Paste the whole mess in and press a button, and it comes back sorted into entries you can correct. Nothing is stored as fact until you've looked at it.",
   },
   {
     title: "You record a voice note",
@@ -256,6 +271,19 @@ export const pricing = {
  * nowhere in v1, and nothing recurring ships. When its scope settles, add:
  *
  *   { label: "Care plan · email me a change, live within 48 hours", price: "$100 / month" },
+ *
+ * Animations and Supabase setup (both $250, added 2026-09-01) are page copy
+ * only, not seeded in the checkout catalogue (`server/services/products.ts`).
+ * Neither is a toggle at checkout: the animations row exists to warn a buyer
+ * that scope drives the final charge and to route the ask through the intake
+ * form, and Supabase setup is scoped case by case once a build actually needs
+ * a database. Wire both into the real catalogue if either becomes a flat,
+ * always-available toggle.
+ *
+ * SEO blog ($750) and per-post writing ($500/post, added 2026-09-01) are also
+ * page copy only, same reasoning: neither is seeded in the checkout catalogue,
+ * and the per-post one especially isn't a flat toggle — it's ongoing work
+ * scoped per request, not a one-time build step.
  */
 export const addOns: PricedRow[] = [
   {
@@ -279,6 +307,27 @@ export const addOns: PricedRow[] = [
     label: "Booking setup · a booking page wired to your calendar",
     price: "$250",
   },
+  {
+    label:
+      "Animations · standard motion built with Framer Motion or similar. Bigger asks can run more, and you'll describe what you're after in the intake form.",
+    price: "$250",
+    link: { label: "Framer Motion", href: "https://motion.dev" },
+  },
+  {
+    label:
+      "Supabase setup · for a database when the site needs one: logins, saved form entries, anything that has to persist beyond the pages themselves.",
+    price: "$250",
+  },
+  {
+    label:
+      "SEO blog · a blog section built into your site, with its own admin so you can publish and manage posts without touching code.",
+    price: "$750",
+  },
+  {
+    label:
+      "A blog post, written for you · you brain-dump what you know, I turn it into a polished post tuned for the keywords you're chasing.",
+    price: "$500 / post",
+  },
 ];
 
 /* ── Changes ──────────────────────────────────────────────────────────── */
@@ -289,14 +338,18 @@ export const addOns: PricedRow[] = [
  * differs, because it names this track's price and this track's anchor.
  */
 export const changesClosing =
-  "None of this is me being precious. It's how the price stays where it is. I can charge $2,000 instead of $5,000 because I know exactly how much work I'm signing up for.";
+  "None of this is me being difficult. It's how the price stays where it is. I can charge $2,000 instead of $5,000 because I know exactly how much work I'm signing up for.";
 
 /* ── Worth saying up front ────────────────────────────────────────────── */
 
-export const upFront: LabelledRow[] = [
+export const upFront: LabelRow[] = [
   {
     label: "What I don't build",
-    body: "No web apps, no online stores, no logins or memberships. This is a site that shows your work and gets people to contact you about it. If you need something that does a job beyond that, tell me and I'll either scope it properly or point you somewhere better.",
+    body: [
+      "No web apps, no online stores, no membership systems. This product is a site, and it isn't priced to do those jobs. I build all of that too, just separately, and you can have a look at ",
+      { text: "my engineering work", href: "/" },
+      " if that's what you're after. Logins are the one exception. The admin panel add-on gives you one, and it only does a single job: letting you edit copy and images without touching code.",
+    ],
   },
   {
     label: "Video lives elsewhere",

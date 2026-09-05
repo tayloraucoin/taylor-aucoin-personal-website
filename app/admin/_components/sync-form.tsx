@@ -35,7 +35,7 @@ export function SyncForm() {
           name="file"
           accept=".csv,text/csv"
           required
-          className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 text-sm text-(--color-ink) file:mr-3 file:rounded-(--radius) file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-sm file:text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 text-sm text-(--color-ink) file:mr-3 file:rounded-(--radius) file:border-0 file:bg-(--color-line-soft) file:px-3 file:py-1.5 file:text-sm file:text-(--color-ink)"
         />
       </label>
 
@@ -45,7 +45,7 @@ export function SyncForm() {
           name="intent"
           value="preview"
           disabled={pending}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 text-sm text-(--color-ink) disabled:opacity-60"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 text-sm text-(--color-ink) disabled:opacity-60"
         >
           {pending ? "Reading…" : "Preview changes"}
         </button>
@@ -100,7 +100,7 @@ function SyncSummary({
   return (
     <div
       aria-live="polite"
-      className="flex flex-col gap-3 border-t border-white/10 pt-5"
+      className="flex flex-col gap-3 border-t border-(--color-line-soft) pt-5"
     >
       <p className="text-sm text-(--color-ink)">
         {done ? "Imported from " : "Ready to import from "}

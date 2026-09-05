@@ -25,6 +25,45 @@ const Sheet = DialogPrimitive.Root;
 const SheetPortal = DialogPrimitive.Portal;
 const SheetClose = DialogPrimitive.Close;
 const SheetTitle = DialogPrimitive.Title;
+const SheetTrigger = DialogPrimitive.Trigger;
+
+/**
+ * Which edge the panel comes from. `right` is the drawer every CRM surface
+ * uses; `left` exists for the admin rail's off-canvas form (ADM-1), which is a
+ * navigation column and would read as wrong sliding in from the far side.
+ *
+ * Extending this file is what its own note asks for when a second use case
+ * arrives, rather than a caller overriding `right-0` with `left-0` from the
+ * outside — two classes of equal specificity in one rule, decided by whichever
+ * Tailwind emits last. That is a coin flip, not a layout.
+ */
+type SheetSide = "left" | "right";
+
+/**
+ * How wide the panel is.
+ *
+ * `default` is the record-reading width every CRM drawer uses. `wide` exists
+ * for the example-site editor, which holds a media stage beside eleven fields
+ * of pickers — at `max-w-xl` every segmented control wraps to its own line and
+ * the form stops being scannable, which is the whole reason it is a drawer.
+ *
+ * A prop rather than a caller passing `sm:max-w-3xl` through `className`, for
+ * the reason `SheetSide` is a prop: two max-width classes of equal specificity
+ * in one rule are decided by whichever Tailwind emits last, and that is a coin
+ * flip rather than a layout.
+ */
+type SheetSize = "default" | "wide";
+
+const SIZE_CLASSES: Record<SheetSize, string> = {
+  default: "max-w-xl",
+  wide: "max-w-3xl",
+};
+
+const SIDE_CLASSES: Record<SheetSide, string> = {
+  right:
+    "right-0 border-l data-[state=open]:[animation:sheet-slide-in_var(--dur-fast)_var(--ease-out)] data-[state=closed]:[animation:sheet-slide-out_var(--dur-fast)_var(--ease-out)]",
+  left: "left-0 border-r data-[state=open]:[animation:sheet-slide-in-left_var(--dur-fast)_var(--ease-out)] data-[state=closed]:[animation:sheet-slide-out-left_var(--dur-fast)_var(--ease-out)]",
+};
 
 function SheetOverlay(
   props: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>,
@@ -45,8 +84,14 @@ function SheetOverlay(
 
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(function SheetContent({ className, children, ...props }, ref) {
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    side?: SheetSide;
+    size?: SheetSize;
+  }
+>(function SheetContent(
+  { className, children, side = "right", size = "default", ...props },
+  ref,
+) {
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -54,9 +99,9 @@ const SheetContent = React.forwardRef<
         ref={ref}
         {...props}
         className={[
-          "fixed inset-y-0 right-0 z-[41] flex h-full w-full max-w-xl flex-col overflow-y-auto border-l border-white/15 bg-(--color-ground-a) p-6 shadow-lg outline-none",
-          "data-[state=open]:[animation:sheet-slide-in_var(--dur-fast)_var(--ease-out)]",
-          "data-[state=closed]:[animation:sheet-slide-out_var(--dur-fast)_var(--ease-out)]",
+          "fixed inset-y-0 z-[41] flex h-full w-full flex-col overflow-y-auto border-(--color-line) bg-(--color-ground-a) p-6 shadow-lg outline-none",
+          SIZE_CLASSES[size],
+          SIDE_CLASSES[side],
           className ?? "",
         ].join(" ")}
       >
@@ -66,4 +111,11 @@ const SheetContent = React.forwardRef<
   );
 });
 
-export { Sheet, SheetClose, SheetContent, SheetOverlay, SheetTitle };
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetOverlay,
+  SheetTitle,
+  SheetTrigger,
+};

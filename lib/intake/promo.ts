@@ -49,7 +49,10 @@ const PROMO_CODES: Record<string, PromoGrant> = {
 
 /** Case- and whitespace-forgiving: a code read out on a phone call gets typed messy. */
 export function normalizePromoCode(raw: string): string {
-  return raw.trim().toUpperCase().replace(/[\s-]+/g, "_");
+  return raw
+    .trim()
+    .toUpperCase()
+    .replace(/[\s-]+/g, "_");
 }
 
 export function resolvePromoCode(raw: string): PromoGrant | null {

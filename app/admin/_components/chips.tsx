@@ -25,7 +25,7 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 
 export function StageChip({ stage }: { stage: LeadStage }) {
   return (
-    <span className="rounded-(--radius) border border-white/15 px-1.5 py-0.5 text-xs text-(--color-dim)">
+    <span className="rounded-(--radius) border border-(--color-line) px-1.5 py-0.5 text-xs text-(--color-dim)">
       {STAGE_LABELS[stage]}
     </span>
   );

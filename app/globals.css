@@ -84,6 +84,53 @@
   --color-night-600: #6f6c8b;
   --color-night-700: #45425c;
   --color-night-800: #1f1c2f;
+
+  /* Gold as a FILL. `--color-c2` is gold-500 in the dark theme but steps to
+     gold-700 in the admin light theme so gold *text* stays legal on paper
+     (DESIGN-SYSTEM §1, D-DOC-1). A fill with no text on it wants the real
+     gold in both themes, and this is the token that never moves. */
+  --color-gold-500: #e8b961;
+
+  /* CTA fills (D-ADM-13, feedback round). The house gradient and the ghost
+     button were written against `--color-c2` / `--color-c3` and two inline
+     rgb() values. In the admin light theme c2 steps to gold-700 for text and
+     c3 to gold-800 for hover text, so a fill reading them turned muddy on the
+     cold end and the ghost's `ground-a` at 55% became a grey slab on paper.
+     Fills read these instead; every dark value is exactly what shipped. */
+  --color-gradient-hot: #fff6e3; /* = c3 in the dark theme */
+  --color-ghost-fill: rgb(9 12 34 / 0.55);
+  --color-ghost-fill-hover: rgb(9 12 34 / 0.8);
+  --color-ghost-line: rgb(232 185 97 / 0.42);
+  --color-ghost-line-hover: rgb(232 185 97 / 0.72);
+
+  /* Admin surface tokens (D-ADM-13, M-ADM-9). The CRM was written with
+     `white/N` and `black/N` alpha classes standing in for "the foreground at
+     N%" and "the ground at N%". Those are theme-fixed: on a light ground a
+     white hairline is invisible. Each token carries the exact value its call
+     sites used, so the dark admin renders unchanged; the admin light block
+     re-declares them on ink. Named by role, not by strength, so a call site
+     says what the edge or fill is for. They live in this `static` block for
+     the reason stated above it: every consumer is a `bg-(--color-well)`-style
+     reference, which a plain @theme does not count, and a pruned token falls
+     back to currentColor on a border and to transparent on a fill — silently. */
+  --color-line: rgb(
+    255 255 255 / 0.15
+  ); /* field + chip borders (was border-white/15) */
+  --color-line-strong: rgb(
+    255 255 255 / 0.2
+  ); /* ghost-button borders (was border-white/20) */
+  --color-line-soft: rgb(
+    255 255 255 / 0.1
+  ); /* dividers and rules; also the quietest raised fill (was white/10) */
+  --color-well: rgb(
+    0 0 0 / 0.3
+  ); /* sunken fills: inputs, selects, code blocks (was bg-black/30) */
+  --color-tint: rgb(
+    255 255 255 / 0.05
+  ); /* selected-row and meter-track fill (was bg-white/5) */
+  --color-tint-strong: rgb(
+    255 255 255 / 0.15
+  ); /* the day-strip "fair" bar (was bg-white/15) */
 }
 
 /* The animated ring writes --angle in JS. The conic gradient lives on a
@@ -104,6 +151,24 @@
    extra rule here: the sitewide collapse below already zeroes every
    animation-duration, which is the actual law (CRM-UX-SPEC §5: "panel
    transitions collapse") — a collapse, not a separate fade. */
+/* The ingestion overlay's one moving element (PORT-18). A hairline that
+   breathes rather than a spinner: the house law is that motion settles and
+   never pleads, and a form that says "this takes a minute" should not also
+   look like it is straining. Reduced motion needs no rule of its own — the
+   sitewide collapse below zeroes every animation-duration, which leaves this
+   as the static line it is drawn from. */
+@keyframes ingest-breathe {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scaleX(0.35);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
 @keyframes sheet-slide-in {
   from {
     transform: translateX(100%);
@@ -120,6 +185,24 @@
     transform: translateX(100%);
   }
 }
+@keyframes sheet-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sheet-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 @keyframes sheet-fade-in {
   from {
     opacity: 0;
@@ -139,6 +222,57 @@
 
 html {
   color-scheme: dark;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Admin light theme (D-ADM-13, M-ADM-8). /admin only.
+
+   next-themes writes `.light` / `.dark` to <html>. The public site has no
+   light mode (repo CLAUDE.md) and never gets one from this block: every rule
+   is gated on `:has(.admin-theme)`, the marker `app/admin/layout.tsx`
+   renders, so the class alone does nothing. That gate is what stops a
+   back-navigation from a light admin into the public site carrying the
+   theme along, and putting the tokens on <html> rather than on the marker is
+   what lets Radix portals (the mobile sheet, dialogs — mounted on <body>)
+   inherit them.
+
+   Values are Palette D on paper (DESIGN-SYSTEM D-DOC-1) plus the ramps, not
+   inventions: ink = ground-a; body, dim, and hairline are the paper
+   counterparts; gold is gold-700, the first gold legal as text on white. The
+   alpha tokens keep their dark alphas and swap white for ink. Two values had
+   no documented counterpart and are proposals: card-hover (ground-a at 7%,
+   one step past the tint at ~3%) and well (ground-a at 4%, the sunken twin
+   of the tint).
+   ───────────────────────────────────────────────────────────── */
+html.light:has(.admin-theme) {
+  color-scheme: light;
+  --color-ground-a: #ffffff; /* paper — flyouts, dialogs, the sheet */
+  --color-ink: #060b1e;
+  --color-body: #3f3c5c; /* 10.4:1 on paper */
+  --color-dim: #5a5773; /* [PROPOSED] night-650 — the OKLCH midpoint of night-600 and night-700. D-DOC-1 dim (#6b6889) measured 4.9:1 on the tint and Taylor read it as faded; this holds the site floor of 6:1 (6.9 on paper, 6.4 on the tint) */
+  --color-faint: #e3e1ec;
+  --color-c2: #815d07; /* gold-700 — 6.0:1 as text on paper */
+  --color-c3: #4d3601; /* gold-800 — c3 is only ever hover text here; on paper a hover deepens instead of brightening */
+  --color-gradient-hot: #f6d293; /* gold-300 — the house gradient runs gold-500 → gold-300 on paper; its cream end read as white-on-white */
+  --color-ghost-fill: #ffffff;
+  --color-ghost-fill-hover: #f7f6fa;
+  --color-ghost-line: #b48934; /* gold-600 — 3.2:1, the UI-component floor */
+  --color-ghost-line-hover: #815d07;
+  --color-card: #f7f6fa; /* the tint — rail and panels */
+  --color-card-hover: rgb(6 11 30 / 0.07);
+  --color-line: rgb(6 11 30 / 0.15);
+  --color-line-strong: rgb(6 11 30 / 0.2);
+  --color-line-soft: rgb(6 11 30 / 0.1);
+  --color-well: rgb(6 11 30 / 0.04);
+  --color-tint: rgb(6 11 30 / 0.05);
+  --color-tint-strong: rgb(6 11 30 / 0.15);
+}
+html.light:has(.admin-theme) body {
+  background: var(--color-ground-a);
+}
+/* Grain is atmosphere for the dark ground; on paper it is dirt. */
+html.light:has(.admin-theme) body::after {
+  display: none;
 }
 
 /* Specialties cards read too transparent on mobile — full-width cards sit
@@ -192,8 +326,95 @@ body::after {
 }
 
 ::selection {
-  background: var(--color-c2);
+  background: var(--color-gold-500);
   color: #0a0714;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   The taste step's 1–7 scale (PORT-23).
+
+   A native range input, styled to the palette. Track, fill, and thumb have to
+   be written twice — once for WebKit, once for Firefox — because the two
+   engines expose different pseudo-elements and neither accepts the other's, so
+   a combined selector list is dropped whole by both. This is the one place in
+   the codebase that duplication is correct.
+
+   `--filled` is set inline from the value: the fill is part of the track's own
+   background, so there is one element and no absolutely-positioned overlay to
+   fall out of alignment at the ends.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.taste-scale {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* the tap target, not the track */
+  background: transparent;
+  cursor: pointer;
+}
+
+.taste-scale:focus-visible {
+  outline: 2px solid var(--color-c2);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
+.taste-scale::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-c2) 0 var(--filled, 0%),
+    var(--color-faint) var(--filled, 0%) 100%
+  );
+}
+
+.taste-scale::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-faint);
+}
+
+.taste-scale::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-c2);
+}
+
+.taste-scale::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px; /* centres a 20px thumb on a 6px track */
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.taste-scale::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.taste-scale:hover::-webkit-slider-thumb,
+.taste-scale:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+}
+
+.taste-scale:hover::-moz-range-thumb,
+.taste-scale:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
 }
 
 @media (prefers-reduced-motion: reduce) {

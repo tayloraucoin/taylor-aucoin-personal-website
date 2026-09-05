@@ -49,7 +49,7 @@ export function PhoneBlock({
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         }}
-        className="min-h-[44px] rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-body)"
+        className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-body)"
       >
         {copied ? "Copied" : "Copy"}
       </button>

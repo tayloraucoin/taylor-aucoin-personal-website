@@ -3,6 +3,7 @@
 import { useReportSaveState } from "../../_lib/save-state";
 import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
+import { Reveal } from "../reveal";
 
 const YES_NO_UNSURE = [
   { value: "yes", label: "Yes" },
@@ -132,9 +133,9 @@ export function StepBusiness({
         options={YES_NO_UNSURE}
       />
 
-      {form.values.insured === "yes" ? (
+      <Reveal values={form.values} dependsOn={{ field: "insured", equals: "yes" }}>
         <TextAnswer form={form} name="insuranceType" label="What kind?" />
-      ) : null}
+      </Reveal>
 
       <LongAnswer
         form={form}

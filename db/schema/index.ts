@@ -2,6 +2,12 @@ import type { callAttempts } from "./call-attempts";
 import type { emailEvents } from "./email-events";
 import type { engagementProducts } from "./engagement-products";
 import type { engagements } from "./engagements";
+import type {
+  exampleCaptures,
+  examplePacks,
+  exampleSitePacks,
+  exampleSites,
+} from "./example-sites";
 import type { intakeFiles } from "./intake-files";
 import type { invoiceEmails } from "./invoice-emails";
 import type { leadEmails } from "./lead-emails";
@@ -14,6 +20,8 @@ export * from "./call-attempts";
 export * from "./email-events";
 export * from "./engagement-products";
 export * from "./engagements";
+export * from "./example-pack";
+export * from "./example-sites";
 export * from "./intake-files";
 export * from "./intake-track";
 export * from "./invoice-emails";
@@ -33,6 +41,28 @@ export * from "./stripe-events";
  */
 export type EngagementRow = typeof engagements.$inferSelect;
 export type NewEngagementRow = typeof engagements.$inferInsert;
+
+/**
+ * Taste-gallery rows.
+ *
+ * `ExampleSiteRow` is the database's shape, with every column a draft
+ * legitimately lacks nullable. Client-facing surfaces never see it: they
+ * receive the `ExampleSite` content contract from
+ * `server/services/example-sites.ts`, built only from published rows and
+ * validated on the way out, so a half-tagged draft cannot reach a gallery
+ * structurally rather than by promise (M-PORT-42).
+ */
+export type ExampleSiteRow = typeof exampleSites.$inferSelect;
+export type NewExampleSiteRow = typeof exampleSites.$inferInsert;
+
+export type ExampleCaptureRow = typeof exampleCaptures.$inferSelect;
+export type NewExampleCaptureRow = typeof exampleCaptures.$inferInsert;
+
+export type ExampleSitePackRow = typeof exampleSitePacks.$inferSelect;
+export type NewExampleSitePackRow = typeof exampleSitePacks.$inferInsert;
+
+export type ExamplePackRow = typeof examplePacks.$inferSelect;
+export type NewExamplePackRow = typeof examplePacks.$inferInsert;
 
 export type IntakeFileRow = typeof intakeFiles.$inferSelect;
 export type NewIntakeFileRow = typeof intakeFiles.$inferInsert;

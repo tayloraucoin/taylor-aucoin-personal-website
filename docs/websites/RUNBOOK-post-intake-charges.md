@@ -60,8 +60,26 @@ Nothing in the PORT work changed this path. A client who chose pay-in-full (`sho
 
 ---
 
+## 4. The one charge a client can start themselves
+
+**Motion, from inside the taste step.** Since 2026-09-04 a client who did not
+buy the animations add-on at checkout meets a notice at the bottom of step 6
+with its catalogue price and a button that opens hosted Stripe Checkout for
+that one item. It is not a post-intake charge and it is not yours to run: they
+press it, they pay on Stripe, and it settles through `settleAncillaryPurchase`
+like extra pages do — **their deposit state is untouched**.
+
+You get one ops email per settlement ("Add-on paid"). Nothing else about it
+reaches you, and nothing about it can reach a client who has not paid for the
+build.
+
+The allow-list is one key (`MID_INTAKE_ADDONS` in `server/services/deposit.ts`).
+Selling anything else this way is a decision, not a constant edit — see
+M-PORT-38 for why the charge law was restated to permit exactly this and
+nothing more.
+
 ## 4. What must never happen
 
-- **A charge the client did not agree to out loud first.** Every path here starts with you running something.
+- **A charge the client did not agree to out loud first, or start themselves.** Every path in sections 1–3 starts with you running something; section 4's starts with the client pressing a priced button on hosted Checkout.
 - **`paid_at` set by anything other than a build payment.** It has one meaning. `settleAncillaryPurchase` exists precisely so ancillary money cannot touch it.
 - **A client-reachable route to any of this.** If a future ticket adds an admin surface for these, it authenticates as the admin — it does not relax the rule that a client cannot charge themselves.

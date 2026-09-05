@@ -88,7 +88,7 @@ export default async function TranscriptsPage({
             type="date"
             name="from"
             defaultValue={filters.from ?? ""}
-            className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -97,12 +97,12 @@ export default async function TranscriptsPage({
             type="date"
             name="to"
             defaultValue={filters.to ?? ""}
-            className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+            className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
           />
         </label>
         <button
           type="submit"
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 text-sm text-(--color-ink)"
         >
           Apply
         </button>
@@ -117,7 +117,7 @@ export default async function TranscriptsPage({
             className={`min-h-[44px] rounded-(--radius) border px-3 py-2.5 text-sm ${
               rangeIsActive(filters, entry.filters)
                 ? "border-(--color-c2)/60 text-(--color-ink)"
-                : "border-white/15 text-(--color-body) hover:text-(--color-ink)"
+                : "border-(--color-line) text-(--color-body) hover:text-(--color-ink)"
             }`}
           >
             {entry.label}
@@ -128,13 +128,13 @@ export default async function TranscriptsPage({
       <section className="flex flex-wrap gap-3">
         <a
           href={transcriptsExportHref(EXPORT_BASE, filters, "csv")}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 py-2.5 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 py-2.5 text-sm text-(--color-ink)"
         >
           Download CSV
         </a>
         <a
           href={transcriptsExportHref(EXPORT_BASE, filters, "json")}
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 py-2.5 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 py-2.5 text-sm text-(--color-ink)"
         >
           Download JSON
         </a>

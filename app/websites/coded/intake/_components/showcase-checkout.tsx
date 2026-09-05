@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { formatMoney } from "@/lib/intake/money";
+import { EXTRA_PAGES_MAX } from "@/lib/validators/intake";
+import { checkShowcasePromoCode } from "../_actions/promo";
 import { AddonInfo } from "../../../intake/_components/addon-info";
+import type { CheckoutAddonView } from "../../../intake/_components/deposit-checkout";
 import { LegalAgreement } from "../../../intake/_components/legal-agreement";
 import { PromoRail } from "../../../intake/_components/promo-rail";
-import type { CheckoutAddonView } from "../../../intake/_components/deposit-checkout";
-import { checkShowcasePromoCode } from "../_actions/promo";
 import { ShowcasePayButton } from "./showcase-pay-button";
+import { NativeSelect } from "@/components/ui/native-select";
 
 type PromoState =
   | { status: "idle" }
@@ -45,6 +48,7 @@ export function ShowcaseCheckout({
   halfCents,
   fullCents,
   addons,
+  extraPage,
   initialPromoCode,
 }: {
   token: string;
@@ -53,10 +57,22 @@ export function ShowcaseCheckout({
   /** Null when no pay-in-full row is sellable; the option is then not offered. */
   fullCents: number | null;
   addons: CheckoutAddonView[];
+  /**
+   * Extra pages, priced per page. Null when no sellable row exists, in which
+   * case nothing is offered rather than a count that cannot be charged.
+   */
+  extraPage: CheckoutAddonView | null;
   initialPromoCode?: string;
 }) {
+  // Promo validation round-trips to a server action against a real token.
+  const preview = useIsPreview();
   const [plan, setPlan] = useState<"half" | "full" | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  /**
+   * How many pages beyond the included five. Zero is the default and is not a
+   * selection — nothing is added to the total until the client picks a number.
+   */
+  const [pages, setPages] = useState(0);
   const [agreed, setAgreed] = useState(false);
 
   const [promoOpen, setPromoOpen] = useState(Boolean(initialPromoCode));
@@ -65,6 +81,7 @@ export function ShowcaseCheckout({
   const autoApplied = useRef(false);
 
   const applyPromo = async (code: string) => {
+    if (preview) return;
     if (!code.trim()) return;
     setPromo({ status: "checking" });
     try {
@@ -121,6 +138,10 @@ export function ShowcaseCheckout({
     .filter((a) => selected.has(a.key))
     .reduce((sum, a) => sum + a.amountCents, 0);
 
+  // The one multiplication on this screen, and it is display only. Stripe does
+  // the arithmetic that matters, from the same count and its own price.
+  const pagesCents = extraPage ? extraPage.amountCents * pages : 0;
+
   const planCents =
     plan === "full" && typeof effectiveFull === "number"
       ? effectiveFull
@@ -128,7 +149,8 @@ export function ShowcaseCheckout({
         ? effectiveHalf
         : null;
 
-  const totalCents = planCents === null ? null : planCents + addonTotal;
+  const totalCents =
+    planCents === null ? null : planCents + addonTotal + pagesCents;
 
   const payLabel =
     totalCents === null
@@ -229,6 +251,60 @@ export function ShowcaseCheckout({
         </div>
       ) : null}
 
+      {/* Counted, not ticked. Everything above is a yes/no; this is a how
+          many, so it gets a number picker and its own line on the total
+          rather than a checkbox that would have to mean "one". */}
+      {extraPage ? (
+        <div className="mt-9">
+          <p className="font-body text-[16px] font-medium leading-[1.4] text-(--color-ink)">
+            Extra pages?
+          </p>
+
+          <div className="mt-3 border-y border-(--color-faint) py-3.5">
+            <div className="flex items-baseline justify-between gap-4">
+              <label
+                htmlFor="extra-pages"
+                className="font-body text-[16px] leading-[1.4] text-(--color-body)"
+              >
+                Pages beyond the five included
+              </label>
+              <span className="shrink-0 font-mono text-[12px] tracking-[.06em] text-(--color-dim)">
+                {formatMoney(extraPage.amountCents, currency)} each
+              </span>
+            </div>
+
+            <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+              {/* [COPY — pending Taylor] */}
+              Only if you already know you need them — you&apos;ll lay out what
+              every page is for inside the questionnaire, and we can always add
+              pages later. Project detail pages don&apos;t count; they come with
+              the work section.
+            </p>
+
+            <div className="mt-3 flex items-center gap-3">
+              <NativeSelect
+                id="extra-pages"
+                value={pages}
+                onChange={(event) => setPages(Number(event.target.value))}
+                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
+              >
+                {Array.from({ length: EXTRA_PAGES_MAX + 1 }, (_, n) => (
+                  <option key={n} value={n}>
+                    {n === 0 ? "None" : n === 1 ? "1 page" : `${n} pages`}
+                  </option>
+                ))}
+              </NativeSelect>
+
+              {pages > 0 ? (
+                <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
+                  {formatMoney(pagesCents, currency)}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {totalCents !== null ? (
         <div className="flex items-baseline justify-between pt-3.5">
           <span className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
@@ -268,8 +344,8 @@ export function ShowcaseCheckout({
                       </span>
                     </div>
                     <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-                      {active.granted.description} Nothing added to
-                      today&apos;s total.
+                      {active.granted.description} Nothing added to today&apos;s
+                      total.
                     </p>
                   </>
                 ) : (
@@ -298,6 +374,7 @@ export function ShowcaseCheckout({
           label={payLabel}
           plan={plan}
           addonKeys={[...selected]}
+          extraPages={pages}
           promoCode={active?.code}
           disabled={!agreed || plan === null}
         />

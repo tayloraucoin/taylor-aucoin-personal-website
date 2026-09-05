@@ -83,7 +83,7 @@ export function LeadList({
             <Link
               href={rowHref(filters, row.id)}
               scroll={false}
-              className="flex min-h-[44px] flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-transparent px-3 py-2 hover:border-(--color-c2) hover:bg-white/[0.03]"
+              className="flex min-h-[44px] flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-transparent px-3 py-2 hover:border-(--color-c2) hover:bg-(--color-tint)/60"
             >
               <span className="text-sm text-(--color-ink)">
                 {row.businessName}
@@ -174,7 +174,7 @@ function EmptyList({
               : "No leads match these filters.";
 
   return (
-    <div className="flex max-w-prose flex-col gap-3 border-t border-white/10 pt-6">
+    <div className="flex max-w-prose flex-col gap-3 border-t border-(--color-line-soft) pt-6">
       <p className="text-sm text-(--color-ink)">{message}</p>
       <div className="flex flex-wrap items-center gap-4">
         <Link href={clearHref} className="text-sm text-(--color-c2) underline">

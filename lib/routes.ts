@@ -154,6 +154,35 @@ export const adminRoutes = {
   sync: `${ADMIN_PREFIX}/sync`,
   scoreboard: `${ADMIN_PREFIX}/scoreboard`,
   transcripts: `${ADMIN_PREFIX}/transcripts`,
+
+  /**
+   * Named here before they are built, because the admin rail lists them as
+   * dimmed labels (D-ADM-7) and a nav entry still needs a stable identity to
+   * key on. `intakeQuestions` becomes a real route in ADM-2; `revenue` has no
+   * ticket yet. Neither is linked until its surface exists — see
+   * `app/admin/_components/admin-nav.ts`.
+   */
+  intakeQuestions: `${ADMIN_PREFIX}/intake/questions`,
+
+  /**
+   * The taste gallery's curation surface (PORT-31).
+   *
+   * Two screens: the six packs, and one pack's sites. A site itself opens as a
+   * drawer on the second (`?site=`), and the gallery previews as a drawer on it
+   * too (`?preview=`). `all` is a valid pack, meaning the whole library.
+   */
+  intakeExamples: `${ADMIN_PREFIX}/intake/examples`,
+  intakeExamplePack: (pack: string) =>
+    `${ADMIN_PREFIX}/intake/examples/packs/${pack}`,
+
+  /**
+   * One site opens as a drawer over its pack, not as a page of its own
+   * (`?site=<slug>`): editing is an aside from the list you are working down,
+   * and the list is where you know what is left. Same reasoning as `?lead=`.
+   */
+  intakeExampleSite: (pack: string, slug: string) =>
+    `${ADMIN_PREFIX}/intake/examples/packs/${pack}?site=${slug}`,
+  revenue: `${ADMIN_PREFIX}/finances/revenue`,
 } as const;
 
 /**

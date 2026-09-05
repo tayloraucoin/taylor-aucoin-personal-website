@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startShowcaseCheckout } from "../_actions/pay";
 
@@ -20,6 +21,7 @@ export function ShowcasePayButton({
   label,
   plan,
   addonKeys = [],
+  extraPages = 0,
   promoCode,
   disabled = false,
 }: {
@@ -28,22 +30,38 @@ export function ShowcasePayButton({
   /** Null until the client picks; the button is disabled until they do. */
   plan: "half" | "full" | null;
   addonKeys?: string[];
+  /** How many pages beyond the included five. A count, never an amount. */
+  extraPages?: number;
   promoCode?: string;
   disabled?: boolean;
 }) {
+  /**
+   * Preview never opens Checkout. This is the one place a Stripe session
+   * can be started from this screen, so it is the one place that has to
+   * refuse — a disabled button here is worth more than a rule written
+   * anywhere else (ADM-4).
+   */
+  const preview = useIsPreview();
+
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
 
   return (
     <div>
       <GradientButton
-        disabled={disabled || pending || plan === null}
+        disabled={disabled || pending || plan === null || preview}
         onClick={() => {
           if (plan === null) return;
           setFailed(false);
           startTransition(async () => {
             try {
-              await startShowcaseCheckout(token, plan, addonKeys, promoCode);
+              await startShowcaseCheckout(
+                token,
+                plan,
+                addonKeys,
+                promoCode,
+                extraPages,
+              );
             } catch {
               // A redirect throws by design and unmounts this; anything that
               // lands here is a real failure to open Checkout.

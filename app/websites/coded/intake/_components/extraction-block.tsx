@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useIsDocument, useIsPreview } from "@/components/intake/preview-mode";
 import { GhostButton } from "@/components/ui/GradientButton";
 import { mintEntryKey } from "@/lib/intake/entry-key";
+import type { ExtractionMode } from "@/server/services/extract";
+import { extractPastedEntries, type ExtractResult } from "../_actions/extract";
+import { DocHint, DocTag } from "../../../intake/_components/document";
 import { TextArea } from "../../../intake/_components/text-field";
-import {
-  extractPastedEntries,
-  type ExtractResult,
-} from "../_actions/extract";
 
 type State =
   | { status: "idle" }
@@ -50,7 +50,8 @@ export function ExtractionBlock({
   onEntries,
 }: {
   token: string;
-  mode: "experience" | "projects";
+  /** One home for the mode list: the service that runs them. */
+  mode: ExtractionMode;
   /** The v2 doc's copy above the box — different words on each step. */
   intro: string;
   /** The v2 doc's line shown once entries have appeared. */
@@ -61,6 +62,14 @@ export function ExtractionBlock({
   /** Hands new entries to the step, which appends them. Never saves here. */
   onEntries: (entries: Record<string, string>[]) => void;
 }) {
+  /**
+   * The extraction round-trips through a server action that resolves the
+   * engagement behind the token. A preview has neither, so the button is
+   * disabled and says why rather than failing on press (ADM-2, UX spec §6).
+   */
+  const preview = useIsPreview();
+  const document = useIsDocument();
+
   const [state, setState] = useState<State>({ status: "idle" });
 
   const run = async () => {
@@ -86,11 +95,36 @@ export function ExtractionBlock({
 
     // Each entry gets its key here, on arrival, so an extracted project can
     // hold images the moment it renders.
-    onEntries(result.entries.map((entry) => ({ ...entry, entryKey: mintEntryKey() })));
+    onEntries(
+      result.entries.map((entry) => ({ ...entry, entryKey: mintEntryKey() })),
+    );
     setState({ status: "done" });
   };
 
   const running = state.status === "running";
+
+  /**
+   * The paste box is a question — its blob is stored as `fastWay` — so it
+   * belongs in the document, minus the button that cannot be pressed there.
+   * The after-line is included because it is the copy that tells a client what
+   * happens to what they pasted, which is the part worth reviewing.
+   */
+  if (document) {
+    return (
+      <section className="mb-10">
+        <h3 className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)">
+          The fast way
+        </h3>
+        <p className="mt-1.5 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">
+          {intro}
+        </p>
+        <div className="mt-2">
+          <DocTag>Paste box · &ldquo;Sort this for me&rdquo;</DocTag>
+          <DocHint>Once it has run: {afterLine}</DocHint>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mb-10 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
@@ -102,9 +136,13 @@ export function ExtractionBlock({
         {intro}
       </p>
 
+      {/* The id is suffixed by mode because two of these render on one page:
+          the block appears on step 3 and on step 4, and the review surface
+          stacks every step, so a bare `f-fastWay` was a duplicate id the
+          moment both were on screen. */}
       <div className="mt-4">
         <TextArea
-          id="f-fastWay"
+          id={`f-fastWay-${mode}`}
           rows={8}
           value={value}
           readOnly={running}
@@ -120,13 +158,26 @@ export function ExtractionBlock({
       </div>
 
       <div className="mt-4">
-        <GhostButton disabled={running} onClick={() => void run()}>
+        <GhostButton
+          disabled={running || preview}
+          onClick={preview ? undefined : () => void run()}
+        >
           {running ? "Reading it through…" : "Sort this for me"}
         </GhostButton>
 
-        <p aria-live="polite" className="mt-3 max-w-[48ch]">
-          <Line state={state} afterLine={afterLine} onRetry={() => void run()} />
-        </p>
+        {preview ? (
+          <p className="mt-3 max-w-[48ch] text-xs text-(--color-dim)">
+            Sorting is disabled in preview.
+          </p>
+        ) : (
+          <p aria-live="polite" className="mt-3 max-w-[48ch]">
+            <Line
+              state={state}
+              afterLine={afterLine}
+              onRetry={() => void run()}
+            />
+          </p>
+        )}
       </div>
     </section>
   );
@@ -162,7 +213,9 @@ function Line({
     case "nothing_pasted":
       // [COPY — pending Taylor]
       return (
-        <span className={dim}>Nothing to sort yet — paste something in first.</span>
+        <span className={dim}>
+          Nothing to sort yet — paste something in first.
+        </span>
       );
 
     case "done":

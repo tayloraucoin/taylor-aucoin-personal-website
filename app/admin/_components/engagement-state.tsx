@@ -102,7 +102,7 @@ export function MoneyTable({
         ))}
       </ul>
 
-      <p className="border-t border-white/10 pt-2 text-sm text-(--color-ink)">
+      <p className="border-t border-(--color-line-soft) pt-2 text-sm text-(--color-ink)">
         {money(paidCents)} paid
         {pendingCents > 0 ? ` · ${money(pendingCents)} outstanding` : ""}
       </p>

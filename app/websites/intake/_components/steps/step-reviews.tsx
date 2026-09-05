@@ -5,6 +5,7 @@ import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { FileDrop, type ExistingFile } from "../file-drop";
+import { CheckAnswer } from "../check-answer";
 
 const REVIEW_SOURCES = [
   { value: "google", label: "Google" },
@@ -67,20 +68,14 @@ export function StepReviews({
         />
       </Field>
 
-      <Field id="f-permission" label="Can we publish these?">
-        <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3 font-body text-[16px] font-light text-(--color-body)">
-          <input
-            type="checkbox"
-            checked={form.values.publishPermission === true}
-            onChange={(event) => {
-              form.setValue("publishPermission", event.target.checked);
-              form.flush();
-            }}
-            className="h-5 w-5 shrink-0 accent-(--color-c2)"
-          />
-          Yes — these are real and you can use them on my site.
-        </label>
-      </Field>
+      <CheckAnswer
+        form={form}
+        name="publishPermission"
+        label="Can we publish these?"
+        align="center"
+      >
+        Yes — these are real and you can use them on my site.
+      </CheckAnswer>
 
       <LongAnswer
         form={form}

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { socialCard } from "@/lib/metadata";
 import { INTAKE_COLUMN } from "../../intake/_lib/column";
 
@@ -27,10 +27,10 @@ export const dynamic = "force-dynamic";
 const description = "A private questionnaire for a website build.";
 
 export const metadata: Metadata = {
-  title: "Portfolio intake",
+  title: "Project intake",
   description,
   robots: { index: false, follow: false },
-  ...socialCard({ title: "Portfolio intake", description }),
+  ...socialCard({ title: "Project intake", description }),
 };
 
 export default function ShowcaseIntakeLayout({

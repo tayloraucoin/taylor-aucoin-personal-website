@@ -1,7 +1,7 @@
 # Portfolio intake — full walkthrough (v2)
 
 Every screen, question, and line of copy, in the order a client experiences it.
-Field types in `backticks`. Conditional questions marked *(shows only if…)*.
+Field types in `backticks`. Conditional questions marked _(shows only if…)_.
 Every question is optional, always — same law as the existing intake.
 The start form asks what kind of work the portfolio holds; that answer picks the example-site set for the taste step and flavours the copy throughout. This doc shows the **film** flavour; flex points are marked inline with their generic fallback.
 
@@ -20,17 +20,21 @@ Blur validation: "That doesn't look like an email address — check for a typo."
 Help: So Taylor can reach you about the build.
 
 **What you do, in one line** `text`
-Placeholder: Director and camera operator in Vancouver
+Placeholder: Founder and product designer in Vancouver
+
+> **Amended 2026-09-01 (Taylor).** The film-shaped placeholder was the first thing every non-film client read, on the public page before payment. Same de-biasing pass as Step 1.
 
 **What kind of site is this?** `check all that apply`
+
 - Portfolio — your creative work is the product
-- Consultant or coach *(coming soon — disabled)*
-- Speaker or author *(coming soon — disabled)*
-- Studio or small team *(coming soon — disabled)*
+- Consultant or coach _(coming soon — disabled)_
+- Speaker or author _(coming soon — disabled)_
+- Studio or small team _(coming soon — disabled)_
 
 Help: More categories open soon. If you're a mix, check everything that's true.
 
 **What's the work?** `check all that apply`
+
 - Film or video
 - Photography
 - Design
@@ -52,22 +56,24 @@ Help: If you have one. Leave blank if you don't.
 Five pages, your work fully produced, real code you own, hosting that costs close to nothing. Extra pages are $150 each — you'll pick pages inside, and nothing extra is ever charged without a conversation first.
 
 **How would you like to pay?** `pick one`
+
 - Half now, half before launch — **$1,000 today**
 - All up front, 5% off — **$1,900 today**
 
 **Worth adding?** `check any` — each row has an info button, same pattern as the existing checkout
+
 - **Admin panel — $500** · A private login where you change copy and swap images yourself, no code involved. Most people do fine without it — the site comes with a guide for editing it yourself either way.
 - **Logo / wordmark refresh — $250** · Most portfolio sites don't need a logo; your name in good type usually does it better. This is for when you want the mark anyway.
 - **Booking setup — $250** · A booking page wired to your calendar, for coaching, teaching, or consults. Honestly: you can set Cal.com up yourself in an afternoon — this is for skipping the afternoon.
 - **Care plan — $100/mo** · Email me a change, it's live within 48 hours — plus I keep the underlying software current. Cancel whenever; the site never depends on it.
 
-*(Payment runs through the same Stripe checkout as the existing flow. Add-ons charge with today's payment.)*
+_(Payment runs through the same Stripe checkout as the existing flow. Add-ons charge with today's payment.)_
 
 ---
 
 ## Welcome screen — after payment
 
-**Nine steps. Every one of them optional.**
+**Nine steps. Every one of them optional but encouraged.**
 
 Budget about 45 minutes — longer if your back catalogue runs deep. It saves as you type, so leave and come back whenever; your link always brings you back to where you were.
 
@@ -80,15 +86,22 @@ Skip anything. A skipped question just means we ask on a call, or leave it out. 
 **Your name, as it should appear on the site** `text`
 Help: If you go by something different professionally, use that.
 
-**What you do, in one line** `text` *(prefilled from start form)*
-Help: The line that sits under your name. "Director / Camera / Editor / Teacher" counts. So does something looser. We'll sharpen it together.
+**What you do, in one line** `text` _(prefilled from start form)_
+Help: The line that sits under your name. "Founder / Product Designer" counts. So does "Ceramicist, mostly commissions" or "I run a two-person studio in Halifax." We'll sharpen it together.
+
+> **Amended 2026-09-01 (Taylor).** The previous examples — "Director / Camera / Editor / Teacher" — read as film copy in the generic pack, which every non-film client gets. Replaced with a formal example and a loose one, neither tied to a discipline.
 
 **Your roles** `repeatable block` — add button: "Add another role"
 Per entry:
-- **Role** `text` — placeholder: Director
 
-**Which role leads?** `text`
-Help: If a stranger could only know one thing you do, which is it?
+- **Role** `text` — placeholder: Founder
+
+Below the block, a live **title preview** shows the name and the assembled role line as they will sit on the site. It renders only once one of them has content.
+
+**Which role leads?** `single select` — options are the roles entered above
+Help: If a stranger could only know one thing you do, which is it? It goes first in the line under your name.
+
+> **Amended 2026-09-01 (Taylor).** Was free text. A stored lead role that no longer matches a typed role stays on the option list rather than disappearing, so editing a role's spelling cannot silently drop this answer. With no roles entered the field explains itself instead of showing an empty group.
 
 **How long you've been doing this** `text`
 Help: "Since 2008" or "about fifteen years" — either is fine.
@@ -97,14 +110,19 @@ Help: "Since 2008" or "about fifteen years" — either is fine.
 Placeholder: Vancouver, BC
 Help: And how far the work travels, if that matters — "Vancouver-based, works anywhere" is a common shape.
 
-**Who we'll be dealing with** `text` *(prefilled)*
+**Who we'll be dealing with** `text` _(prefilled)_
 
-**Best phone number** `phone` *(prefilled)*
+**Best phone number** `phone` _(prefilled)_
 
-**Email** `email` *(prefilled)*
+**Email** `email` _(prefilled)_
 
-**Union or guild memberships** `long text`
-Help: IATSE, DGC, a guild, a professional college — with the category or number if it matters. We only list what's current.
+**Memberships and credentials** `long text` — key: `credentials`
+Help: Unions and guilds, professional colleges, degrees, certifications, training worth naming. Include the category or number where it matters. We only list what's current.
+
+**Affiliations and partnerships** `long text` — key: `affiliations`
+Help: Studios or agencies you work under, companies you're formally tied to, brands you're an official partner or reseller for. Only the ones you can name publicly.
+
+> **Amended 2026-09-01 (Taylor).** "Union or guild memberships" was too narrow and film-shaped; it now covers education, training, and certification. Affiliations and partnerships are new. The old `unions` key stays in the schema and label map, read-only, so answers given before this change still reach the document.
 
 **Representation** `long text`
 Help: Agent, manager, or rep — who they are, and whether enquiries should go through them.
@@ -113,9 +131,10 @@ Help: Agent, manager, or rep — who they are, and whether enquiries should go t
 
 ## Step 2 of 9 — Who this site is for
 
-*Step intro:* A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.
+_Step intro:_ A portfolio isn't for you — it's for the person deciding whether to work with you. This step is about who that is.
 
 **Who ends up on your site?** `check all that apply`
+
 - Producers or production companies
 - Agencies or brands
 - Direct clients
@@ -152,7 +171,7 @@ Help: The impression, in your own words. "Someone you'd trust with a crew" reads
 
 ## Step 3 of 9 — Experience and proof
 
-*Step intro:* Think of this as the LinkedIn layer: positions, memberships, ongoing roles — the timeline your career sits on. The individual films and projects that timeline produced come in the next step. This one is where you've worked, taught, founded, and belonged.
+_Step intro:_ Think of this as the LinkedIn layer: positions, memberships, ongoing roles — the timeline your career sits on. The individual films and projects that timeline produced come in the next step. This one is where you've worked, taught, founded, and belonged.
 
 **The fast way** `long text` + button
 Copy above the box: Paste everything — your LinkedIn, your old site's about page, your CV, your IMDb bio. One big messy blob is perfect.
@@ -163,6 +182,7 @@ After the button runs: Entries appear below, filled in. Fix anything we got wron
 **Your experience** `repeatable block` — add button: "Add another"
 Help: Positions, ongoing roles, things you founded, programs you run. "Feature this" marks the ones that should be impossible to miss.
 Per entry:
+
 - **What it is** `text` — placeholder: Instructor — Film Production
 - **Where** `text` — placeholder: LaSalle College
 - **When** `text` — placeholder: 2019–now
@@ -189,8 +209,8 @@ Help: Clients, companies, or people you've worked with that carry weight — and
 
 ## Step 4 of 9 — The work
 
-*Step intro:* Now the work itself — the films, videos, and projects the last step's career produced. Add as many as you want; there's no cap. Don't aim for polished — aim for honest, and lead with what you'd show first.
-*(Flexes by discipline — generic: "Now the work itself — the pieces the last step's career produced." Photography: "the shoots, series, and commissions…" Art: "the pieces, series, and shows…")*
+_Step intro:_ Now the work itself — the films, videos, and projects the last step's career produced. Add as many as you want; there's no cap. Don't aim for polished — aim for honest, and lead with what you'd show first.
+_(Flexes by discipline — generic: "Now the work itself — the pieces the last step's career produced." Photography: "the shoots, series, and commissions…" Art: "the pieces, series, and shows…")_
 
 **The fast way** `long text` + button
 Copy above the box: Same trick as the last step — paste your filmography, credit list, IMDb page, or the projects off your old site, and hit the button.
@@ -200,6 +220,7 @@ After the button runs: Projects appear below, filled in as far as the blob allow
 
 **Your projects** `repeatable block` — add button: "Add another project"
 Per entry:
+
 - **Title** `text`
 - **Year** `text`
 - **Your role on it** `text` — placeholder: Director · or: Camera op / editor
@@ -219,20 +240,21 @@ Per entry:
   - Yes — it's public
   - Yes, but there are rules — ask me
   - Not sure — check with me
-  Help: Studio and client work sometimes comes with strings. We'd rather ask than get you in trouble.
+    Help: Studio and client work sometimes comes with strings. We'd rather ask than get you in trouble.
 - **Where it belongs** `pick one`
   - Front and centre
   - In the archive
   - Leave it off for now
 
-**Which piece is *the* reel?** `text`
+**Which piece is _the_ reel?** `text`
 Help: The one video a stranger should see first. If you don't have a current reel, say so — the site can lead with your best piece instead, and we'll note the reel needs a refresh.
-*(Flexes by discipline — generic label: "Which piece leads?" with help "The one thing a stranger should see first.")*
+_(Flexes by discipline — generic label: "Which piece leads?" with help "The one thing a stranger should see first.")_
 
 **If you could only show five** `long text`
 Help: Which five, in what order? This tells us more than any rating.
 
 **How should the work be organized?** `check all that apply`
+
 - By role — directing, camera, editing
 - By type — films, commercials, music videos
 - One curated grid, no filters
@@ -248,10 +270,11 @@ Help: How you imagine someone moving through the work. Checked more than one abo
 
 ## Step 5 of 9 — Taste
 
-*Step intro:* This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.
+_Step intro:_ This is how we skip the part where a designer shows you three drafts you don't like. Below are real portfolio sites from across the whole spectrum. Go with your gut — the pattern in your reactions is what we're after.
 
 **The gallery** `custom block — one card per example site`
 Each card shows a screenshot set and a "Visit site" link, plus two actions:
+
 - **Add to favourites** `toggle`
 - **Add a note** `long text, revealed on tap`
   Placeholder: What catches you — good or bad. A detail, a feeling, the type, the way it moves.
@@ -261,18 +284,21 @@ Instruction copy: Drag your favourites into order, best first. Then tell us why 
 Each favourite shows its note, open for editing.
 
 **Dark or light?** `pick one`
+
 - Dark
 - Light
 - Could go either way
-Help: Most film sites run dark so the footage glows. Yours doesn't have to.
-*(Flexes by discipline — photography/art: "Most gallery sites run light so the work hangs clean. Yours doesn't have to.")*
+  Help: Most film sites run dark so the footage glows. Yours doesn't have to.
+  _(Flexes by discipline — photography/art: "Most gallery sites run light so the work hangs clean. Yours doesn't have to.")_
 
 **How still should it be?** `pick one`
+
 - Dead still — nothing moves
 - Quiet — small, settled movement
 - Alive — motion is part of the personality
 
 **How much on screen at once?** `pick one`
+
 - Almost nothing — one thing at a time
 - Balanced
 - Rich — I like density
@@ -298,7 +324,7 @@ Help: Pet hates. Autoplay music, tiny grey text, whatever it is.
 
 ## Step 6 of 9 — Your words
 
-*Step intro:* Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.
+_Step intro:_ Most portfolio bios read like a stranger wrote them in a hurry. This step is how we make the site sound like you.
 
 **Voice note** `file upload — the one gradient-ring moment, same as the existing flow`
 Prompt copy: Record a 2–3 minute voice memo on your phone answering two things: how did you get into this, and what's a piece of work you're proud of — and why? Don't script it. This is the single most useful thing you can give us.
@@ -312,10 +338,11 @@ Box label: Where I've written something myself — bio, project notes, experienc
 Help: Unchecked, we treat everything you've pasted as raw material and write from it.
 
 **First person or third?** `pick one`
+
 - First — "I direct…"
 - Third — "Kryshan directs…"
 - Not sure — you pick
-Help: Third person reads like a program note; first person reads like a letter. Both work.
+  Help: Third person reads like a program note; first person reads like a letter. Both work.
 
 **Anything you've written** `file upload, multiple`
 Help: Artist statements, director's notes, grant applications, captions — anything in your own words.
@@ -333,7 +360,7 @@ Box label: Yes — we use it to make the writing sound like you.
 
 ## Step 7 of 9 — Media
 
-*Step intro:* Project images live with their projects back in step 4. This step is everything else — and original files beat compressed copies every time.
+_Step intro:_ Project images live with their projects back in step 4. This step is everything else — and original files beat compressed copies every time.
 
 **A photo of you** `file upload, image`
 Help: For the about page. A real photo beats a stock one every time — a still of you working is even better.
@@ -345,12 +372,13 @@ Help: You on set, behind a camera, teaching. This is where the site gets its hum
 Help: Festivals send these as PNGs. Whatever you've got.
 
 **Do you have a logo or wordmark?** `pick one`
+
 - Yes, I have one
 - No — my name in good type is fine
 - Have one, but I hate it
-Help: Most portfolio sites don't need a logo — a well-set name usually does it better.
+  Help: Most portfolio sites don't need a logo — a well-set name usually does it better.
 
-**Your logo file** `file upload` *(shows only if "Yes" or "hate it")*
+**Your logo file** `file upload` _(shows only if "Yes" or "hate it")_
 Help: The original file if you have it — otherwise any version.
 
 **Anything else with your name on it** `file upload, multiple`
@@ -365,9 +393,10 @@ Help: Colours, styles, or a site that makes you cringe.
 
 ## Step 8 of 9 — The site itself
 
-*Step intro:* The shape of the thing — what pages exist and what each one is for. Five pages are included in the build; extra pages are $150 each, and we'll always confirm with you before anything is charged. Project detail pages don't count — they come with the work section.
+_Step intro:_ The shape of the thing — what pages exist and what each one is for. Five pages are included in the build; extra pages are $150 each, and we'll always confirm with you before anything is charged. Project detail pages don't count — they come with the work section.
 
 **Pages you're imagining** `check all that apply`
+
 - Home
 - Work / projects
 - A reel page
@@ -384,17 +413,19 @@ Help (under the group): Check what feels right — we'll push back if something'
 Help: A producer looking at your reel and a parent looking at your film camp want different things. Different pages? Different sections? Or does one of them belong on a separate site entirely?
 
 **How should people reach you?** `pick one`
+
 - An email link — no form
 - A short form
 - Both
 - Through my rep
-Help: Forms filter people; a bare email converts. For portfolios we usually recommend the email.
+  Help: Forms filter people; a bare email converts. For portfolios we usually recommend the email.
 
 **Should the site say whether you're available?** `pick one`
+
 - Yes — show availability
 - No
 - Not sure
-Help: "Booking for fall 2026" can prompt the email. It also needs updating — only say yes if you'll actually update it.
+  Help: "Booking for fall 2026" can prompt the email. It also needs updating — only say yes if you'll actually update it.
 
 **Your old site: what must survive?** `long text`
 Help: Anything on the current site that has to carry over — and anything that should die with it.
@@ -406,45 +437,50 @@ Help: If your site's been up for years, links to it live in old emails, articles
 
 ## Step 9 of 9 — Accounts and access
 
-*Callout at top, carried over and extended:*
+_Callout at top, carried over and extended:_
 **No passwords · ever** — We never ask for account passwords. Everything below is either something you send us an invite to, or something we set up together on a call. **Any invite — domain, Vimeo, anything — goes to hello@tayloraucoin.com.**
 
 **Do you own a domain?** `pick one`
 Help: A web address you've already bought — yourname.com, or similar.
+
 - Yes
 - No
 - Not sure
 
-**Which one?** `text` *(label changes by answer, carried over: Yes → "Which one?" · Not sure → "What do you think it is?" with help "A guess is fine — we can look it up from there." · No → "Any address you'd want?" with help "Registering it is part of the build. If you haven't thought about it, skip this.")*
+**Which one?** `text` _(label changes by answer, carried over: Yes → "Which one?" · Not sure → "What do you think it is?" with help "A guess is fine — we can look it up from there." · No → "Any address you'd want?" with help "Registering it is part of the build. If you haven't thought about it, skip this.")_
 Placeholder: yourname.com
 
-**Where did you buy it?** `text` *(shows only if Yes)*
+**Where did you buy it?** `text` _(shows only if Yes)_
 Help: GoDaddy, Namecheap, Squarespace — or "not sure."
 
-**How would you rather handle access?** `pick one` *(shows only if Yes)*
+**How would you rather handle access?** `pick one` _(shows only if Yes)_
+
 - Invite you to my domain account
 - Send me what to add and I'll do it
 - Not sure — let's sort it on the call
-Help: Invites go to hello@tayloraucoin.com.
+  Help: Invites go to hello@tayloraucoin.com.
 
 **Do you use email at that domain?** `pick one`
 Help: Important — we need to know so your email keeps working.
+
 - Yes
 - No
 - Not sure
 
 **Where does your video live?** `check all that apply`
+
 - Vimeo
 - YouTube
 - A drive or Dropbox
-Help: The site embeds from Vimeo or YouTube rather than hosting video itself — that's what keeps your hosting close to free.
+  Help: The site embeds from Vimeo or YouTube rather than hosting video itself — that's what keeps your hosting close to free.
 
 **Somewhere else?** `text`
 
 **Your accounts around the web** `repeatable block` — add button: "Add another account"
 Help: IMDb especially, if you have a page — people in film check it.
-*(Flexes by discipline — generic: "Wherever your work already lives — people will look." Photography: Instagram/Behance; art: Instagram/gallery pages.)*
+_(Flexes by discipline — generic: "Wherever your work already lives — people will look." Photography: Instagram/Behance; art: Instagram/gallery pages.)_
 Per entry:
+
 - **Platform** `text` — placeholder: Instagram, Vimeo, IMDb…
 - **Link or handle** `text`
 
@@ -452,12 +488,14 @@ Per entry:
 Help: Wix, Squarespace, WordPress — or "not sure."
 
 **After launch, how hands-on do you want to be?** `pick one`
+
 - Very — I'll edit it myself with Claude Code
 - A little — small tweaks myself, you for the rest
 - Not at all — I'll send you changes
-Help: No wrong answer — it shapes the handoff guide we write for you.
+  Help: No wrong answer — it shapes the handoff guide we write for you.
 
 **Best way to reach you** `pick one`
+
 - Text
 - Email
 - Phone
@@ -474,7 +512,7 @@ Help: Anything I haven't asked — something you want on the site, something you
 
 Taylor reads all of it — every note, every rating, every file. You'll see the first look at your site within three days. If anything below is easy to answer by text, it all helps.
 
-*(Skipped-items list renders here, same as the existing flow.)*
+_(Skipped-items list renders here, same as the existing flow.)_
 
 ---
 
@@ -492,3 +530,250 @@ Taylor reads all of it — every note, every rating, every file. You'll see the 
 - **Extra pages after the fact** (step 8): needs a post-intake payment path — a Stripe payment link or a re-entry to checkout scoped to `extra_page` quantity. Confirm-before-charge is a copy promise above; the mechanism must enforce it (nothing auto-charges off a checkbox).
 - **"Sort this for me"** (steps 3 and 4): one server endpoint, Claude Sonnet, blob in → structured entries out, prefilling the repeatable blocks client-side. Nothing saves until the user has seen the entries — same law as autosave. Cost per run is fractions of a cent; rate-limit per token anyway.
 - **No project cap**: per-project image uploads reuse the existing 50MB-per-file intake upload path; the only limit that can reject a file remains size, never format or count.
+
+---
+
+## Amendments — 2026-09-01 (Taylor)
+
+Recorded here because this file declares itself the verbatim source for every
+showcase string; a change made only in a component gets "restored" by the next
+session that reads this doc.
+
+**Start form — site kinds.** The "(coming soon)" suffixes and the `disabled`
+flags are removed; all four categories are selectable. A fifth option,
+"Something else", is added, and checking it reveals a free-text field
+(`siteKindsOther`). The group's help line loses "More categories open soon."
+
+**Step 4 — how the work is organised.** A "Something else" option is added.
+The existing `organizationOther` field, which stood permanently open as
+"Anything else?", now appears only when that option is checked and is labelled
+"Tell us how". A vague box under a list of concrete choices reads as a second
+question; asked after someone says the list missed them, it reads as a
+follow-up.
+
+**Step 2 — who ends up on your site.** Adds "Investors" and "Prospective
+collaborators".
+
+**Step 1 — what you do, in one line.** The help now carries three examples
+spanning the range: a formal slash-title, a discipline with a niche, and a
+plain sentence.
+
+**"Portfolio" removed from copy that every category reads.** The coded track
+serves consultants, speakers, and studios as well as portfolios, so the word
+cannot sit in shared copy. Changed: step 2 intro ("A portfolio isn't for
+you" → "This site isn't for you"), step 5 intro ("Most portfolio bios" →
+"Most bios"), step 6 taste intro ("real portfolio sites" → "real sites"),
+step 7 logo help ("Most portfolio sites" → "Most sites like this"), step 8
+contact help ("For portfolios" → "For sites like this"), the page title
+("Start your portfolio build" → "Start your build"), and the intake layout
+title ("Portfolio intake" → "Project intake").
+
+The site-kind option labelled "Portfolio" is deliberately unchanged. There it
+names one category among five rather than describing every client.
+
+**Track eyebrow — `[PROVISIONAL, needs Taylor]`.** `eyebrowFor` in
+`lib/intake/tracks.ts` read "Agora · Portfolio build" on every screen of the
+coded track, including the pay and welcome screens a consultant sees. Changed
+to "Agora · Custom build" as a reversible default. "Custom" is category-neutral
+and true of the deliverable; "Coded" is the public slug but reads as jargon to
+a client. Overrule if you want different words — it is one string.
+
+---
+
+## Amendments — 2026-09-03 (Taylor)
+
+**Start form — what's the work?** The five-row discipline list widens to eleven
+and one label narrows. Keys are storage and none changed. `[COPY — pending
+Taylor]` on every row not marked v2:
+
+- Film or video *(v2)*
+- Photography *(v2)*
+- Design *(v2)*
+- Illustration or fine art *(v2)*
+- Music — playing, producing, composing *(was "Music or performance"; narrowed
+  because it overlapped both new performance rows)*
+- DJing
+- Performing arts — dance, theatre, flow
+- Modelling
+- Fashion, styling, or makeup
+- Craft — ceramics, textiles, woodwork
+- Writing
+
+"Something else?" stays as the free-text row beneath. Only film has a copy pack;
+every other discipline reads the generic copy and meets the generic example-site
+set until a pack or a set of its own is written (D-PORT-5).
+
+**Step 1 — the fast way.** The invitation above the paste box now flexes by
+kind, from `lib/intake/showcase-copy.ts` (`primerIntro`). The portfolio floor:
+*"Anything that already explains you and your work — an old About page, an
+artist statement, a bio from a programme or a festival, an email where you put
+it well. Paste it below, send the file, or both. Skip the career timeline
+itself; there's a step for that."* `[COPY — pending Taylor]`. PORT-18 replaces
+this block with a step of its own before "About you".
+
+**Ten steps (PORT-18, ratified by Taylor 2026-09-03).** A new step leads the
+questionnaire and every step after it renumbers: "About you" is step 2,
+"Accounts and access" is step 10. The welcome screen's "Nine steps." becomes
+"Ten steps." and now reads the count from the registry. Every other string on
+the welcome screen is unchanged.
+
+## Step 1 of 10 — Everything you already have
+
+_Step intro:_ One job on this screen: give us everything you already have, once.
+We read it and fill in as much of the rest of this form as it honestly supports
+— so the steps ahead open mostly answered, and you correct instead of compose.
+
+Copy above the box _(flexes by kind — this is the portfolio floor)_: An old
+About page, an artist statement, a bio from a programme or a festival, the text
+off your current site, a CV, an email where you put it well. Paste it all in one
+go — don't tidy it.
+
+Go wide, not deep. Your work history and the individual pieces each get a box
+of their own later, with the same trick — so a line or two on each is plenty
+here.
+
+**Words now, pictures later** _(callout)_ — Photos, video, logos, and anything
+you want on the site itself come later, in the steps that place them. This step
+reads text.
+
+**Paste it all here** `long text`
+Help: One big messy paste is perfect. It saves as you type.
+Placeholder: Paste it all here — don't tidy it.
+
+**Pages worth reading** `long text` — key: `links`
+Help: One per line. Your old site, an interview, a festival page, a profile. We
+read the page itself; we don't follow anything on it. Anything behind a login —
+Instagram, LinkedIn, a private drive — can't be read from outside, so paste
+what it says instead.
+Placeholder: https://your-old-site.com
+
+**Or send the files themselves** `file upload, multiple`
+Help: A deck, a PDF, a doc, a scan — anything too long to paste. We read what
+we can and store all of it either way, and Taylor reads what we can't.
+
+**What we've got so far** _(appears once anything has been sent)_
+One line per file and page: *Reading it…* · *Read* · *We can't read this kind
+of file — it's stored, and Taylor reads it himself.* · *Too big for us to read
+through — it's stored, and Taylor reads it himself.* · *That one didn't read.*
+with *Try reading it again* · *Couldn't open that page from outside. Paste what
+it says instead, if it matters.*
+
+A file that was read offers **See what we read**, which opens the text with the
+line: *This is what we made of it — a machine's reading, not your words. Fix
+anything it got wrong and we'll use your version.* Corrections are saved and
+used in place of the reading.
+
+Button: **Read it all**
+
+On press, a confirmation card: **Ready to run this?** — "This runs once. It
+reads everything above and fills in what it can across the steps ahead;
+anything it can't find, you type as you go. If there's more to add, add it
+first — there's no second pass." · **Yes, read it** · **Not yet**
+
+While it runs, a focus-trapped overlay: **Reading it through** — "Usually under
+a minute. A big paste can take a few. You can close this tab — if it finishes
+while you're gone, the form will be filled in when you come back."
+
+Afterwards the step becomes a record of what was sent: the paste read-only, and
+one line saying what happened — how many answers were filled, or that nothing
+in it could be turned into one, or that part of the run didn't land. It does
+not run twice.
+
+Every value it fills carries **Filled in from what you sent** wherever it
+appears, with the sentence it came from, until the client edits it.
+
+The confirmation, in-progress, completed, and failure copy all live in
+`lib/intake/showcase-copy.ts` under `ingestion`, all `[COPY — pending Taylor]`.
+
+**Step 2's "The fast way" box is retired** (PORT-18). It asked for one document
+and proposed into free-text fields; this step asks for everything and fills the
+form from it, so the two were the same question. Answers already given to it
+still appear in the intake document.
+
+Every string in this step is `[COPY — pending Taylor]`.
+
+## Amendments — 2026-09-03, second read (Taylor · shipped as PORT-19)
+
+Taylor read the whole coded flow at `/admin/intake/questions` and superseded
+eleven approved strings. Each one below **replaces** the v2 line it names; the
+old wording is no longer client-facing and its `(v2)` marker is gone. Every new
+string is `[COPY — pending Taylor]`.
+
+**Step 2 — About you.** *"What do you actually want out of this?"* → **"What do
+you want this site to do for you?"** Help: *"Before the questions start
+narrowing it down — say the thing you came here wanting to say. New site or a
+rebuild, and either way: what isn't working now, who you need to reach, what
+you're sick of explaining, and what has to be true a year from now for this to
+have been worth the money. Ramble."* The old label read as a question about
+life rather than about the site.
+
+**Step 3 — Who this site is for.** *"What should they do next?"* → **"What do
+you want a visitor to actually do?"** Help: *"The buttons, in other words. For
+each kind of visitor: watch something, email you, book a call, download the
+deck, pass your name along. Plain words are fine — name the action, not the
+feeling."* It was always the CTA question and now says so.
+
+**Step 5 — The work · videos.** *"Where to watch"* and *"Password, if the link
+has one"* were one link and one password per project. They become a repeatable
+list: **"Where to watch it"** — *"Every version worth seeing — the film, the
+trailer, a cutdown. Tell us what each one is, and tick the one to lead with."*
+Each video carries **"Link"**, **"What it is"** *("A few words — the film, the
+trailer, a two-minute teaser, the Q&A after the screening.")*, the same share
+password field, and **"Lead with this one"** *("Goes to the top of the project,
+highlighted. One per project, and none at all is a fine answer.")*.
+
+**Step 5 — The work · the box.** A project box now ends with **Save and close**,
+which saves and collapses the card. Presentation only.
+
+**Step 5 — The work · the reel.** *"Which piece is the reel?"* / *"Which piece
+leads?"* — **withdrawn.** A project's lead-with tick answers it inside the
+project, and the new home block on step 9 answers it for the site.
+
+**Step 5 — The work · the five.** *"If you could only show five"* keeps its
+label and stops being a text box. The project rows render and the client ticks
+five, in order; the order is the rank. Help: *"Tick five, in the order you'd
+show them. This tells us more than any rating."* A sixth tick is refused with a
+visible line rather than ignored.
+
+**Step 8 — Media · videos.** New: **"Videos that don't belong to one project"**
+— *"A showreel, a sizzle, a teaser, a talk you gave. Anything on Vimeo or
+YouTube — the site embeds from there rather than hosting video itself, which is
+what keeps your hosting close to free."* Same rows as a project's videos, minus
+the lead-with tick.
+
+**Step 8 — Media · the logo.** *"Have one, but I hate it"* → **"Have one, but I
+want a new one"**. The stored value is unchanged.
+
+**Step 9 — The site itself · the home page.** New, replacing the reel question:
+**"What should be on the home page?"** — *"However it comes out. The one thing
+someone should hit first, what has to be above the fold, what you want them
+feeling ten seconds in — and anything that must not be there."* Followed by
+**"Anything from what you've given us that belongs there"** — *"A shortlist, not
+a running order. We'll design the home page from everything on this form — this
+is you pointing at the pieces worth considering first."* It shows every video
+they have entered, as a YouTube or Vimeo embed labelled with the line they
+wrote about it, and every image they have uploaded, by name.
+
+**Step 9 — The site itself · pages.** The help line's *"before anything goes
+past the five included"* becomes *"before anything goes past what's included"*,
+because what is included is five plus whatever they bought. The group now shows
+a running **`n/allowance` pages** count at all times rather than only once they
+are over, and carries a standing note: *"We take this as input rather than
+instruction. If a different set of pages serves you better, we'll say so —
+having read everything you've told us, not just this list."*
+
+**Step 9 — The site itself · availability.** *"Should the site say whether
+you're available?"* keeps its label and gains a follow-up, revealed on **yes**
+and on **not sure**: **"What should it say?"** — *"'Booking for fall 2026',
+'Taking two projects this quarter', 'Currently on a feature until March' — and
+tell us when it stops being true."*
+
+**Step 10 — Accounts and access.** *"Where does your video live?"* and
+*"Somewhere else?"* — **withdrawn.** The client pastes video links on every
+project card and on Media, and their domains answer it. The kinds that were
+asked the tools checklist instead are unaffected; a portfolio and a studio now
+meet nothing at that point.
+
+**Not amended here.** Step 6 (Taste) is Taylor's own separate pass. Step 7's
+voice-memo prompt stands as written until the browser-recording work lands —
+see `VOICE-NOTE-TRANSCRIPTION-PRIMER.md`.

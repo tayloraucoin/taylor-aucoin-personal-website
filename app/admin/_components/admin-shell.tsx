@@ -1,28 +1,28 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Menu } from "lucide-react";
 import { adminRoutes } from "@/lib/routes";
+import { AdminSidebar } from "./admin-sidebar";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 /**
- * One nav entry. `ready: false` renders the label without a link.
+ * The frame every authenticated admin surface renders inside.
  *
- * Sections are listed before they exist on purpose: the shape of the tool is
- * useful information, and a dimmed label is honest where a link to a 404 is
- * not. Flip `ready` as each ticket lands — that flag is the only edit the
- * later tickets need to make here.
+ * Structure is Conscious Connections' — a persistent left rail of labelled
+ * sections with items nested beneath them, off-canvas below `lg` — rebuilt in
+ * this site's tokens rather than lifted from CC's shadcn sidebar, which this
+ * repo does not have and is not getting. The taxonomy itself lives in
+ * `admin-nav.ts`; this file is only the arrangement.
+ *
+ * The whole shell sits inside the `Sheet` root so the mobile menu button can be
+ * a real `SheetTrigger`. That is what buys the focus trap, `Escape`, the scrim,
+ * and — the part that is easy to lose by controlling `open` from the outside —
+ * focus returning to the button that opened it.
  */
-type NavItem = { href: string; label: string; ready: boolean };
-
-const NAV: NavItem[] = [
-  { href: adminRoutes.queue, label: "Call queue", ready: true },
-  { href: adminRoutes.leads, label: "Leads", ready: true },
-  { href: adminRoutes.engagements, label: "Engagements", ready: true },
-  { href: adminRoutes.sync, label: "Sync", ready: true },
-  { href: adminRoutes.scoreboard, label: "Scoreboard", ready: true },
-  { href: adminRoutes.transcripts, label: "Transcripts", ready: true },
-];
-
 export function AdminShell({
   email,
   signOut,
@@ -33,59 +33,77 @@ export function AdminShell({
   signOut: () => Promise<void>;
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  /** Navigating is the end of the menu's job. */
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-white/10">
-        <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3">
-          <Link
-            href={adminRoutes.home}
-            className="font-(family-name:--font-display) text-sm text-(--color-ink)"
-          >
-            Admin
-          </Link>
+    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+      <div className="flex min-h-dvh">
+        <aside
+          className={`sticky top-0 hidden h-dvh shrink-0 border-r border-(--color-faint) lg:block ${
+            collapsed ? "w-14" : "w-60"
+          }`}
+        >
+          <AdminSidebar
+            email={email}
+            signOut={signOut}
+            pathname={pathname}
+            collapsed={collapsed}
+            onToggleCollapsed={() => setCollapsed((value) => !value)}
+          />
+        </aside>
 
-          {NAV.map((item) =>
-            item.ready ? (
+        <SheetContent
+          side="left"
+          aria-label="Admin navigation"
+          className="w-72 max-w-[85vw] p-0 lg:hidden"
+        >
+          <SheetTitle className="sr-only">Admin navigation</SheetTitle>
+          <AdminSidebar
+            email={email}
+            signOut={signOut}
+            pathname={pathname}
+            collapsed={false}
+          />
+        </SheetContent>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="border-b border-(--color-faint) lg:hidden">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <SheetTrigger
+                aria-label="Open navigation"
+                className="flex size-11 items-center justify-center rounded-md text-(--color-body) transition-colors hover:bg-(--color-card-hover) hover:text-(--color-ink)"
+              >
+                <Menu aria-hidden className="size-5" />
+              </SheetTrigger>
+
               <Link
-                key={item.href}
-                href={item.href}
-                aria-current={
-                  pathname.startsWith(item.href) ? "page" : undefined
-                }
-                className={
-                  pathname.startsWith(item.href)
-                    ? "text-sm text-(--color-c2)"
-                    : "text-sm text-(--color-body) hover:text-(--color-ink)"
-                }
+                href={adminRoutes.home}
+                className="flex items-center gap-2.5 text-(--color-ink)"
               >
-                {item.label}
+                <Image
+                  src="/icon.png"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="size-6 rounded-sm"
+                />
+                <span className="font-(family-name:--font-display) text-sm">
+                  Admin
+                </span>
               </Link>
-            ) : (
-              <span
-                key={item.href}
-                title="Not built yet"
-                className="text-sm text-(--color-dim)/60"
-              >
-                {item.label}
-              </span>
-            ),
-          )}
+            </div>
+          </header>
 
-          <form action={signOut} className="ml-auto flex items-center gap-3">
-            <span className="text-xs text-(--color-dim)">{email}</span>
-            <button
-              type="submit"
-              className="text-sm text-(--color-body) hover:text-(--color-ink)"
-            >
-              Sign out
-            </button>
-          </form>
-        </nav>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl px-5 py-8">{children}</main>
-    </div>
+          <main className="mx-auto w-full max-w-6xl px-5 py-8">{children}</main>
+        </div>
+      </div>
+    </Sheet>
   );
 }

@@ -12,7 +12,19 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
+    // `.next-agent` and `.next-build` are the dist dirs the `dev:agent` and
+    // `build:agent` scripts write to (repo CLAUDE.md — an agent must never
+    // share Taylor's running `.next`). They were added without reaching this
+    // list, so `yarn lint` reported ~16,500 problems from generated bundles the
+    // moment either script had been run once, and none from source.
+    ignores: [
+      ".next/**",
+      ".next-agent/**",
+      ".next-build/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+    ],
   },
 ];
 

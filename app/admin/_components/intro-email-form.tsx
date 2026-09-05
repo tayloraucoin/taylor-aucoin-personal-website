@@ -203,7 +203,7 @@ export function IntroEmailForm({
   }
 
   const field =
-    "min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-3 text-base text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
+    "min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-base text-(--color-ink) outline-none focus-visible:border-(--color-c2)";
 
   return (
     <div className="flex flex-col gap-4">
@@ -256,7 +256,7 @@ export function IntroEmailForm({
           }}
           rows={14}
           data-typing
-          className="rounded-(--radius) border border-white/15 bg-black/30 px-3 py-2 font-(family-name:--font-mono) text-xs leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+          className="rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 py-2 font-(family-name:--font-mono) text-xs leading-relaxed text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
         />
       </label>
 

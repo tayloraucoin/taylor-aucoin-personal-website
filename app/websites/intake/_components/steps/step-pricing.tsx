@@ -7,6 +7,7 @@ import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { RepeatableBlock } from "../repeatable-block";
 import { TextArea, TextField } from "../text-field";
+import { Reveal } from "../reveal";
 
 const EXTRA_CHARGES = [
   { value: "travel", label: "Travel or distance" },
@@ -192,13 +193,16 @@ export function StepPricing({
         options={WHEN_THEY_PAY}
       />
 
-      {form.values.whenTheyPay === "depositUpFront" ? (
+      <Reveal
+        values={form.values}
+        dependsOn={{ field: "whenTheyPay", equals: "depositUpFront" }}
+      >
         <TextAnswer
           form={form}
           name="depositAmount"
           label="How much deposit?"
         />
-      ) : null}
+      </Reveal>
 
       <LongAnswer
         form={form}

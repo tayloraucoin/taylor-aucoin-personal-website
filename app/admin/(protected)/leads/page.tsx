@@ -60,11 +60,11 @@ export default async function LeadsPage({
           name="q"
           defaultValue={filters.q}
           placeholder="Business, contact, phone, city, trade, address, or notes"
-          className="min-h-[44px] flex-1 rounded-(--radius) border border-white/15 bg-black/30 px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
+          className="min-h-[44px] flex-1 rounded-(--radius) border border-(--color-line) bg-(--color-well) px-3 text-sm text-(--color-ink) outline-none focus-visible:border-(--color-c2)"
         />
         <button
           type="submit"
-          className="min-h-[44px] rounded-(--radius) border border-white/20 px-4 text-sm text-(--color-ink)"
+          className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-4 text-sm text-(--color-ink)"
         >
           Search
         </button>

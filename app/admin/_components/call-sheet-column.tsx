@@ -61,7 +61,7 @@ export function CallSheetColumn({
         type="button"
         onClick={() => setOpenOnMobile((prior) => !prior)}
         aria-expanded={openOnMobile}
-        className="min-h-[44px] w-fit rounded-(--radius) border border-white/20 px-3 text-sm text-(--color-body) lg:hidden"
+        className="min-h-[44px] w-fit rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-body) lg:hidden"
       >
         {openOnMobile ? "Hide the script" : "Show the script"}
       </button>

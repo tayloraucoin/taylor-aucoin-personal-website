@@ -25,7 +25,7 @@ export function StepProgress({
         style={{
           width: `${pct}%`,
           background:
-            "linear-gradient(90deg, var(--color-c2), var(--color-c3))",
+            "linear-gradient(90deg, var(--color-gold-500), var(--color-gradient-hot))",
         }}
       />
     </div>

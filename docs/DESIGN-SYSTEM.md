@@ -1,3 +1,25 @@
+### Admin surface tokens (D-ADM-13)
+
+`/admin` only, declared in `@theme static` (they are consumed only through
+`bg-(--color-well)`-style references, which a plain `@theme` prunes — see the
+night ramp note). Each carries the exact value the CRM's `white/N` / `black/N`
+alpha classes had, so the dark admin is unchanged; the admin light theme
+(below) re-declares them on ink. Named by role so a call site says what the
+edge or fill is for.
+
+| Token                 | Dark value               | Role                                         |
+| --------------------- | ------------------------ | -------------------------------------------- |
+| `--color-line`        | `rgb(255 255 255 / .15)` | Field and chip borders                       |
+| `--color-line-strong` | `rgb(255 255 255 / .20)` | Ghost-button borders                         |
+| `--color-line-soft`   | `rgb(255 255 255 / .10)` | Dividers and rules; the quietest raised fill |
+| `--color-well`        | `rgb(0 0 0 / .30)`       | Sunken fills: inputs, selects, code blocks   |
+| `--color-tint`        | `rgb(255 255 255 / .05)` | Selected-row and meter-track fill            |
+| `--color-tint-strong` | `rgb(255 255 255 / .15)` | The day-strip "fair" bar                     |
+
+`--color-gold-500` (`#E8B961`) is also declared, in `@theme static`: gold as a
+**fill** that must not follow `--color-c2` when the admin light theme steps
+gold text to gold-700. Consumed by the day-strip "best" bar.
+
 # Design system — tayloraucoin.com
 
 Palette **D · Gilt**. Dark blue-purple ground, gold and warm-white as the light.
@@ -27,12 +49,12 @@ The page background is a 172° linear gradient from `ground-a` to `ground-b`, wi
 
 The house gradient is `linear-gradient(102deg, c2, c3)` for surfaces, and a conic sweep `c1 → c2 → c3` for rings.
 
-| Token            | Hex       | Role                                                          |
-| ---------------- | --------- | ------------------------------------------------------------- |
+| Token            | Hex       | Role                                                                |
+| ---------------- | --------- | ------------------------------------------------------------------- |
 | `--color-action` | `#6D5CC0` | **Primary action fill.** Violet-600. The admin CRM's solid buttons. |
 
 **`--color-c1` is structure and must never carry text.** It is the trace, ring,
-and gradient-cold-end violet, tuned to sit *near* the ground — which is exactly
+and gradient-cold-end violet, tuned to sit _near_ the ground — which is exactly
 what makes it fail as a text or fill colour. White on `c1` measures **3.44:1**,
 and it was the fill for all 13 solid buttons in the admin CRM. White on
 `--color-action` (violet-600) is **5.33:1**. If a violet ever needs to carry
@@ -43,21 +65,21 @@ small text directly, violet-400 is the floor (7.1:1); see the ramp below.
 Recalibrated per **D-CON-1** (below). Body and dim each lifted one night-ramp
 step; hues unchanged, both grounds unchanged.
 
-| Token                | Hex                     | Use                                                        |
-| -------------------- | ----------------------- | ---------------------------------------------------------- |
-| `--color-ink`        | `#F1EFFA`               | Headings, primary text (≈ night-100)                       |
-| `--color-body`       | `#B0ADCD`               | Paragraphs — night-400. Was `#9C99BC`                      |
-| `--color-dim`        | `#9C99BC`               | Labels, metadata, mono eyebrows — night-500. Was `#7E7CA0` |
-| `--color-role-label` | `#7F7DA1`               | Selected Work role line — solid. Was dim at 55% α (2.2:1)  |
-| `--color-proof-label`| `#B48934`               | Proof / attribution labels — gold-600. Was gold at 55% α (3.8:1) |
-| `--color-faint`      | `rgba(200,190,240,.11)` | Hairlines, dividers                                        |
+| Token                 | Hex                     | Use                                                              |
+| --------------------- | ----------------------- | ---------------------------------------------------------------- |
+| `--color-ink`         | `#F1EFFA`               | Headings, primary text (≈ night-100)                             |
+| `--color-body`        | `#B0ADCD`               | Paragraphs — night-400. Was `#9C99BC`                            |
+| `--color-dim`         | `#9C99BC`               | Labels, metadata, mono eyebrows — night-500. Was `#7E7CA0`       |
+| `--color-role-label`  | `#7F7DA1`               | Selected Work role line — solid. Was dim at 55% α (2.2:1)        |
+| `--color-proof-label` | `#B48934`               | Proof / attribution labels — gold-600. Was gold at 55% α (3.8:1) |
+| `--color-faint`       | `rgba(200,190,240,.11)` | Hairlines, dividers                                              |
 
 **`--color-proof-label` is the non-interactive twin of `--color-c2`.** Proof
 and attribution labels come in pairs: where one has an `href` it renders in
 `--color-c2` with a trailing arrow; where it does not, it renders in
 `--color-proof-label`. Same gold family, visibly recessive, 5.9–6.1:1 measured
 in place. The distinction is real information — clickable vs not — and it must
-be carried by *hue depth*, not by dropping alpha below the floor. Consumed at
+be carried by _hue depth_, not by dropping alpha below the floor. Consumed at
 `CapabilityGrid.tsx` (×2) and `TestimonialCard.tsx`.
 
 ### Surfaces
@@ -88,57 +110,57 @@ component actually consumes it, not before. Ratios are on `ground-a` /
 
 **night** — base 500 = `#9C99BC` (the pre-D-CON-1 body). Declared in `@theme`.
 
-| Step | Hex       | on grounds       | Notes                                            |
-| ---- | --------- | ---------------- | ------------------------------------------------ |
-| 100  | `#EEEDFA` | 16.9 / 15.7      | ≈ `--color-ink` within a hair                    |
-| 200  | `#D9D7EC` | 13.9 / 12.9      | ≈ paper hairline `#E3E1EC` (D-DOC-1)             |
-| 300  | `#C4C2DD` | 11.3 / 10.5      |                                                  |
-| 400  | `#B0ADCD` | 9.0 / 8.4        | **= `--color-body`**                             |
-| 500  | `#9C99BC` | 7.2 / 6.7        | **= `--color-dim`**                              |
-| 600  | `#6F6C8B` | 3.9 / 3.6        | ≈ paper dim `#6B6889` (D-DOC-1). Not text on dark |
-| 700  | `#45425C` | 2.0 / 1.9        | ≈ paper body `#3F3C5C` (D-DOC-1)                 |
-| 800  | `#1F1C2F` | 1.2 / 1.1        | Surface/tint depth only                          |
+| Step | Hex       | on grounds  | Notes                                             |
+| ---- | --------- | ----------- | ------------------------------------------------- |
+| 100  | `#EEEDFA` | 16.9 / 15.7 | ≈ `--color-ink` within a hair                     |
+| 200  | `#D9D7EC` | 13.9 / 12.9 | ≈ paper hairline `#E3E1EC` (D-DOC-1)              |
+| 300  | `#C4C2DD` | 11.3 / 10.5 |                                                   |
+| 400  | `#B0ADCD` | 9.0 / 8.4   | **= `--color-body`**                              |
+| 500  | `#9C99BC` | 7.2 / 6.7   | **= `--color-dim`**                               |
+| 600  | `#6F6C8B` | 3.9 / 3.6   | ≈ paper dim `#6B6889` (D-DOC-1). Not text on dark |
+| 700  | `#45425C` | 2.0 / 1.9   | ≈ paper body `#3F3C5C` (D-DOC-1)                  |
+| 800  | `#1F1C2F` | 1.2 / 1.1   | Surface/tint depth only                           |
 
 **gold** — base 500 = `#E8B961` (`--color-c2`, unchanged).
 
-| Step | Hex       | on grounds  | on white | Notes                                        |
-| ---- | --------- | ----------- | -------- | -------------------------------------------- |
-| 100  | `#FDECD0` | 16.8 / 15.7 | 1.2      |                                              |
-| 200  | `#F9DFB2` | 15.1 / 14.1 | 1.3      |                                              |
-| 300  | `#F6D293` | 13.6 / 12.6 | 1.4      |                                              |
-| 400  | `#F0C578` | 12.1 / 11.2 | 1.6      |                                              |
-| 500  | `#E8B961` | 10.7 / 10.0 | 1.8      | The gold. Never text on white (D-DOC-1)      |
+| Step | Hex       | on grounds  | on white | Notes                                                           |
+| ---- | --------- | ----------- | -------- | --------------------------------------------------------------- |
+| 100  | `#FDECD0` | 16.8 / 15.7 | 1.2      |                                                                 |
+| 200  | `#F9DFB2` | 15.1 / 14.1 | 1.3      |                                                                 |
+| 300  | `#F6D293` | 13.6 / 12.6 | 1.4      |                                                                 |
+| 400  | `#F0C578` | 12.1 / 11.2 | 1.6      |                                                                 |
+| 500  | `#E8B961` | 10.7 / 10.0 | 1.8      | The gold. Never text on white (D-DOC-1)                         |
 | 600  | `#B48934` | 6.1 / 5.7   | 3.2      | **= `--color-proof-label`.** Also the hover-dark for gold fills |
-| 700  | `#815D07` | 3.3 / 3.0   | 6.0      | **First gold legal as text on white**        |
-| 800  | `#4D3601` | 1.7 / 1.6   | 11.4     | Shadow/tint only                             |
+| 700  | `#815D07` | 3.3 / 3.0   | 6.0      | **First gold legal as text on white**                           |
+| 800  | `#4D3601` | 1.7 / 1.6   | 11.4     | Shadow/tint only                                                |
 
 **violet** — base 500 = `#8B7BE8` (`--color-c1`, unchanged). Structure-only
 today; if violet ever speaks, **400 is the floor for small text on the ground**
 (7.1:1); 500 is legal for normal-size only (5.3:1).
 
-| Step | Hex       | on grounds  | Notes |
-| ---- | --------- | ----------- | ----- |
-| 100  | `#EAE9FF` | 16.4 / 15.3 |       |
-| 200  | `#D0CDFF` | 12.9 / 12.0 |       |
-| 300  | `#B8B1FE` | 10.0 / 9.3  |       |
-| 400  | `#A195F8` | 7.6 / 7.1   | Floor for small violet text |
-| 500  | `#8B7BE8` | 5.7 / 5.3   | `--color-c1` — structure only |
-| 600  | `#6D5CC0` | 3.7 / 3.4   | **= `--color-action`** — as a *fill* under white text (5.33:1), never as text |
-| 700  | `#504096` | 2.3 / 2.2   |       |
-| 800  | `#35276A` | 1.5 / 1.4   |       |
+| Step | Hex       | on grounds  | Notes                                                                         |
+| ---- | --------- | ----------- | ----------------------------------------------------------------------------- |
+| 100  | `#EAE9FF` | 16.4 / 15.3 |                                                                               |
+| 200  | `#D0CDFF` | 12.9 / 12.0 |                                                                               |
+| 300  | `#B8B1FE` | 10.0 / 9.3  |                                                                               |
+| 400  | `#A195F8` | 7.6 / 7.1   | Floor for small violet text                                                   |
+| 500  | `#8B7BE8` | 5.7 / 5.3   | `--color-c1` — structure only                                                 |
+| 600  | `#6D5CC0` | 3.7 / 3.4   | **= `--color-action`** — as a _fill_ under white text (5.33:1), never as text |
+| 700  | `#504096` | 2.3 / 2.2   |                                                                               |
+| 800  | `#35276A` | 1.5 / 1.4   |                                                                               |
 
 **cream** — base 500 = `#FFF6E3` (`--color-c3`, unchanged). Honest asterisk:
 100–400 are functionally indistinguishable from 500 (the base is already
 L 0.975) and exist for scale symmetry only. The useful arm is 600–800 — warm
 neutrals for paper surfaces and print tints.
 
-| Step | Hex       | Notes                     |
-| ---- | --------- | ------------------------- |
+| Step    | Hex                 | Notes                  |
+| ------- | ------------------- | ---------------------- |
 | 100–400 | `#FFFBF5`–`#FFF7E8` | Do not reach for these |
-| 500  | `#FFF6E3` | The light                 |
-| 600  | `#C2BAA9` | 10.1 / 9.4 on grounds     |
-| 700  | `#888173` | 5.1 / 4.7 on grounds      |
-| 800  | `#524D42` | 8.4:1 on white            |
+| 500     | `#FFF6E3`           | The light              |
+| 600     | `#C2BAA9`           | 10.1 / 9.4 on grounds  |
+| 700     | `#888173`           | 5.1 / 4.7 on grounds   |
+| 800     | `#524D42`           | 8.4:1 on white         |
 
 ### Runner-up palette (E · Reliquary)
 
@@ -326,15 +348,15 @@ Tokens live in `lib/invoices/paper.ts` (`PAPER`), derived from this file's
 palette rather than invented: `--color-ground-a` promoted from background to
 ink; the violet-gray text ramp flipped for white; gold unchanged.
 
-| Token | Value | Role |
-|---|---|---|
-| `paper` | `#ffffff` | The page. White on purpose — prints honestly |
-| `tint` | `#f7f6fa` | The one surface (meta blocks); ground-a at ~3% |
-| `ink` | `#060b1e` | Headings, amounts, totals — `--color-ground-a` |
-| `body` | `#3f3c5c` | Prose — light counterpart of `--color-body` |
-| `dim` | `#6b6889` | Labels, footer — counterpart of `--color-dim`, AA-corrected |
-| `hairline` | `#e3e1ec` | Rules — counterpart of `--color-faint` |
-| `gold` | `#e8b961` | `--color-c2`, unchanged. **Never text on paper** (~1.9:1 on white). Rules, chip fills, button fills with ink text — same law as the site CTA |
+| Token      | Value     | Role                                                                                                                                         |
+| ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `paper`    | `#ffffff` | The page. White on purpose — prints honestly                                                                                                 |
+| `tint`     | `#f7f6fa` | The one surface (meta blocks); ground-a at ~3%                                                                                               |
+| `ink`      | `#060b1e` | Headings, amounts, totals — `--color-ground-a`                                                                                               |
+| `body`     | `#3f3c5c` | Prose — light counterpart of `--color-body`                                                                                                  |
+| `dim`      | `#6b6889` | Labels, footer — counterpart of `--color-dim`, AA-corrected                                                                                  |
+| `hairline` | `#e3e1ec` | Rules — counterpart of `--color-faint`                                                                                                       |
+| `gold`     | `#e8b961` | `--color-c2`, unchanged. **Never text on paper** (~1.9:1 on white). Rules, chip fills, button fills with ink text — same law as the site CTA |
 
 Same three families (Space Grotesk / Manrope / JetBrains Mono; vendored
 subset TTFs in `server/assets/fonts/` for the PDF path), same mono grammar
@@ -368,3 +390,57 @@ Open until CON-02 QA: full step (shipped) vs half step (body `#A09DC0`, dim
 `#9391B6` — same hues, half the lift), to be judged on the live site, not on
 swatches. The half-step values are recorded in the `@theme` comment for a
 two-line revert.
+
+## D-ADM-13 · Admin light theme (Light / Dark / System)
+
+Requested by Taylor 2026-09-03. `/admin` only: the public site has no light
+mode and this section does not license one. Mechanism and scoping are in
+`docs/admin/specs/TECHNICAL-DECISIONS.md` M-ADM-8; the UX in
+`docs/admin/ADMIN-UX-SPEC.md` §9. All rules live in one block in
+`app/globals.css`, gated on `html.light:has(.admin-theme)`.
+
+The light values are **Palette D on paper (D-DOC-1) applied to the admin's
+tokens** — the same palette the invoices already print in — plus the ramps.
+Nothing new was drawn.
+
+| Token                      | Light value          | Source                                                                                                                     | Contrast on paper   |
+| -------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `--color-ground-a`         | `#FFFFFF`            | D-DOC-1 `paper` — flyouts, dialogs, sheet                                                                                  |                     |
+| `--color-ink`              | `#060B1E`            | D-DOC-1 `ink` (= dark `ground-a`)                                                                                          | 19.6:1              |
+| `--color-body`             | `#3F3C5C`            | D-DOC-1 `body` (≈ night-700)                                                                                               | 10.4:1              |
+| `--color-dim`              | `#5A5773`            | `[PROPOSED]` night-650, the OKLCH midpoint of 600 and 700. D-DOC-1 dim (`#6B6889`) was 4.9:1 on the tint and read as faded | 6.9:1 · 6.4 on tint |
+| `--color-faint`            | `#E3E1EC`            | D-DOC-1 `hairline` (≈ night-200)                                                                                           |                     |
+| `--color-c2`               | `#815D07`            | **gold-700** — first gold legal as text on white                                                                           | 6.0:1               |
+| `--color-card`             | `#F7F6FA`            | D-DOC-1 `tint` — the rail and panels                                                                                       |                     |
+| `--color-card-hover`       | `rgb(6 11 30 / .07)` | `[PROPOSED]` ground-a at 7%, one step past the tint                                                                        |                     |
+| `--color-line`             | `rgb(6 11 30 / .15)` | dark alpha, white → ink                                                                                                    |                     |
+| `--color-line-strong`      | `rgb(6 11 30 / .20)` | dark alpha, white → ink                                                                                                    |                     |
+| `--color-line-soft`        | `rgb(6 11 30 / .10)` | dark alpha, white → ink                                                                                                    |                     |
+| `--color-well`             | `rgb(6 11 30 / .04)` | `[PROPOSED]` the sunken twin of the tint                                                                                   |                     |
+| `--color-tint`             | `rgb(6 11 30 / .05)` | dark alpha, white → ink                                                                                                    |                     |
+| `--color-tint-strong`      | `rgb(6 11 30 / .15)` | dark alpha, white → ink                                                                                                    |                     |
+| `--color-c3`               | `#4D3601`            | gold-800 — c3 is only hover text in the admin; on paper a hover deepens                                                    | 11.4:1              |
+| `--color-gradient-hot`     | `#F6D293`            | gold-300 — hot end of the house gradient on paper (dark: `#FFF6E3` = c3)                                                   | ink on it 13.6:1    |
+| `--color-ghost-fill`       | `#FFFFFF`            | paper (dark: `rgb(9 12 34 / .55)`)                                                                                         |                     |
+| `--color-ghost-fill-hover` | `#F7F6FA`            | tint (dark: `rgb(9 12 34 / .80)`)                                                                                          |                     |
+| `--color-ghost-line`       | `#B48934`            | gold-600 (dark: `rgb(232 185 97 / .42)`)                                                                                   | 3.2:1 — UI floor    |
+| `--color-ghost-line-hover` | `#815D07`            | gold-700 (dark: `rgb(232 185 97 / .72)`)                                                                                   |                     |
+
+Unchanged in light: `--color-action` (white on violet-600 is 5.33:1 on any
+ground), `::selection` (now reads `--color-gold-500`, so it does not follow
+`c2` to gold-700), the `bg-black/60`–`/70` scrims, and `text-white` on action
+fills. The body gradient and the grain are switched off under the same gate —
+grain is atmosphere on the dark ground and dirt on paper.
+
+**Fills never follow the text golds.** `GradientButton.tsx` (primary and ghost),
+`Pricing.tsx`, and `step-progress.tsx` read `--color-gold-500`,
+`--color-gradient-hot`, and the `--color-ghost-*` tokens — all declared in
+` static` with the dark values they always had — so the house gradient
+is gold-500 → cream in dark and gold-500 → gold-300 on paper, and the ghost
+CTA is an outlined paper button rather than `ground-a` at 55% showing through
+white. That grey was the one hardcode the M-ADM-9 sweep could not reach.
+
+**The gold law on paper holds here as it does on invoices:** gold-500 is never
+text on white. Anything in the admin that renders `--color-c2` as text gets
+gold-700 for free; anything that needs the true gold as a fill reads
+`--color-gold-500` explicitly.

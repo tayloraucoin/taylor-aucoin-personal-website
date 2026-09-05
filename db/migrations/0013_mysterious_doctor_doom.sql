@@ -1,0 +1,1 @@
+ALTER TABLE "example_captures" ADD COLUMN "mime_type" text DEFAULT 'image/jpeg' NOT NULL;

@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 import { eyebrowFor } from "@/lib/intake/tracks";
+import { galleryForEngagement } from "@/server/services/example-sites";
 import {
   EngagementNotFoundError,
   requireEngagement,
 } from "@/server/services/engagement";
-import { collectUnanswered } from "@/server/services/output";
+import {
+  collectUnanswered,
+  tasteShortfall,
+} from "@/server/services/output";
 import { CompleteOnArrival } from "../../../../intake/_components/complete-on-arrival";
 import { Eyebrow } from "../../../../intake/_components/eyebrow";
 import { LinkUnavailable } from "../../../../intake/_components/link-unavailable";
@@ -47,6 +51,14 @@ export default async function ShowcaseIntakeDonePage({
 
   const unanswered = collectUnanswered(engagement);
 
+  // The shortfall line is silent when the client was shown no gallery — they
+  // cannot fall short of picking from a screen we never rendered — so this
+  // resolves the same set the step did rather than assuming one existed.
+  const shortfall = tasteShortfall(
+    engagement,
+    await galleryForEngagement(engagement),
+  );
+
   return (
     <div>
       <CompleteOnArrival
@@ -66,7 +78,7 @@ export default async function ShowcaseIntakeDonePage({
         anything below is easy to answer by text, it all helps.
       </p>
 
-      {unanswered.length > 0 ? (
+      {unanswered.length > 0 || shortfall ? (
         <section className="mt-12 border-t border-(--color-faint) pt-6">
           <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
             We&apos;ll cover these on the call
@@ -82,6 +94,17 @@ export default async function ShowcaseIntakeDonePage({
                 </p>
               </li>
             ))}
+
+            {/* A stated ask that was not met is not an unanswered question —
+                they answered, with fewer. Recorded rather than enforced:
+                Continue was never disabled over it (D-INT-4, D-PORT-16). */}
+            {shortfall ? (
+              <li>
+                <p className="font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+                  {shortfall}
+                </p>
+              </li>
+            ) : null}
           </ul>
         </section>
       ) : null}

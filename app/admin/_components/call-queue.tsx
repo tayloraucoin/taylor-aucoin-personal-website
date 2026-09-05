@@ -11,6 +11,7 @@ import { CallSheetColumn } from "./call-sheet-column";
 import { StageChip, WindowChip } from "./chips";
 import { DayStrip } from "./day-strip";
 import { hasModifier, isTypingTarget } from "./keyboard";
+import { NativeSelect } from "@/components/ui/native-select";
 
 /**
  * Who to call next, and the whole loop of calling them.
@@ -242,7 +243,7 @@ export function CallQueue({
                   <Link
                     href={showMoreHref(filters, bands.fresh.length)}
                     scroll={false}
-                    className="min-h-[44px] w-fit rounded-(--radius) border border-white/20 px-4 py-2.5 text-sm text-(--color-body)"
+                    className="min-h-[44px] w-fit rounded-(--radius) border border-(--color-line-strong) px-4 py-2.5 text-sm text-(--color-body)"
                   >
                     Show {Math.min(50, bands.freshTotal - group.leads.length)}{" "}
                     more
@@ -318,8 +319,8 @@ function QueueRow({
         aria-current={selected ? "true" : undefined}
         className={`flex w-full min-h-[44px] flex-wrap items-center gap-x-3 gap-y-1 border-l-2 px-3 py-2 text-left ${
           selected
-            ? "border-(--color-c2) bg-white/5"
-            : "border-transparent hover:bg-white/[0.03]"
+            ? "border-(--color-c2) bg-(--color-tint)"
+            : "border-transparent hover:bg-(--color-tint)/60"
         }`}
       >
         <span className="text-sm text-(--color-ink)">{lead.businessName}</span>
@@ -382,7 +383,7 @@ function EmptyQueue({
     : null;
 
   return (
-    <div className="flex max-w-prose flex-col gap-4 border-t border-white/10 pt-6">
+    <div className="flex max-w-prose flex-col gap-4 border-t border-(--color-line-soft) pt-6">
       <p className="text-sm text-(--color-ink)">
         {filters.readyNow
           ? "Nothing is in its best window right now."
@@ -411,7 +412,7 @@ function EmptyQueue({
       {filters.readyNow ? (
         <Link
           href={`${adminRoutes.queue}?thread=${filters.thread}`}
-          className="min-h-[44px] w-fit rounded-(--radius) border border-white/20 px-4 py-2.5 text-sm text-(--color-ink)"
+          className="min-h-[44px] w-fit rounded-(--radius) border border-(--color-line-strong) px-4 py-2.5 text-sm text-(--color-ink)"
         >
           Show everyone anyway
         </Link>
@@ -441,7 +442,7 @@ function FilterBar({
       className={`min-h-[44px] rounded-(--radius) border px-3 py-2.5 text-sm ${
         active
           ? "border-(--color-c2)/60 text-(--color-ink)"
-          : "border-white/15 text-(--color-body)"
+          : "border-(--color-line) text-(--color-body)"
       }`}
     >
       {label}
@@ -463,13 +464,12 @@ function FilterBar({
         href({ readyNow: !filters.readyNow }),
       )}
 
-      <select
+      <NativeSelect
         value={filters.niche}
         onChange={(event) => {
           router.push(href({ niche: event.target.value }));
         }}
         aria-label="Filter by trade"
-        className="min-h-[44px] rounded-(--radius) border border-white/15 bg-black/30 px-2 text-sm text-(--color-body)"
       >
         <option value="">All trades</option>
         {niches.map((niche) => (
@@ -477,7 +477,7 @@ function FilterBar({
             {niche}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </div>
   );
 }

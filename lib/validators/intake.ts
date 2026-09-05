@@ -14,26 +14,25 @@ import {
  * surface will validate against the same schema later. One home, so the two
  * cannot disagree about what an engagement needs.
  */
-export const createEngagementInput = z
-  .object({
-    businessName: z.string().trim().min(1, "Business name is required"),
-    contactName: z.string().trim().min(1, "Contact name is required"),
-    contactEmail: z.email("A valid contact email is required"),
-    contactPhone: z.string().trim().min(1).optional(),
+export const createEngagementInput = z.object({
+  businessName: z.string().trim().min(1, "Business name is required"),
+  contactName: z.string().trim().min(1, "Contact name is required"),
+  contactEmail: z.email("A valid contact email is required"),
+  contactPhone: z.string().trim().min(1).optional(),
 
-    /** Renders verbatim on the pay screen — written for the client's eyes. */
-    projectSummary: z.string().trim().min(1).optional(),
+  /** Renders verbatim on the pay screen — written for the client's eyes. */
+  projectSummary: z.string().trim().min(1).optional(),
 
-    currency: z.string().trim().length(3).default("cad"),
-    depositRequired: z.boolean().default(true),
+  currency: z.string().trim().length(3).default("cad"),
+  depositRequired: z.boolean().default(true),
 
-    /**
-     * Which questionnaire this engagement answers. Defaults to the durable
-     * track, so every existing caller — the CLI, the durable start form —
-     * keeps creating exactly what it created before.
-     */
-    track: z.enum(INTAKE_TRACK_KEYS).default("durable"),
-  });
+  /**
+   * Which questionnaire this engagement answers. Defaults to the durable
+   * track, so every existing caller — the CLI, the durable start form —
+   * keeps creating exactly what it created before.
+   */
+  track: z.enum(INTAKE_TRACK_KEYS).default("durable"),
+});
 
 // The deposit amount is deliberately absent. A standard build has a standard
 // price, which lives in Stripe's catalogue (STRIPE_PRICE_DEPOSIT) rather than
@@ -330,6 +329,27 @@ export const uploadIssueInput = z.object({
 });
 
 /**
+ * A ceiling on a transcript the client has edited.
+ *
+ * Thirty minutes of continuous speech is on the order of 30,000 characters, so
+ * this is roughly triple the longest real transcript with room for somebody
+ * who decides to type their whole biography into the box. It bounds a hostile
+ * payload; it is not a limit any client can reach by talking.
+ */
+export const MAX_TRANSCRIPT_CHARS = 100_000;
+
+export const transcriptSaveInput = z.object({
+  token: z.string().min(1),
+  fileId: z.uuid(),
+  /**
+   * An empty string is legitimate and means "delete what the machine wrote".
+   * Every field on this form is optional, and that includes unsaying something
+   * (D-INT-4).
+   */
+  transcript: z.string().max(MAX_TRANSCRIPT_CHARS),
+});
+
+/**
  * The pay action's input beyond the token: which optional add-ons the client
  * ticked on P0. Keys are validated against the live catalogue in the deposit
  * service — this schema only bounds the shape, so a hostile payload cannot
@@ -339,6 +359,35 @@ export const depositAddonSelectionInput = z
   .array(z.string().trim().min(1).max(64))
   .max(12)
   .default([]);
+
+/**
+ * A sanity ceiling on one extra-page purchase, not a product rule.
+ *
+ * Twenty pages past the included five is not a site, it is a typo — and a typo
+ * in a quantity is the cheapest possible way to overcharge someone. It lives
+ * here rather than in the deposit service because both ends need it now: the
+ * server bounds the charge with it, and the pay screen builds its picker from
+ * it, and a second copy on the browser side is a ceiling that can drift below
+ * the one that actually refuses.
+ */
+export const EXTRA_PAGES_MAX = 20;
+
+/**
+ * How many extra pages the client asked for on the pay screen.
+ *
+ * Zero is the ordinary answer and is not a selection — it means the row was
+ * left alone. The count rides Stripe's own line-item `quantity`, so this is
+ * the only number the browser proposes, and it proposes a *count*, never an
+ * amount: the price still comes from the catalogue row and is verified against
+ * Stripe before a session exists.
+ */
+export const extraPagesInput = z.coerce
+  .number()
+  .int()
+  .min(0)
+  .max(EXTRA_PAGES_MAX)
+  .catch(0)
+  .default(0);
 
 /**
  * A promo code as typed by a client. Bounds only — whether it means anything

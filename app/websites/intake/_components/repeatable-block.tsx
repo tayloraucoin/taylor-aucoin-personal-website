@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { GhostButton } from "@/components/ui/GradientButton";
+import { useIsDocument } from "@/components/intake/preview-mode";
+import { DocTag } from "./document";
 
 const UNDO_WINDOW_MS = 6000;
 
@@ -33,6 +35,7 @@ export function RepeatableBlock<T>({
     null,
   );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const document = useIsDocument();
 
   useEffect(() => {
     return () => {
@@ -43,6 +46,28 @@ export function RepeatableBlock<T>({
   // Always show at least one block: an empty list reads as a broken screen
   // rather than an invitation.
   const blocks = items.length > 0 ? items : [emptyItem()];
+
+  /**
+   * One entry, and the fact that there can be any number of them.
+   *
+   * The index chrome, the remove link, and the add button are all machinery for
+   * *managing* a list; none of them is a question, and printing the same entry
+   * shape three times would say nothing the add label does not. The add label
+   * itself is client copy and carries the shape's name ("Add another project"),
+   * which is why it rides in the tag rather than being dropped.
+   *
+   * `update` is a no-op here: a document has no state to change.
+   */
+  if (document) {
+    return (
+      <div>
+        <DocTag>Repeatable · &ldquo;{addLabel}&rdquo;</DocTag>
+        <div className="mt-3 border-l border-(--color-faint) pl-5">
+          {renderItem(blocks[0]!, 0, () => {})}
+        </div>
+      </div>
+    );
+  }
 
   function update(index: number, next: T) {
     const copy = [...blocks];

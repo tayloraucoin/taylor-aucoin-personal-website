@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireEngagement } from "@/server/services/engagement";
 import {
   extractEntries,
+  EXTRACTION_MODES,
   ExtractionUnavailableError,
   type ExtractedEntry,
 } from "@/server/services/extract";
@@ -22,7 +23,9 @@ export type ExtractResult =
 
 const input = z.object({
   token: z.string().min(1),
-  mode: z.enum(["experience", "projects"]),
+  // The mode list has one home, in the service. A mode added there is a mode
+  // this action accepts; there is no second list to keep in step.
+  mode: z.enum(EXTRACTION_MODES),
   blob: z.string(),
 });
 

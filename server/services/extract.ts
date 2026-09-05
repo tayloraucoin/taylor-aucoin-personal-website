@@ -5,6 +5,14 @@ import { z } from "zod";
 import { getDb } from "@/db/client";
 import { engagements } from "@/db/schema";
 import { requireEnv } from "@/lib/env";
+import {
+  experienceEntrySchema,
+  offeringEntrySchema,
+  personEntrySchema,
+  pieceEntrySchema,
+  projectEntrySchema,
+  serviceEntrySchema,
+} from "@/lib/validators/showcase-intake";
 
 /**
  * "Sort this for me" — turning a client's pasted career into editable entries.
@@ -31,7 +39,7 @@ import { requireEnv } from "@/lib/env";
  * decision with a record, not a preference.
  */
 
-const MODEL = "claude-sonnet-5";
+export const MODEL = "claude-sonnet-5";
 
 /**
  * How many times one engagement may run this.
@@ -47,32 +55,68 @@ const MAX_RUNS = 25;
  * Roughly 25,000 words. Long enough for a full CV plus an IMDb page pasted
  * together, short enough that no single request is pathological.
  */
-const MAX_BLOB_CHARS = 100_000;
+export const MAX_BLOB_CHARS = 100_000;
 
-export type ExtractionMode = "experience" | "projects";
+/**
+ * The modes, named for the answer array each one fills (M-PORT-24).
+ *
+ * One mode per array key means the output shape has exactly one authority — the
+ * entry schema the form already validates against — so a field added to an
+ * entry is a field the extractor can fill, and a field removed cannot linger
+ * here pointing at nothing.
+ *
+ * **There is no `asks` mode and there will not be one.** Which mechanism an ask
+ * uses, where it lands, and whether to show it are decisions a client makes,
+ * not facts a document states. An extractor proposing "a form on the site" is
+ * inventing, and this feature's whole discipline is that it does not.
+ */
+export const EXTRACTION_MODES = [
+  "experience",
+  "projects",
+  "people",
+  "offerings",
+  "pieces",
+  "services",
+] as const;
 
-/** What the model is asked to return, and the only shape that survives it. */
-const experienceEntry = z.object({
-  what: z.string(),
-  where: z.string(),
-  when: z.string(),
-  about: z.string(),
-  category: z.string(),
-});
+export type ExtractionMode = (typeof EXTRACTION_MODES)[number];
 
-const projectEntry = z.object({
-  title: z.string(),
-  year: z.string(),
-  role: z.string(),
-  kind: z.string(),
-  forWhom: z.string(),
-  story: z.string(),
-  credits: z.string(),
-  awards: z.string(),
-});
+/**
+ * What the model is asked to return, derived from the form's own entry schemas.
+ *
+ * Every field becomes a plain string — including the enum ones, which the
+ * prompt is told to leave blank unless the text states them plainly. Typing
+ * `status` as its enum would force the model to pick one of three, and "the
+ * deck did not say" is the answer that matters most on exactly that field.
+ *
+ * **Two keys are dropped, and both are machinery rather than answers.**
+ * `entryKey` is minted by the client on receipt (M-PORT-14). `personKey` says
+ * which roster person an experience entry belongs to *by their entry key*, and
+ * a model shown the field fills it with a name — which matches no person, so
+ * the entry silently stops being grouped under anybody. Found by the ingestion
+ * eval on 2026-09-03, printing `personKey="Mira Castellane"` on every entry of
+ * a one-sheet with no roster at all. Which person an entry belongs to is
+ * decided by the block a client typed it into, and never by a document.
+ */
+const NOT_ANSWERS = new Set(["entryKey", "personKey"]);
 
-const experienceResult = z.object({ entries: z.array(experienceEntry) });
-const projectsResult = z.object({ entries: z.array(projectEntry) });
+function resultFor(shape: z.ZodObject<Record<string, z.ZodTypeAny>>) {
+  const fields = Object.fromEntries(
+    Object.keys(shape.shape)
+      .filter((key) => !NOT_ANSWERS.has(key))
+      .map((key) => [key, z.string()]),
+  );
+  return z.object({ entries: z.array(z.object(fields)) });
+}
+
+const RESULTS: Record<ExtractionMode, ReturnType<typeof resultFor>> = {
+  experience: resultFor(experienceEntrySchema),
+  projects: resultFor(projectEntrySchema),
+  people: resultFor(personEntrySchema),
+  offerings: resultFor(offeringEntrySchema),
+  pieces: resultFor(pieceEntrySchema),
+  services: resultFor(serviceEntrySchema),
+};
 
 export type ExtractedEntry = Record<string, string>;
 
@@ -99,6 +143,67 @@ export class ExtractionUnavailableError extends Error {
  * never had, sitting in a field they skim past because it looks right. So the
  * prompt says omit rather than guess, in the one place a law cannot.
  */
+/**
+ * What each mode is looking for, and what it must not reach for.
+ *
+ * Every one of these ends by naming the shape it is NOT, because the commonest
+ * real failure is a client pasting the wrong thing into the right box — a CV
+ * into the people box, a team page into the services box — and the honest
+ * output for that is almost nothing.
+ */
+const PER_MODE: Record<ExtractionMode, readonly string[]> = {
+  experience: [
+    "Extract POSITIONS AND ONGOING ROLES — jobs, teaching posts, things",
+    "they founded, memberships, programs they run. This is the career",
+    "timeline, not the individual works it produced.",
+    "`category` is copied only when the text groups entries under a heading",
+    "or names one; otherwise leave it empty. 'Position' is not a category the",
+    "text stated.",
+    "Do NOT extract individual films, projects, or pieces.",
+  ],
+  projects: [
+    "Extract INDIVIDUAL WORKS — films, videos, projects, commissions.",
+    "Each entry is one piece of work.",
+    "Do NOT extract jobs, teaching posts, or memberships.",
+  ],
+  people: [
+    "Extract PEOPLE — the named individuals on a team, with the role each",
+    "one holds. One entry per person.",
+    "`name` is their name. `role` is their title or what they do.",
+    "`line` is one short sentence about them, copied from the text; leave it",
+    "empty if the text says nothing about them beyond their title.",
+    "Do NOT extract jobs one person held over time — that is a career",
+    "history, not a team. If the text is one person's CV, return at most",
+    "that one person.",
+  ],
+  offerings: [
+    "Extract WHAT THIS PRACTICE OFFERS — engagements, sessions, programmes,",
+    "talks, books. One entry per offer.",
+    "`price` is copied EXACTLY as written or left empty. Never round it,",
+    "never convert a currency, never add 'from'.",
+    "`pricePosture` must be left EMPTY. Whether a price belongs on the site",
+    "is the client's decision and the text does not state it.",
+    "Do NOT extract the people who deliver the work.",
+  ],
+  pieces: [
+    "Extract WHAT IS BEING BUILT — a property, a phase, a programme, a",
+    "product. One entry per piece.",
+    "`status` may ONLY be 'planned', 'underway', or 'done', and ONLY when",
+    "the text says so plainly. 'We took possession and work has begun' is",
+    "underway. 'We intend to' and 'we are creating' are NOT statements of",
+    "status — leave it empty. A planned thing described as existing is the",
+    "worst error you can make here.",
+    "Do NOT extract the people building it.",
+  ],
+  services: [
+    "Extract SERVICES SOLD — the things a customer can buy. One entry per",
+    "service.",
+    "`price` and `duration` are copied EXACTLY as written or left empty.",
+    "Do NOT extract the people who provide them, and do not extract a team",
+    "page as though each person were a service.",
+  ],
+};
+
 function instructionFor(mode: ExtractionMode): string {
   const shared = [
     "You are sorting one person's own career notes into structured entries.",
@@ -108,34 +213,38 @@ function instructionFor(mode: ExtractionMode): string {
     "  half-finished thought. If the text does not say something, leave that",
     "  field as an empty string.",
     "- Never invent a date, an employer, a client, an award, or a credit.",
+    "- COPY, do not compose. Every word you put in a field must already appear",
+    "  in the text, in that form. Do not inflect a word into another word",
+    "  ('founded' does not become 'founder'; 'creating' does not become",
+    "  'creation'). Do not join two separate phrases into one value. Do not add",
+    "  a parenthetical, a clarification, or a unit the text does not use.",
     "- Preserve the person's own wording wherever a field is free text. Do not",
     "  rewrite their voice, improve their phrasing, or add adjectives.",
+    "- If the closest thing the text offers is not an exact fit for a field,",
+    "  leave that field empty. A blank field is a question the client answers",
+    "  in two seconds; a plausible wrong one is a thing they skim past.",
     "- If the text contains nothing that fits, return an empty list. An empty",
     "  list is a correct answer.",
+    "- A title or name for something the text never names is composed. When",
+    "  the text describes a thing without naming it, use the exact phrase the",
+    "  text uses for it ('the main house', 'a retreat programme'), even if it",
+    "  reads like a fragment. Never reorder words into a title.",
+    "- A label, a type, or a category the text does not state is composed.",
+    "  Leave such a field empty rather than classifying the entry yourself.",
+    "- A date or period field takes ONLY the time expression the text uses —",
+    "  '2019-now', 'March', 'by autumn', '2027'. Never assemble one out of a",
+    "  sentence that also says what happened, and never join two separate time",
+    "  references into one value. If the sentence mixes a date with a status,",
+    "  copy the date alone and leave the status to its own field.",
   ];
 
-  const perMode =
-    mode === "experience"
-      ? [
-          "",
-          "Extract POSITIONS AND ONGOING ROLES — jobs, teaching posts, things",
-          "they founded, memberships, programs they run. This is the career",
-          "timeline, not the individual works it produced.",
-          "Do NOT extract individual films, projects, or pieces.",
-        ]
-      : [
-          "",
-          "Extract INDIVIDUAL WORKS — films, videos, projects, commissions.",
-          "Each entry is one piece of work.",
-          "Do NOT extract jobs, teaching posts, or memberships.",
-        ];
-
-  return [...shared, ...perMode].join("\n");
+  return [...shared, "", ...PER_MODE[mode]].join("\n");
 }
 
 let client: Anthropic | null = null;
 
-function getClient(): Anthropic {
+/** One pinned client for every AI touchpoint on this track. */
+export function getClient(): Anthropic {
   client ??= new Anthropic({ apiKey: requireEnv("ANTHROPIC_API_KEY") });
   return client;
 }
@@ -143,12 +252,16 @@ function getClient(): Anthropic {
 /**
  * Claims one run against the cap, atomically.
  *
+ * Shared with the business primer (PORT-10): one counter per engagement across
+ * every AI touchpoint on this track, not one per feature. A leaked link spends
+ * the same bounded budget whichever button it presses.
+ *
  * The guard lives in the UPDATE's own predicate rather than in a read followed
  * by a write, for the same reason deposit fulfillment does (M-INT-15): two
  * concurrent presses can both pass a read-then-write, and neither can pass
  * this. "No row returned" *is* the over-cap signal.
  */
-async function claimRun(engagementId: string): Promise<boolean> {
+export async function claimRun(engagementId: string): Promise<boolean> {
   const [row] = await getDb()
     .update(engagements)
     .set({ extractionRuns: sql`${engagements.extractionRuns} + 1` })
@@ -175,14 +288,37 @@ export async function extractEntries(
   mode: ExtractionMode,
   blob: string,
 ): Promise<ExtractedEntry[]> {
-  const text = blob.trim();
-  if (!text) throw new ExtractionUnavailableError("empty");
+  // A blank paste costs no run: refusing is cheaper than counting.
+  if (!blob.trim()) throw new ExtractionUnavailableError("empty");
 
   if (!(await claimRun(engagementId))) {
     throw new ExtractionUnavailableError("rate_limited");
   }
 
-  const schema = mode === "experience" ? experienceResult : projectsResult;
+  return sortDocument(mode, blob);
+}
+
+/**
+ * The sort itself: one blob in, entries out. No database, no run counter.
+ *
+ * Split from `extractEntries` so the golden set can grade the part being
+ * graded — the prompts and the per-entry degradation — without a real
+ * engagement to spend a budget against. Ten fixtures would otherwise burn ten
+ * of some client's twenty-five runs, and the eval would need a seeded row
+ * before it could tell you anything about a prompt.
+ *
+ * **This is not a bypass.** The cap is a property of an engagement, not of the
+ * model call, and nothing client-reachable imports this: the action calls
+ * `extractEntries` and only that. The one other caller is the eval.
+ */
+export async function sortDocument(
+  mode: ExtractionMode,
+  blob: string,
+): Promise<ExtractedEntry[]> {
+  const text = blob.trim();
+  if (!text) throw new ExtractionUnavailableError("empty");
+
+  const schema = RESULTS[mode];
 
   let parsed;
   try {
