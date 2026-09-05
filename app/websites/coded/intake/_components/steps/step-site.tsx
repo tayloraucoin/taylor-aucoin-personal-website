@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
@@ -20,6 +21,7 @@ import {
   type ShortlistVideo,
 } from "../home-shortlist";
 import { UpsellQuestions } from "../upsell-block";
+import { CustomPages } from "../custom-pages";
 
 const HOW_TO_REACH = [
   { value: "email", label: "An email link — no form" },
@@ -27,6 +29,17 @@ const HOW_TO_REACH = [
   { value: "both", label: "Both" },
   { value: "rep", label: "Through my rep" },
 ] as const;
+
+
+/**
+ * The page every site has.
+ *
+ * Locked in the checklist rather than removed from it: a client should still
+ * see Home in the sitemap they are reading, and dropping it from the list to
+ * stop it being unticked would make the list disagree with the site.
+ */
+const ALWAYS_PAGE = "home";
+const LOCKED_PAGES = [ALWAYS_PAGE] as const;
 
 /**
  * Whether a form built somewhere else has to live on the site.
@@ -130,6 +143,26 @@ export function StepSite({
     ? (form.values.pages as string[])
     : [];
 
+  const customPages = Array.isArray(form.values.pagesCustom)
+    ? (form.values.pagesCustom as string[])
+    : [];
+
+  /**
+   * Home is on, always, and the stored answer says so.
+   *
+   * `locked` on the group governs the rendering and refuses the toggle; this is
+   * what puts the value in the answers document, so Taylor's read of the
+   * sitemap does not depend on a client having left a tick alone. Runs once on
+   * arrival and then only if something removed it.
+   */
+  useEffect(() => {
+    if (!pages.includes(ALWAYS_PAGE)) {
+      form.setValue("pages", [ALWAYS_PAGE, ...pages]);
+    }
+    // `form.setValue` is stable for the life of the step.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pages]);
+
   /**
    * What this client has actually bought: the five included, plus whatever
    * they added at checkout.
@@ -141,7 +174,13 @@ export function StepSite({
    * that the conversation comes before the charge (Taylor, 2026-09-03).
    */
   const allowance = INCLUDED_PAGES + paidExtraPages;
-  const over = pages.length > allowance;
+
+  // A typed page counts. It was the point of making them rows rather than a
+  // sentence in a box, and a total that ignored them would understate the
+  // sitemap the client just described.
+  const named = customPages.filter((page) => page.trim().length > 0).length;
+  const total = pages.length + named;
+  const over = total > allowance;
 
   return (
     <>
@@ -162,10 +201,11 @@ export function StepSite({
         help="Check what feels right — we'll push back if something's missing or unnecessary, and flag it before anything goes past what's included."
         options={pack.pages}
         multiple
+        locked={LOCKED_PAGES}
         note={
           <>
             <span className="text-(--color-dim)">
-              {pages.length}/{allowance} pages
+              {total}/{allowance} pages
               {paidExtraPages > 0
                 ? ` (${INCLUDED_PAGES} included, ${paidExtraPages} you added at checkout)`
                 : " included"}
@@ -182,7 +222,20 @@ export function StepSite({
         }
       />
 
-      <TextAnswer form={form} name="pagesOther" label="Something else?" />
+      {/* Was "Something else?", one text box. See `CustomPages` for why a typed
+          page is now a row that counts. */}
+      <Field
+        id="f-pagesCustom"
+        label="Any other pages"
+        // [COPY — pending Taylor]
+        help="Anything the list above doesn't cover. Each one you add counts toward the total."
+      >
+        <CustomPages
+          pages={customPages}
+          onChange={(next) => form.setValue("pagesCustom", next)}
+          onBlur={form.flush}
+        />
+      </Field>
 
       {/* Only for someone who already bought pages. Asking everyone else what
           their extra pages are for is asking about something they do not

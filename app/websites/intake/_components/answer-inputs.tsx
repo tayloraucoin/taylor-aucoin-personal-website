@@ -116,6 +116,7 @@ export function ChoiceAnswer({
   options,
   multiple,
   exclusiveValue,
+  locked,
 }: {
   form: StepAutosave;
   name: string;
@@ -125,6 +126,8 @@ export function ChoiceAnswer({
   options: readonly Choice[];
   multiple?: boolean;
   exclusiveValue?: string;
+  /** Always-on values. See `ChoiceGroup`. */
+  locked?: readonly string[];
 }) {
   const id = `f-${name}`;
   const stored = form.values[name];
@@ -148,6 +151,7 @@ export function ChoiceAnswer({
         onBlur={form.flush}
         multiple={multiple}
         exclusiveValue={exclusiveValue}
+        locked={locked}
       />
     </Field>
   );

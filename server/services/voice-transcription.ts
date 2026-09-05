@@ -341,8 +341,14 @@ export async function transcribeVoiceNote(
  * recorded MIME type, never the client's own filename. The vendor asks for an
  * extension-bearing name to identify the format; it has no business receiving
  * "kryshan-showreel-notes-FINAL.m4a".
+ *
+ * Exported for one caller besides `transcribeVoiceNote`: the admin preview's
+ * transcription route, which has audio in hand and no engagement to attach it
+ * to. That route stores nothing, so it needs the vendor call without the
+ * claim, the row update, or the prompt built from a client's answers. Anything
+ * touching a real voice note still goes through `transcribeVoiceNote`.
  */
-async function send(
+export async function send(
   bytes: Uint8Array,
   file: { mimeType: string | null; originalName: string | null },
   prompt: string,

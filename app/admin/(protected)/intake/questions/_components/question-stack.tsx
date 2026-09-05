@@ -22,7 +22,16 @@ import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { stepsFor } from "@/lib/intake/tracks";
 import type { IntakeTrackKey } from "@/lib/types/intake";
-import { AccordionSection } from "./accordion";
+import { AccordionControls, AccordionSection } from "./accordion";
+import { PreviewLink } from "./preview-link";
+
+/**
+ * The group the step sections register under.
+ *
+ * Named rather than inlined at both ends, because a typo in one of the two
+ * strings would produce a control that silently folds nothing.
+ */
+const STEP_GROUP = "questionnaire-steps";
 
 /**
  * Every step of one track, stacked, in order.
@@ -54,11 +63,17 @@ export function QuestionStack({
   flavour,
   kind,
   gallery,
+  previewQuery,
 }: Readonly<{
   track: IntakeTrackKey;
   flavour: ShowcaseFlavour;
   /** What the site is for. Decides which field groups exist at all. */
   kind: ShowcaseKind;
+  /**
+   * The view the review page is showing, forwarded to each step's Preview
+   * link so the tab it opens is the same questionnaire this stack is showing.
+   */
+  previewQuery: string;
   /**
    * This pack's gallery, exactly as a client would meet it.
    *
@@ -74,57 +89,75 @@ export function QuestionStack({
   const steps = stepsFor(track, flavour);
 
   return (
-    <ol className="mt-10">
-      {steps.map((step) => (
-        <li
-          key={step.key}
-          className="border-t border-(--color-faint) py-10 first:border-t-0 first:pt-0"
-        >
-          <AccordionSection
-            header={
-              <>
-                <span
-                  data-md="eyebrow"
-                  className="block font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
-                >
-                  Step {step.number} of {steps.length} · {step.key}
-                </span>
-                <span
-                  data-md="section"
-                  className="mt-2 block font-(family-name:--font-display) text-[28px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)"
-                >
-                  {step.title}
-                </span>
-              </>
-            }
-            note={
-              step.intro ? (
-                <p
-                  key={`${step.key}-intro`}
-                  className={`mt-3 max-w-[48ch] text-[16px] font-light leading-[1.6] ${
-                    step.emphasis === "ink"
-                      ? "text-(--color-ink)"
-                      : "text-(--color-body)"
-                  }`}
-                >
-                  {step.intro}
-                </p>
-              ) : undefined
-            }
+    <>
+      {/*
+        The steps' own Expand / Collapse, scoped to this list.
+
+        The page-level pair in the header folds all thirteen sections, which is
+        the wrong instrument once you are down here: the questionnaire is nine
+        of those thirteen, and folding it should not also close the start form
+        and the pay screen you are comparing it against. `data-md="skip"` keeps
+        the control out of the Markdown export, which reads this rendered DOM —
+        the same reason the Hide/Show state word carries it.
+      */}
+      <div data-md="skip" className="mt-6 flex justify-end">
+        <AccordionControls group={STEP_GROUP} noun="all steps" />
+      </div>
+
+      <ol className="mt-4">
+        {steps.map((step) => (
+          <li
+            key={step.key}
+            className="border-t border-(--color-faint) py-10 first:border-t-0 first:pt-0"
           >
-            <div key={`${step.key}-body`} className="mt-6 max-w-2xl">
-              <StepBody
-                track={track}
-                stepKey={step.key}
-                flavour={flavour}
-                kind={kind}
-                gallery={gallery}
-              />
-            </div>
-          </AccordionSection>
-        </li>
-      ))}
-    </ol>
+            <AccordionSection
+              group={STEP_GROUP}
+              action={<PreviewLink section={step.key} query={previewQuery} />}
+              header={
+                <>
+                  <span
+                    data-md="eyebrow"
+                    className="block font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+                  >
+                    Step {step.number} of {steps.length} · {step.key}
+                  </span>
+                  <span
+                    data-md="section"
+                    className="mt-2 block font-(family-name:--font-display) text-[28px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)"
+                  >
+                    {step.title}
+                  </span>
+                </>
+              }
+              note={
+                step.intro ? (
+                  <p
+                    key={`${step.key}-intro`}
+                    className={`mt-3 max-w-[48ch] text-[16px] font-light leading-[1.6] ${
+                      step.emphasis === "ink"
+                        ? "text-(--color-ink)"
+                        : "text-(--color-body)"
+                    }`}
+                  >
+                    {step.intro}
+                  </p>
+                ) : undefined
+              }
+            >
+              <div key={`${step.key}-body`} className="mt-6 max-w-2xl">
+                <StepBody
+                  track={track}
+                  stepKey={step.key}
+                  flavour={flavour}
+                  kind={kind}
+                  gallery={gallery}
+                />
+              </div>
+            </AccordionSection>
+          </li>
+        ))}
+      </ol>
+    </>
   );
 }
 
@@ -132,7 +165,15 @@ const NO_TOKEN = "";
 const NO_ANSWERS: Record<string, unknown> = {};
 const NO_FILES = [] as const;
 
-function StepBody({
+/**
+ * One step's fields, with every prop empty.
+ *
+ * Exported because the single-section preview renders exactly one of these in
+ * the client's own column, and a second dispatch would be a second thing to
+ * forget when a step is added — the `UnrenderedStep` guard below only helps
+ * while there is one switch to fall through.
+ */
+export function StepBody({
   track,
   stepKey,
   flavour,

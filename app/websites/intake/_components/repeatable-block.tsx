@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { GhostButton } from "@/components/ui/GradientButton";
 import { useIsDocument } from "@/components/intake/preview-mode";
+import { GhostButton } from "@/components/ui/GradientButton";
 import { DocTag } from "./document";
 
 const UNDO_WINDOW_MS = 6000;
@@ -23,12 +23,26 @@ export function RepeatableBlock<T>({
   onChange,
   emptyItem,
   addLabel,
+  addFirstLabel,
+  startEmpty = false,
   renderItem,
 }: {
   items: readonly T[];
   onChange: (next: T[]) => void;
   emptyItem: () => T;
   addLabel: string;
+  /** Shown instead of `addLabel` while the list is empty. */
+  addFirstLabel?: string;
+  /**
+   * Start with no card at all, rather than one waiting to be filled.
+   *
+   * The default below is the right one for a list the client is expected to
+   * have something for. It is the wrong one where having nothing is the
+   * ordinary answer: an open card is a question, and a question nobody asked
+   * for reads as work owed. The client then has to cancel out of a card they
+   * never wanted (Taylor, 2026-09-04, on the taste step's found sites).
+   */
+  startEmpty?: boolean;
   renderItem: (item: T, index: number, update: (next: T) => void) => ReactNode;
 }) {
   const [removed, setRemoved] = useState<{ item: T; index: number } | null>(
@@ -43,9 +57,11 @@ export function RepeatableBlock<T>({
     };
   }, []);
 
-  // Always show at least one block: an empty list reads as a broken screen
-  // rather than an invitation.
-  const blocks = items.length > 0 ? items : [emptyItem()];
+  // One block by default, because for most lists here an empty screen reads as
+  // broken rather than as an invitation. `startEmpty` inverts that for the
+  // lists where nothing is the ordinary answer, and then the add button is the
+  // whole invitation.
+  const blocks = items.length > 0 ? items : startEmpty ? [] : [emptyItem()];
 
   /**
    * One entry, and the fact that there can be any number of them.
@@ -63,7 +79,10 @@ export function RepeatableBlock<T>({
       <div>
         <DocTag>Repeatable · &ldquo;{addLabel}&rdquo;</DocTag>
         <div className="mt-3 border-l border-(--color-faint) pl-5">
-          {renderItem(blocks[0]!, 0, () => {})}
+          {/* `items[0] ?? emptyItem()`: a `startEmpty` list has no block to
+              show, and a document of the questions still has to print the
+              shape it would ask for. */}
+          {renderItem(items[0] ?? emptyItem(), 0, () => {})}
         </div>
       </div>
     );
@@ -103,7 +122,10 @@ export function RepeatableBlock<T>({
               {String(index + 1).padStart(2, "0")}
             </span>
 
-            {blocks.length > 1 ? (
+            {/* `startEmpty` makes "none" a valid state, so the only card must
+                be removable too — otherwise adding one by mistake is a card
+                the client is stuck with. */}
+            {blocks.length > 1 || startEmpty ? (
               <button
                 type="button"
                 onClick={() => remove(index)}
@@ -135,7 +157,7 @@ export function RepeatableBlock<T>({
       ) : null}
 
       <GhostButton onClick={() => onChange([...blocks, emptyItem()])}>
-        {addLabel}
+        {blocks.length === 0 ? (addFirstLabel ?? addLabel) : addLabel}
       </GhostButton>
     </div>
   );

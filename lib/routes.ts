@@ -165,6 +165,25 @@ export const adminRoutes = {
   intakeQuestions: `${ADMIN_PREFIX}/intake/questions`,
 
   /**
+   * One section of the intake, alone, in the client's own column.
+   *
+   * The review page stacks every screen inside the admin shell, which is the
+   * right surface for reading the flow and the wrong one for judging whether a
+   * screen feels good to be handed. This route drops the rail, the bands, and
+   * the accordion, and renders the one section the way a client meets it.
+   *
+   * It lives outside `(protected)` so it does not inherit `AdminShell`, and its
+   * own layout calls `requireAdmin` — the guard follows the surface, never the
+   * folder (M-CRM-1). `isAdminPath` already covers it, so site chrome and
+   * analytics stay away.
+   *
+   * `section` is a flow band's id or a step's own key; `query` carries the
+   * track, kind, and pack the review page was showing.
+   */
+  intakeSectionPreview: (section: string, query?: string) =>
+    `${ADMIN_PREFIX}/intake/preview/${section}${query ? `?${query}` : ""}`,
+
+  /**
    * The taste gallery's curation surface (PORT-31).
    *
    * Two screens: the six packs, and one pack's sites. A site itself opens as a

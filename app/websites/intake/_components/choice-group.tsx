@@ -58,6 +58,7 @@ export function ChoiceGroup({
   onBlur,
   multiple = false,
   exclusiveValue,
+  locked,
 }: {
   legend: string;
   name: string;
@@ -67,12 +68,26 @@ export function ChoiceGroup({
   onBlur?: () => void;
   multiple?: boolean;
   exclusiveValue?: string;
+  /**
+   * Values that are always on and cannot be turned off.
+   *
+   * Different from `disabled`, which means "not available": a locked option is
+   * chosen, it reads as chosen, and the tick is simply not a decision anyone
+   * has to make. Home is the case it exists for — every site has one, so
+   * offering it as a choice invites a client to uncheck it and produce a
+   * sitemap nobody meant (Taylor, 2026-09-04).
+   *
+   * The caller is responsible for the value actually being stored; this only
+   * governs how it renders and refuses to toggle.
+   */
+  locked?: readonly string[];
 }) {
   const groupId = useId();
   const document = useIsDocument();
 
   function toggle(option: string) {
     if (options.find((o) => o.value === option)?.disabled) return;
+    if (locked?.includes(option)) return;
 
     if (!multiple) {
       onChange([option]);
@@ -114,9 +129,12 @@ export function ChoiceGroup({
 
       <div className="flex flex-col gap-2">
         {options.map((option) => {
-          const isSelected = value.includes(option.value);
+          const isLocked = locked?.includes(option.value) ?? false;
+          const isSelected = value.includes(option.value) || isLocked;
           const id = `${groupId}-${option.value}`;
 
+          // A locked option reads as what it is — chosen — rather than as
+          // unavailable. `DISABLED_CLASS` would dim the one page every site has.
           const state = option.disabled
             ? DISABLED_CLASS
             : isSelected
@@ -128,7 +146,9 @@ export function ChoiceGroup({
               key={option.value}
               htmlFor={id}
               className={`${CARD_CLASS} ${state} ${
-                option.disabled ? "cursor-default" : "cursor-pointer"
+                option.disabled || isLocked
+                  ? "cursor-default"
+                  : "cursor-pointer"
               }`}
             >
               <input
@@ -141,7 +161,7 @@ export function ChoiceGroup({
                 // rather than `disabled`, which would drop it from the tab order
                 // and hide the roadmap from exactly the users who cannot see the
                 // dimmed styling.
-                aria-disabled={option.disabled || undefined}
+                aria-disabled={option.disabled || isLocked || undefined}
                 onChange={() => toggle(option.value)}
                 className="sr-only"
               />
@@ -151,7 +171,15 @@ export function ChoiceGroup({
                   isSelected ? "bg-(--color-c2)" : "bg-(--color-faint)"
                 }`}
               />
-              {option.label}
+              <span className="grow">{option.label}</span>
+
+              {/* Says why it cannot be unticked, rather than leaving a control
+                  that silently ignores the click. */}
+              {isLocked ? (
+                <span className="ml-3 shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                  Always
+                </span>
+              ) : null}
             </label>
           );
         })}

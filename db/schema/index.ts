@@ -8,6 +8,7 @@ import type {
   exampleSitePacks,
   exampleSites,
 } from "./example-sites";
+import type { intakeFeedback } from "./intake-feedback";
 import type { intakeFiles } from "./intake-files";
 import type { invoiceEmails } from "./invoice-emails";
 import type { leadEmails } from "./lead-emails";
@@ -22,6 +23,7 @@ export * from "./engagement-products";
 export * from "./engagements";
 export * from "./example-pack";
 export * from "./example-sites";
+export * from "./intake-feedback";
 export * from "./intake-files";
 export * from "./intake-track";
 export * from "./invoice-emails";
@@ -63,6 +65,9 @@ export type NewExampleSitePackRow = typeof exampleSitePacks.$inferInsert;
 
 export type ExamplePackRow = typeof examplePacks.$inferSelect;
 export type NewExamplePackRow = typeof examplePacks.$inferInsert;
+
+export type IntakeFeedbackRow = typeof intakeFeedback.$inferSelect;
+export type NewIntakeFeedbackRow = typeof intakeFeedback.$inferInsert;
 
 export type IntakeFileRow = typeof intakeFiles.$inferSelect;
 export type NewIntakeFileRow = typeof intakeFiles.$inferInsert;

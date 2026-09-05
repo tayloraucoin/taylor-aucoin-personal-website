@@ -3,15 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ExampleGroup, ExampleSet } from "@/content/intake-examples";
 import { GROUP_ORDER } from "@/content/intake-examples/taxonomy";
-import { picksOf, TASTE_PICKS_ASKED } from "@/lib/intake/taste-picks";
-import { copyPackFor } from "@/lib/intake/tracks";
 import { mintEntryKey } from "@/lib/intake/entry-key";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
+import { picksOf, TASTE_PICKS_ASKED } from "@/lib/intake/taste-picks";
+import { copyPackFor } from "@/lib/intake/tracks";
 import type {
   TastePick,
   TasteReference,
 } from "@/lib/validators/showcase-intake";
-import { LongAnswer, TextAnswer } from "../../../../intake/_components/answer-inputs";
+import {
+  LongAnswer,
+  TextAnswer,
+} from "../../../../intake/_components/answer-inputs";
 import { Field } from "../../../../intake/_components/field";
 import {
   FileDrop,
@@ -25,12 +28,12 @@ import {
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
 import { ExampleRow } from "../taste/example-row";
 import { GalleryOverlay } from "../taste/gallery-overlay";
+import { MotionNotice } from "../taste/motion-notice";
 import type { Pick } from "../taste/pick-block";
 import { ReferenceList } from "../taste/reference-list";
 import { StyleSearch } from "../taste/style-search";
 import { TasteGroup } from "../taste/taste-group";
 import { YourPicks } from "../taste/your-picks";
-import { MotionNotice } from "../taste/motion-notice";
 
 /** How long the met-the-ask line holds the footer before it hands the slot back. */
 const MET_LINGER_MS = 6000;
@@ -181,7 +184,10 @@ export function StepTaste({
         ? (previous as TastePick[])
         : picksOf(form.values);
 
-      return [...base.filter((p) => p.siteKey !== siteKey), { siteKey, ...next }]
+      return [
+        ...base.filter((p) => p.siteKey !== siteKey),
+        { siteKey, ...next },
+      ]
         .slice()
         .sort((a, b) => orderOf(a.siteKey) - orderOf(b.siteKey));
     });
@@ -372,6 +378,16 @@ export function StepTaste({
         label="And one thing it must never feel like"
       />
 
+      {/* Moved from the media step, where it sat among the logo and the file
+          drops and read as an asset question (Taylor, 2026-09-04). It belongs
+          with the words above it, and ahead of the style search below, which
+          reads this cluster. */}
+      <TextAnswer
+        form={form}
+        name="coloursYouLike"
+        label="Colours you're drawn to"
+      />
+
       <StyleSearch
         token={token}
         brief={
@@ -392,8 +408,9 @@ export function StepTaste({
         <Field
           id="f-references"
           label="Sites you've found"
-          // [COPY — draft]
-          help="Anything you've come across that feels right — one link each, and the same two questions."
+          // [COPY — pending Taylor] — says plainly that none is a fine answer,
+          // because the list no longer opens a card to imply otherwise.
+          help="Only if you've got some. No need to go hunting. One link each, and the same two questions we asked about ours."
         >
           <ReferenceList
             references={references}

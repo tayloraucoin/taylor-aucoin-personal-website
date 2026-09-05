@@ -9,9 +9,9 @@ import { TextArea } from "../../../../intake/_components/text-field";
 
 /** [COPY — draft] — every string in this component. */
 const COPY = {
-  label: "Find more like it",
+  label: "Describe the style you're going for",
   intro:
-    "Describe the site you're picturing and we'll go looking for real ones that feel like it. Anything helps — a mood, a site you can't remember the name of, “like the second one above but lighter”.",
+    "Look and feel only: colour, type, how much sits on screen, how it moves. We'll go looking for real sites that match. A mood works, so does “like the second one above, but lighter”. What the site needs to say or do belongs in the brain dump further down.",
   placeholder:
     "Dark but warm, big type, one project at a time, nothing moves until you hover…",
   button: "Search with AI",
@@ -21,7 +21,8 @@ const COPY = {
   found:
     "Found these. We haven't checked them — some may be dead or nothing like you meant. Open the ones that sound right.",
   none: "Nothing convincing came back. Try different words, or put what you're picturing in the brain dump below — that reaches a person.",
-  failed: "That didn't work — your description is still here. Try again in a moment.",
+  failed:
+    "That didn't work — your description is still here. Try again in a moment.",
   budget:
     "That's the lot for now. Anything you'd have searched for is welcome in the brain dump.",
   link: "That link stopped working. Anything you've typed is still here.",
@@ -173,9 +174,7 @@ export function StyleSearch({
       ) : null}
 
       {state.status === "none" ? (
-        <p
-          className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
-        >
+        <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
           {COPY.none}
         </p>
       ) : null}
@@ -217,9 +216,7 @@ export function StyleSearch({
                       type="button"
                       onClick={() => {
                         onAdd(result.url);
-                        setAdded((current) =>
-                          new Set(current).add(result.url),
-                        );
+                        setAdded((current) => new Set(current).add(result.url));
                       }}
                       className="mt-2.5 min-h-11 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline underline-offset-2 transition-colors hover:text-(--color-c3) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
                     >

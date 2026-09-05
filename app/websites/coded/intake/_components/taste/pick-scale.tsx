@@ -3,7 +3,7 @@
 import { useIsDocument } from "@/components/intake/preview-mode";
 import { DocHint, DocTag } from "../../../../intake/_components/document";
 
-/** [COPY — draft] — the question, and what each end of it means. */
+/** [COPY — draft] — the taste step's question, and what each end of it means. */
 const SCALE_LABEL = "How close is this to what you want?";
 const LOW = "One detail";
 const HIGH = "Build me this";
@@ -41,12 +41,28 @@ export function PickScale({
   idPrefix,
   value,
   onChange,
+  label = SCALE_LABEL,
+  low = LOW,
+  high = HIGH,
 }: {
   /** Unique per scale on the page — the label finds the control by id. */
   idPrefix: string;
   value: number | undefined;
   /** `undefined` when the client drags back to the unscored end. */
   onChange: (next: number | undefined) => void;
+  /**
+   * The question, and what each end of it means.
+   *
+   * Defaulted to the taste step's, which is the caller this was built for and
+   * the only one until the done screen's feedback asked the same *shape* of
+   * question about something else (2026-09-04). Parameters rather than a second
+   * component: the no-default zero, the readout, the ticks, and the named ends
+   * are the design here, and a copy of them that drifted would be the thing
+   * worth avoiding.
+   */
+  label?: string;
+  low?: string;
+  high?: string;
 }) {
   const labelId = `${idPrefix}-scale-label`;
   const inputId = `${idPrefix}-scale`;
@@ -56,9 +72,9 @@ export function PickScale({
     value === undefined
       ? "Not scored"
       : value === 1
-        ? `1 of ${MAX} — ${LOW}`
+        ? `1 of ${MAX} — ${low}`
         : value === MAX
-          ? `${MAX} of ${MAX} — ${HIGH}`
+          ? `${MAX} of ${MAX} — ${high}`
           : `${value} of ${MAX}`;
 
   if (useIsDocument()) {
@@ -66,7 +82,7 @@ export function PickScale({
       <>
         <DocTag>Slider · 1–7, unscored until moved</DocTag>
         <DocHint>
-          {SCALE_LABEL} 1 is &ldquo;{LOW}&rdquo;, 7 is &ldquo;{HIGH}&rdquo;.
+          {label} 1 is &ldquo;{low}&rdquo;, 7 is &ldquo;{high}&rdquo;.
         </DocHint>
       </>
     );
@@ -83,7 +99,7 @@ export function PickScale({
           htmlFor={inputId}
           className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
         >
-          {SCALE_LABEL}
+          {label}
         </label>
 
         {/* The readout carries the answer in numerals, where a thumb position
@@ -138,8 +154,8 @@ export function PickScale({
       {/* The ends, named. A number with nothing at either end of it is a number
           someone has to guess the meaning of. */}
       <div className="mt-2 flex justify-between gap-4 font-body text-[13.5px] font-light leading-[1.4] text-(--color-dim)">
-        <span>1 · {LOW}</span>
-        <span>7 · {HIGH}</span>
+        <span>1 · {low}</span>
+        <span>7 · {high}</span>
       </div>
     </div>
   );

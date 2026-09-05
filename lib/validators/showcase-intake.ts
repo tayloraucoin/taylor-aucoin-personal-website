@@ -590,6 +590,17 @@ export const stepTasteSchema = z.object({
   wordTwo: text,
   wordThree: text,
   neverFeelLike: text,
+
+  /**
+   * Moved here from the media step (Taylor, 2026-09-04: "feels like it belongs
+   * in taste, not in media").
+   *
+   * It was next to the logo and the file drops, which made it read as an asset
+   * question. It is a taste question, and it belongs with the three words and
+   * the thing the site must never feel like — the cluster the style search then
+   * reads. No engagement had answered it, so the key moved with no fallback.
+   */
+  coloursYouLike: text,
   brainDump: text,
 
   /* ── Bought the animations add-on ──────────────────────────────────────
@@ -659,7 +670,6 @@ export const stepMediaSchema = z.object({
    */
   videos: z.array(projectVideoSchema).optional(),
   logoStatus: text,
-  coloursYouLike: text,
   dislikes: text,
 
   /* ── Bought the logo refresh add-on (2026-09-03) ───────────────────────
@@ -675,7 +685,15 @@ export const stepMediaSchema = z.object({
 /** Step 8 — The site itself. */
 export const stepSiteSchema = z.object({
   pages: choice,
-  pagesOther: text,
+  /**
+   * Pages the checklist does not name, typed by the client.
+   *
+   * Replaced `pagesOther`, a single text box, at Taylor's 2026-09-04 note: a
+   * typed page is a page, so it counts toward the running total and can be
+   * removed like any other. Adding the row is choosing it, so there is no
+   * separate selected flag to keep in step with the list.
+   */
+  pagesCustom: choice,
   /**
    * What the pages they bought at checkout are for. Asked only of clients who
    * bought some — see `paidExtraPages`.
