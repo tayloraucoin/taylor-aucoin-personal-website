@@ -9,6 +9,7 @@ import { PickBlock } from "./pick-block";
 
 /** [COPY — draft] */
 const COPY = {
+  addFirst: "Add a site",
   add: "Add another site",
   link: "Link",
   placeholder: "juliarossetti.com",
@@ -26,6 +27,11 @@ const COPY = {
  * **Adding the row is selecting**, so the pick block opens composing rather
  * than behind a Select nobody would understand pressing. An entry that arrived
  * from storage is collapsed, because it was saved once already.
+ *
+ * **Nothing is open on arrival.** Most clients have not been collecting links,
+ * and an open card asked them for one anyway — then made them cancel out of it
+ * to say no (Taylor, 2026-09-04). The button is the whole question now, and
+ * the field's help line above says the answer may be none.
  *
  * A link is normalised, never refused. Someone typing `juliarossetti.com` has
  * given a perfectly good answer, and a validator arguing with them about a
@@ -56,7 +62,9 @@ export function ReferenceList({
       items={references}
       onChange={onChange}
       emptyItem={() => ({ entryKey: mintEntryKey(), source: "typed" })}
+      startEmpty
       addLabel={COPY.add}
+      addFirstLabel={COPY.addFirst}
       renderItem={(entry, index, update) => {
         /**
          * Ids come from the index, never from the entry key.
@@ -98,7 +106,9 @@ export function ReferenceList({
               pick={
                 isSaved
                   ? {
-                      ...(entry.score === undefined ? {} : { score: entry.score }),
+                      ...(entry.score === undefined
+                        ? {}
+                        : { score: entry.score }),
                       ...(entry.note ? { note: entry.note } : {}),
                     }
                   : null

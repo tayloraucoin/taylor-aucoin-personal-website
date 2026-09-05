@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AccordionSection } from "./accordion";
+import { PreviewLink } from "./preview-link";
 
 /**
  * One labelled band in the review scroll.
@@ -18,16 +19,28 @@ export function FlowSection({
   stage,
   title,
   note,
+  preview,
   children,
 }: Readonly<{
   stage: string;
   title: string;
   note?: string;
+  /**
+   * The band's own id and the view it should open in, or absent for a band
+   * that has nothing of its own to show — the questionnaire, whose ten steps
+   * each carry their own link.
+   */
+  preview?: { section: string; query: string };
   children: ReactNode;
 }>) {
   return (
     <section className="border-t border-(--color-faint) py-10 first:border-t-0">
       <AccordionSection
+        action={
+          preview ? (
+            <PreviewLink section={preview.section} query={preview.query} />
+          ) : undefined
+        }
         header={
           <>
             <span className="block font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-c2)">

@@ -1,8 +1,13 @@
 import type { ReactNode } from "react";
 import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
 import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
+import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
 import { intakeRoutesFor } from "@/lib/routes";
-import type { IntakeStep, IntakeTrackKey } from "@/lib/types/intake";
+import type {
+  AnyIntakeStepKey,
+  IntakeStep,
+  IntakeTrackKey,
+} from "@/lib/types/intake";
 import { INTAKE_COLUMN } from "../_lib/column";
 import { FooterEnd } from "../_lib/save-state";
 import { Eyebrow } from "./eyebrow";
@@ -41,19 +46,42 @@ export function StepShell({
   track,
   token,
   step,
+  flavour = "generic",
+  navigate,
   saveSlot,
   children,
 }: {
   track: IntakeTrackKey;
   token: string;
   step: IntakeStep;
+  /**
+   * This client's copy pack, so the footer's "Next · …" names the step they
+   * are actually about to meet. Step 5 is "The work" for a portfolio and
+   * "What you offer" for a practice; without this the bar promised the wrong
+   * one to four of the six packs.
+   */
+  flavour?: ShowcaseFlavour;
+  /**
+   * Where Back and Continue point, when it is not this client's own flow.
+   *
+   * The admin preview mounts this shell so a section can be judged as the
+   * screen it is, chrome and all — but its steps live under `/admin/intake/
+   * preview/...` and it has no token to build a client route from. Overriding
+   * the two destinations is the whole of what it needs; everything else about
+   * the bar is the same bar (Taylor, 2026-09-04).
+   */
+  navigate?: { step: (stepKey: AnyIntakeStepKey) => string; done: string };
   saveSlot?: ReactNode;
   children: ReactNode;
 }) {
-  const previous = previousStep(track, step);
-  const next = nextStep(track, step);
+  const previous = previousStep(track, step, flavour);
+  const next = nextStep(track, step, flavour);
   const stepCount = stepCountFor(track);
   const routes = intakeRoutesFor(track);
+  const go = navigate ?? {
+    step: (stepKey: AnyIntakeStepKey) => routes.step(token, stepKey),
+    done: routes.done(token),
+  };
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -83,20 +111,12 @@ export function StepShell({
         <div className={`py-4 ${INTAKE_COLUMN}`}>
           <div className="flex items-center justify-between gap-3">
             {previous ? (
-              <GhostButton href={routes.step(token, previous.key)}>
-                ← Back
-              </GhostButton>
+              <GhostButton href={go.step(previous.key)}>← Back</GhostButton>
             ) : (
               <span />
             )}
 
-            <GradientButton
-              href={
-                next
-                  ? routes.step(token, next.key)
-                  : routes.done(token)
-              }
-            >
+            <GradientButton href={next ? go.step(next.key) : go.done}>
               {next ? "Continue" : "Finish"}
             </GradientButton>
           </div>

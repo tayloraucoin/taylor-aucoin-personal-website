@@ -428,6 +428,7 @@ export default async function ShowcaseIntakeStepPage({
         track={engagement.track}
         token={token}
         step={step}
+        flavour={flavour}
         saveSlot={<FooterSaveIndicator />}
       >
         <StepProposals token={token} proposals={proposals} />

@@ -43,9 +43,11 @@ import {
 type AccordionApi = {
   isOpen: (id: string) => boolean;
   toggle: (id: string) => void;
-  register: (id: string) => () => void;
-  openAll: () => void;
-  closeAll: () => void;
+  /** `group` is what a scoped control filters on. See `AccordionControls`. */
+  register: (id: string, group?: string) => () => void;
+  /** Undefined group means every section on the page. */
+  openAll: (group?: string) => void;
+  closeAll: (group?: string) => void;
   /** Hide a closed body instead of unmounting it. See the provider. */
   keepMounted: boolean;
 };
@@ -72,11 +74,17 @@ export function AccordionProvider({
   // Open is the default, so the state tracks the exception. A section that has
   // never been touched is simply absent from this set.
   const [closed, setClosed] = useState<ReadonlySet<string>>(() => new Set());
-  const [ids, setIds] = useState<readonly string[]>([]);
+  // Each section carries the group it registered under, so a scoped control
+  // can address a subset without the page holding a second list of ids.
+  const [entries, setEntries] = useState<
+    readonly { id: string; group?: string }[]
+  >([]);
 
-  const register = useCallback((id: string) => {
-    setIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
-    return () => setIds((prev) => prev.filter((entry) => entry !== id));
+  const register = useCallback((id: string, group?: string) => {
+    setEntries((prev) =>
+      prev.some((entry) => entry.id === id) ? prev : [...prev, { id, group }],
+    );
+    return () => setEntries((prev) => prev.filter((entry) => entry.id !== id));
   }, []);
 
   const api = useMemo<AccordionApi>(
@@ -90,11 +98,26 @@ export function AccordionProvider({
           return next;
         }),
       register,
-      openAll: () => setClosed(new Set()),
-      closeAll: () => setClosed(new Set(ids)),
+      // Both fold `prev` rather than replacing it, so a section that is closed
+      // and currently unmounted — a step inside a collapsed band — keeps its
+      // state. That is the behaviour this file already promised above; the
+      // scoped variants would otherwise silently reopen what they cannot see.
+      openAll: (group) =>
+        setClosed((prev) => {
+          if (group === undefined) return new Set();
+          const next = new Set(prev);
+          for (const id of idsIn(entries, group)) next.delete(id);
+          return next;
+        }),
+      closeAll: (group) =>
+        setClosed((prev) => {
+          const next = new Set(prev);
+          for (const id of idsIn(entries, group)) next.add(id);
+          return next;
+        }),
       keepMounted,
     }),
-    [closed, ids, register, keepMounted],
+    [closed, entries, register, keepMounted],
   );
 
   return (
@@ -102,6 +125,16 @@ export function AccordionProvider({
       {children}
     </AccordionContext.Provider>
   );
+}
+
+/** Registered ids in one group, or every registered id when unscoped. */
+function idsIn(
+  entries: readonly { id: string; group?: string }[],
+  group: string | undefined,
+): string[] {
+  return entries
+    .filter((entry) => group === undefined || entry.group === group)
+    .map((entry) => entry.id);
 }
 
 /**
@@ -112,14 +145,33 @@ export function AccordionProvider({
  * and a control whose effect depends on state you cannot see is a control you
  * press twice.
  */
-export function AccordionControls() {
+export function AccordionControls({
+  group,
+  noun = "all",
+}: Readonly<{
+  /**
+   * Limit both buttons to the sections registered under this group.
+   *
+   * Unscoped is the page-level pair in the header. The questionnaire renders a
+   * scoped pair of its own, because the nine steps are the bulk of the scroll
+   * and folding them was costing a trip back to the top plus the loss of the
+   * three flow bands the page-level pair also closes (Taylor, 2026-09-04).
+   */
+  group?: string;
+  /** Completes "Expand …" / "Collapse …". Say what is being folded. */
+  noun?: string;
+}> = {}) {
   const api = useContext(AccordionContext);
   if (!api) return null;
 
   return (
     <div className="flex items-center gap-1 rounded-(--radius) border border-(--color-faint) p-1">
-      <ControlButton onClick={api.openAll}>Expand all</ControlButton>
-      <ControlButton onClick={api.closeAll}>Collapse all</ControlButton>
+      <ControlButton onClick={() => api.openAll(group)}>
+        Expand {noun}
+      </ControlButton>
+      <ControlButton onClick={() => api.closeAll(group)}>
+        Collapse {noun}
+      </ControlButton>
     </div>
   );
 }
@@ -165,12 +217,25 @@ function ControlButton({
 export function AccordionSection({
   header,
   note,
+  group,
+  action,
   children,
   className = "",
 }: Readonly<{
   /** Phrasing content only — it renders inside the toggle. */
   header: ReactNode;
   note?: ReactNode;
+  /**
+   * A control beside the toggle — not inside it.
+   *
+   * The whole heading is a button, so a link in the header would be an `<a>`
+   * inside a `<button>`: invalid, and the parser rewrites it out from under
+   * React. This renders as the toggle's sibling instead, which also keeps it
+   * off the accordion's own click target.
+   */
+  action?: ReactNode;
+  /** Opt this section into a scoped `AccordionControls` pair. */
+  group?: string;
   children: ReactNode;
   className?: string;
 }>) {
@@ -179,14 +244,17 @@ export function AccordionSection({
   const bodyId = `${id}-body`;
 
   const register = api?.register;
-  useEffect(() => register?.(id), [register, id]);
+  useEffect(() => register?.(id, group), [register, id, group]);
 
   // Outside a provider this is an ordinary always-open section, which is what
   // any non-admin consumer would want if one ever appeared.
   if (!api) {
     return (
       <div className={className}>
-        <div>{header}</div>
+        <div className="flex items-start gap-4">
+          <div className="grow">{header}</div>
+          {action}
+        </div>
         {note}
         {children}
       </div>
@@ -197,25 +265,34 @@ export function AccordionSection({
 
   return (
     <div className={className}>
-      <h2 className="m-0">
-        <button
-          type="button"
-          onClick={() => api.toggle(id)}
-          aria-expanded={open}
-          aria-controls={bodyId}
-          className="group flex w-full items-start justify-between gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-c2)"
-        >
-          <span className="min-w-0 grow">{header}</span>
-          {/* A control's state word, not content: `data-md="skip"` keeps it
-              out of the Markdown export, which reads this rendered DOM. */}
-          <span
-            data-md="skip"
-            className="mt-1 shrink-0 font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors group-hover:text-(--color-c2)"
+      <div className="flex items-start gap-4">
+        <h2 className="m-0 min-w-0 grow">
+          <button
+            type="button"
+            onClick={() => api.toggle(id)}
+            aria-expanded={open}
+            aria-controls={bodyId}
+            className="group flex w-full items-start justify-between gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-c2)"
           >
-            {open ? "Hide" : "Show"}
-          </span>
-        </button>
-      </h2>
+            <span className="min-w-0 grow">{header}</span>
+            {/* A control's state word, not content: `data-md="skip"` keeps it
+              out of the Markdown export, which reads this rendered DOM. */}
+            <span
+              data-md="skip"
+              className="mt-1 shrink-0 font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors group-hover:text-(--color-c2)"
+            >
+              {open ? "Hide" : "Show"}
+            </span>
+          </button>
+        </h2>
+
+        {/* `data-md="skip"`: a control, not content. The export reads this DOM. */}
+        {action ? (
+          <div data-md="skip" className="shrink-0">
+            {action}
+          </div>
+        ) : null}
+      </div>
 
       {open || api.keepMounted ? (
         <div id={bodyId} hidden={!open}>

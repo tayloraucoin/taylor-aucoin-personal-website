@@ -35,6 +35,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
  *   box it belonged to.
  * - coded `taste/style-search` — the style-search action (PORT-25).
  * - coded `taste/motion-notice` — the add-on checkout action (PORT-26).
+ * - coded `feedback-block` — the done screen's feedback action (2026-09-04).
  *
  * Two more read it to disable a control rather than to refuse a write, which is
  * the same law wearing different clothes: coded `come-across` and coded
@@ -46,6 +47,13 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
  * *shell* (`[token]/[step]/page.tsx`), never by a step body, and the preview
  * does not mount the shell. They are unguarded on purpose and the reason is
  * their placement, not an oversight.
+ *
+ * One caller now reads preview to *enable* rather than refuse: coded
+ * `voice-recorder` swaps its durable pipeline for `PreviewRecorder`, which
+ * records and transcribes through an admin-only route and stores nothing. That
+ * is not an exception to the law — there is still no write — but it is the one
+ * place where preview means "a different component" rather than "a disabled
+ * one" (Taylor, 2026-09-04).
  *
  * That list is an audit, not a comment: **if a fifteenth network caller is ever
  * added beneath a step, it reads this too, or the preview silently starts

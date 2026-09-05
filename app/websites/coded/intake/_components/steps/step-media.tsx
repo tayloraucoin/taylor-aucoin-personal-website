@@ -7,7 +7,6 @@ import type { ProjectVideo } from "@/lib/validators/showcase-intake";
 import {
   ChoiceAnswer,
   LongAnswer,
-  TextAnswer,
 } from "../../../../intake/_components/answer-inputs";
 import { Field } from "../../../../intake/_components/field";
 import {
@@ -232,12 +231,6 @@ export function StepMedia({
           existing={files.documents}
         />
       </ForKinds>
-
-      <TextAnswer
-        form={form}
-        name="coloursYouLike"
-        label="Colours you're drawn to"
-      />
 
       <LongAnswer
         form={form}

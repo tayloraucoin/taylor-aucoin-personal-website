@@ -135,17 +135,21 @@ export function stepByNumber(
 export function nextStep(
   track: IntakeTrackKey,
   step: IntakeStep,
+  flavour: ShowcaseFlavour = "generic",
 ): IntakeStep | null {
   return step.number < stepCountFor(track)
-    ? stepByNumber(track, step.number + 1)
+    ? stepByNumber(track, step.number + 1, flavour)
     : null;
 }
 
 export function previousStep(
   track: IntakeTrackKey,
   step: IntakeStep,
+  flavour: ShowcaseFlavour = "generic",
 ): IntakeStep | null {
-  return step.number > 1 ? stepByNumber(track, step.number - 1) : null;
+  return step.number > 1
+    ? stepByNumber(track, step.number - 1, flavour)
+    : null;
 }
 
 /**

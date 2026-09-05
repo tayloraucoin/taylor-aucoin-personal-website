@@ -1,4 +1,5 @@
 import { AdminPageHeader } from "@/app/admin/_components/admin-page-header";
+import { ShowcaseDone } from "@/app/websites/coded/intake/_components/showcase-done";
 import { ShowcasePayGate } from "@/app/websites/coded/intake/_components/showcase-pay-gate";
 import { ShowcaseStartForm } from "@/app/websites/coded/intake/_components/showcase-start-form";
 import { ShowcaseWelcome } from "@/app/websites/coded/intake/_components/showcase-welcome";
@@ -18,6 +19,7 @@ import {
 } from "@/lib/intake/tracks";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { getCheckoutCatalogue } from "@/server/services/deposit";
+import { loadExampleSet } from "@/server/services/example-sites";
 import { findSellableProductByKey } from "@/server/services/products";
 import { AccordionControls, AccordionProvider } from "./_components/accordion";
 import { DownloadMarkdown } from "./_components/download-markdown";
@@ -25,7 +27,6 @@ import { FlowSection, SectionUnavailable } from "./_components/flow-sections";
 import { PackDiffSection } from "./_components/pack-diff-section";
 import { EVERY_KIND, PreviewControls } from "./_components/preview-controls";
 import { previewEngagement } from "./_components/preview-engagement";
-import { loadExampleSet } from "@/server/services/example-sites";
 import { QuestionStack } from "./_components/question-stack";
 import { markdownFilename } from "./_components/to-markdown";
 
@@ -102,7 +103,24 @@ export default async function IntakeQuestionsPage({
       ? `${labelForKind(kind)}${film ? " · film" : ""}`
       : "The one questionnaire";
 
-  const engagement = previewEngagement(track);
+  // What each Preview link carries, so the tab it opens shows the questionnaire
+  // this page is showing rather than the default one. Built once here: it is
+  // the same three values the rail already put in this page's own URL.
+  const previewQuery = (() => {
+    const search = new URLSearchParams({ track });
+    if (track === "showcase") {
+      search.set("kind", kind);
+      if (film) search.set("pack", "film");
+    }
+    return search.toString();
+  })();
+
+  // The pre-questionnaire screens resolve their pack from the engagement, so
+  // the rail's choice has to reach them the way a client's answers would.
+  const engagement = previewEngagement(track, {
+    kind,
+    disciplines: film ? ["film"] : undefined,
+  });
   const catalogue = await loadCatalogue(track);
 
   return (
@@ -163,6 +181,7 @@ export default async function IntakeQuestionsPage({
             <FlowSection
               stage="Before payment · Step 1"
               title="Start form"
+              preview={{ section: "start", query: previewQuery }}
               note="The public page. A client fills this in before they have paid anything, and their answers mint the engagement and prefill the questionnaire."
             >
               {track === "showcase" ? <ShowcaseStartForm /> : <StartForm />}
@@ -171,6 +190,7 @@ export default async function IntakeQuestionsPage({
             <FlowSection
               stage="Before payment · Step 2"
               title="Deposit and add-ons"
+              preview={{ section: "pay", query: previewQuery }}
               note="The upsell and the checkout. Nothing past this point is reachable until the deposit is paid."
             >
               {document ? (
@@ -201,6 +221,7 @@ export default async function IntakeQuestionsPage({
             <FlowSection
               stage="After payment"
               title="Welcome"
+              preview={{ section: "welcome", query: previewQuery }}
               note="The first screen after the deposit lands. It sets the expectation for the questionnaire."
             >
               {document ? (
@@ -222,6 +243,7 @@ export default async function IntakeQuestionsPage({
                 flavour={flavour}
                 kind={kind}
                 gallery={gallery}
+                previewQuery={previewQuery}
               />
 
               {/* The other half of "what is unique to a kind": not which
@@ -230,6 +252,36 @@ export default async function IntakeQuestionsPage({
               {document && track === "showcase" ? (
                 <PackDiffSection flavour={flavour} everyPack={everyKind} />
               ) : null}
+            </FlowSection>
+
+            {/* The screen after the last question. It carries the feedback
+                form, which is the only thing on the flow that is asked once
+                there is nothing left to answer — so a review of the questions
+                that stopped at step ten would never show it.
+
+                Nothing is listed as skipped: a preview has no answers, and a
+                "we'll cover these on the call" block naming all forty would be
+                an artefact of the preview rather than a screen anyone meets. */}
+            <FlowSection
+              stage="After the questionnaire"
+              title="Done"
+              note="The confirmation, and the feedback form behind its button."
+              preview={
+                track === "showcase"
+                  ? { section: "done", query: previewQuery }
+                  : undefined
+              }
+            >
+              {track === "showcase" ? (
+                <ShowcaseDone
+                  track={track}
+                  token=""
+                  unanswered={[]}
+                  shortfall={null}
+                />
+              ) : (
+                <NotWired />
+              )}
             </FlowSection>
           </div>
         </AccordionProvider>
@@ -299,6 +351,21 @@ const DOCUMENT_ID = "intake-document";
  * *questions* has nothing to say about a screen that asks none, so it says
  * that, and points at the mode that does render it.
  */
+/**
+ * The durable track's done screen has not been extracted from its route.
+ *
+ * Said plainly rather than rendered as an empty band: a reviewer must be able
+ * to tell "this screen has nothing on it" from "this screen is not wired here".
+ */
+function NotWired() {
+  return (
+    <p className="max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">
+      Not wired for this track yet — the showcase track&apos;s done screen is
+      the one that carries the feedback form.
+    </p>
+  );
+}
+
 function NotQuestions() {
   return (
     <p className="max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">

@@ -3,11 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsDocument, useIsPreview } from "@/components/intake/preview-mode";
 import { GhostButton } from "@/components/ui/GradientButton";
-import {
-  DocHint,
-  DocTag,
-} from "../../../intake/_components/document";
-import { uploadIntakeFile } from "../../../intake/_lib/upload-file";
 import { saveTranscriptEdit } from "../_actions/save-transcript";
 import {
   assembleSession,
@@ -21,6 +16,9 @@ import {
   sweepOldSessions,
   type RecordingSession,
 } from "../_lib/recording-store";
+import { DocHint, DocTag } from "../../../intake/_components/document";
+import { uploadIntakeFile } from "../../../intake/_lib/upload-file";
+import { PreviewRecorder } from "./preview-recorder";
 
 /**
  * Record a voice note here, and have it written out.
@@ -190,10 +188,13 @@ export function VoiceRecorder({
   dropped?: readonly string[];
 }) {
   /**
-   * There is no engagement behind a preview, so a recording could not be
-   * uploaded and a transcript could not be saved. A control that says up front
-   * that it will not work is kinder than one that discovers it afterwards
-   * (ADM-2, UX spec §6) — the same call `FileDrop` makes.
+   * There is no engagement behind a preview, so nothing below this line can
+   * run: no upload to attach audio to, no row to write a transcript onto.
+   *
+   * It used to mean the control stood down and said so. It now means the
+   * preview gets `PreviewRecorder` instead — recording and transcription
+   * without the durable pipeline, so the feature can actually be heard while
+   * still writing nothing (Taylor, 2026-09-04).
    */
   const preview = useIsPreview();
   const isDocument = useIsDocument();
@@ -277,16 +278,13 @@ export function VoiceRecorder({
 
   /* ── Transcription ──────────────────────────────────────────────────────── */
 
-  const patchRow = useCallback(
-    (fileId: string, changes: Partial<NoteRow>) => {
-      setRows((current) =>
-        current.map((row) =>
-          row.fileId === fileId ? { ...row, ...changes } : row,
-        ),
-      );
-    },
-    [],
-  );
+  const patchRow = useCallback((fileId: string, changes: Partial<NoteRow>) => {
+    setRows((current) =>
+      current.map((row) =>
+        row.fileId === fileId ? { ...row, ...changes } : row,
+      ),
+    );
+  }, []);
 
   const transcribe = useCallback(
     async (fileId: string) => {
@@ -300,8 +298,7 @@ export function VoiceRecorder({
         });
 
         const result = (await response.json()) as
-          | { ok: true; transcript: string }
-          | { ok: false; reason: string };
+          { ok: true; transcript: string } | { ok: false; reason: string };
 
         if (result.ok) {
           patchRow(fileId, {
@@ -311,7 +308,9 @@ export function VoiceRecorder({
           return;
         }
 
-        patchRow(fileId, { state: { status: "failed", reason: result.reason } });
+        patchRow(fileId, {
+          state: { status: "failed", reason: result.reason },
+        });
       } catch {
         patchRow(fileId, { state: { status: "failed", reason: "failed" } });
       } finally {
@@ -616,7 +615,11 @@ export function VoiceRecorder({
         }
       };
 
-      audioRef.current = { context, analyser, frame: requestAnimationFrame(tick) };
+      audioRef.current = {
+        context,
+        analyser,
+        frame: requestAnimationFrame(tick),
+      };
     } catch {
       // No meter. Recording is unaffected, and the counter still counts.
     }
@@ -701,14 +704,11 @@ export function VoiceRecorder({
     );
   }
 
-  if (preview) {
-    return (
-      <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)/60">
-        {/* [COPY — pending Taylor] */}
-        Recording is off in preview
-      </p>
-    );
-  }
+  // Recording works in preview, through the short path: no chunk store, no
+  // upload, no saved transcript, and an admin-only route for the vendor call.
+  // The durable pipeline below needs an engagement to attach all three to, and
+  // there is none here — see `PreviewRecorder`.
+  if (preview) return <PreviewRecorder />;
 
   // Feature detection has not run yet on the very first paint. Rendering the
   // button and then removing it would be worse than a beat of nothing.

@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { eyebrowFor, stepByNumber, stepsFor } from "@/lib/intake/tracks";
+import {
+  eyebrowFor,
+  flavourFor,
+  stepByNumber,
+  stepsFor,
+} from "@/lib/intake/tracks";
 import { intakeRoutesFor } from "@/lib/routes";
 import type { Engagement } from "@/server/services/engagement";
 import { Eyebrow } from "./eyebrow";
@@ -27,9 +32,16 @@ export function ResumeList({
 }) {
   const firstName =
     engagement.contactName.split(" ")[0] ?? engagement.contactName;
+  // The client's own pack. Without it this list reads the generic registry and
+  // names step 5 "The work" for every showcase client, including the ones whose
+  // step 5 is titled "What you offer" — a step title that disagrees with the
+  // step's own screen. Durable has no packs, so this resolves to generic there
+  // and nothing changes.
+  const flavour = flavourFor(engagement.track, engagement.answers);
   const current = stepByNumber(
     engagement.track,
     Math.max(engagement.currentStep, 1),
+    flavour,
   );
   const routes = intakeRoutesFor(engagement.track);
 
@@ -53,7 +65,7 @@ export function ResumeList({
       </div>
 
       <ul className="mt-10 border-t border-(--color-faint)">
-        {stepsFor(engagement.track).map((step) => {
+        {stepsFor(engagement.track, flavour).map((step) => {
           const visited = step.number <= engagement.currentStep;
 
           return (

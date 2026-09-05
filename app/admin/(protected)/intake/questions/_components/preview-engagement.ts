@@ -1,4 +1,5 @@
 import type { Engagement } from "@/server/services/engagement";
+import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 
 /**
@@ -15,15 +16,32 @@ import type { IntakeTrackKey } from "@/lib/types/intake";
  * **Prices do not come from here.** They come from the real product catalogue,
  * read live, so the pay screen quotes what a client would actually be quoted.
  * Inventing a number on a money screen is the one thing this file must not do.
+ *
+ * The two `about` answers are the exception to "empty everything", and they are
+ * not client data: they are the reviewer's own choice from the rail, written
+ * where the pack resolver reads it. Without them every screen above the
+ * questionnaire resolves to the generic pack, so previewing a filmmaker showed
+ * a welcome screen listing a consultant's step names while the questionnaire
+ * below it listed the right ones.
  */
-export function previewEngagement(track: IntakeTrackKey): Engagement {
+export function previewEngagement(
+  track: IntakeTrackKey,
+  view?: Readonly<{ kind: ShowcaseKind; disciplines?: readonly string[] }>,
+): Engagement {
   const epoch = new Date(0);
 
   return {
     id: "",
     createdAt: epoch,
     updatedAt: epoch,
-    answers: {},
+    answers: view
+      ? {
+          about: {
+            siteKind: view.kind,
+            ...(view.disciplines ? { disciplines: [...view.disciplines] } : {}),
+          },
+        }
+      : {},
     businessName: "",
     completedAt: null,
     contactEmail: "",
