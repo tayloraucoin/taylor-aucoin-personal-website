@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { examplesFor } from "@/content/intake-examples";
+import { loadExampleSet } from "@/server/services/example-sites";
 import {
   ingestedFor,
   readIngestionRecord,
@@ -137,7 +137,7 @@ export default async function ShowcaseIntakeStepPage({
   const people = Array.isArray(about.people)
     ? (about.people as PersonEntry[])
     : [];
-  const gallery = examplesFor(galleryFlavourFor(flavour, disciplines));
+  const gallery = await loadExampleSet(galleryFlavourFor(flavour, disciplines));
 
   // What this engagement's site is for. Step 1 shows it back with a Change
   // link and then derives its own from the form, so this is the starting

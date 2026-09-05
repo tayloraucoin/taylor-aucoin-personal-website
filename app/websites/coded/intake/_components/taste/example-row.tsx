@@ -46,8 +46,6 @@ export function ExampleRow({
   autoEdit?: boolean;
   onEdited?: () => void;
 }) {
-  const capture = site.captures[0];
-  const [broken, setBroken] = useState(false);
   const row = useRef<HTMLLIElement>(null);
   const preview = useIsPreview();
 
@@ -60,6 +58,15 @@ export function ExampleRow({
 
   const picked = pick !== null;
 
+  /**
+   * See more is offered only where it leads somewhere.
+   *
+   * A preview has no overlay to open, and a disabled button beside an enabled
+   * one asks the reader to work out which of two controls is real. Absent says
+   * the same thing in less space and with no ambiguity.
+   */
+  const seeMore = onSeeMore && !preview ? onSeeMore : null;
+
   return (
     <li
       ref={row}
@@ -69,29 +76,10 @@ export function ExampleRow({
           : "border-(--color-faint) bg-(--color-card)"
       }`}
     >
-      {capture && !broken ? (
-        <Image
-          src={capture.src}
-          alt={`${site.name} — ${capture.alt}`}
-          width={capture.width}
-          height={capture.height}
-          loading={priority ? "eager" : "lazy"}
-          sizes="(max-width: 640px) 92vw, 560px"
-          onError={() => setBroken(true)}
-          className="h-auto w-full"
-        />
-      ) : (
-        /* A missing capture is quiet, not broken: the row still carries the
-           name, the link, and the tags, which is most of what it is for. */
-        <div
-          aria-hidden
-          className="w-full bg-(--color-card-hover)"
-          style={{ aspectRatio: "1512 / 982" }}
-        />
-      )}
+      <CaptureGallery site={site} priority={priority} />
 
-      <div className="p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <div className="p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
           <p className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)">
             {site.name}
           </p>
@@ -109,13 +97,11 @@ export function ExampleRow({
           </a>
         </div>
 
-        <p className="mt-1 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+        <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
           {site.role}
         </p>
 
-        <p className="mt-2 font-mono text-[9px] uppercase tracking-[.24em] text-(--color-dim)">
-          {tagsFor(site).join(" · ")}
-        </p>
+        <TagChips site={site} />
 
         <PickBlock
           idPrefix={`pick-${site.key}`}
@@ -125,24 +111,151 @@ export function ExampleRow({
           openInitially={autoEdit}
           onOpened={onEdited}
           actions={
-            onSeeMore ? (
-              <GhostButton
-                type="button"
-                onClick={preview ? undefined : onSeeMore}
-                disabled={preview}
-              >
+            seeMore ? (
+              <GhostButton type="button" onClick={seeMore}>
                 See more
               </GhostButton>
             ) : null
           }
         />
-
-        {preview && onSeeMore ? (
-          <p className="mt-2 font-body text-[13.5px] font-light text-(--color-dim)">
-            Not available in preview.
-          </p>
-        ) : null}
       </div>
     </li>
+  );
+}
+
+/**
+ * The captures, with a way through them.
+ *
+ * A site with three captures had two of them invisible until the overlay was
+ * opened, which made the row a worse first impression than the content
+ * deserved. The arrows sit on the image, because that is where the thing they
+ * page is.
+ *
+ * **They have to read on a near-white gallery site and a near-black reel site
+ * alike**, so they carry their own ground rather than borrowing the page's: a
+ * dark translucent disc, a white glyph, and a hairline. That holds on both, and
+ * on a photograph — which either of the palette's own surface tokens would not.
+ */
+function CaptureGallery({
+  site,
+  priority,
+}: {
+  site: ExampleSite;
+  priority?: boolean;
+}) {
+  const [index, setIndex] = useState(0);
+  const [broken, setBroken] = useState<ReadonlySet<number>>(new Set());
+
+  const capture = site.captures[index];
+  const many = site.captures.length > 1;
+
+  if (!capture || broken.has(index)) {
+    return (
+      /* A missing capture is quiet, not broken: the row still carries the name,
+         the link, and the tags, which is most of what it is for. */
+      <div
+        aria-hidden
+        className="w-full bg-(--color-card-hover)"
+        style={{ aspectRatio: "1512 / 982" }}
+      />
+    );
+  }
+
+  return (
+    <div className="relative">
+      <Image
+        src={capture.src}
+        alt={`${site.name} — ${capture.alt}`}
+        width={capture.width}
+        height={capture.height}
+        loading={priority && index === 0 ? "eager" : "lazy"}
+        sizes="(max-width: 640px) 92vw, 560px"
+        onError={() => setBroken((current) => new Set(current).add(index))}
+        className="h-auto w-full"
+      />
+
+      {many ? (
+        <>
+          <PageArrow
+            label={`Previous capture of ${site.name}`}
+            disabled={index === 0}
+            onClick={() => setIndex((current) => Math.max(0, current - 1))}
+            className="left-3"
+          >
+            ‹
+          </PageArrow>
+
+          <PageArrow
+            label={`Next capture of ${site.name}`}
+            disabled={index === site.captures.length - 1}
+            onClick={() =>
+              setIndex((current) =>
+                Math.min(site.captures.length - 1, current + 1),
+              )
+            }
+            className="right-3"
+          >
+            ›
+          </PageArrow>
+
+          <p
+            aria-live="polite"
+            className="absolute right-3 bottom-3 rounded-(--radius) border border-white/25 bg-[rgb(6_11_30/.62)] px-2 py-1 font-mono text-[10px] tracking-[.16em] text-white backdrop-blur-[2px]"
+          >
+            {index + 1} / {site.captures.length}
+          </p>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+/** A capture-gallery arrow. Always rendered, never hover-revealed. */
+function PageArrow({
+  label,
+  disabled,
+  onClick,
+  className,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-[rgb(6_11_30/.62)] text-[18px] text-white backdrop-blur-[2px] transition-opacity duration-(--dur-fast) ease-(--ease-out) hover:bg-[rgb(6_11_30/.82)] disabled:pointer-events-none disabled:opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
+    >
+      <span aria-hidden>{children}</span>
+    </button>
+  );
+}
+
+/**
+ * The tags, as chips.
+ *
+ * A middle-dot run read as one long line of shouting; separate shapes let the
+ * eye compare two rows at a glance, which is the only thing these are for. Axes
+ * first, then styles — the axes are the comparison a client is actually making,
+ * and the styles explain a reaction after the fact.
+ */
+function TagChips({ site }: { site: ExampleSite }) {
+  return (
+    <ul className="mt-4 flex flex-wrap gap-1.5">
+      {tagsFor(site).map((tag) => (
+        <li
+          key={tag}
+          className="rounded-(--radius) border border-(--color-faint) px-2 py-1 font-mono text-[9px] uppercase tracking-[.2em] text-(--color-dim)"
+        >
+          {tag}
+        </li>
+      ))}
+    </ul>
   );
 }

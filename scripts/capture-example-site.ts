@@ -4,21 +4,28 @@ import { parseArgs } from "node:util";
 import { chromium, type Response } from "playwright";
 
 /**
- * Shoots one example site for the taste gallery and prints its content entry.
+ * Shoots one example site at the gallery's exact aspect, for uploading.
  *
- *   yarn capture:example --url https://myrthemosterman.com --pack film
- *   yarn capture:example --url https://x.com --pack venture --key myrthe
+ *   yarn capture:example --url https://myrthemosterman.com
+ *   yarn capture:example --url https://x.com --key myrthe
  *
- * Curating a set is forty sites, and forty hand-run screenshot sessions is the
- * reason a gallery stays uncurated for a month. This makes each one a command
- * and a tagging decision.
+ * ## Why this still exists after PORT-31
  *
- * **It prints; it never writes to a set file.** The entry lands on your
- * clipboard by way of your eyes, and the three fields that are judgement —
- * `group`, `axes`, `styles` — come back as `TODO` for you to fill. A script
- * that guessed them would be inventing the taxonomy the gallery exists to test.
+ * The sites are database rows now and captures arrive by upload or image URL at
+ * `/admin/intake/examples`, so this no longer prints an entry to paste — there
+ * is no file to paste it into.
  *
- * **It never emits `embed: true`.** See `framingVerdict` below.
+ * What it is still the only source of is **the shape**. The publish gate
+ * measures the opening capture against the MacBook Pro 14" frame, and an upload
+ * is only ever as good as whatever took the screenshot. This shoots at exactly
+ * 1512 × 982 at 2×, three scrolls deep, with motion reduced so the opening
+ * frame of an autoplay reel is what gets judged. Then it prints the paths and
+ * gets out of the way: you drag them into the editor.
+ *
+ * **It never decides `embed`.** Headers cannot settle it — `load` fires on a
+ * blocked frame in Chromium — so the verdict below is printed as a hint for the
+ * terminal and never leaves it. The admin's frame check is where that judgement
+ * is made, by looking (D-PORT-17, D-PORT-26).
  *
  * Nothing here is in the app's import graph: it is a devDependency and a
  * script, and `yarn build:agent` never sees either.
@@ -34,38 +41,24 @@ const LOAD_TIMEOUT_MS = 20_000;
 /** JPEG, because forty 3024px-wide PNGs is tens of megabytes in `public/`. */
 const QUALITY = 82;
 
-const PACKS = [
-  "film",
-  "generic",
-  "practice",
-  "entity",
-  "venture",
-  "service",
-] as const;
-
-type Pack = (typeof PACKS)[number];
+/** Where shots land. Not in `public/` — nothing here is served. */
+const OUT_DIR = "captures";
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
     options: {
       url: { type: "string" },
-      pack: { type: "string" },
       key: { type: "string" },
     },
   });
 
   const url = values.url?.trim();
-  const pack = values.pack?.trim() as Pack | undefined;
-
   if (!url) throw new Error("Missing --url https://…");
-  if (!pack || !PACKS.includes(pack)) {
-    throw new Error(`Missing or unknown --pack. One of: ${PACKS.join(", ")}`);
-  }
 
   const target = new URL(url.startsWith("http") ? url : `https://${url}`);
   const key = (values.key?.trim() || slugFor(target)).toLowerCase();
 
-  const dir = path.join(process.cwd(), "public", "intake-examples", pack);
+  const dir = path.join(process.cwd(), OUT_DIR, key);
   await mkdir(dir, { recursive: true });
 
   // A collision is refused rather than overwritten: `--key` is how you shoot a
@@ -141,15 +134,19 @@ async function main(): Promise<void> {
 
       const file = path.join(dir, `${key}-${index + 1}.jpg`);
       await page.screenshot({ path: file, type: "jpeg", quality: QUALITY });
-      shots.push(`/intake-examples/${pack}/${key}-${index + 1}.jpg`);
+      shots.push(path.relative(process.cwd(), file));
     }
 
     const title = (await page.title()).trim();
     const verdict = framingVerdict(response);
 
-    console.log(`\nok    ${shots.length} captures → public/intake-examples/${pack}/`);
-    console.log(`ok    ${verdict.line}\n`);
-    console.log(entryFor({ key, title, url: target.toString(), shots, verdict }));
+    console.log(`\nok    ${shots.length} captures at ${VIEWPORT.width * SCALE} × ${VIEWPORT.height * SCALE}`);
+    for (const shot of shots) console.log(`      ${shot}`);
+    console.log(`\nok    ${verdict.line}`);
+    console.log(`      page title: ${title || "(none)"}`);
+    console.log(
+      `\nnext  paste ${target.toString()} into /admin/intake/examples, then upload the first shot as its capture.\n`,
+    );
 
     await context.close();
   } finally {
@@ -165,20 +162,19 @@ async function main(): Promise<void> {
  * frame and **not sufficient**: JavaScript frame-busting exists, a consent wall
  * can swallow the viewport, and a site can simply look wrong at this size.
  *
- * So this never emits `embed: true`. It emits `false` with a line telling you
- * to open the site in the overlay and look, which is the only thing that
- * actually settles it (D-PORT-17).
+ * So this is printed as a hint in the terminal and goes no further. The admin's
+ * frame check is where `embed` is decided, by opening the site in the real
+ * 1512:982 box and watching it load — the only thing that actually settles it
+ * (D-PORT-17, D-PORT-26).
  */
 function framingVerdict(response: Response | null): {
   embeddable: boolean;
   line: string;
-  comment: string;
 } {
   if (!response) {
     return {
       embeddable: false,
       line: "framing: unknown — no document response was captured",
-      comment: "// framing headers unknown — check by hand before flipping",
     };
   }
 
@@ -191,57 +187,15 @@ function framingVerdict(response: Response | null): {
     return {
       embeddable: false,
       line: `framing: refused by the site (${xfo ? `X-Frame-Options: ${xfo}` : "CSP frame-ancestors"})`,
-      comment: "// the site refuses to be framed — leave this false",
     };
   }
 
   return {
     embeddable: false,
     line: "framing: headers allow it — verify in the overlay before flipping `embed`",
-    comment:
-      "// headers allow framing — open it in the overlay and look, then flip",
   };
 }
 
-/** The entry, ready to paste, with the judgement left to a person. */
-function entryFor({
-  key,
-  title,
-  url,
-  shots,
-  verdict,
-}: {
-  key: string;
-  title: string;
-  url: string;
-  shots: string[];
-  verdict: { comment: string };
-}): string {
-  const captures = shots
-    .map(
-      (src) =>
-        `      { src: "${src}", width: ${VIEWPORT.width * SCALE}, height: ${VIEWPORT.height * SCALE}, alt: "TODO" },`,
-    )
-    .join("\n");
-
-  return [
-    "    {",
-    `      key: "${key}",`,
-    `      name: "${title.replace(/"/g, '\\"')}", // TODO — the person's name, not the page title`,
-    `      url: "${url}",`,
-    `      role: "TODO — Cinematographer · commercials, music video",`,
-    `      group: "TODO", // dark-cinematic | light-editorial | type-first | warm-textured | stills-credits | statement`,
-    `      axes: { ground: "TODO", motion: "TODO", density: "TODO" },`,
-    `      styles: [], // TODO — at most three, from the closed list in types.ts`,
-    `      build: "TODO", // template | designer | custom — never shown to a client`,
-    `      embed: false, ${verdict.comment}`,
-    `      checkedOn: "${new Date().toISOString().slice(0, 10)}",`,
-    "      captures: [",
-    captures,
-    "      ],",
-    "    },",
-  ].join("\n");
-}
 
 function slugFor(url: URL): string {
   return url.hostname

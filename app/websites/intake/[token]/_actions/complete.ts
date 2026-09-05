@@ -8,6 +8,7 @@ import {
   buildIntakeUrl,
   requireEngagement,
 } from "@/server/services/engagement";
+import { galleryForEngagement } from "@/server/services/example-sites";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { linkUploads, markComplete } from "@/server/services/submission";
 
@@ -40,6 +41,9 @@ export async function completeIntake(token: string): Promise<void> {
       engagement: finished,
       files,
       generatedAt: new Date(),
+      // Resolved from the engagement, never from where this file lives: this
+      // action sits in the durable tree and both tracks' done screens call it.
+      gallery: await galleryForEngagement(finished),
     });
 
     await sendIntakeDocument(finished, markdown);

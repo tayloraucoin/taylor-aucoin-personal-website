@@ -25,6 +25,7 @@ import { FlowSection, SectionUnavailable } from "./_components/flow-sections";
 import { PackDiffSection } from "./_components/pack-diff-section";
 import { EVERY_KIND, PreviewControls } from "./_components/preview-controls";
 import { previewEngagement } from "./_components/preview-engagement";
+import { loadExampleSet } from "@/server/services/example-sites";
 import { QuestionStack } from "./_components/question-stack";
 import { markdownFilename } from "./_components/to-markdown";
 
@@ -85,6 +86,12 @@ export default async function IntakeQuestionsPage({
   // Only a portfolio's pack still moves with its disciplines.
   const film = params.pack === "film";
   const flavour = flavourForKind(kind, film ? ["film"] : undefined);
+  // The real gallery for the pack under review, loaded once at the rail and
+  // handed down (M-PORT-41). This is the whole of D-PORT-27: the preview mounts
+  // the production taste step, so once the sites are rows this surface shows
+  // exactly what a client meets — including the absent state for a pack that
+  // is not being shown. There is no second preview to keep in sync.
+  const gallery = await loadExampleSet(flavour);
 
   // Everything the export needs to name itself and to say where it came from.
   const trackLabel =
@@ -210,7 +217,12 @@ export default async function IntakeQuestionsPage({
               title="The questionnaire"
               note="One screen per step for the client. Stacked here so they read end to end."
             >
-              <QuestionStack track={track} flavour={flavour} kind={kind} />
+              <QuestionStack
+                track={track}
+                flavour={flavour}
+                kind={kind}
+                gallery={gallery}
+              />
 
               {/* The other half of "what is unique to a kind": not which
                 questions exist, but which are asked in different words. Derived

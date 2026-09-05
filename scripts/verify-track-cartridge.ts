@@ -40,7 +40,11 @@ import {
   stepsFor,
 } from "@/lib/intake/tracks";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
-import { examplesFor } from "@/content/intake-examples";
+import { EMPTY_EXAMPLE_SET } from "@/content/intake-examples";
+import {
+  captureNotes,
+  publishBlockers,
+} from "@/lib/intake/example-site-rules";
 import {
   EXAMPLE_GROUPS,
   GROUP_ORDER,
@@ -578,68 +582,133 @@ function checkKindChangeIsNonDestructive(): void {
   );
 }
 
-/* ── PORT-16 — the taste gallery ─────────────────────────────────────────── */
+/* ── PORT-30 — the taste gallery's content rules ─────────────────────────── */
 
+/**
+ * The rules a site must hold before a client may meet it.
+ *
+ * These used to walk six TypeScript files. The sites are rows now, and this
+ * script runs with **no database and no network** — which is the property that
+ * makes it cheap enough to actually get run, and the property that decided the
+ * whole architecture (M-PORT-41).
+ *
+ * So it exercises the rules against fixtures instead of against content. That
+ * is a stronger assertion than the one it replaces: the old checks passed
+ * vacuously over six empty sets and would have kept passing if the rule itself
+ * had been deleted. These fail if the rule stops working.
+ *
+ * The same `publishBlockers` runs in front of Taylor at the publish control, so
+ * a row cannot be published broken and cannot be published around (M-PORT-47).
+ */
 function checkGallery(): void {
-  // Every pack has a set of its own. Before PORT-16 there was one set of six
-  // invented sites and every pack pointed at it (audit B1).
+  const capture = { width: 3024, height: 1964, alt: "The opening view" };
+
+  const whole = {
+    name: "Matias Boucard",
+    role: "Cinematographer · commercials",
+    url: "https://matiasboucard.com",
+    group: "dark-cinematic",
+    ground: "dark",
+    motion: "alive",
+    density: "balanced",
+    build: "custom",
+    styles: ["hover-preview", "grid"],
+    checkedOn: "2026-08-22",
+    packs: ["film"],
+    captures: [capture],
+  };
+
+  check("a complete site publishes", publishBlockers(whole), []);
+
   check(
-    "every pack resolves its own set",
-    showcaseFlavours.map((f) => typeof examplesFor(f).curated),
-    showcaseFlavours.map(() => "boolean"),
+    "a fourth style tag blocks publication",
+    publishBlockers({
+      ...whole,
+      styles: ["hover-preview", "grid", "serif", "mono"],
+    }),
+    ["there are 4 style tags and the most is three"],
   );
 
-  // The invariant, not today's state: a set may be uncurated, and it may be
-  // curated with sites, but "curated with nothing in it" is a content error
-  // that would render an empty grid to a client (D-PORT-12).
+  // The aspect is a note, not a blocker: a GIF of a hover state and a screen
+  // recording of a scroll are the media a `motion: alive` tag is about, and
+  // neither is 1512 × 982.
   check(
-    "no set is curated but empty",
-    showcaseFlavours.filter((f) => {
-      const set = examplesFor(f);
-      return set.curated && set.sites.length === 0;
+    "a capture that is not the MacBook aspect still publishes",
+    publishBlockers({
+      ...whole,
+      captures: [{ ...capture, width: 1600, height: 1000 }],
     }),
     [],
   );
-
-  // Nothing invented can reach a client. Every site in a curated set must have
-  // a real URL and real capture dimensions.
-  const bad = showcaseFlavours.flatMap((f) =>
-    examplesFor(f)
-      .sites.filter(
-        (site) =>
-          site.url.includes("example.test") ||
-          site.key.startsWith("stub-") ||
-          site.captures.some((c) => !c.width || !c.height),
-      )
-      .map((site) => `${f}.${site.key}`),
-  );
-  check("no placeholder or unsized site in any set", bad, []);
-
-  // The documents promise (kinds scope §5.5). It lives in the pack so the copy
-  // pass reaches it; this is what stops the pass quietly removing it, because
-  // it is the sentence that makes sending a confidential deck safe.
-  const PROMISE =
-    "nothing from them goes on the site unless you say so";
   check(
-    "every pack's documents help keeps its promise",
-    showcaseFlavours.filter(
-      (f) => !copyPackFor(f).documents.help.includes(PROMISE),
-    ),
+    "…and says so",
+    captureNotes([{ width: 1600, height: 1000 }]).length,
+    1,
+  );
+  check(
+    "a retina capture is the right shape and draws no note",
+    captureNotes([{ width: 3024, height: 1964 }]),
     [],
   );
 
-  // Reported rather than asserted: curation is Taylor's content work, and this
-  // line is how a build thread sees what is still absent.
-  const uncurated = showcaseFlavours.filter((f) => !examplesFor(f).curated);
-  console.log(
-    `note  ${uncurated.length} of ${showcaseFlavours.length} taste sets are uncurated (${uncurated.join(", ")}) — those steps render without a gallery`,
+  check(
+    "no media at all blocks publication",
+    publishBlockers({ ...whole, captures: [] }),
+    ["there's no media"],
+  );
+
+  check(
+    "a video first blocks publication — the row renders a still",
+    publishBlockers({
+      ...whole,
+      captures: [{ ...capture, mimeType: "video/mp4" }],
+    }),
+    ["the first item is a video — the row needs an image first"],
+  );
+
+  check(
+    "media with no alt text blocks publication",
+    publishBlockers({ ...whole, captures: [{ ...capture, alt: "" }] }),
+    ["the first item has no alt text"],
+  );
+
+  check(
+    "an unparseable link check blocks publication",
+    publishBlockers({ ...whole, checkedOn: "sometime last year" }),
+    ["the checked-on date doesn't parse"],
+  );
+
+  check(
+    "a tag with no words blocks publication",
+    publishBlockers({ ...whole, styles: ["chrome-bevel"] }),
+    ['"chrome-bevel" isn\'t a style tag we have words for'],
+  );
+
+  check(
+    "an untagged draft names everything it is missing",
+    publishBlockers({ url: "https://x.test", captures: [] }),
+    [
+      "the name is blank",
+      "the role is blank",
+      "the group isn't set",
+      "an axis isn't set",
+      "the build level isn't set",
+      "there's no checked-on date",
+      "it isn't in any pack",
+      "there's no media",
+    ],
+  );
+
+  // A site belonging to no pack can never be met, which is the one blocker a
+  // reader might assume the join handles. It does not: the join can be empty.
+  check(
+    "a site in no pack blocks publication",
+    publishBlockers({ ...whole, packs: [] }),
+    ["it isn't in any pack"],
   );
 }
 
 /* ── PORT-22 — the taste contract ────────────────────────────────────────── */
-
-/** The aspect every opening capture is shot at: a MacBook Pro 14" (1512×982). */
-const CAPTURE_ASPECT = 1512 / 982;
 
 function checkTasteContract(): void {
   // The hand-written order against the type-enforced map. Same drift-guard
@@ -652,41 +721,25 @@ function checkTasteContract(): void {
   );
   check("no group is ordered twice", GROUP_ORDER.length, GROUP_ORDER.length);
 
-  // Content rules a curated set has to hold. All six sets are empty today, so
-  // these pass vacuously and are here for the day Taylor fills one — which is
-  // exactly when nobody will be reading this file.
-  const sites = showcaseFlavours.flatMap((f) =>
-    examplesFor(f).sites.map((site) => ({ f, site })),
-  );
-
+  // Every tag on a whole site resolves to words. `tagsFor` is what the row, the
+  // overlay, and the document all read, and a value with no words renders as a
+  // blank rather than as an error — which is the one failure `taxonomy.ts`
+  // exists to prevent.
   check(
-    "no site carries more than three style tags",
-    sites.filter(({ site }) => site.styles.length > 3).map(({ f, site }) => `${f}.${site.key}`),
-    [],
-  );
-  check(
-    "every opening capture is shot at the MacBook aspect",
-    sites
-      .filter(({ site }) => {
-        const first = site.captures[0];
-        if (!first) return true;
-        return Math.abs(first.width / first.height - CAPTURE_ASPECT) > 0.01;
-      })
-      .map(({ f, site }) => `${f}.${site.key}`),
-    [],
-  );
-  check(
-    "every site records a parseable link check",
-    sites
-      .filter(({ site }) => !Number.isFinite(Date.parse(site.checkedOn)))
-      .map(({ f, site }) => `${f}.${site.key}`),
-    [],
-  );
-  check(
-    "every site's tags resolve to words",
-    sites
-      .filter(({ site }) => tagsFor(site).some((tag) => !tag))
-      .map(({ f, site }) => `${f}.${site.key}`),
+    "a whole site's tags all resolve to words",
+    tagsFor({
+      key: "x",
+      name: "X",
+      url: "https://x.test",
+      role: "Cinematographer",
+      group: "dark-cinematic",
+      axes: { ground: "dark", motion: "alive", density: "balanced" },
+      styles: ["hover-preview", "grid"],
+      build: "custom",
+      embed: false,
+      checkedOn: "2026-08-22",
+      captures: [],
+    }).filter((tag) => !tag),
     [],
   );
 
@@ -806,6 +859,24 @@ function checkTasteContract(): void {
     document.includes("**Favourite example sites, best first:**"),
     false,
   );
+
+  // The other half, which PORT-22 could only reach by hand-editing a content
+  // file: a pick whose site *is* in the set prints the whole line — name, host,
+  // score, note, archetype, the three axes, and the build level Taylor curates
+  // against and no client ever sees (D-PORT-15).
+  const picked = showcasePickDocument();
+  check(
+    "a resolved pick prints its name, host, score, note, tags, and build level",
+    picked.includes(
+      'Sample Person (sample.test/work) — 6/7 — "the type" · Dark and cinematic · dark · alive · balanced · Custom build',
+    ),
+    true,
+  );
+  check(
+    "the private build level never reaches a client-facing string",
+    picked.includes("Custom build") && !document.includes("Custom build"),
+    true,
+  );
   check(
     "the document prints the old note map as words, not [object Object]",
     document.includes("[object Object]"),
@@ -859,6 +930,57 @@ function showcaseTasteDocument(): string {
     },
     files: [],
     generatedAt: at,
+    // No gallery, which is what this fixture has always rendered against: all
+    // six sets were empty when it was written, so the pick prints by its stored
+    // key with a marker. Passed explicitly now, so the assertion below is about
+    // the legacy read rather than about a set that happened to be empty.
+    gallery: EMPTY_EXAMPLE_SET,
+  });
+}
+
+/**
+ * The same document, against a set that *does* hold the picked site.
+ *
+ * PORT-22 could only reach this by hand-editing a content file to
+ * `curated: true` on a developer machine. With the gallery a parameter, the
+ * whole pick line — name, host, score, note, group, axes, and the private
+ * build level — is assertable here, with no database and no network
+ * (M-PORT-41, M-PORT-47).
+ */
+function showcasePickDocument(): string {
+  const at = new Date("2026-09-04T17:00:00.000Z");
+
+  return renderIntakeMarkdown({
+    engagement: {
+      ...fixtureEngagement(),
+      track: "showcase",
+      answers: {
+        about: { displayName: "Sample Person", whatYouDo: "Makes things" },
+        taste: {
+          picks: [{ siteKey: "sample-site", score: 6, note: "the type" }],
+        },
+      },
+    },
+    files: [],
+    generatedAt: at,
+    gallery: {
+      curated: true,
+      sites: [
+        {
+          key: "sample-site",
+          name: "Sample Person",
+          url: "https://sample.test/work",
+          role: "Cinematographer · commercials",
+          group: "dark-cinematic",
+          axes: { ground: "dark", motion: "alive", density: "balanced" },
+          styles: ["hover-preview"],
+          build: "custom",
+          embed: false,
+          checkedOn: "2026-08-22",
+          captures: [],
+        },
+      ],
+    },
   });
 }
 
@@ -1039,6 +1161,9 @@ function fixtureEngagement(): Engagement {
 function durableDocument(): string {
   return renderIntakeMarkdown({
     engagement: fixtureEngagement(),
+    // The durable track has no taste step and no gallery; this is the fact, not
+    // a placeholder. The byte-for-byte guarantee below is what it protects.
+    gallery: EMPTY_EXAMPLE_SET,
     files: [
       {
         id: "file-voice-note",

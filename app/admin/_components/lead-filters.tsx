@@ -14,6 +14,7 @@ import {
   leadsHref,
   type LeadFilters,
 } from "@/lib/validators/crm";
+import { NativeSelect } from "@/components/ui/native-select";
 
 /**
  * The filter rail — the part of this surface that makes it a CRM rather than
@@ -130,11 +131,10 @@ export function LeadFilterRail({
     options: { value: string; label: string }[],
     onPick: (value: string) => void,
   ) => (
-    <select
+    <NativeSelect
       value={value}
       onChange={(event) => onPick(event.target.value)}
       aria-label={label}
-      className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body)"
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (
@@ -142,7 +142,7 @@ export function LeadFilterRail({
           {option.label}
         </option>
       ))}
-    </select>
+    </NativeSelect>
   );
 
   /** Toggling a stage chip keeps the others — stage is the one facet where
@@ -311,7 +311,7 @@ export function LeadFilterRail({
             ),
         )}
 
-        <select
+        <NativeSelect
           value={filters.sort}
           onChange={(event) =>
             router.push(
@@ -322,14 +322,13 @@ export function LeadFilterRail({
             )
           }
           aria-label="Sort leads"
-          className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body)"
         >
           {(Object.keys(SORT_LABELS) as LeadFilters["sort"][]).map((sort) => (
             <option key={sort} value={sort}>
               {SORT_LABELS[sort]}
             </option>
           ))}
-        </select>
+        </NativeSelect>
 
         {hasLeadFilters(filters) ? (
           <Link

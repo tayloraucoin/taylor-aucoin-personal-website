@@ -4,6 +4,8 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 
 **Migrations 0010 and 0011 are applied on staging** (confirmed 2026-09-04: `engagements.track`, `intake_files.transcript`, and `intake_files.transcript_status` all exist, journal entry dated 2026-09-03). The earlier note here said both were pending Taylor's run against the hosted databases; that is stale for staging. **Production is unchecked** — a `db:migrate` on this machine resolves to staging (local borrows staging credentials), so nothing here says anything about the live tier. PORT-20 still needs `OPENAI_API_KEY` set; without it a recording still records, uploads, and reaches the intake document as audio — it just arrives with the old "transcribe this" heading.
 
+**Outstanding for the taste gallery (PORT-28…32):** migration `0012_warm_harpoon.sql` and `db/supabase/setup/03-example-sites-rls.sql` are **written and reviewed but not applied** — Taylor runs both, in that order. Until then `/admin/intake/examples` cannot load and the taste step keeps rendering the absent state (which is the correct behaviour, not a symptom). The capture bucket constant in `server/services/example-captures.ts` reads `public`; Supabase bucket ids are case-sensitive and the dashboard uppercases that column in CSS, so it may need to become `PUBLIC`.
+
 **Outstanding for the coded track's money paths:** `showcase_animations` (and any other add-on row) has no minted Stripe price on the sandbox tier, so the mid-intake add-on Checkout cannot be created there. `yarn stripe:catalogue --apply` per tier, then paste the ids into `scripts/seed-products.ts` and `yarn db:seed` — the same PORT-3 action that has been outstanding since 2026-08-26.
 
 | Ticket | Title | Depends on | Status | Date |
@@ -36,6 +38,11 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 | PORT-25 | Find more like it: style brief, server-side web search, result links, Add to my sites | PORT-22, PORT-23 | Complete (Add-to-my-sites unverified in a browser — no `INTAKE_LINK_KEY` to mint a token) | 2026-09-04 |
 | PORT-26 | Motion add-on notice and the one client-initiated single-item Checkout | PORT-23, PORT-3, PORT-9 | Complete (Checkout session creation unverified — no minted Stripe price on this tier) | 2026-09-04 |
 | PORT-27 | Capture tooling for curation (`yarn capture:example`) | PORT-22 | Complete | 2026-09-04 |
+| PORT-28 | Example-site schema, migration 0012, RLS setup `03` | PORT-22 | **Complete in code — migration NOT applied.** Taylor runs it | 2026-09-04 |
+| PORT-29 | The seam: the gallery becomes a required parameter | PORT-22 | Complete | 2026-09-04 |
+| PORT-30 | `loadExampleSet`; the six set files deleted; `verify:tracks` rebuilt | PORT-28, PORT-29 | Complete (exercised without a database — see DEVIATIONS) | 2026-09-04 |
+| PORT-31 | Admin CRUD: the three screens, publish gate, pack switch, archive | PORT-30 | Complete in code — **no browser pass** (needs the migration) | 2026-09-04 |
+| PORT-32 | Captures: upload, image URL, storage, `next.config`, CLI narrowed | PORT-31 | Complete in code — **upload path unexercised** (needs the migration and the bucket) | 2026-09-04 |
 
 ## Checklist (mirrors `00-build-order.md`)
 
@@ -67,3 +74,8 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 - [x] PORT-25 · Find more like it
 - [x] PORT-26 · Motion add-on
 - [x] PORT-27 · Capture tooling
+- [x] PORT-28 · Example-site schema (migration pending Taylor's run)
+- [x] PORT-29 · The gallery seam
+- [x] PORT-30 · Rows behind `examplesFor`
+- [x] PORT-31 · Admin CRUD (no browser pass)
+- [x] PORT-32 · Captures (upload unexercised)

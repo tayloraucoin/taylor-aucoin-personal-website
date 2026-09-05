@@ -39,6 +39,26 @@ const SheetTrigger = DialogPrimitive.Trigger;
  */
 type SheetSide = "left" | "right";
 
+/**
+ * How wide the panel is.
+ *
+ * `default` is the record-reading width every CRM drawer uses. `wide` exists
+ * for the example-site editor, which holds a media stage beside eleven fields
+ * of pickers — at `max-w-xl` every segmented control wraps to its own line and
+ * the form stops being scannable, which is the whole reason it is a drawer.
+ *
+ * A prop rather than a caller passing `sm:max-w-3xl` through `className`, for
+ * the reason `SheetSide` is a prop: two max-width classes of equal specificity
+ * in one rule are decided by whichever Tailwind emits last, and that is a coin
+ * flip rather than a layout.
+ */
+type SheetSize = "default" | "wide";
+
+const SIZE_CLASSES: Record<SheetSize, string> = {
+  default: "max-w-xl",
+  wide: "max-w-3xl",
+};
+
 const SIDE_CLASSES: Record<SheetSide, string> = {
   right:
     "right-0 border-l data-[state=open]:[animation:sheet-slide-in_var(--dur-fast)_var(--ease-out)] data-[state=closed]:[animation:sheet-slide-out_var(--dur-fast)_var(--ease-out)]",
@@ -66,8 +86,12 @@ const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     side?: SheetSide;
+    size?: SheetSize;
   }
->(function SheetContent({ className, children, side = "right", ...props }, ref) {
+>(function SheetContent(
+  { className, children, side = "right", size = "default", ...props },
+  ref,
+) {
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -75,7 +99,8 @@ const SheetContent = React.forwardRef<
         ref={ref}
         {...props}
         className={[
-          "fixed inset-y-0 z-[41] flex h-full w-full max-w-xl flex-col overflow-y-auto border-(--color-line) bg-(--color-ground-a) p-6 shadow-lg outline-none",
+          "fixed inset-y-0 z-[41] flex h-full w-full flex-col overflow-y-auto border-(--color-line) bg-(--color-ground-a) p-6 shadow-lg outline-none",
+          SIZE_CLASSES[size],
           SIDE_CLASSES[side],
           className ?? "",
         ].join(" ")}

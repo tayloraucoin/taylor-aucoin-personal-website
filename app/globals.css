@@ -330,6 +330,93 @@ body::after {
   color: #0a0714;
 }
 
+
+/* ──────────────────────────────────────────────────────────────────────────
+   The taste step's 1–7 scale (PORT-23).
+
+   A native range input, styled to the palette. Track, fill, and thumb have to
+   be written twice — once for WebKit, once for Firefox — because the two
+   engines expose different pseudo-elements and neither accepts the other's, so
+   a combined selector list is dropped whole by both. This is the one place in
+   the codebase that duplication is correct.
+
+   `--filled` is set inline from the value: the fill is part of the track's own
+   background, so there is one element and no absolutely-positioned overlay to
+   fall out of alignment at the ends.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.taste-scale {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* the tap target, not the track */
+  background: transparent;
+  cursor: pointer;
+}
+
+.taste-scale:focus-visible {
+  outline: 2px solid var(--color-c2);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
+.taste-scale::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-c2) 0 var(--filled, 0%),
+    var(--color-faint) var(--filled, 0%) 100%
+  );
+}
+
+.taste-scale::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-faint);
+}
+
+.taste-scale::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-c2);
+}
+
+.taste-scale::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px; /* centres a 20px thumb on a 6px track */
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.taste-scale::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.taste-scale:hover::-webkit-slider-thumb,
+.taste-scale:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+}
+
+.taste-scale:hover::-moz-range-thumb,
+.taste-scale:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

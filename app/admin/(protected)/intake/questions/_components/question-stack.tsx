@@ -17,7 +17,7 @@ import { StepPricing } from "@/app/websites/intake/_components/steps/step-pricin
 import { StepReviews } from "@/app/websites/intake/_components/steps/step-reviews";
 import { StepTeam } from "@/app/websites/intake/_components/steps/step-team";
 import { StepVoice } from "@/app/websites/intake/_components/steps/step-voice";
-import { examplesFor } from "@/content/intake-examples";
+import type { ExampleSet } from "@/content/intake-examples";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { stepsFor } from "@/lib/intake/tracks";
@@ -53,11 +53,23 @@ export function QuestionStack({
   track,
   flavour,
   kind,
+  gallery,
 }: Readonly<{
   track: IntakeTrackKey;
   flavour: ShowcaseFlavour;
   /** What the site is for. Decides which field groups exist at all. */
   kind: ShowcaseKind;
+  /**
+   * This pack's gallery, exactly as a client would meet it.
+   *
+   * Loaded by the page and passed in, rather than read here: this component is
+   * a server component that renders into a client accordion through a
+   * synchronous `switch`, and keeping the read at the rail keeps it that way
+   * (M-PORT-41). An unpublished pack arrives as the empty set and renders the
+   * step's absent state, which is the point — this surface exists to show what
+   * a client actually meets.
+   */
+  gallery: ExampleSet;
 }>) {
   const steps = stepsFor(track, flavour);
 
@@ -106,6 +118,7 @@ export function QuestionStack({
                 stepKey={step.key}
                 flavour={flavour}
                 kind={kind}
+                gallery={gallery}
               />
             </div>
           </AccordionSection>
@@ -124,11 +137,13 @@ function StepBody({
   stepKey,
   flavour,
   kind,
+  gallery,
 }: Readonly<{
   track: IntakeTrackKey;
   stepKey: string;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  gallery: ExampleSet;
 }>) {
   const shared = { token: NO_TOKEN, initial: NO_ANSWERS };
 
@@ -240,7 +255,7 @@ function StepBody({
         <StepTaste
           {...shared}
           flavour={flavour}
-          gallery={examplesFor(flavour)}
+          gallery={gallery}
           files={{ inspiration: NO_FILES }}
           // A preview buys nothing and quotes nothing: the document renders
           // both add-on states under a line naming what opens each.

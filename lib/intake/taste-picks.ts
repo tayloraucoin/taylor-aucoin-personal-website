@@ -1,3 +1,4 @@
+import type { ExampleSet, ExampleSite } from "@/content/intake-examples";
 import { flavourFor, galleryFlavourFor } from "@/lib/intake/tracks";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
 import type {
@@ -130,4 +131,28 @@ export function hostOf(raw: string | undefined): string {
   const path = `${url.pathname}${url.search}`.replace(/\/$/, "");
 
   return `${host}${path}`;
+}
+
+/**
+ * Looks a site up by the key a client's picks are stored under.
+ *
+ * Takes the set rather than fetching one, and that is the whole point: the
+ * intake document resolves a pick for every entry in a client's shortlist, and
+ * a lookup that queried would turn one document render into a dozen round
+ * trips — while making `renderIntakeMarkdown` async, which would break
+ * `yarn verify:tracks`, the oracle that runs with no database at all
+ * (M-PORT-41). The rail loads the set once; this reads it.
+ *
+ * Replaces `exampleByKey(flavour, key)`, which could reach into a module-level
+ * map because the sets were files. They are rows now.
+ *
+ * Undefined is an ordinary answer, not an error: a pick whose site has since
+ * been archived keeps its place in the answers document and renders by its
+ * stored key with a marker, rather than vanishing (D-PORT-11).
+ */
+export function siteByKey(
+  set: ExampleSet,
+  key: string,
+): ExampleSite | undefined {
+  return set.sites.find((site) => site.key === key);
 }

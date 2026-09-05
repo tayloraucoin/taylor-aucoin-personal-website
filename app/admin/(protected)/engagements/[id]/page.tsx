@@ -9,6 +9,7 @@ import { adminRoutes } from "@/lib/routes";
 import { requireAdmin } from "@/server/services/admin-auth";
 import { findEngagementById } from "@/server/services/engagement";
 import { loadEngagementAdminDetail } from "@/server/services/engagement-admin";
+import { galleryForEngagement } from "@/server/services/example-sites";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { linkUploads } from "@/server/services/submission";
 
@@ -41,6 +42,7 @@ export default async function EngagementDetailPage({
       engagement,
       files: await linkUploads(id, LINK_TTL_SECONDS),
       generatedAt: new Date(),
+      gallery: await galleryForEngagement(engagement),
     });
   } catch {
     // A document that will not render must not take the page with it — the

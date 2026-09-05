@@ -1,8 +1,14 @@
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import { exampleByKey, examplesFor } from "@/content/intake-examples";
-import { galleryFlavourOf, hostOf, picksOf } from "@/lib/intake/taste-picks";
+import type { ExampleSet } from "@/content/intake-examples";
+import {
+  galleryFlavourOf,
+  hostOf,
+  picksOf,
+  siteByKey,
+} from "@/lib/intake/taste-picks";
+import { loadExampleSet } from "./example-sites";
 import {
   claimRun,
   ExtractionUnavailableError,
@@ -177,7 +183,7 @@ const SELECT_INSTRUCTION = [
  * their own taste on this form, and it is the reason the search is worth
  * running at all.
  */
-function digest(answers: unknown): string[] {
+function digest(answers: unknown, gallery: ExampleSet): string[] {
   const taste = readStepAnswers("showcase", answers, "taste" as never);
   const lines: string[] = [];
 
@@ -188,9 +194,8 @@ function digest(answers: unknown): string[] {
     if (text) lines.push(`${LABELS[field] ?? field}: ${text}`);
   }
 
-  const flavour = galleryFlavourOf(answers);
   for (const pick of picksOf(taste)) {
-    const site = exampleByKey(flavour, pick.siteKey);
+    const site = siteByKey(gallery, pick.siteKey);
     if (!site) continue;
 
     const parts = [
@@ -224,7 +229,12 @@ export async function searchForStyle(
     throw new ExtractionUnavailableError("rate_limited");
   }
 
-  return findSites(answers, brief);
+  // Loaded here rather than inside `findSites`, so that function keeps the
+  // property its own docblock claims: no database, runnable against a fixture
+  // (M-PORT-41).
+  const gallery = await loadExampleSet(galleryFlavourOf(answers));
+
+  return findSites(answers, brief, gallery);
 }
 
 /**
@@ -242,13 +252,14 @@ export async function searchForStyle(
 export async function findSites(
   answers: unknown,
   brief: string,
+  gallery: ExampleSet,
 ): Promise<StyleSearchResult[]> {
   const description = brief.trim();
   if (!description) throw new ExtractionUnavailableError("empty");
 
   const context = [
     `What they are picturing: ${description.slice(0, MAX_BRIEF_CHARS)}`,
-    ...digest(answers),
+    ...digest(answers, gallery),
   ].join("\n");
 
   try {
@@ -263,7 +274,7 @@ export async function findSites(
       output_config: { format: zodOutputFormat(resultSchema) },
     });
 
-    return keepUsable(response.parsed_output?.results ?? [], answers);
+    return keepUsable(response.parsed_output?.results ?? [], gallery);
   } catch (error) {
     if (error instanceof ExtractionUnavailableError) throw error;
 
@@ -345,9 +356,9 @@ async function runSearch(context: string): Promise<string> {
  */
 function keepUsable(
   results: readonly { url: string; why: string }[],
-  answers: unknown,
+  set: ExampleSet,
 ): StyleSearchResult[] {
-  const gallery = galleryHosts(galleryFlavourOf(answers));
+  const gallery = galleryHosts(set);
   const seen = new Set<string>();
   const kept: StyleSearchResult[] = [];
 
@@ -377,16 +388,15 @@ function keepUsable(
 }
 
 /** The hosts already in this pack's gallery, so a result cannot repeat one. */
-function galleryHosts(
-  flavour: ReturnType<typeof galleryFlavourOf>,
-): ReadonlySet<string> {
+function galleryHosts(set: ExampleSet): ReadonlySet<string> {
   const hosts = new Set<string>();
 
-  for (const site of examplesFor(flavour).sites) {
+  for (const site of set.sites) {
     try {
       hosts.add(new URL(site.url).hostname.replace(/^www\./, ""));
     } catch {
-      // A malformed URL in a content file is `yarn verify:tracks`'s business.
+      // A malformed URL never publishes: the gate refuses a blank link and
+      // `yarn verify:tracks` owns the rest.
     }
   }
 

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { eyebrowFor } from "@/lib/intake/tracks";
+import { galleryForEngagement } from "@/server/services/example-sites";
 import {
   EngagementNotFoundError,
   requireEngagement,
@@ -49,7 +50,14 @@ export default async function ShowcaseIntakeDonePage({
   if (engagement.track !== "showcase") notFound();
 
   const unanswered = collectUnanswered(engagement);
-  const shortfall = tasteShortfall(engagement);
+
+  // The shortfall line is silent when the client was shown no gallery — they
+  // cannot fall short of picking from a screen we never rendered — so this
+  // resolves the same set the step did rather than assuming one existed.
+  const shortfall = tasteShortfall(
+    engagement,
+    await galleryForEngagement(engagement),
+  );
 
   return (
     <div>

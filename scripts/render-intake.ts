@@ -1,6 +1,7 @@
 import { parseArgs } from "node:util";
 import { sendIntakeDocument } from "@/server/services/emails";
 import { findEngagementById } from "@/server/services/engagement";
+import { galleryForEngagement } from "@/server/services/example-sites";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { linkUploads } from "@/server/services/submission";
 import { applyTierEnv } from "./_env";
@@ -39,6 +40,7 @@ async function main(): Promise<void> {
     engagement,
     files,
     generatedAt: new Date(),
+    gallery: await galleryForEngagement(engagement),
   });
 
   console.log(markdown);

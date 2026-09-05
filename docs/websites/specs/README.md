@@ -14,6 +14,8 @@
 | `../CODED-INTAKE-CATEGORY-AUDIT.md` | The finding behind Phase 6: the nine steps read through twelve client kinds |
 | `../CODED-INTAKE-KINDS-UX-SCOPE.md` | Governing UX scope for Phase 6 (Vesper). Its §11 D-PORT-8…14 are binding once ratified; its §6 tables are the copy source for every new string, draft until Taylor's pass |
 | `../CODED-INTAKE-TASTE-UX-SCOPE.md` | Governing UX scope for Phase 9, the taste step (Vesper; approved by Taylor 2026-09-03). Its §14 D-PORT-15…20 bind as provisional; its §13 table is the copy source for every new string, draft until Taylor's pass |
+| `../CODED-INTAKE-EXAMPLES-ADMIN-UX-SCOPE.md` | Governing UX scope for Phase 10, the example-sites admin surface (Vesper; ratified by Taylor 2026-09-04). Its §12 D-PORT-21…28 bind; its §11 table is the copy source. Admin-only — it may not amend the client-facing taste step |
+| `../CODED-INTAKE-EXAMPLES-TECH-SCOPE.md` | Architecture pass for Phase 10 (Mason). Placement and data law for PORT-28…32; its decisions are M-PORT-41…47 in `TECHNICAL-DECISIONS.md`. Its §2.2 DDL is the reviewed artifact the schema slice diffs its generated migration against |
 | `00-build-order.md` | The ordered, checkable queue |
 | `PORT-*.md` | One implementable slice each |
 | `PROGRESS.md` / `DEVIATIONS.md` / `TECHNICAL-DECISIONS.md` | The records. `PROGRESS.md` is the only source of truth for Complete |

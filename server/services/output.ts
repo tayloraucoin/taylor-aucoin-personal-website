@@ -10,15 +10,15 @@ import {
   videosOf,
 } from "@/lib/intake/project-videos";
 import {
-  galleryFlavourOf as galleryFlavourFrom,
   hostOf,
   picksOf,
+  siteByKey,
   STALE_CHECK_DAYS,
   TASTE_PICKS_ASKED,
 } from "@/lib/intake/taste-picks";
 import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
 import { fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
-import { exampleByKey, examplesFor } from "@/content/intake-examples";
+import type { ExampleSet } from "@/content/intake-examples";
 import { BUILD_LEVELS, EXAMPLE_GROUPS } from "@/content/intake-examples/taxonomy";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import {
@@ -135,8 +135,14 @@ function renderValue(track: IntakeTrackKey, value: unknown): string {
  * protect. The showcase track's flags — rights-restricted projects, kind words
  * without permission to publish, thin taste signal — arrive with PORT-8.
  */
-export function collectFlags(engagement: Engagement, asOf: Date): string[] {
-  if (engagement.track === "showcase") return showcaseFlags(engagement, asOf);
+export function collectFlags(
+  engagement: Engagement,
+  asOf: Date,
+  gallery: ExampleSet,
+): string[] {
+  if (engagement.track === "showcase") {
+    return showcaseFlags(engagement, asOf, gallery);
+  }
   if (engagement.track !== "durable") return [];
 
   const flags: string[] = [];
@@ -213,7 +219,11 @@ export function collectFlags(engagement: Engagement, asOf: Date): string[] {
  * whose flags get skimmed, and the whole value of this block is that Taylor
  * reads it.
  */
-function showcaseFlags(engagement: Engagement, asOf: Date): string[] {
+function showcaseFlags(
+  engagement: Engagement,
+  asOf: Date,
+  gallery: ExampleSet,
+): string[] {
   const flags: string[] = [];
   const read = (key: string) =>
     readStepAnswers("showcase", engagement.answers, key as never);
@@ -314,7 +324,6 @@ function showcaseFlags(engagement: Engagement, asOf: Date): string[] {
    * Silent at zero too, because the line above already covers that case and
    * says something more useful about it.
    */
-  const gallery = examplesFor(galleryFlavourOf(engagement));
   const hadAGallery = gallery.curated && gallery.sites.length > 0;
 
   if (hadAGallery && picks.length > 0 && picks.length < TASTE_PICKS_ASKED) {
@@ -332,9 +341,8 @@ function showcaseFlags(engagement: Engagement, asOf: Date): string[] {
    * open them.
    */
   const staleAfter = STALE_CHECK_DAYS * 24 * 60 * 60 * 1000;
-  const flavour = galleryFlavourOf(engagement);
   const stale = picks
-    .map((pick) => exampleByKey(flavour, pick.siteKey))
+    .map((pick) => siteByKey(gallery, pick.siteKey))
     .filter((site) => site !== undefined)
     .filter((site) => {
       const checked = Date.parse(site.checkedOn);
@@ -776,10 +784,11 @@ export function collectUnanswered(
  * of picking from it, and saying otherwise would blame them for our content
  * work. Silent when the ask is met.
  */
-export function tasteShortfall(engagement: Engagement): string | null {
+export function tasteShortfall(
+  engagement: Engagement,
+  gallery: ExampleSet,
+): string | null {
   if (engagement.track !== "showcase") return null;
-
-  const gallery = examplesFor(galleryFlavourOf(engagement));
   if (!gallery.curated || gallery.sites.length === 0) return null;
 
   const taste = readStepAnswers(
@@ -829,11 +838,6 @@ function depositLine(engagement: Engagement): string {
  * because the thing behind it was deleted is a document that quietly edits an
  * answer.
  */
-/** This engagement's gallery, resolved the way the step resolves it. */
-function galleryFlavourOf(engagement: Engagement) {
-  return galleryFlavourFrom(engagement.answers);
-}
-
 /** `5/7`, or the honest absence. A pick with no score was never scored. */
 function scoreText(score: number | undefined): string {
   return typeof score === "number" ? `${score}/7` : "no score";
@@ -857,10 +861,10 @@ function quoted(note: string | undefined): string | null {
  * reason to lose their reaction.
  */
 function tastePickLine(
-  flavour: ReturnType<typeof galleryFlavourOf>,
+  gallery: ExampleSet,
   pick: { siteKey: string; score?: number; note?: string },
 ): string {
-  const site = exampleByKey(flavour, pick.siteKey);
+  const site = siteByKey(gallery, pick.siteKey);
 
   if (!site) {
     return [
@@ -912,6 +916,7 @@ function resolveShowcaseKeys(
   stepKey: string,
   stored: Record<string, unknown>,
   files: readonly IntakeFileLink[],
+  gallery: ExampleSet,
 ): Record<string, unknown> {
   const strings = (value: unknown): string[] =>
     Array.isArray(value)
@@ -959,12 +964,11 @@ function resolveShowcaseKeys(
    * it would have shipped for any engagement that used the old gallery.
    */
   if (stepKey === "taste") {
-    const flavour = galleryFlavourOf(engagement);
     const next = { ...stored };
 
     const picks = picksOf(stored);
     if (picks.length > 0) {
-      next.picks = picks.map((pick) => tastePickLine(flavour, pick));
+      next.picks = picks.map((pick) => tastePickLine(gallery, pick));
     }
     delete next.favourites;
 
@@ -982,7 +986,7 @@ function resolveShowcaseKeys(
     const noteLines = Object.entries(notes)
       .filter(([, note]) => note?.trim())
       .map(([key, note]) => {
-        const site = exampleByKey(flavour, key);
+        const site = siteByKey(gallery, key);
         return `${site?.name ?? key} — "${note.trim()}"`;
       });
     if (noteLines.length > 0) next.notes = noteLines;
@@ -1049,8 +1053,18 @@ export function renderIntakeMarkdown(input: {
   engagement: Engagement;
   files: readonly IntakeFileLink[];
   generatedAt: Date;
+  /**
+   * The gallery this engagement's picks were made from.
+   *
+   * **Required, with no default** (M-PORT-41). A default is how a caller
+   * silently renders the absent state and nobody notices the gallery never
+   * loaded — which is D-PORT-12's failure mode with a new mechanism. The
+   * durable track passes `EMPTY_EXAMPLE_SET`, which reads as the statement it
+   * is: that track has no gallery.
+   */
+  gallery: ExampleSet;
 }): string {
-  const { engagement, files, generatedAt } = input;
+  const { engagement, files, generatedAt, gallery } = input;
   const lines: string[] = [];
 
   lines.push(`# Intake — ${engagement.businessName}`);
@@ -1066,7 +1080,7 @@ export function renderIntakeMarkdown(input: {
       : "Not yet submitted — this is a partial document",
   );
 
-  const flags = collectFlags(engagement, generatedAt);
+  const flags = collectFlags(engagement, generatedAt, gallery);
   if (flags.length > 0) {
     lines.push("", "## Flags");
     for (const flag of flags) lines.push(`- **${flag}**`);
@@ -1084,7 +1098,7 @@ export function renderIntakeMarkdown(input: {
     );
     const resolved =
       engagement.track === "showcase"
-        ? resolveShowcaseKeys(engagement, step.key, stored, delivered)
+        ? resolveShowcaseKeys(engagement, step.key, stored, delivered, gallery)
         : stored;
     const answered = Object.entries(resolved).filter(([, v]) => !isEmpty(v));
 

@@ -10,6 +10,7 @@ import type { CheckoutAddonView } from "../../../intake/_components/deposit-chec
 import { LegalAgreement } from "../../../intake/_components/legal-agreement";
 import { PromoRail } from "../../../intake/_components/promo-rail";
 import { ShowcasePayButton } from "./showcase-pay-button";
+import { NativeSelect } from "@/components/ui/native-select";
 
 type PromoState =
   | { status: "idle" }
@@ -281,18 +282,18 @@ export function ShowcaseCheckout({
             </p>
 
             <div className="mt-3 flex items-center gap-3">
-              <select
+              <NativeSelect
                 id="extra-pages"
                 value={pages}
                 onChange={(event) => setPages(Number(event.target.value))}
-                className="min-h-12 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3 font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
+                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
               >
                 {Array.from({ length: EXTRA_PAGES_MAX + 1 }, (_, n) => (
                   <option key={n} value={n}>
                     {n === 0 ? "None" : n === 1 ? "1 page" : `${n} pages`}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
 
               {pages > 0 ? (
                 <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">

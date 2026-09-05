@@ -5,6 +5,7 @@ import {
   CreditCard,
   FileText,
   Handshake,
+  Images,
   ListChecks,
   PhoneCall,
   RefreshCw,
@@ -87,6 +88,15 @@ export const NAV_SECTIONS: AdminNavSection[] = [
     label: "Intake",
     icon: ClipboardList,
     items: [
+      {
+        // "Example sites", not "Taste gallery": it matches the type name, and —
+        // the reason that decides it — it matches the words a client reads on
+        // the step when a set is absent. One vocabulary, tool to client.
+        title: "Example sites",
+        href: adminRoutes.intakeExamples,
+        icon: Images,
+        ready: true,
+      },
       {
         title: "Questions",
         href: adminRoutes.intakeQuestions,

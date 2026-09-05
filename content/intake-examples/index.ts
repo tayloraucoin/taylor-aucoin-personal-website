@@ -1,11 +1,4 @@
-import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { ENTITY_EXAMPLES } from "./entity";
-import { FILM_EXAMPLES } from "./film";
-import { GENERIC_EXAMPLES } from "./generic";
-import { PRACTICE_EXAMPLES } from "./practice";
-import { SERVICE_EXAMPLES } from "./service";
-import type { ExampleSet, ExampleSite } from "./types";
-import { VENTURE_EXAMPLES } from "./venture";
+import type { ExampleSet } from "./types";
 
 export type {
   BuildLevel,
@@ -20,53 +13,39 @@ export type {
 } from "./types";
 
 /**
- * The gallery a client sees, one set per copy pack.
+ * The taste gallery's shape and vocabulary. **The sites themselves are rows.**
  *
- * Before PORT-16 there was one set — six invented sites whose own file header
- * said "nothing here may ship to a client" — and both packs pointed at it, so
- * every client who reached step 5 reached placeholder art
- * (`CODED-INTAKE-CATEGORY-AUDIT.md` B1). Now each pack has its own file, each
- * file carries its own curation contract, and none of them is curated yet.
+ * Until PORT-30 this module held six typed set files and an `examplesFor` map
+ * over them, and curating a gallery meant editing a file, committing, and
+ * deploying — which is why all six stayed empty and every client met the absent
+ * state. The sites now live in `example_sites`, edited at
+ * `/admin/intake/examples`, and read through `loadExampleSet` in
+ * `server/services/example-sites.ts`.
  *
- * **An uncurated set is an absence, not an empty grid.** The taste step renders
- * without the gallery and without the picks list, says so in one line, and
- * collects everything else on the step — the preference questions, the three
- * words, the inspiration uploads, the links, the brain dump. That is still most
- * of the step's signal, and it is honest, which placeholder art was not.
+ * What stayed here is what should never have been data: `types.ts` owns the
+ * contract, and `taxonomy.ts` owns the words for every value in it. The step,
+ * the overlay, the intake document, and the verifier all read those, and each
+ * map is `Record<Union, …>` so a value with no words fails the build rather
+ * than rendering as a raw key.
  *
- * Curating one is a content edit: fill its `sites`, set `curated: true`.
+ * The folder keeps its name. It is mildly wrong now — this is a contract, not
+ * content — and renaming it churns fifteen import sites for no behavioural
+ * gain (M-PORT-46).
  */
-const SETS: Record<ShowcaseFlavour, ExampleSet> = {
-  film: FILM_EXAMPLES,
-  generic: GENERIC_EXAMPLES,
-  practice: PRACTICE_EXAMPLES,
-  entity: ENTITY_EXAMPLES,
-  venture: VENTURE_EXAMPLES,
-  service: SERVICE_EXAMPLES,
-};
 
 /**
- * One pack's set. Never undefined, and never a set from another pack.
+ * A gallery that is not being shown, which is a real answer and not a gap.
  *
- * The caller passes a *gallery* flavour, which is the copy pack for every kind
- * but a studio — a studio reads entity copy while its gallery may follow its
- * discipline. `galleryFlavourFor` in `lib/intake/tracks.ts` makes that choice;
- * this module is a map and holds no opinion about kinds.
- */
-export function examplesFor(flavour: ShowcaseFlavour): ExampleSet {
-  return SETS[flavour];
-}
-
-/**
- * Looks a site up by the key a client's picks are stored under.
+ * Two callers, for two different reasons, and both are deliberate:
  *
- * Undefined is an ordinary answer, not an error: a pick whose set has since
- * changed keeps its place in the answers document and renders by its stored
- * key with a marker, rather than vanishing (D-PORT-11 at the gallery).
+ * - **The durable track**, which has no gallery at all. `renderIntakeMarkdown`
+ *   and its siblings take the set as a **required** parameter with no default,
+ *   so a durable caller passes this explicitly. That reads as a statement — the
+ *   durable track has no gallery — where a default would read as an oversight,
+ *   and it is why the compiler can enumerate every call site (M-PORT-41).
+ * - **Anywhere a set could not be loaded.** An unpublished pack, a pack whose
+ *   switch is off, and a failed query all produce this, and the taste step
+ *   renders the same honest line for all three: no gallery, no picks list, no
+ *   empty grid (D-PORT-12).
  */
-export function exampleByKey(
-  flavour: ShowcaseFlavour,
-  key: string,
-): ExampleSite | undefined {
-  return SETS[flavour].sites.find((site) => site.key === key);
-}
+export const EMPTY_EXAMPLE_SET: ExampleSet = { curated: false, sites: [] };

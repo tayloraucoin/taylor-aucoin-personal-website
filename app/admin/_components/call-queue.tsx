@@ -11,6 +11,7 @@ import { CallSheetColumn } from "./call-sheet-column";
 import { StageChip, WindowChip } from "./chips";
 import { DayStrip } from "./day-strip";
 import { hasModifier, isTypingTarget } from "./keyboard";
+import { NativeSelect } from "@/components/ui/native-select";
 
 /**
  * Who to call next, and the whole loop of calling them.
@@ -463,13 +464,12 @@ function FilterBar({
         href({ readyNow: !filters.readyNow }),
       )}
 
-      <select
+      <NativeSelect
         value={filters.niche}
         onChange={(event) => {
           router.push(href({ niche: event.target.value }));
         }}
         aria-label="Filter by trade"
-        className="min-h-[44px] rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body)"
       >
         <option value="">All trades</option>
         {niches.map((niche) => (
@@ -477,7 +477,7 @@ function FilterBar({
             {niche}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </div>
   );
 }

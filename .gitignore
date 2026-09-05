@@ -44,3 +44,7 @@ next-env.d.ts
 
 # Banner export scratch output (temporary — goes with app/banner-export/)
 /public/banner/
+
+# Screenshots shot by `yarn capture:example`, for uploading to the admin.
+# Never served, never committed.
+captures/

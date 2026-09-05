@@ -8,34 +8,34 @@ const SCALE_LABEL = "How close is this to what you want?";
 const LOW = "One detail";
 const HIGH = "Build me this";
 
-const STOPS = [1, 2, 3, 4, 5, 6, 7] as const;
+const MAX = 7;
 
 /**
- * Seven stops, and no default.
+ * A real slider, and still no fabricated score.
  *
- * **Nothing is selected until someone selects something.** A range input with a
- * default fabricates a score nobody gave, and every pick a client never touched
- * would come back as the same middle number — which is worse than no number,
- * because it reads as an answer. An untouched scale saves nothing and the
- * document says "no score", which is true.
+ * Seven tap-targets in a row was a segmented control wearing a scale's clothes;
+ * this is the control the question actually describes, and it matches the
+ * `ScaleSliderField` pattern in Conscious Connections' design system.
  *
- * The question is *closeness*, not *liking*. They already pressed Select, so
- * they like it; what a designer needs is how much of it. A 2 against the note
- * "just the hover previews" is a precise instruction, and a 7 is a different
- * one — so the low end is labelled as a real answer rather than a slight.
+ * **Zero is "not scored", and it is a position on the track.** That is what
+ * keeps the no-default law (D-PORT-4 as amended) and a slider in the same
+ * component: a slider always has a thumb somewhere, so parking it before the
+ * first tick with the fill empty and the readout showing a dash says "you have
+ * not answered this" in the one place a client is looking. It also buys
+ * something the buttons never had — dragging back to zero **clears** a score,
+ * where before a mis-tap could only be changed, never undone.
  *
- * ## Why one slider and not seven radios
+ * ## Why a native range input rather than Radix
  *
- * A screen reader meets one control with a value, which is what this is, rather
- * than seven controls of which none is chosen. The stops are pointer
- * affordances inside that control: `tabIndex={-1}` keeps them out of the tab
- * order and `aria-hidden` keeps them out of the accessibility tree, so the
- * composite is announced once. Arrow keys, Home, and End drive the slider
- * itself.
+ * Keyboard stepping, `Home`/`End`, touch dragging, the pointer-capture drag,
+ * and the ARIA slider semantics are all free and already correct. Radix is here
+ * for dialog and select because both need behaviour the platform does not give;
+ * a one-thumb slider is not one of those, and a dependency that buys styling
+ * hooks alone is a tax on every future install (M-INT boring-technology law).
  *
- * `aria-valuenow` is omitted while unset, because a slider that reports a
- * position it does not have is the same lie the default value would be;
- * `aria-valuetext` carries the honest reading either way.
+ * The browser also owns the value, so the stale-closure hazard the seven
+ * buttons had — where key repeat outran React and the score stuck — cannot
+ * exist here. Each event carries the browser's own current value.
  */
 export function PickScale({
   idPrefix,
@@ -45,32 +45,26 @@ export function PickScale({
   /** Unique per scale on the page — the label finds the control by id. */
   idPrefix: string;
   value: number | undefined;
-  /**
-   * Absolute for a tap, an updater for a key.
-   *
-   * Key repeat fires faster than React re-renders, so a handler that computed
-   * `value + 1` from the value its render closed over would read the same stale
-   * number on every repeat and the scale would stick — the same hazard
-   * M-PORT-17 fixed for array answers, in a different shape. The stop buttons
-   * pass an absolute number because a tap genuinely is absolute.
-   */
-  onChange: (next: number | ((previous: number | undefined) => number)) => void;
+  /** `undefined` when the client drags back to the unscored end. */
+  onChange: (next: number | undefined) => void;
 }) {
   const labelId = `${idPrefix}-scale-label`;
+  const inputId = `${idPrefix}-scale`;
+  const position = value ?? 0;
 
   const valueText =
     value === undefined
-      ? "No score yet"
+      ? "Not scored"
       : value === 1
-        ? `1 of 7 — ${LOW}`
-        : value === 7
-          ? `7 of 7 — ${HIGH}`
-          : `${value} of 7`;
+        ? `1 of ${MAX} — ${LOW}`
+        : value === MAX
+          ? `${MAX} of ${MAX} — ${HIGH}`
+          : `${value} of ${MAX}`;
 
   if (useIsDocument()) {
     return (
       <>
-        <DocTag>Scale · 1–7, nothing selected by default</DocTag>
+        <DocTag>Slider · 1–7, unscored until moved</DocTag>
         <DocHint>
           {SCALE_LABEL} 1 is &ldquo;{LOW}&rdquo;, 7 is &ldquo;{HIGH}&rdquo;.
         </DocHint>
@@ -78,76 +72,72 @@ export function PickScale({
     );
   }
 
-  /** Moves by `delta` from whatever the value is when the update runs. */
-  function step(delta: number) {
-    onChange((previous) =>
-      previous === undefined ? 1 : Math.min(7, Math.max(1, previous + delta)),
-    );
-  }
+  /** The filled portion, drawn on the input itself so there is one element. */
+  const filled = (position / MAX) * 100;
 
   return (
     <div>
-      <p
-        id={labelId}
-        className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
-      >
-        {SCALE_LABEL}
-      </p>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <label
+          id={labelId}
+          htmlFor={inputId}
+          className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+        >
+          {SCALE_LABEL}
+        </label>
 
-      <div
-        role="slider"
-        tabIndex={0}
+        {/* The readout carries the answer in numerals, where a thumb position
+            alone would leave someone counting ticks. */}
+        <span
+          aria-hidden
+          className={`font-mono text-[12px] tracking-[.14em] ${
+            value === undefined ? "text-(--color-dim)" : "text-(--color-c2)"
+          }`}
+        >
+          {value === undefined ? "—" : `${value} / ${MAX}`}
+        </span>
+      </div>
+
+      <input
+        id={inputId}
+        type="range"
+        min={0}
+        max={MAX}
+        step={1}
+        value={position}
         aria-labelledby={labelId}
-        aria-valuemin={1}
-        aria-valuemax={7}
-        aria-valuenow={value}
         aria-valuetext={valueText}
-        onKeyDown={(event) => {
-          const key = event.key;
-          if (key === "ArrowRight" || key === "ArrowUp") {
-            event.preventDefault();
-            step(1);
-          } else if (key === "ArrowLeft" || key === "ArrowDown") {
-            event.preventDefault();
-            step(-1);
-          } else if (key === "Home") {
-            event.preventDefault();
-            onChange(1);
-          } else if (key === "End") {
-            event.preventDefault();
-            onChange(7);
-          }
+        onChange={(event) => {
+          const next = Number(event.target.value);
+          onChange(next === 0 ? undefined : next);
         }}
-        className="mt-2.5 flex gap-1.5 rounded-(--radius) focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-c2)"
-      >
-        {STOPS.map((stop) => {
-          const chosen = value !== undefined && stop === value;
-          const below = value !== undefined && stop < value;
+        className="taste-scale mt-4 w-full"
+        style={{ ["--filled" as string]: `${filled}%` }}
+      />
 
-          return (
-            <button
-              key={stop}
-              type="button"
-              tabIndex={-1}
-              aria-hidden
-              onClick={() => onChange(stop)}
-              className={`flex h-11 flex-1 items-center justify-center rounded-(--radius) border font-mono text-[11px] tracking-[.1em] transition-colors duration-(--dur-fast) ease-(--ease-out) ${
-                chosen
-                  ? "border-[rgb(232_185_97/.55)] bg-[rgb(232_185_97/.18)] text-(--color-ink)"
-                  : below
-                    ? "border-[rgb(232_185_97/.28)] bg-[rgb(232_185_97/.07)] text-(--color-body)"
-                    : "border-(--color-faint) bg-(--color-card) text-(--color-dim) hover:border-[rgb(232_185_97/.28)]"
-              }`}
-            >
-              {stop}
-            </button>
-          );
-        })}
+      {/* Ticks under the track, so the seven stops are visible rather than
+          something you discover by dragging. */}
+      <div
+        aria-hidden
+        className="mt-2 flex justify-between px-[9px] font-mono text-[10px] text-(--color-dim)"
+      >
+        {Array.from({ length: MAX }, (_, index) => index + 1).map((stop) => (
+          <span
+            key={stop}
+            className={
+              value !== undefined && stop <= value
+                ? "text-(--color-c2)"
+                : undefined
+            }
+          >
+            {stop}
+          </span>
+        ))}
       </div>
 
       {/* The ends, named. A number with nothing at either end of it is a number
           someone has to guess the meaning of. */}
-      <div className="mt-1.5 flex justify-between font-body text-[13.5px] font-light leading-[1.4] text-(--color-dim)">
+      <div className="mt-2 flex justify-between gap-4 font-body text-[13.5px] font-light leading-[1.4] text-(--color-dim)">
         <span>1 · {LOW}</span>
         <span>7 · {HIGH}</span>
       </div>

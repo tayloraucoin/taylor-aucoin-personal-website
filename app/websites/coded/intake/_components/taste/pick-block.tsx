@@ -165,7 +165,7 @@ export function PickBlock({
    */
   if (document) {
     return (
-      <div className="mt-3">
+      <div className="mt-5">
         <DocTag>Select · opens a scale and a note; saved, it shows both with Edit and Remove</DocTag>
         <PickScale idPrefix={idPrefix} value={undefined} onChange={() => {}} />
         <div className="mt-4">
@@ -190,28 +190,24 @@ export function PickBlock({
 
   if (composing) {
     return (
-      <div className="mt-3">
+      <div className="mt-5">
         <PickScale
           idPrefix={idPrefix}
           value={score}
-          onChange={(next) =>
-            setScore((previous) => {
-              const resolved =
-                typeof next === "function" ? next(previous) : next;
-              touch(resolved, note);
-              return resolved;
-            })
-          }
+          onChange={(next) => {
+            setScore(next);
+            touch(next, note);
+          }}
         />
 
-        <div className="mt-4">
+        <div className="mt-7">
           <label
             htmlFor={noteId}
             className="block font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
           >
             {COPY.noteLabel}
           </label>
-          <div className="mt-2">
+          <div className="mt-2.5">
             <TextArea
               id={noteId}
               helpId={`${noteId}-help`}
@@ -232,7 +228,7 @@ export function PickBlock({
           </p>
         </div>
 
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-6 flex items-center gap-5">
           <GhostButton type="button" onClick={save}>
             {COPY.save}
           </GhostButton>
@@ -250,7 +246,7 @@ export function PickBlock({
 
   if (pick) {
     return (
-      <div className="mt-3">
+      <div className="mt-5">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
           <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
             Picked ·{" "}
@@ -274,7 +270,7 @@ export function PickBlock({
         </div>
 
         {pick.note?.trim() ? (
-          <p className="mt-2 line-clamp-2 font-body text-[16px] font-light leading-[1.5] text-(--color-ink)">
+          <p className="mt-2.5 line-clamp-2 font-body text-[16px] font-light leading-[1.6] text-(--color-ink)">
             {pick.note}
           </p>
         ) : (
@@ -294,7 +290,7 @@ export function PickBlock({
   }
 
   return (
-    <div className="mt-3">
+    <div className="mt-5">
       {removed ? (
         <p
           aria-live="polite"

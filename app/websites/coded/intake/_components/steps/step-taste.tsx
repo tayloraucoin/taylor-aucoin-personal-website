@@ -59,6 +59,21 @@ const MET_LINGER_MS = 6000;
  * **Nothing here out-dresses Continue.** No ring, no gradient, no lift on any
  * row, scale, or button. The gallery is the instrument, not the exhibit.
  */
+/**
+ * What a client reads when the gallery for their kind of build is not being
+ * shown — an absence, never an empty grid (D-PORT-12).
+ *
+ * Exported because `/admin/intake/examples` quotes it verbatim beside the pack
+ * switch, so the consequence of leaving a set unpublished is shown to Taylor in
+ * the client's own words rather than described in the admin's. **One home**: it
+ * is read there, never transcribed, so Taylor's human-hand copy pass changes
+ * both at once (D-ADM-6's law, applied to a string that now has two readers).
+ *
+ * [COPY — pending Taylor]
+ */
+export const TASTE_ABSENT_LINE =
+  "The example sites for this kind of build are still being chosen. Skip that part for now; everything below still counts, and we'll look at sites together on the call.";
+
 export function StepTaste({
   token,
   initial,
@@ -253,10 +268,7 @@ export function StepTaste({
     <>
       {sites.length === 0 ? (
         <p className="mb-10 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-dim)">
-          {/* [COPY — pending Taylor] */}
-          The example sites for this kind of build are still being chosen. Skip
-          that part for now; everything below still counts, and we&apos;ll look
-          at sites together on the call.
+          {TASTE_ABSENT_LINE}
         </p>
       ) : (
         <div className="mb-10">

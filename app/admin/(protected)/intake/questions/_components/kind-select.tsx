@@ -1,6 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/admin/_components/ui/select";
 
 /**
  * The seven questionnaires, as a select.
@@ -33,23 +40,24 @@ export function KindSelect({
         What the site is for
       </label>
       <div className="mt-1.5">
-        <select
-          id="preview-kind"
+        <Select
           value={current}
-          onChange={(event) => {
-            const picked = options.find(
-              (option) => option.value === event.target.value,
-            );
+          onValueChange={(value) => {
+            const picked = options.find((option) => option.value === value);
             if (picked) router.push(picked.href);
           }}
-          className="min-h-[44px] w-full rounded-(--radius) border border-(--color-line) bg-(--color-well) px-2 text-sm text-(--color-body) sm:w-auto"
         >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="preview-kind" className="sm:w-auto">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

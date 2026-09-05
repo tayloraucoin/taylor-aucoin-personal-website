@@ -250,13 +250,21 @@ export function GalleryOverlay({
             </a>
           </div>
 
-          <p className="mt-1 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+          <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
             {site.role}
           </p>
 
-          <p className="mt-2 font-mono text-[9px] uppercase tracking-[.24em] text-(--color-dim)">
-            {tagsFor(site).join(" · ")}
-          </p>
+          {/* The same chips the row wears, for the same reason. */}
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {tagsFor(site).map((tag) => (
+              <li
+                key={tag}
+                className="rounded-(--radius) border border-(--color-faint) px-2 py-1 font-mono text-[9px] uppercase tracking-[.2em] text-(--color-dim)"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
 
           {/* The same block as the row's, minus See more — we are in it. Keyed
               by site so paging gives the next one its own draft state. */}
