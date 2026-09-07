@@ -1,4 +1,6 @@
+import { GhostButton } from "@/components/ui/GradientButton";
 import { eyebrowFor } from "@/lib/intake/tracks";
+import { showcaseIntakeRoutes } from "@/lib/routes";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { Eyebrow } from "../../../intake/_components/eyebrow";
 import { FeedbackBlock } from "./feedback-block";
@@ -81,6 +83,27 @@ export function ShowcaseDone({
           </ul>
         </section>
       ) : null}
+
+      {/* The way back in. Until this existed, a client who finished could
+          reach their own answers only by editing a URL by hand — and the
+          commonest thing anybody wants after sending a long form is to change
+          one line of it. [COPY — draft, pending Taylor] */}
+      <section className="mt-12 border-t border-(--color-faint) pt-6">
+        <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          Changed your mind about something?
+        </h2>
+
+        <p className="mt-4 max-w-[52ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+          Everything you answered is still here, and still yours to edit. Taylor
+          reads the latest version, so keep this link.
+        </p>
+
+        <div className="mt-4">
+          <GhostButton href={showcaseIntakeRoutes.review(token)}>
+            Review my answers
+          </GhostButton>
+        </div>
+      </section>
 
       {/* Last on the screen, and behind a button. See `FeedbackBlock` for why
           it is asked here rather than anywhere in the questionnaire. */}

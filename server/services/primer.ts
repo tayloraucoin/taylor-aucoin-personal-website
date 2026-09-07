@@ -260,7 +260,18 @@ export async function proposeFromDocument(
 
   if (!parsed) throw new PrimerUnavailableError("failed");
 
-  return keepValidProposals(text, parsed.proposals, fields);
+  const kept = keepValidProposals(text, parsed.proposals, fields);
+
+  // How many the quote check threw away. Silent until now, which made a prompt
+  // that quotes loosely look identical to a document with nothing in it.
+  const discarded = parsed.proposals.length - kept.length;
+  if (discarded > 0) {
+    console.info(
+      `[primer] ${discarded} of ${parsed.proposals.length} proposals failed the quote check`,
+    );
+  }
+
+  return kept;
 }
 
 /*

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { socialCard } from "@/lib/metadata";
+import { ScrollToTop } from "./_components/scroll-to-top";
 import { INTAKE_COLUMN } from "./_lib/column";
 
 /**
@@ -53,6 +54,7 @@ export const metadata: Metadata = {
 export default function IntakeLayout({ children }: { children: ReactNode }) {
   return (
     <div className={`relative z-[2] min-h-dvh py-10 md:py-16 ${INTAKE_COLUMN}`}>
+      <ScrollToTop />
       {children}
     </div>
   );

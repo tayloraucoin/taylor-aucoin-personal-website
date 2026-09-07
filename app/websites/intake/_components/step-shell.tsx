@@ -48,6 +48,7 @@ export function StepShell({
   step,
   flavour = "generic",
   navigate,
+  previousLocked = false,
   saveSlot,
   children,
 }: {
@@ -71,6 +72,16 @@ export function StepShell({
    * the bar is the same bar (Taylor, 2026-09-04).
    */
   navigate?: { step: (stepKey: AnyIntakeStepKey) => string; done: string };
+  /**
+   * Renders Back as unavailable even though a previous step exists.
+   *
+   * One step behind this one may be spent rather than merely visited — the
+   * coded track's ingestion run is read-once, and its page redirects forward
+   * on a second visit. Without this the Back button would land there and be
+   * bounced straight back, which reads as a broken control rather than a
+   * closed door.
+   */
+  previousLocked?: boolean;
   saveSlot?: ReactNode;
   children: ReactNode;
 }) {
@@ -110,13 +121,20 @@ export function StepShell({
       <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-(--color-faint) bg-(--color-card) backdrop-blur-[6px]">
         <div className={`py-4 ${INTAKE_COLUMN}`}>
           <div className="flex items-center justify-between gap-3">
-            {previous ? (
+            {/* Back is present on the first step too, disabled rather than
+                absent. An empty placeholder left the bar lopsided and moved
+                Continue between steps one and two; a control that is visibly
+                unavailable teaches where it will be. */}
+            {previous && !previousLocked ? (
               <GhostButton href={go.step(previous.key)}>← Back</GhostButton>
             ) : (
-              <span />
+              <GhostButton disabled>← Back</GhostButton>
             )}
 
-            <GradientButton href={next ? go.step(next.key) : go.done}>
+            <GradientButton
+              href={next ? go.step(next.key) : go.done}
+              className="min-w-[11rem] justify-center"
+            >
               {next ? "Continue" : "Finish"}
             </GradientButton>
           </div>

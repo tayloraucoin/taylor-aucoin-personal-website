@@ -101,6 +101,13 @@ export const showcaseIntakeRoutes = {
   step: (token: string, step: AnyIntakeStepKey) =>
     `${SHOWCASE_INTAKE_PREFIX}/${token}/${step}`,
   done: (token: string) => `${SHOWCASE_INTAKE_PREFIX}/${token}/done`,
+  /**
+   * Everything they have answered, and the way back into any of it.
+   *
+   * A static segment beside `[step]`, which Next resolves first, and `review`
+   * is not a step key on either track — so this cannot shadow a question.
+   */
+  review: (token: string) => `${SHOWCASE_INTAKE_PREFIX}/${token}/review`,
 } as const;
 
 /**

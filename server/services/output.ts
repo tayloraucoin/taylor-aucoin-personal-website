@@ -17,10 +17,11 @@ import {
   TASTE_PICKS_ASKED,
 } from "@/lib/intake/taste-picks";
 import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
+import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
 import type { ExampleSet } from "@/content/intake-examples";
 import { BUILD_LEVELS, EXAMPLE_GROUPS } from "@/content/intake-examples/taxonomy";
-import type { IntakeTrackKey } from "@/lib/types/intake";
+import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 import {
   INCLUDED_PAGES as SHOWCASE_INCLUDED_PAGES,
   type ProjectEntry,
@@ -769,6 +770,54 @@ export function collectUnanswered(
       return { step: step.title, labels };
     })
     .filter((group) => group.labels.length > 0);
+}
+
+/**
+ * Every step, with how much of it is filled in.
+ *
+ * The review page's whole content. Counts rather than values on purpose: a
+ * client returning months later wants to see where their answers are, and a
+ * page that reprinted all of them would be a worse version of each step —
+ * longer, not editable, and a second place for the same words to drift.
+ *
+ * Shares `collectUnanswered`'s two rules so the two screens can never disagree
+ * about what counts as a question: a retired key is not an unanswered one, and
+ * a step's fields are its schema's keys.
+ */
+export function answerTally(
+  engagement: Engagement,
+  flavour?: ShowcaseFlavour,
+): Array<{
+  key: AnyIntakeStepKey;
+  number: number;
+  title: string;
+  answered: number;
+  total: number;
+}> {
+  return stepsFor(engagement.track, flavour).map((step) => {
+    const stored = readStepAnswers(
+      engagement.track,
+      engagement.answers,
+      step.key,
+    );
+
+    const keys = fieldKeysFor(engagement.track, step.key).filter(
+      (key) =>
+        !(
+          engagement.track === "showcase" &&
+          step.key === "taste" &&
+          RETIRED_TASTE_KEYS.has(key)
+        ),
+    );
+
+    return {
+      key: step.key,
+      number: step.number,
+      title: step.title,
+      answered: keys.filter((key) => !isEmpty(stored[key])).length,
+      total: keys.length,
+    };
+  });
 }
 
 /**

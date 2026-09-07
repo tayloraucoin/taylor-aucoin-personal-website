@@ -169,6 +169,26 @@
   }
 }
 
+/* The same hairline, travelling instead of breathing.
+
+   `ingest-breathe` pulses symmetrically about the centre, which on a full-width
+   rule reads as a bar filling and emptying — a progress shape, on something
+   with no progress to report. Taylor watched a live run and could not tell the
+   thing was working (2026-09-05). A segment that crosses and re-enters says
+   "still going" without ever implying how far along it is, and it still settles
+   rather than strains, which is what the house law was protecting.
+
+   Reduced motion needs no rule of its own — the sitewide collapse below zeroes
+   every animation-duration, leaving the segment parked at the left. */
+@keyframes ingest-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
 @keyframes sheet-slide-in {
   from {
     transform: translateX(100%);

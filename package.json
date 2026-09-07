@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate",
+    "db:setup": "node --env-file-if-exists=.env.local --import tsx scripts/db-setup.ts",
     "intake:create": "node --env-file-if-exists=.env.local --import tsx scripts/create-engagement.ts",
     "intake:render": "node --env-file-if-exists=.env.local --import tsx scripts/render-intake.ts",
     "stripe:catalogue": "node --env-file-if-exists=.env.local --import tsx scripts/setup-stripe-catalogue.ts",

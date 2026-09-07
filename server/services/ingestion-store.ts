@@ -76,18 +76,44 @@ export async function commitIngestion(
     // never write a field the schema does not know — the same law autosave
     // follows, applied to the machine's writes.
     const guarded: Record<string, unknown> = {};
+    const refused = new Set<string>();
+
     for (const [stepKey, object] of Object.entries(patch)) {
       const schema = schemaFor(track, stepKey);
       const parsed = schema?.safeParse(object);
-      if (parsed?.success) guarded[stepKey] = parsed.data;
+      if (parsed?.success) {
+        guarded[stepKey] = parsed.data;
+        continue;
+      }
+
+      refused.add(stepKey);
+
+      // A step that fails here loses everything the run proposed for it, and
+      // for one release it did so in silence — the field keys, never their
+      // values, so a failure is diagnosable without printing a client's CV.
+      console.error(
+        `[ingest] step ${stepKey} failed its shape guard and was not written:`,
+        parsed
+          ? [...new Set(parsed.error.issues.map((i) => i.path.join(".")))].join(
+              ", ",
+            )
+          : "no schema for this step",
+      );
     }
 
+    // Only what actually survived the guard. `fields` is built from the merge,
+    // so a step refused above would otherwise be counted as filled and the
+    // client told we wrote answers that were thrown away on the way to disk.
+    const written = refused.size
+      ? fields.filter((field) => !refused.has(field.stepKey))
+      : fields;
+
     const record: IngestionRecord = {
-      status: statusFor(fields, outcome.failed),
+      status: statusFor(written, outcome.failed),
       ranAt: new Date().toISOString(),
       sourceChars: outcome.sourceChars,
       sourceDigest: outcome.sourceDigest,
-      fields,
+      fields: written,
       failed: outcome.failed,
       ...(outcome.omitted?.length ? { omitted: outcome.omitted } : {}),
       ...(outcome.notReady?.length ? { notReady: outcome.notReady } : {}),

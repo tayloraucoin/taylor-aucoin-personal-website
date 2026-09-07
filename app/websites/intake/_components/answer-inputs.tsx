@@ -28,6 +28,7 @@ export function TextAnswer({
   form,
   name,
   label,
+  labelNode,
   help,
   note,
   placeholder,
@@ -36,6 +37,8 @@ export function TextAnswer({
   form: StepAutosave;
   name: string;
   label: string;
+  /** See `Field` — the on-screen label when a word in it carries emphasis. */
+  labelNode?: ReactNode;
   help?: string;
   note?: string;
   placeholder?: string;
@@ -48,6 +51,7 @@ export function TextAnswer({
     <Field
       id={id}
       label={label}
+      labelNode={labelNode}
       help={help}
       note={note}
       fieldKey={name}

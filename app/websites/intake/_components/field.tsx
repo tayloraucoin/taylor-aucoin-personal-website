@@ -31,6 +31,7 @@ import { MachineFilled, useMachineFilled } from "./machine-filled";
 export function Field({
   id,
   label,
+  labelNode,
   help,
   error,
   note,
@@ -40,6 +41,14 @@ export function Field({
 }: {
   id: string;
   label: string;
+  /**
+   * The label as it renders on screen, when a word inside it carries emphasis.
+   *
+   * `label` stays the plain string and remains what document mode prints, so
+   * the intake markdown can never pick up markup. Callers pass both, and the
+   * two must say the same words.
+   */
+  labelNode?: ReactNode;
   help?: string;
   /**
    * Takes the help line's place when present, following the Conscious
@@ -89,7 +98,7 @@ export function Field({
         htmlFor={id}
         className="block font-body text-[16px] font-medium leading-[1.4] text-(--color-ink)"
       >
-        {label}
+        {labelNode ?? label}
       </label>
 
       {error ? (

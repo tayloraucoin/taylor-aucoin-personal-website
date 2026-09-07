@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { accountsFromLinks } from "@/lib/intake/accounts-from-links";
 import { readIngestionRecord } from "@/lib/intake/ingestion-record";
 import { kindOf } from "@/lib/intake/tracks";
 import { requireEngagement } from "@/server/services/engagement";
@@ -116,6 +117,20 @@ export async function runIngestionForToken(
       kindOf(engagement.answers),
       source,
     );
+
+    // The links box, read as accounts. Deterministic and appended here rather
+    // than proposed by a stage: no model is involved, so it belongs beside the
+    // run rather than inside it. Merged like any other entry batch, which means
+    // it appends to whatever the client has already typed and cannot overwrite
+    // it. See `accountsFromLinks` for why the primer could never do this.
+    const accounts = accountsFromLinks(links);
+    if (accounts.length > 0) {
+      outcome.batches.push({
+        stage: "accounts",
+        stepKey: "access",
+        entries: accounts,
+      });
+    }
 
     const committed = await commitIngestion(
       engagement.id,

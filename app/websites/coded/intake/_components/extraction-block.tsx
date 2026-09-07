@@ -8,6 +8,18 @@ import type { ExtractionMode } from "@/server/services/extract";
 import { extractPastedEntries, type ExtractResult } from "../_actions/extract";
 import { DocHint, DocTag } from "../../../intake/_components/document";
 import { TextArea } from "../../../intake/_components/text-field";
+import { WorkingIndicator } from "../../../intake/_components/working-indicator";
+
+/**
+ * The wait, spent saying what the sort is doing. Short, because this one is.
+ *
+ * [COPY — draft, pending Taylor]
+ */
+const SORTING_NOTES = [
+  "Reading your paste.",
+  "Splitting it into separate entries.",
+  "Almost there. Anything it gets wrong is yours to fix below.",
+] as const;
 
 type State =
   | { status: "idle" }
@@ -169,6 +181,13 @@ export function ExtractionBlock({
           <p className="mt-3 max-w-[48ch] text-xs text-(--color-dim)">
             Sorting is disabled in preview.
           </p>
+        ) : running ? (
+          // Inline rather than the ingest step's modal: this reads one box
+          // rather than rewriting the form, and it finishes in seconds, so
+          // there is nothing here worth taking the page away for.
+          <div className="mt-4 max-w-[48ch]">
+            <WorkingIndicator messages={SORTING_NOTES} />
+          </div>
         ) : (
           <p aria-live="polite" className="mt-3 max-w-[48ch]">
             <Line

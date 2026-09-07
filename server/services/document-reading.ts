@@ -612,29 +612,44 @@ export async function readLinks(
   let failed = 0;
 
   for (const result of results) {
-    const { fileId } = await writeSourceObject({
-      engagementId,
-      fieldKey: LINK_FIELD_KEY,
-      name: result.url,
-      text: result.ok ? result.text : "",
-    });
+    // Per page, and never all-or-nothing. `writeSourceObject` throws when the
+    // storage bucket is missing, and because this loop is sequential a single
+    // throw used to abandon every remaining page — so a misconfigured bucket
+    // silently discarded a whole set of links the model had already fetched
+    // and been paid for (Taylor, 2026-09-05). One page's storage failing is
+    // that page failing, exactly as one page's fetch failing already was.
+    try {
+      const { fileId } = await writeSourceObject({
+        engagementId,
+        fieldKey: LINK_FIELD_KEY,
+        name: result.url,
+        text: result.ok ? result.text : "",
+      });
 
-    await getDb()
-      .update(intakeFiles)
-      .set(
-        result.ok
-          ? {
-              transcribedAt: new Date(),
-              transcript: result.text,
-              transcriptModel: MODEL,
-              transcriptStatus: "done",
-            }
-          : { transcriptStatus: "failed" },
-      )
-      .where(eq(intakeFiles.id, fileId));
+      await getDb()
+        .update(intakeFiles)
+        .set(
+          result.ok
+            ? {
+                transcribedAt: new Date(),
+                transcript: result.text,
+                transcriptModel: MODEL,
+                transcriptStatus: "done",
+              }
+            : { transcriptStatus: "failed" },
+        )
+        .where(eq(intakeFiles.id, fileId));
 
-    if (result.ok) fetched += 1;
-    else failed += 1;
+      if (result.ok) fetched += 1;
+      else failed += 1;
+    } catch (error) {
+      failed += 1;
+      // The host and the reason, never the page's contents.
+      console.error(
+        "[ingest] could not store a fetched page:",
+        error instanceof Error ? error.message : "unknown error",
+      );
+    }
   }
 
   return { fetched, failed };

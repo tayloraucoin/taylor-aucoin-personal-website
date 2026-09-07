@@ -19,6 +19,16 @@ const RIGHTS = [
   { value: "unsure", label: "Not sure — check with me" },
 ] as const;
 
+/**
+ * What a new project entry starts on.
+ *
+ * Most work a client puts in a portfolio is already out in the world, so the
+ * common answer was costing a click per project while the two answers that
+ * actually need care sat one click away either way. A client who changes it
+ * keeps their answer — nothing re-applies this to an entry that exists.
+ */
+export const DEFAULT_RIGHTS = "public";
+
 const PLACEMENT = [
   { value: "front", label: "Front and centre" },
   { value: "archive", label: "In the archive" },

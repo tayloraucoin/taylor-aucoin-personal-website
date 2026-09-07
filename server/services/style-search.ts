@@ -64,6 +64,21 @@ export const MAX_BRIEF_CHARS = 2000;
 const MAX_RESUMES = 3;
 
 /**
+ * The whole search's wall-clock budget.
+ *
+ * There was none, which on a path of up to four model turns and fourteen
+ * server-side web searches meant the only ceiling was the route's own
+ * `maxDuration` of 300s — and a client watching a button that says "Looking…"
+ * had no way to tell a slow run from a hung one (Taylor, 2026-09-05). Set
+ * under that ceiling so this fails as itself, with its own sentence, rather
+ * than as a function timeout.
+ *
+ * `[PROVISIONAL — a live run measured 90s to four minutes; this is the far
+ * end of that plus room, not a measured optimum]`
+ */
+const SEARCH_BUDGET_MS = 240_000;
+
+/**
  * How many searches one run may make.
  *
  * Six was the first value and the first live run spent it on round-up articles
@@ -140,6 +155,19 @@ const resultSchema = z.object({
 });
 
 export type StyleSearchResult = { url: string; host: string; why: string };
+
+/**
+ * What one run found, and what it found that the client has already met.
+ *
+ * `familiar` counts results dropped for being in this pack's own gallery. It
+ * exists so the surface can tell "we looked and found nothing like it" apart
+ * from "what we found, you have already been shown" — two different sentences
+ * that the old `StyleSearchResult[]` return could not distinguish.
+ */
+export type StyleSearchFindings = {
+  results: StyleSearchResult[];
+  familiar: number;
+};
 
 const SEARCH_INSTRUCTION = [
   "You are finding real websites that feel like a description someone gave.",
@@ -221,7 +249,7 @@ export async function searchForStyle(
   engagementId: string,
   answers: unknown,
   brief: string,
-): Promise<StyleSearchResult[]> {
+): Promise<StyleSearchFindings> {
   // An empty brief costs no run. Refusing is cheaper than counting.
   if (!brief.trim()) throw new ExtractionUnavailableError("empty");
 
@@ -253,7 +281,7 @@ export async function findSites(
   answers: unknown,
   brief: string,
   gallery: ExampleSet,
-): Promise<StyleSearchResult[]> {
+): Promise<StyleSearchFindings> {
   const description = brief.trim();
   if (!description) throw new ExtractionUnavailableError("empty");
 
@@ -262,19 +290,40 @@ export async function findSites(
     ...digest(answers, gallery),
   ].join("\n");
 
+  const startedAt = Date.now();
+  const deadline = startedAt + SEARCH_BUDGET_MS;
+  console.info(
+    `[style-search] start · brief=${description.length} chars · gallery=${gallery.sites.length} sites · model=${MODEL}`,
+  );
+
   try {
-    const notes = await runSearch(context);
-    if (!notes.trim()) return [];
+    const notes = await runSearch(context, deadline);
+    if (!notes.trim()) {
+      console.info("[style-search] search turn returned no text");
+      return { results: [], familiar: 0 };
+    }
 
-    const response = await getClient().messages.parse({
-      model: MODEL,
-      max_tokens: 2000,
-      system: SELECT_INSTRUCTION,
-      messages: [{ role: "user", content: notes }],
-      output_config: { format: zodOutputFormat(resultSchema) },
-    });
+    const response = await getClient().messages.parse(
+      {
+        model: MODEL,
+        max_tokens: 2000,
+        system: SELECT_INSTRUCTION,
+        messages: [{ role: "user", content: notes }],
+        output_config: { format: zodOutputFormat(resultSchema) },
+      },
+      { timeout: Math.max(deadline - Date.now(), 1) },
+    );
 
-    return keepUsable(response.parsed_output?.results ?? [], gallery);
+    // A refusal or an unparseable structured output arrives as no results at
+    // all, which is indistinguishable from an honest empty list unless it is
+    // said out loud.
+    if (!response.parsed_output) {
+      console.info("[style-search] select turn returned no parsable output");
+    }
+
+    const findings = keepUsable(response.parsed_output?.results ?? [], gallery);
+    console.info(`[style-search] done in ${Date.now() - startedAt}ms`);
+    return findings;
   } catch (error) {
     if (error instanceof ExtractionUnavailableError) throw error;
 
@@ -295,46 +344,50 @@ export async function findSites(
  * the response looks fine, the text is short, and the client is told nothing
  * came back. Three resumes, then it is a failure and says so.
  */
-async function runSearch(context: string): Promise<string> {
+async function runSearch(context: string, deadline: number): Promise<string> {
   const client = getClient();
   const messages: Anthropic.MessageParam[] = [
     { role: "user", content: context },
   ];
 
-  let response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 4000,
-    system: SEARCH_INSTRUCTION,
-    messages,
-    tools: [
-      {
-        type: "web_search_20260209",
-        name: "web_search",
-        max_uses: MAX_SEARCHES,
-        blocked_domains: BLOCKED_DOMAINS,
-      },
-    ],
-  });
+  const turn = (): Promise<Anthropic.Message> => {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) throw new ExtractionUnavailableError("failed");
 
+    return client.messages.create(
+      {
+        model: MODEL,
+        max_tokens: 4000,
+        system: SEARCH_INSTRUCTION,
+        messages,
+        tools: [
+          {
+            type: "web_search_20260209",
+            name: "web_search",
+            max_uses: MAX_SEARCHES,
+            blocked_domains: BLOCKED_DOMAINS,
+          },
+        ],
+      },
+      // Whatever is left of the budget, so the last turn cannot outlive it.
+      { timeout: remaining },
+    );
+  };
+
+  let response = await turn();
   let resumes = 0;
+
   while (response.stop_reason === "pause_turn" && resumes < MAX_RESUMES) {
     messages.push({ role: "assistant", content: response.content });
-    response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4000,
-      system: SEARCH_INSTRUCTION,
-      messages,
-      tools: [
-        {
-          type: "web_search_20260209",
-          name: "web_search",
-          max_uses: MAX_SEARCHES,
-          blocked_domains: BLOCKED_DOMAINS,
-        },
-      ],
-    });
+    response = await turn();
     resumes += 1;
   }
+
+  console.info(
+    `[style-search] search turns=${resumes + 1} · stop=${response.stop_reason} · searches=${
+      response.usage?.server_tool_use?.web_search_requests ?? "?"
+    }`,
+  );
 
   if (response.stop_reason === "pause_turn") {
     throw new ExtractionUnavailableError("failed");
@@ -357,34 +410,50 @@ async function runSearch(context: string): Promise<string> {
 function keepUsable(
   results: readonly { url: string; why: string }[],
   set: ExampleSet,
-): StyleSearchResult[] {
+): StyleSearchFindings {
   const gallery = galleryHosts(set);
   const seen = new Set<string>();
   const kept: StyleSearchResult[] = [];
+  let familiar = 0;
+  let unusable = 0;
 
   for (const result of results) {
     let url: URL;
     try {
       url = new URL(result.url.trim());
     } catch {
+      unusable += 1;
       continue;
     }
-    if (url.protocol !== "https:" && url.protocol !== "http:") continue;
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      unusable += 1;
+      continue;
+    }
 
     const host = hostOf(url.toString());
     if (seen.has(host)) continue;
 
     // Anything already in this pack's gallery is not a discovery — showing
     // someone a site they were shown two sections ago reads as not having
-    // looked.
-    if (gallery.has(url.hostname.replace(/^www\./, ""))) continue;
+    // looked. Counted rather than merely skipped: a brief whose every good
+    // answer is already in the gallery is a *hit*, and reporting it as
+    // "nothing convincing came back" is the search calling its own success a
+    // failure (Taylor, 2026-09-05).
+    if (gallery.has(url.hostname.replace(/^www\./, ""))) {
+      familiar += 1;
+      continue;
+    }
 
     seen.add(host);
     kept.push({ url: url.toString(), host, why: result.why.trim() });
     if (kept.length >= MAX_RESULTS) break;
   }
 
-  return kept;
+  console.info(
+    `[style-search] model returned ${results.length} · kept ${kept.length} · already in gallery ${familiar} · unusable ${unusable}`,
+  );
+
+  return { results: kept, familiar };
 }
 
 /** The hosts already in this pack's gallery, so a result cannot repeat one. */

@@ -6,6 +6,24 @@ import { GhostButton } from "@/components/ui/GradientButton";
 import type { StyleSearchResult } from "@/server/services/style-search";
 import { searchStyle } from "../../_actions/style-search";
 import { TextArea } from "../../../../intake/_components/text-field";
+import { WorkingIndicator } from "../../../../intake/_components/working-indicator";
+
+/**
+ * What the wait says while a real search is running.
+ *
+ * The first line sets the expectation, because a couple of minutes is a long
+ * time to watch a button and this is the only place a client is told to expect
+ * it. The rest report the stage the run is actually in.
+ *
+ * [COPY — draft, pending Taylor]
+ */
+const SEARCH_NOTES = [
+  "Reading your description, and the sites you've rated so far.",
+  "Out searching the web now. This is the slow part.",
+  "Opening the promising ones to see how they actually look.",
+  "Narrowing it down to the ones worth your time.",
+  "Still going. A careful search takes a few minutes.",
+] as const;
 
 /** [COPY — draft] — every string in this component. */
 const COPY = {
@@ -21,6 +39,8 @@ const COPY = {
   found:
     "Found these. We haven't checked them — some may be dead or nothing like you meant. Open the ones that sound right.",
   none: "Nothing convincing came back. Try different words, or put what you're picturing in the brain dump below — that reaches a person.",
+  familiar:
+    "What came back closest, you've already seen — it's in the gallery above. Rate those, or try different words here.",
   failed:
     "That didn't work — your description is still here. Try again in a moment.",
   budget:
@@ -35,7 +55,7 @@ type State =
   | { status: "idle" }
   | { status: "running" }
   | { status: "results"; results: StyleSearchResult[] }
-  | { status: "none" }
+  | { status: "none"; familiar: number }
   | { status: "failed"; reason: "rate_limited" | "failed" | "link" | "empty" };
 
 /**
@@ -90,7 +110,7 @@ export function StyleSearch({
 
     setState(
       outcome.results.length === 0
-        ? { status: "none" }
+        ? { status: "none", familiar: outcome.familiar }
         : { status: "results", results: outcome.results },
     );
   };
@@ -137,6 +157,16 @@ export function StyleSearch({
         </span>
       </div>
 
+      {/* The wait is minutes, not seconds, and a button that only changes its
+          own label gave a client no way to tell a slow search from a stuck
+          one (Taylor, 2026-09-05). Inline rather than a modal: this runs long
+          enough that taking the page away would be the worse offence. */}
+      {running ? (
+        <div className="mt-5 max-w-[48ch]">
+          <WorkingIndicator messages={SEARCH_NOTES} />
+        </div>
+      ) : null}
+
       {/* One short announcement per state, out of sight.
           The visible blocks below are not live regions: a list of six result
           cards inside one would be read out in full every time a search
@@ -147,7 +177,9 @@ export function StyleSearch({
           : state.status === "results"
             ? `Found ${state.results.length} ${state.results.length === 1 ? "site" : "sites"}.`
             : state.status === "none"
-              ? COPY.none
+              ? state.familiar > 0
+                ? COPY.familiar
+                : COPY.none
               : state.status === "failed"
                 ? "Nothing was searched."
                 : ""}
@@ -173,9 +205,12 @@ export function StyleSearch({
         </p>
       ) : null}
 
+      {/* A search whose every good answer was already in the gallery found
+          something. Saying "nothing convincing came back" there is the feature
+          reporting a hit as a miss. */}
       {state.status === "none" ? (
         <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-          {COPY.none}
+          {state.familiar > 0 ? COPY.familiar : COPY.none}
         </p>
       ) : null}
 

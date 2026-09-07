@@ -583,7 +583,9 @@ function TitlePreview({
   if (!displayName && !line) return null;
 
   return (
-    <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-4">
+    // `mb-7` matches what `Field` puts under every question, because this card
+    // sits between two of them and without it the next question crowds it.
+    <div className="mb-7 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-4">
       <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
         How this reads on the site
       </p>

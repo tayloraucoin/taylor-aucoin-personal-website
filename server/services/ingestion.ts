@@ -230,6 +230,14 @@ export async function ingestFromText(
   const fields = ingestionFieldsFor(kind);
   const entryStages = entryStagesFor(kind);
 
+  // Counts and durations only — never a quote, a field value, or a line of
+  // what the client pasted. A successful run used to print nothing at all,
+  // which left "did it even fire?" unanswerable (Taylor, 2026-09-05).
+  const startedAt = Date.now();
+  console.info(
+    `[ingest] run start · kind=${kind} · sources=${kept.length} · chars=${text.length} · stages=${["fields", ...entryStages.map((s) => s.stage)].join("+")}`,
+  );
+
   const [fieldsResult, ...entryResults] = await Promise.allSettled([
     proposeFromDocument(text, fields),
     ...entryStages.map(({ stage }) =>
@@ -267,6 +275,14 @@ export async function ingestFromText(
       failed.push(stage);
     }
   });
+
+  console.info(
+    `[ingest] run done in ${Date.now() - startedAt}ms · proposals=${proposals.length}/${fields.length} · ${
+      batches
+        .map((batch) => `${batch.stage}=${batch.entries.length}`)
+        .join(" · ") || "no entry stages"
+    }${failed.length ? ` · failed=${failed.join(",")}` : ""}`,
+  );
 
   // Every stage threw: nothing landed, and nothing should be written.
   if (failed.length === 1 + entryStages.length) {

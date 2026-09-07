@@ -12,7 +12,7 @@ import {
 } from "@/server/services/engagement";
 import { saveStepAnswers } from "@/server/services/submission";
 
-export type StartResult = { error: string } | never;
+export type StartResult = { error: string } | { sent: true } | never;
 
 /**
  * The showcase track's own resume cookie.
@@ -74,8 +74,27 @@ export async function startShowcaseIntake(
   // platform site last year and is now buying a coded one is starting a
   // genuinely new engagement, not returning to their old one.
   if (existing?.token && existing.engagement.track === "showcase") {
-    await setResumeCookie(existing.token);
-    redirect(withPromo(showcaseIntakeRoutes.entry(existing.token)));
+    // Typing an address must never *show* anyone that address's intake. This
+    // form is public, so for one release anybody who knew a client's email
+    // could submit it and land inside their answers with their cookie set.
+    //
+    // The browser that started it already holds the token, so matching it
+    // discloses nothing and keeps the "lost the tab" path instant. Every other
+    // browser gets the link at the address instead of on the screen, which is
+    // the same magic-link shape the resume email already uses.
+    const held = await readShowcaseResumeCookie();
+
+    if (held === existing.token) {
+      await setResumeCookie(existing.token);
+      redirect(withPromo(showcaseIntakeRoutes.entry(existing.token)));
+    }
+
+    void sendResumeLink(
+      existing.engagement,
+      buildShowcaseIntakeUrl(existing.token),
+    ).catch(() => {});
+
+    return { sent: true };
   }
 
   // The thing's own name when it has one, the contact's when it does not.

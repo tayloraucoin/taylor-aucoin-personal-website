@@ -47,3 +47,31 @@ begin
   end if;
 end
 $$;
+
+-- The other two buckets the application expects.
+--
+-- Both were dashboard-owned and created by nothing in this repo, which is how
+-- a working tree ended up serving `Bucket not found` on the invoice archive and
+-- on every page the ingestion step fetched (2026-09-05). Bucket ids are
+-- case-sensitive and the dashboard displays them uppercased, so naming them
+-- here also settles the casing question in the one place that can be diffed:
+-- `PRIVATE` is what `archiveBucket()` defaults to, and `public` is
+-- `CAPTURE_BUCKET`.
+--
+-- `PRIVATE` holds invoice PDFs and must never be public — a public URL to a
+-- client's billing is a disclosure with a CDN in front of it. `public` holds
+-- example-site screenshots, which are shown to every client in the taste
+-- gallery and are public by intent.
+do $$
+begin
+  if to_regclass('storage.buckets') is not null then
+    insert into storage.buckets (id, name, public)
+    values ('PRIVATE', 'PRIVATE', false)
+    on conflict (id) do update set public = false;
+
+    insert into storage.buckets (id, name, public)
+    values ('public', 'public', true)
+    on conflict (id) do update set public = true;
+  end if;
+end
+$$;

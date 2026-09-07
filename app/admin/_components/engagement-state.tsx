@@ -51,9 +51,25 @@ export function EngagementState({ summary }: { summary: EngagementSummary }) {
       </p>
 
       {summary.completedAt ? (
-        <p className="text-sm text-(--color-body)">
-          Questionnaire finished {WHEN.format(summary.completedAt)}
-        </p>
+        <>
+          <p className="text-sm text-(--color-body)">
+            Questionnaire finished {WHEN.format(summary.completedAt)}
+          </p>
+
+          {/* Clients can now reopen their own answers from the done screen, so
+              "finished" stopped meaning "unchanged since". The document that
+              was emailed at completion is a snapshot; this page is not. Said
+              here because the alternative is Taylor building from a version
+              the client has since corrected. */}
+          {summary.lastActivityAt &&
+          summary.lastActivityAt > summary.completedAt ? (
+            <p className="text-sm text-(--color-c2)">
+              Edited since — last change{" "}
+              {WHEN.format(summary.lastActivityAt)}. The emailed document is
+              older than these answers.
+            </p>
+          ) : null}
+        </>
       ) : (
         <p className="text-sm text-(--color-body)">
           Questionnaire step {summary.currentStep} of {summary.totalSteps}

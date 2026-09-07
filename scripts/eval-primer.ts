@@ -742,6 +742,12 @@ export async function runIngestionSet(
     if (outside.length > 0) fail(`${goldenCase.id} — fields outside the ${spec.kind} inventory: ${outside.join(", ")}`);
 
     for (const batch of outcome.batches) {
+      // `accounts` is not a model stage — it is the step-1 links box turned
+      // into step-10 entries by `accountsFromLinks`, appended beside the run
+      // rather than produced by it. There is no prompt here to grade, and
+      // `runIngestion` never emits one, so this is belt to that brace.
+      if (batch.stage === "accounts") continue;
+
       const expect = spec.entries?.[batch.stage] ?? {};
       const graded = gradeEntries(
         {

@@ -18,7 +18,15 @@ import {
  * boundary arrives as an opaque digest.
  */
 export type StyleSearchOutcome =
-  | { ok: true; results: StyleSearchResult[] }
+  | {
+      ok: true;
+      results: StyleSearchResult[];
+      /**
+       * How many good matches were dropped for already being in this client's
+       * own gallery, so an empty list can say which kind of empty it is.
+       */
+      familiar: number;
+    }
   | { ok: false; reason: "rate_limited" | "empty" | "failed" | "link" };
 
 const input = z.object({
@@ -58,14 +66,13 @@ export async function searchStyle(
   if (engagement.track !== "showcase") return { ok: false, reason: "failed" };
 
   try {
-    return {
-      ok: true,
-      results: await searchForStyle(
-        engagement.id,
-        engagement.answers,
-        parsed.data.brief,
-      ),
-    };
+    const findings = await searchForStyle(
+      engagement.id,
+      engagement.answers,
+      parsed.data.brief,
+    );
+
+    return { ok: true, results: findings.results, familiar: findings.familiar };
   } catch (error) {
     if (error instanceof ExtractionUnavailableError) {
       return { ok: false, reason: error.reason };

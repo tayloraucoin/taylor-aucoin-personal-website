@@ -372,10 +372,19 @@ export function StepTaste({
         </div>
       </Field>
 
+      {/* "never" is underlined because this question is the inverse of the
+          three above it, and a client skimming a column of taste questions
+          reads it as another one of them. The plain string still goes to the
+          document. */}
       <TextAnswer
         form={form}
         name="neverFeelLike"
         label="And one thing it must never feel like"
+        labelNode={
+          <>
+            And one thing it must <u>never</u> feel like
+          </>
+        }
       />
 
       {/* Moved from the media step, where it sat among the logo and the file
