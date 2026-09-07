@@ -39,7 +39,7 @@ const PROMO_CODES: Record<string, PromoGrant> = {
   // mechanism is ruled; the split is a labeled default: $800 half, or $1,520
   // paid in full at the same 5% the standard offer gives. Changing either
   // number is a seed edit plus one `yarn stripe:catalogue --apply`.
-  KRYSHAN_1600: {
+  APPROVED_FRIENDS_SAVE: {
     overridesBuildKey: {
       half: "showcase_deposit_1600",
       full: "showcase_full_1600",
