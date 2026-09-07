@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { ExampleGroup, ExampleSet } from "@/content/intake-examples";
 import { GROUP_ORDER } from "@/content/intake-examples/taxonomy";
 import { mintEntryKey } from "@/lib/intake/entry-key";
+import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { picksOf, TASTE_PICKS_ASKED } from "@/lib/intake/taste-picks";
+import { picksOf, spectrumsOf, TASTE_PICKS_ASKED } from "@/lib/intake/taste-picks";
 import { copyPackFor } from "@/lib/intake/tracks";
 import type {
   TastePick,
@@ -31,12 +32,23 @@ import { GalleryOverlay } from "../taste/gallery-overlay";
 import { MotionNotice } from "../taste/motion-notice";
 import type { Pick } from "../taste/pick-block";
 import { ReferenceList } from "../taste/reference-list";
+import { SpectrumBlock } from "../taste/spectrum-block";
 import { StyleSearch } from "../taste/style-search";
 import { TasteGroup } from "../taste/taste-group";
 import { YourPicks } from "../taste/your-picks";
 
 /** How long the met-the-ask line holds the footer before it hands the slot back. */
 const MET_LINGER_MS = 6000;
+
+/**
+ * The fallback for a pack that defines no forks (D-PORT-29).
+ *
+ * Module-level so it is one stable reference. Written inline as `?? []` it was
+ * a fresh array every render, which silently defeated both `useMemo`s below —
+ * the same hazard the `sites` memo above guards against, and the one the
+ * lint rule caught here.
+ */
+const NO_SPECTRUMS: readonly TasteSpectrum[] = [];
 
 /**
  * Step 6 — Taste.
@@ -252,6 +264,46 @@ export function StepTaste({
     : [];
 
   /**
+   * The nine forks, split by the group that decides where each one renders
+   * (D-PORT-29). Memoised because both filters run on every keystroke otherwise.
+   */
+  const spectrums = pack.tasteSpectrums ?? NO_SPECTRUMS;
+  const structureForks = useMemo(
+    () => spectrums.filter((s) => s.group === "structure"),
+    [spectrums],
+  );
+  const feelForks = useMemo(
+    () => spectrums.filter((s) => s.group === "feel"),
+    [spectrums],
+  );
+  const spectrumValues = spectrumsOf(form.values);
+
+  /**
+   * Writes one fork, or removes it.
+   *
+   * A cleared fork **deletes its key** rather than storing a sentinel: the
+   * schema has no zero, the document prints what is present, and "answered then
+   * cleared" and "never touched" are the same fact. Through the updater form
+   * for the reason every write on this step is (M-PORT-17) — two rows saved in
+   * the same tick would otherwise both compute from the object this render
+   * closed over, and the second would discard the first.
+   */
+  const saveSpectrum = (id: string, next: number | undefined) => {
+    form.setValue("spectrums", (previous: unknown) => {
+      const base =
+        previous && typeof previous === "object" && !Array.isArray(previous)
+          ? { ...(previous as Record<string, number>) }
+          : spectrumsOf(form.values);
+
+      const draft = { ...base };
+      if (next === undefined) delete draft[id];
+      else draft[id] = next;
+      return draft;
+    });
+    form.flush();
+  };
+
+  /**
    * Presses a search result into the client's own list.
    *
    * Through the updater form for the same reason every array write on this step
@@ -336,6 +388,37 @@ export function StepTaste({
         />
       ) : null}
 
+      {/* The structural forks, gated on the first pick — and the gate is the
+          argument, not decoration. D-PORT-20 retired ground tone, stillness and
+          density because a client answers those cold and it tells us nothing.
+          These generalise from sites they have *just* reacted to, with their own
+          shortlist directly above; asked before any of that they would be the
+          same retired radios in a nicer control. No picks, no block. */}
+      {picks.length > 0 ? (
+        <SpectrumBlock
+          legend="Which way it leans"
+          // [COPY — draft]
+          intro="Now the same reactions, generalised. Drag toward whichever end sounds more like your site — the middle is a real answer, and so is leaving one alone."
+          spectrums={structureForks}
+          values={spectrumValues}
+          onChange={saveSpectrum}
+        />
+      ) : null}
+
+      {/* The feel forks, ungated — the client is the only authority on these, so
+          there is nothing to warm them up with, and nothing in the gallery could
+          answer them anyway. Placed directly above the three words because that
+          field asks the same question as free text; this is its structured half
+          and should make the boxes easier to fill in rather than longer. */}
+      <SpectrumBlock
+        legend="How it should feel"
+        // [COPY — draft]
+        intro="Nothing to do with layout — just the feeling someone should get in the first two seconds. Go with your gut; there are no wrong answers here, only yours."
+        spectrums={feelForks}
+        values={spectrumValues}
+        onChange={saveSpectrum}
+      />
+
       {/* Three boxes, not one comma-separated field — the v2 doc's own shape,
           and three answers rather than one list is what it gets you.
 
@@ -372,10 +455,19 @@ export function StepTaste({
         </div>
       </Field>
 
+      {/* "never" is underlined because this question is the inverse of the
+          three above it, and a client skimming a column of taste questions
+          reads it as another one of them. The plain string still goes to the
+          document. */}
       <TextAnswer
         form={form}
         name="neverFeelLike"
         label="And one thing it must never feel like"
+        labelNode={
+          <>
+            And one thing it must <u>never</u> feel like
+          </>
+        }
       />
 
       {/* Moved from the media step, where it sat among the logo and the file

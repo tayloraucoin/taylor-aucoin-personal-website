@@ -29,7 +29,7 @@ import { ExtractionBlock } from "../extraction-block";
 import { fills, ForKinds, hasGroup } from "../for-kinds";
 import { OfferingEntryCard } from "../offer-entry";
 import { PieceEntryCard } from "../piece-entry";
-import { ProjectEntryCard } from "../project-entry";
+import { DEFAULT_RIGHTS, ProjectEntryCard } from "../project-entry";
 import { ServiceEntryCard } from "../service-entry";
 import { TopFive } from "../top-five";
 
@@ -129,6 +129,10 @@ export function StepWork({
               hasContent,
             ),
             ...incoming.map((entry) => ({
+              // Public is the answer for most work and the one a client would
+              // otherwise tick a dozen times; the two careful answers stay one
+              // click away. Their own value always wins.
+              ...(entryKey === "projects" ? { rights: DEFAULT_RIGHTS } : {}),
               ...entry,
               entryKey: mintEntryKey(),
             })),
@@ -141,7 +145,10 @@ export function StepWork({
           <RepeatableBlock<ProjectEntry>
             items={projects}
             onChange={(next) => form.setValue("projects", next)}
-            emptyItem={() => ({ entryKey: mintEntryKey() })}
+            emptyItem={() => ({
+              entryKey: mintEntryKey(),
+              rights: DEFAULT_RIGHTS,
+            })}
             addLabel={pack.workAddLabel}
             renderItem={(item, index, update) => (
               <>

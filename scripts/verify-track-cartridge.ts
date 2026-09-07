@@ -50,7 +50,8 @@ import {
   GROUP_ORDER,
   tagsFor,
 } from "@/content/intake-examples/taxonomy";
-import { hostOf, picksOf } from "@/lib/intake/taste-picks";
+import { hostOf, picksOf, spectrumsOf } from "@/lib/intake/taste-picks";
+import { SHOWCASE_FLAVOURS, resolvePack } from "@/lib/intake/showcase-copy";
 import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
 import { stepTasteSchema } from "@/lib/validators/showcase-intake";
 import type { IntakeAnswers } from "@/lib/types/intake";
@@ -774,6 +775,79 @@ function checkTasteContract(): void {
   check("hostOf hands back what it cannot parse", hostOf("not a url"), "not a url");
   check("hostOf on nothing is nothing", hostOf(undefined), "");
 
+  /* ── The spectrums (D-PORT-29) ──────────────────────────────────────── */
+
+  const filmForks = resolvePack("film").tasteSpectrums ?? [];
+
+  check("the film pack defines a set of forks", filmForks.length > 0, true);
+  check(
+    "both blocks are populated in the film pack",
+    [
+      filmForks.some((f) => f.group === "structure"),
+      filmForks.some((f) => f.group === "feel"),
+    ],
+    [true, true],
+  );
+
+  // A pack with no set renders no block. Asserted so the absence path stays
+  // exercised by the oracle rather than discovered by a client (D-PORT-12).
+  check(
+    "at least one pack has no forks at all",
+    SHOWCASE_FLAVOURS.some((flavour) => !resolvePack(flavour).tasteSpectrums),
+    true,
+  );
+
+  // Ids are storage and outlive the copy, so a duplicate would mean two forks
+  // sharing one stored answer.
+  check(
+    "every fork id is unique across both blocks",
+    filmForks.length,
+    new Set(filmForks.map((f) => f.id)).size,
+  );
+
+  // Types cannot see an empty string, and an end with no descriptor is a fork
+  // with nothing to read — which is the whole content of a row now that the
+  // per-stop phrases and the site names are gone.
+  check(
+    "every fork carries a label, both ends, and both descriptors",
+    filmForks
+      .filter(
+        (f) =>
+          !f.label.trim() ||
+          !f.ends.low.trim() ||
+          !f.ends.high.trim() ||
+          !f.means.low.trim() ||
+          !f.means.high.trim(),
+      )
+      .map((f) => f.id),
+    [],
+  );
+
+  // The stored record, read defensively. A value off the track renders a thumb
+  // past the end of its own control, and decimals are answers rather than
+  // rounding errors — 4.3 is where the client put it.
+  check(
+    "spectrumsOf keeps any position on the track, decimals included",
+    spectrumsOf({
+      spectrums: {
+        meetFirst: 4.3,
+        levity: 1,
+        era: 7,
+        tooHigh: 7.1,
+        tooLow: 0.9,
+        notANumber: "3",
+        notFinite: Number.NaN,
+      },
+    }),
+    { meetFirst: 4.3, levity: 1, era: 7 },
+  );
+  check("no spectrums at all reads as none", spectrumsOf({}), {});
+  check(
+    "a spectrums key of the wrong shape reads as none",
+    spectrumsOf({ spectrums: [1, 2] }),
+    {},
+  );
+
   /**
    * The retired keys survive the shape guard.
    *
@@ -793,14 +867,28 @@ function checkTasteContract(): void {
     picks: [{ siteKey: "x", score: 7, note: "this one" }],
     references: [{ entryKey: "e1", url: "a.com", score: 3, source: "search" }],
     styleBrief: "dark but warm",
+    spectrums: { meetFirst: 4.3, retiredFork: 2.5 },
   });
   check(
     "every retired and legacy taste key survives the shape guard",
     Object.keys(guarded).sort(),
     [
       "closeTab", "darkOrLight", "density", "favourites", "linksWorthALook",
-      "notes", "picks", "references", "stillness", "styleBrief",
+      "notes", "picks", "references", "spectrums", "stillness", "styleBrief",
     ].sort(),
+  );
+  /* The open record is the point: an id the copy pack no longer defines keeps
+     its stored answer, exactly as the D-PORT-20 keys above do. A closed enum
+     here would erase it on the client's next keystroke. */
+  check(
+    "a fork id the pack no longer defines still survives the guard",
+    guarded.spectrums?.retiredFork,
+    2.5,
+  );
+  check(
+    "the guard keeps a decimal position rather than rounding it",
+    guarded.spectrums?.meetFirst,
+    4.3,
   );
   check(
     "the guard keeps a score and refuses to invent one",
@@ -901,6 +989,65 @@ function checkTasteContract(): void {
     document.includes("were asked for"),
     false,
   );
+
+  /* ── The forks in the document (D-PORT-29) ───────────────────────────── */
+
+  const forks = showcaseSpectrumDocument();
+
+  // Words, not ids and integers. A document Taylor has to read with the copy
+  // pack open is a document that failed.
+  check(
+    "an answered fork prints its number and the end it leans toward",
+    forks.includes("Who they meet first — 1.2 — toward The work"),
+    true,
+  );
+  check(
+    "the two blocks are named and kept apart",
+    [forks.includes("Structure"), forks.includes("Feel")],
+    [true, true],
+  );
+  check(
+    "a feel fork prints the same way",
+    forks.includes("Cool or warm — 6.4 — toward Warm"),
+    true,
+  );
+  // The even band is a real answer and says so, rather than picking a side by
+  // a tenth of a point.
+  check(
+    "a position near the middle prints as even, naming both ends",
+    forks.includes(
+      "Understated or bold — 4.1 — even between Understated and Bold",
+    ),
+    true,
+  );
+
+  // The reason `spectrums` is an open record rather than an enum of ids.
+  check(
+    "an answer to a fork the pack no longer defines still prints, and is marked",
+    forks.includes("retiredFork — 3.0 of 7.0 (no longer in the copy pack)"),
+    true,
+  );
+
+  // Stated intent beside revealed preference, unresolved on purpose.
+  check(
+    "the picks' own tags print beside the forks for comparison",
+    forks.includes(
+      "Their picks, for comparison — 1 picked — dark ×1, alive ×1, balanced ×1",
+    ),
+    true,
+  );
+  check(
+    "no agreement score is computed",
+    /agreement|match(es)? your picks|\d+% aligned/i.test(forks),
+    false,
+  );
+
+  // An unanswered fork is absent, not printed as a blank or a centre value.
+  check(
+    "a fork nobody answered prints nothing at all",
+    forks.includes("Serious or playful"),
+    false,
+  );
 }
 
 /**
@@ -958,6 +1105,65 @@ function showcasePickDocument(): string {
         about: { displayName: "Sample Person", whatYouDo: "Makes things" },
         taste: {
           picks: [{ siteKey: "sample-site", score: 6, note: "the type" }],
+        },
+      },
+    },
+    files: [],
+    generatedAt: at,
+    gallery: {
+      curated: true,
+      sites: [
+        {
+          key: "sample-site",
+          name: "Sample Person",
+          url: "https://sample.test/work",
+          role: "Cinematographer · commercials",
+          group: "dark-cinematic",
+          axes: { ground: "dark", motion: "alive", density: "balanced" },
+          styles: ["hover-preview"],
+          build: "custom",
+          embed: false,
+          checkedOn: "2026-08-22",
+          captures: [],
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * A film engagement that answered the forks (D-PORT-29).
+ *
+ * `disciplines: ["film"]` is load-bearing: the document resolves the copy pack
+ * through `galleryFlavourOf`, and only the film pack defines a set — so without
+ * it every answer here would print as an id nobody could read, which is exactly
+ * the failure the assertions below exist to catch.
+ *
+ * `retiredFork` is an id the pack has never defined. It stands for the real
+ * case this shape was chosen for: a spectrum removed from a pack after someone
+ * answered it. The answer must survive and print.
+ */
+function showcaseSpectrumDocument(): string {
+  const at = new Date("2026-09-07T17:00:00.000Z");
+
+  return renderIntakeMarkdown({
+    engagement: {
+      ...fixtureEngagement(),
+      track: "showcase",
+      answers: {
+        about: {
+          displayName: "Sample Person",
+          whatYouDo: "Makes things",
+          disciplines: ["film"],
+        },
+        taste: {
+          picks: [{ siteKey: "sample-site", score: 6 }],
+          spectrums: {
+            meetFirst: 1.2,
+            temperature: 6.4,
+            presence: 4.1,
+            retiredFork: 3,
+          },
         },
       },
     },

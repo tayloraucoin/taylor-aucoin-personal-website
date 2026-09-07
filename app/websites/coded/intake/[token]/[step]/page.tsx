@@ -14,6 +14,8 @@ import {
   flavourFor,
   galleryFlavourFor,
   kindOf,
+  nextStep,
+  previousStep,
 } from "@/lib/intake/tracks";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 import type {
@@ -156,6 +158,16 @@ export default async function ShowcaseIntakeStepPage({
   // nothing on screen.
   const ingestion = readIngestionRecord(engagement.answers);
   const ingested = ingestedFor(ingestion, step.key);
+
+  // The ingestion step is spent once. It reads everything the client gave us
+  // and rewrites most of the form from it, so a second visit can only invite
+  // them to paste into a box that will never be read again (Taylor,
+  // 2026-09-05). The record is the authority, not the client's history.
+  const ingestionDone = step.key === "ingest" && ingestion !== null;
+  if (ingestionDone) {
+    const after = nextStep(engagement.track, step, flavour);
+    if (after) redirect(showcaseIntakeRoutes.step(token, after.key));
+  }
 
   const uploadsFor = (fieldKey: string) => listUploads(engagement.id, fieldKey);
 
@@ -429,6 +441,13 @@ export default async function ShowcaseIntakeStepPage({
         token={token}
         step={step}
         flavour={flavour}
+        // Back off the step after ingestion, once ingestion is spent: the
+        // redirect above would bounce them straight here, and a control that
+        // returns you where you stood reads as broken.
+        previousLocked={
+          ingestion !== null &&
+          previousStep(engagement.track, step, flavour)?.key === "ingest"
+        }
         saveSlot={<FooterSaveIndicator />}
       >
         <StepProposals token={token} proposals={proposals} />

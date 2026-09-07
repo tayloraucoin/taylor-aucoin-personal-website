@@ -129,8 +129,19 @@ const DESCRIPTIONS: Record<string, string> = {
   kindWords: "Testimonials or quotes from clients, in the client's words.",
   notableNames: "Clients, employers, or collaborators worth naming.",
   sayMore: "Anything else about how the work should read on the site.",
+  /**
+   * Only a stated plan for the home page, never an inference about one.
+   *
+   * The description used to end "and what must not be there", which against a
+   * bio containing no home-page sentence at all pulled the model to the
+   * nearest quotable thing a client had ruled out — returning "personal
+   * interests are not stuff to put on the film site" as their home page brief
+   * (Taylor, 2026-09-05). What belongs on a home page is a decision the client
+   * makes on step 9, and a document that has not made it should leave this
+   * empty.
+   */
   homeBrainDump:
-    "What they want on the home page — what someone should hit first, and what must not be there.",
+    "Only if the text explicitly plans the website's home page — what it says should lead, or be featured first. Leave empty unless the source is talking about the home page itself.",
   currentBio: "An existing bio or About text written in their own voice.",
   personVoice: "Whether the site speaks as I or as they.",
   writtenNotes: "Notes on how they want the writing to sound.",

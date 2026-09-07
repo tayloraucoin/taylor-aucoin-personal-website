@@ -10,17 +10,21 @@ import {
   videosOf,
 } from "@/lib/intake/project-videos";
 import {
+  galleryFlavourOf,
   hostOf,
   picksOf,
   siteByKey,
+  spectrumsOf,
   STALE_CHECK_DAYS,
   TASTE_PICKS_ASKED,
 } from "@/lib/intake/taste-picks";
 import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
-import { fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
+import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
+import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
+import { copyPackFor, fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
 import type { ExampleSet } from "@/content/intake-examples";
 import { BUILD_LEVELS, EXAMPLE_GROUPS } from "@/content/intake-examples/taxonomy";
-import type { IntakeTrackKey } from "@/lib/types/intake";
+import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 import {
   INCLUDED_PAGES as SHOWCASE_INCLUDED_PAGES,
   type ProjectEntry,
@@ -394,10 +398,22 @@ function showcaseFlags(
   }
 
   // Scope, stated as a fact rather than a charge. Nothing here bills anyone.
+  //
+  // Typed pages count. They are chosen by being added (`CustomPages`), the
+  // step's own running total has counted them since 2026-09-04, and a flag that
+  // read only the checklist disagreed with the number the client was shown: five
+  // ticked plus three typed reads "8/5" on their screen and raised nothing here,
+  // so the conversation this flag exists to start never started.
   const pages = Array.isArray(site.pages) ? (site.pages as string[]) : [];
-  if (pages.length > SHOWCASE_INCLUDED_PAGES) {
+  const customPages = Array.isArray(site.pagesCustom)
+    ? (site.pagesCustom as string[])
+    : [];
+  const chosen =
+    pages.length + customPages.filter((page) => page.trim().length > 0).length;
+
+  if (chosen > SHOWCASE_INCLUDED_PAGES) {
     flags.push(
-      `${pages.length} pages chosen; ${SHOWCASE_INCLUDED_PAGES} are included — confirm the extras with them before anything is charged.`,
+      `${chosen} pages chosen; ${SHOWCASE_INCLUDED_PAGES} are included — confirm the extras with them before anything is charged.`,
     );
   }
 
@@ -772,6 +788,54 @@ export function collectUnanswered(
 }
 
 /**
+ * Every step, with how much of it is filled in.
+ *
+ * The review page's whole content. Counts rather than values on purpose: a
+ * client returning months later wants to see where their answers are, and a
+ * page that reprinted all of them would be a worse version of each step —
+ * longer, not editable, and a second place for the same words to drift.
+ *
+ * Shares `collectUnanswered`'s two rules so the two screens can never disagree
+ * about what counts as a question: a retired key is not an unanswered one, and
+ * a step's fields are its schema's keys.
+ */
+export function answerTally(
+  engagement: Engagement,
+  flavour?: ShowcaseFlavour,
+): Array<{
+  key: AnyIntakeStepKey;
+  number: number;
+  title: string;
+  answered: number;
+  total: number;
+}> {
+  return stepsFor(engagement.track, flavour).map((step) => {
+    const stored = readStepAnswers(
+      engagement.track,
+      engagement.answers,
+      step.key,
+    );
+
+    const keys = fieldKeysFor(engagement.track, step.key).filter(
+      (key) =>
+        !(
+          engagement.track === "showcase" &&
+          step.key === "taste" &&
+          RETIRED_TASTE_KEYS.has(key)
+        ),
+    );
+
+    return {
+      key: step.key,
+      number: step.number,
+      title: step.title,
+      answered: keys.filter((key) => !isEmpty(stored[key])).length,
+      total: keys.length,
+    };
+  });
+}
+
+/**
  * The taste step's shortfall against the number it asks for, or null.
  *
  * Kept apart from `collectUnanswered` because the two say different things.
@@ -860,6 +924,121 @@ function quoted(note: string | undefined): string | null {
  * picked something, and our curation changing afterwards is our business, not a
  * reason to lose their reaction.
  */
+/**
+ * Which end a position leans toward, in the document's words.
+ *
+ * The same bands the client saw on the slider, so the document cannot describe
+ * an answer differently from the control that took it. `EVEN_BAND` is duplicated
+ * rather than shared: importing it would make this server module depend on a
+ * `"use client"` component, which is the wrong direction across that boundary
+ * for one number.
+ */
+function leanText(spectrum: TasteSpectrum, value: number): string {
+  const centre = 4;
+  if (Math.abs(value - centre) <= 0.4) {
+    return `— even between ${spectrum.ends.low} and ${spectrum.ends.high}`;
+  }
+  return `— toward ${value < centre ? spectrum.ends.low : spectrum.ends.high}`;
+}
+
+/**
+ * The forks, as lines a person reads (D-PORT-29).
+ *
+ * Grouped the way the step renders them, and each answer printed as the number
+ * the client set **plus the end it leans toward** — an id and a bare decimal
+ * would make Taylor hold the copy pack in his head to read his own document.
+ *
+ * The direction is a word and the strength is the number, which is why no
+ * per-position copy has to exist: "6.4 — toward Warm" and "4.9 — toward Warm"
+ * say different things without either needing a phrase written for it.
+ *
+ * A stored id the current pack no longer defines still prints, by its raw id
+ * with a marker, for exactly the reason `tastePickLine` prints an archived
+ * pick: the client answered something, and our copy changing afterwards is our
+ * business, not a reason to lose their answer.
+ *
+ * The order is the pack's, not the record's — object key order is insertion
+ * order, which for a client who answered the last fork first would print the
+ * blocks backwards.
+ */
+function tasteSpectrumLines(
+  spectrums: readonly TasteSpectrum[],
+  answers: Record<string, number>,
+): string[] {
+  const lines: string[] = [];
+  const seen = new Set<string>();
+
+  for (const group of ["structure", "feel"] as const) {
+    const inGroup = spectrums
+      .filter((spectrum) => spectrum.group === group)
+      .filter((spectrum) => answers[spectrum.id] !== undefined);
+
+    if (inGroup.length === 0) continue;
+
+    lines.push(group === "structure" ? "Structure" : "Feel");
+    for (const spectrum of inGroup) {
+      seen.add(spectrum.id);
+      const value = answers[spectrum.id]!;
+      lines.push(
+        `  ${spectrum.label} — ${value.toFixed(1)} ${leanText(spectrum, value)}`,
+      );
+    }
+  }
+
+  const orphans = Object.entries(answers).filter(([id]) => !seen.has(id));
+  if (orphans.length > 0) {
+    lines.push("Answers to questions no longer asked");
+    for (const [id, value] of orphans) {
+      lines.push(
+        `  ${id} — ${value.toFixed(1)} of 7.0 (no longer in the copy pack)`,
+      );
+    }
+  }
+
+  return lines;
+}
+
+/**
+ * What the picks say about the same axes, for reading beside the forks.
+ *
+ * **Stated intent and revealed preference, side by side, unresolved.** The
+ * whole value of asking the forks *as well as* showing the gallery is that the
+ * two can disagree — five dark grid picks under a fork parked at "the site is a
+ * piece of work too" is the most useful thing on the form, and it exists only
+ * because both instruments are present.
+ *
+ * Deliberately **not** an agreement score. A number would invite trusting it,
+ * and this is a thing for a person to look at for two seconds and form a
+ * question from. Derived from picks already resolved above; writes nothing.
+ */
+function tastePickTally(
+  gallery: ExampleSet,
+  picks: readonly { siteKey: string }[],
+): string | null {
+  const sites = picks
+    .map((pick) => siteByKey(gallery, pick.siteKey))
+    .filter((site): site is NonNullable<typeof site> => Boolean(site));
+
+  if (sites.length === 0) return null;
+
+  const tally = (values: readonly string[]): string =>
+    Object.entries(
+      values.reduce<Record<string, number>>((counts, value) => {
+        counts[value] = (counts[value] ?? 0) + 1;
+        return counts;
+      }, {}),
+    )
+      .sort((a, b) => b[1] - a[1])
+      .map(([value, count]) => `${value} ×${count}`)
+      .join(", ");
+
+  return `${sites.length} picked — ${tally([
+    ...sites.map((site) => site.axes.ground),
+    ...sites.map((site) => site.axes.motion),
+    ...sites.map((site) => site.axes.density),
+  ])}`;
+}
+
 function tastePickLine(
   gallery: ExampleSet,
   pick: { siteKey: string; score?: number; note?: string },
@@ -971,6 +1150,32 @@ function resolveShowcaseKeys(
       next.picks = picks.map((pick) => tastePickLine(gallery, pick));
     }
     delete next.favourites;
+
+    /**
+     * The forks, resolved through the same pack the client answered them in.
+     *
+     * `galleryFlavourOf` rather than a second flavour parameter threaded
+     * through `renderIntakeMarkdown`: that signature is what
+     * `yarn verify:tracks` calls with no database at all (M-PORT-41), and
+     * widening it to carry copy would make the oracle harder to run than the
+     * thing it verifies.
+     */
+    const spectrumAnswers = spectrumsOf(stored);
+    if (Object.keys(spectrumAnswers).length > 0) {
+      const pack = copyPackFor(galleryFlavourOf(engagement.answers));
+      const lines = tasteSpectrumLines(
+        pack.tasteSpectrums ?? [],
+        spectrumAnswers,
+      );
+
+      // The picks' own tags, last, so stated and revealed are read together.
+      const tally = tastePickTally(gallery, picks);
+      if (tally) lines.push(`Their picks, for comparison — ${tally}`);
+
+      next.spectrums = lines;
+    } else {
+      delete next.spectrums;
+    }
 
     const references = Array.isArray(stored.references)
       ? (stored.references as TasteReference[])

@@ -156,3 +156,36 @@ export function siteByKey(
 ): ExampleSite | undefined {
   return set.sites.find((site) => site.key === key);
 }
+
+/**
+ * A client's spectrum answers, cleaned (D-PORT-29).
+ *
+ * Read defensively rather than trusted, for the same reason `picksOf` is: this
+ * runs against whatever is in the answers document, including rows written
+ * before the key existed and rows a future slice reshapes. A value outside
+ * 1.0 to 7.0, or one that is not a finite number at all, is dropped — an
+ * out-of-range thumb position renders off the end of its own track, and no
+ * amount of care at the write seam makes stored data trustworthy.
+ *
+ * Decimals are kept as they are. The track is continuous, so 4.3 is the
+ * client's answer and not a rounding error.
+ *
+ * **Unknown ids survive.** A spectrum retired from a pack keeps its stored
+ * answer here; resolving the id to words is the caller's job, and both callers
+ * (the step and the intake document) handle a miss by naming the raw id rather
+ * than dropping the answer.
+ */
+export function spectrumsOf(taste: Record<string, unknown>): Record<string, number> {
+  const stored = taste.spectrums;
+  if (!stored || typeof stored !== "object" || Array.isArray(stored)) return {};
+
+  return Object.fromEntries(
+    Object.entries(stored as Record<string, unknown>).filter(
+      (entry): entry is [string, number] =>
+        typeof entry[1] === "number" &&
+        Number.isFinite(entry[1]) &&
+        entry[1] >= 1 &&
+        entry[1] <= 7,
+    ),
+  );
+}

@@ -114,10 +114,19 @@ export type IngestionRecord = {
   notReady?: string[];
 };
 
-/** A set of entries one extraction stage produced, before keys are minted. */
+/**
+ * A set of entries bound for one repeatable block, before keys are minted.
+ *
+ * `stage` is the answer key the entries land under, and for every model stage
+ * it is also the extraction mode's name — which is what
+ * `EXTRACTION_MODES` is for. `"accounts"` is the one member that no model
+ * produces: the links a client typed on step 1 are turned into step 10's
+ * accounts by `accountsFromLinks`, arithmetic rather than a stage, and it rides
+ * this same shape because the merge it needs is identical.
+ */
 export type EntryBatch = {
-  stage: Exclude<IngestionStage, "fields">;
-  stepKey: "experience" | "work";
+  stage: Exclude<IngestionStage, "fields"> | "accounts";
+  stepKey: "experience" | "work" | "access";
   entries: Record<string, string>[];
 };
 

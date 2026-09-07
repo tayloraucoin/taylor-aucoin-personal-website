@@ -5,6 +5,7 @@ import {
   depositAddonSelectionInput,
   extraPagesInput,
   promoCodeInput,
+  seoPostsInput,
 } from "@/lib/validators/intake";
 import { buildPlanInput } from "@/lib/validators/showcase-intake";
 import { createDepositCheckout } from "@/server/services/deposit";
@@ -14,12 +15,14 @@ import { requireEngagement } from "@/server/services/engagement";
  * Opens Checkout for a coded-track build plus any ticked add-ons.
  *
  * Thin: resolve through the seam, call the service, redirect. The browser
- * proposes a *plan*, a set of catalogue keys, and a page **count** — never a
+ * proposes a *plan*, a set of catalogue keys, and two **counts** — never a
  * product id and never an amount. The service resolves the plan against the
  * live catalogue and verifies every price against Stripe before a session
  * exists, which is the whole reason this is a server action and not a fetch
- * with a body. The count is bounded twice: here, at the edge, and again in the
- * service that builds the line item.
+ * with a body. Each count is bounded twice: here, at the edge, and again in
+ * the service that builds the line item. Blog posts are additionally gated
+ * there on the blog add-on being bought, which this edge does not check and
+ * must not — the service reads the settled basket, this only reads a number.
  *
  * `redirect` throws by design in Next, so nothing follows it.
  */
@@ -29,6 +32,7 @@ export async function startShowcaseCheckout(
   addonKeys: unknown = [],
   promoCode?: unknown,
   extraPages: unknown = 0,
+  seoPosts: unknown = 0,
 ): Promise<void> {
   const engagement = await requireEngagement(token);
 
@@ -45,7 +49,10 @@ export async function startShowcaseCheckout(
     promoCodeInput.parse(promoCode),
     false,
     buildPlanInput.parse(plan),
-    extraPagesInput.parse(extraPages),
+    {
+      extraPages: extraPagesInput.parse(extraPages),
+      seoPosts: seoPostsInput.parse(seoPosts),
+    },
   );
 
   redirect(url);

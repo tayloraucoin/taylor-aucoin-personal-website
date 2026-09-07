@@ -169,6 +169,26 @@
   }
 }
 
+/* The same hairline, travelling instead of breathing.
+
+   `ingest-breathe` pulses symmetrically about the centre, which on a full-width
+   rule reads as a bar filling and emptying — a progress shape, on something
+   with no progress to report. Taylor watched a live run and could not tell the
+   thing was working (2026-09-05). A segment that crosses and re-enters says
+   "still going" without ever implying how far along it is, and it still settles
+   rather than strains, which is what the house law was protecting.
+
+   Reduced motion needs no rule of its own — the sitewide collapse below zeroes
+   every animation-duration, leaving the segment parked at the left. */
+@keyframes ingest-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
 @keyframes sheet-slide-in {
   from {
     transform: translateX(100%);
@@ -414,6 +434,111 @@ body::after {
 
 .taste-scale:hover::-moz-range-thumb,
 .taste-scale:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+}
+
+/* The taste step's bipolar spectrum (D-PORT-29).
+   A sibling of `.taste-scale`, not a variant of it: that control measures a
+   quantity from an unscored zero, this one marks a position between two named
+   ends. Written out rather than folded into the selectors above so the two stay
+   greppable and neither drifts into the other. */
+.taste-spectrum {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* the tap target, not the track */
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Inset, where `.taste-scale` offsets outward.
+
+   That control's box hugs its own track; this one is 44px tall for the tap
+   target around a 2px line, so a ring drawn 4px *outside* it reached up into
+   the readout line above and collided with the stop's words — seen on screen
+   2026-09-07. Drawn inside, the ring still frames the whole tap target it
+   describes and touches nothing else. */
+.taste-spectrum:focus-visible {
+  outline: 2px solid var(--color-c2);
+  outline-offset: -4px;
+  border-radius: var(--radius);
+}
+
+/* No fill. A gradient growing from the left end would read as "more", and on a
+   fork between two equal ends there is no more — only nearer. The thumb's
+   position is the entire answer. */
+.taste-spectrum::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-faint);
+}
+
+.taste-spectrum::-moz-range-track {
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-faint);
+}
+
+.taste-spectrum::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -9px; /* centres a 20px thumb on a 2px track */
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+.taste-spectrum::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--color-c2);
+  background: var(--color-card);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+/* Unset. The thumb stays visible and goes dim.
+
+   It was hidden entirely at first, mirroring how `.taste-scale` parks an
+   unscored answer before its first tick with an empty fill. That was a
+   misreading: `PickScale` keeps its thumb — the empty fill and the dash are
+   what say "not answered". Painting nothing here left nine horizontal hairlines
+   with two words under each, which no client would recognise as a control at
+   all. Verified by eye on 2026-09-07 and changed on the spot.
+
+   A dim thumb at centre cannot be mistaken for an answer of "middle": the
+   readout beside it says "—" rather than the centre stop's words, and an
+   answered thumb is gold.
+
+   `--color-dim` and not `--color-faint`: faint is an 11%-alpha hairline token,
+   which as the only outline of an interactive control lands far under the 3:1
+   non-text contrast floor. A control nobody can see is not a restrained
+   control. */
+.taste-spectrum[data-unset="true"]::-webkit-slider-thumb {
+  border-color: var(--color-dim);
+  background: transparent;
+}
+
+.taste-spectrum[data-unset="true"]::-moz-range-thumb {
+  border-color: var(--color-dim);
+  background: transparent;
+}
+
+/* Suppressed while unset: a glow around an invisible thumb is a ghost. */
+.taste-spectrum:not([data-unset="true"]):hover::-webkit-slider-thumb,
+.taste-spectrum:not([data-unset="true"]):focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+}
+
+.taste-spectrum:not([data-unset="true"]):hover::-moz-range-thumb,
+.taste-spectrum:not([data-unset="true"]):focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
 }
 

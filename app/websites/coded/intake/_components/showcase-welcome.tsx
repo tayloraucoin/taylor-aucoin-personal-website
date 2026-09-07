@@ -85,8 +85,10 @@ export function ShowcaseWelcome({
       </div>
 
       <div className="mt-9 flex flex-wrap items-center gap-4">
+        {/* The step's own name came next on screen anyway, so the button was
+            saying it twice. [COPY — draft, pending Taylor] */}
         <GradientButton href={showcaseIntakeRoutes.step(token, firstStep.key)}>
-          Start — {firstStep.title.toLowerCase()}
+          Start →
         </GradientButton>
 
         <SendMyLinkButton token={token} />

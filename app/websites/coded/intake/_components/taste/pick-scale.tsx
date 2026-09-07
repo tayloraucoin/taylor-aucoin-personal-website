@@ -11,6 +11,24 @@ const HIGH = "Build me this";
 const MAX = 7;
 
 /**
+ * The thumb's diameter, matching `.taste-scale` in `globals.css`.
+ *
+ * A range input's thumb travels between its own edges rather than the full
+ * track width, so a stop's true centre is inset by half a thumb at each end.
+ * Laying the ticks out with `justify-between` ignored that and put "1" at the
+ * far left and "7" at the far right, while the thumb's own 1 and 7 sat a
+ * tenth of the track inside them — which is the drift that made the increments
+ * feel wrong. Both the ticks and the fill now use the same arithmetic the
+ * browser does.
+ */
+const THUMB_PX = 20;
+
+/** Where the centre of `stop` actually sits along the track. */
+function stopOffset(stop: number): string {
+  return `calc(${stop / MAX} * (100% - ${THUMB_PX}px) + ${THUMB_PX / 2}px)`;
+}
+
+/**
  * A real slider, and still no fabricated score.
  *
  * Seven tap-targets in a row was a segmented control wearing a scale's clothes;
@@ -88,8 +106,13 @@ export function PickScale({
     );
   }
 
-  /** The filled portion, drawn on the input itself so there is one element. */
-  const filled = (position / MAX) * 100;
+  /**
+   * The filled portion, drawn on the input itself so there is one element.
+   *
+   * Flat zero at the unscored stop rather than the arithmetic's half-thumb, so
+   * "you have not answered this" is an empty track and not a short gold stub.
+   */
+  const filled = position === 0 ? "0%" : stopOffset(position);
 
   return (
     <div>
@@ -128,23 +151,24 @@ export function PickScale({
           onChange(next === 0 ? undefined : next);
         }}
         className="taste-scale mt-4 w-full"
-        style={{ ["--filled" as string]: `${filled}%` }}
+        style={{ ["--filled" as string]: filled }}
       />
 
       {/* Ticks under the track, so the seven stops are visible rather than
-          something you discover by dragging. */}
+          something you discover by dragging. Each one is placed at its own
+          stop rather than spread evenly, so a numeral sits under the thumb
+          that selects it. */}
       <div
         aria-hidden
-        className="mt-2 flex justify-between px-[9px] font-mono text-[10px] text-(--color-dim)"
+        className="relative mt-2 h-3 font-mono text-[10px] text-(--color-dim)"
       >
         {Array.from({ length: MAX }, (_, index) => index + 1).map((stop) => (
           <span
             key={stop}
-            className={
-              value !== undefined && stop <= value
-                ? "text-(--color-c2)"
-                : undefined
-            }
+            className={`absolute top-0 -translate-x-1/2 ${
+              value !== undefined && stop <= value ? "text-(--color-c2)" : ""
+            }`}
+            style={{ left: stopOffset(stop) }}
           >
             {stop}
           </span>

@@ -35,6 +35,7 @@ export function ShowcasePayGate({
   full,
   addons,
   extraPage,
+  seoPost,
   promoCode,
 }: {
   engagement: Engagement;
@@ -45,6 +46,7 @@ export function ShowcasePayGate({
   addons: SellableProduct[];
   /** Priced per page, so it is counted rather than ticked. Null if unsellable. */
   extraPage: SellableProduct | null;
+  seoPost: SellableProduct | null;
   promoCode?: string;
 }) {
   const toView = (product: SellableProduct): CheckoutAddonView => ({
@@ -88,6 +90,7 @@ export function ShowcasePayGate({
         fullCents={full?.priceCents ?? null}
         addons={addonViews}
         extraPage={extraPage ? toView(extraPage) : null}
+        seoPost={seoPost ? toView(seoPost) : null}
         initialPromoCode={promoCode}
       />
 

@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gte, isNull, sql } from "drizzle-orm";
 import { Resend } from "resend";
 import { getDb } from "@/db/client";
 import {
@@ -126,12 +126,18 @@ async function sendOnce(input: {
   }
 
   try {
-    await getResend().emails.send({
+    // Resend reports a refusal in the response rather than by throwing, so an
+    // unchecked call returns success for mail that was never accepted — which
+    // is how a whole tier's email failed while every log line said "sent".
+    const sent = await getResend().emails.send({
       from: from(),
       to: input.to,
       subject: input.subject,
       text: input.text,
     });
+
+    if (sent.error) throw new Error(sent.error.message);
+
     return true;
   } catch (error) {
     if (eventId) {
@@ -159,7 +165,10 @@ export async function sendRawEmail(input: {
   /** Filename + bytes. Used by the invoice rail to attach the PDF. */
   attachments?: Array<{ filename: string; content: Buffer }>;
 }): Promise<void> {
-  await getResend().emails.send({
+  // Callers claim their send-once row before calling and roll it back when this
+  // throws, so a refusal that returned quietly would burn the claim and the
+  // message both. Resend refuses in the response, never by throwing.
+  const sent = await getResend().emails.send({
     from: from(),
     to: input.to,
     subject: input.subject,
@@ -167,6 +176,10 @@ export async function sendRawEmail(input: {
     text: input.text,
     ...(input.attachments?.length ? { attachments: input.attachments } : {}),
   });
+
+  if (sent.error) {
+    throw new Error(`Resend refused the message: ${sent.error.message}`);
+  }
 }
 
 /** Whether a given kind has already gone out for this engagement. */
@@ -229,11 +242,76 @@ export async function sendCompletionConfirmation(
   });
 }
 
+/**
+ * How many resume links one engagement may be sent in a window, and how long
+ * that window is.
+ *
+ * `resume_link` is deliberately outside the send-once index — a client moving
+ * from a van to a kitchen laptop may ask twice, and refusing the second would
+ * be the system being clever at their expense. What it had instead was no
+ * ceiling at all: the button could be pressed forever, and the public start
+ * form sends one to any address that already has an intake open, so an
+ * attacker could mail-bomb a client by submitting their address in a loop.
+ *
+ * Six an hour leaves every honest use untouched — nobody switching devices
+ * asks seven times in an hour — and turns an unbounded amplifier into a
+ * nuisance. `[PROVISIONAL — the numbers, not the mechanism]`
+ */
+const RESUME_LINK_LIMIT = 6;
+const RESUME_LINK_WINDOW_MS = 60 * 60 * 1000;
+
+/**
+ * Whether this engagement has had its fill of one kind of email for now.
+ *
+ * Reads the ledger that already exists rather than introducing a limiter: a
+ * row is written for every send, so counting recent ones is the rate limit,
+ * and it is per-engagement and durable across instances by construction.
+ */
+async function overLimit(
+  engagementId: string,
+  kind: EmailKind,
+  limit: number,
+  windowMs: number,
+): Promise<boolean> {
+  const since = new Date(Date.now() - windowMs);
+
+  const [row] = await getDb()
+    .select({ count: sql<number>`count(*)::int` })
+    .from(emailEvents)
+    .where(
+      and(
+        eq(emailEvents.engagementId, engagementId),
+        eq(emailEvents.kind, kind),
+        gte(emailEvents.createdAt, since),
+      ),
+    );
+
+  return (row?.count ?? 0) >= limit;
+}
+
 /** The resume link, on request or after the first save. */
 export async function sendResumeLink(
   engagement: Engagement,
   resumeUrl: string,
 ): Promise<boolean> {
+  // Silently, and reporting success. The caller's honest answer to a client is
+  // "we've sent the link to that address" either way: one has just gone, and
+  // saying "you have asked too many times" to whoever is on the other end
+  // tells an attacker they found a real engagement.
+  if (
+    await overLimit(
+      engagement.id,
+      "resume_link",
+      RESUME_LINK_LIMIT,
+      RESUME_LINK_WINDOW_MS,
+    )
+  ) {
+    console.warn(
+      `[intake] resume_link rate limit reached for engagement ${engagement.id}`,
+    );
+    return true;
+  }
+
   const firstName =
     engagement.contactName.split(" ")[0] ?? engagement.contactName;
 

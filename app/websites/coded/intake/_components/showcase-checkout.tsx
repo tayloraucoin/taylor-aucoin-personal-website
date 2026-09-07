@@ -2,8 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useIsPreview } from "@/components/intake/preview-mode";
+import {
+  includedBy,
+  isUnlocked,
+  withoutBundled,
+} from "@/lib/intake/addon-bundles";
 import { formatMoney } from "@/lib/intake/money";
-import { EXTRA_PAGES_MAX } from "@/lib/validators/intake";
+import { EXTRA_PAGES_MAX, SEO_POSTS_MAX } from "@/lib/validators/intake";
 import { checkShowcasePromoCode } from "../_actions/promo";
 import { AddonInfo } from "../../../intake/_components/addon-info";
 import type { CheckoutAddonView } from "../../../intake/_components/deposit-checkout";
@@ -49,6 +54,7 @@ export function ShowcaseCheckout({
   fullCents,
   addons,
   extraPage,
+  seoPost,
   initialPromoCode,
 }: {
   token: string;
@@ -62,6 +68,12 @@ export function ShowcaseCheckout({
    * case nothing is offered rather than a count that cannot be charged.
    */
   extraPage: CheckoutAddonView | null;
+  /**
+   * Blog posts, priced per post. Null when no sellable row exists — and shown
+   * only once the blog itself is ticked, because a post has nowhere to go
+   * without one.
+   */
+  seoPost: CheckoutAddonView | null;
   initialPromoCode?: string;
 }) {
   // Promo validation round-trips to a server action against a real token.
@@ -73,6 +85,7 @@ export function ShowcaseCheckout({
    * selection — nothing is added to the total until the client picks a number.
    */
   const [pages, setPages] = useState(0);
+  const [posts, setPosts] = useState(0);
   const [agreed, setAgreed] = useState(false);
 
   const [promoOpen, setPromoOpen] = useState(Boolean(initialPromoCode));
@@ -134,13 +147,46 @@ export function ShowcaseCheckout({
     });
   };
 
+  /*
+   * What is actually being bought, after bundling.
+   *
+   * One add-on includes another (the admin panel includes the Supabase setup
+   * it runs on), so a key that is ticked *and* included by another ticked key
+   * is not a charge. Dropping it here rather than un-ticking it in `toggle`
+   * matters: someone who ticks Supabase, then ticks the admin panel, then
+   * un-ticks the admin panel gets their Supabase tick back, because it was
+   * never thrown away — it was only overridden while the panel was on.
+   */
+  const chargeable = withoutBundled([...selected]);
+
   const addonTotal = addons
-    .filter((a) => selected.has(a.key))
+    .filter((a) => chargeable.includes(a.key))
     .reduce((sum, a) => sum + a.amountCents, 0);
 
   // The one multiplication on this screen, and it is display only. Stripe does
   // the arithmetic that matters, from the same count and its own price.
   const pagesCents = extraPage ? extraPage.amountCents * pages : 0;
+
+  /*
+   * Posts are only sellable alongside the blog they publish to. The gate reads
+   * `chargeable`, the same list the server bills from, so the screen and the
+   * charge can never disagree about whether the blog is in the basket.
+   */
+  const postsUnlocked =
+    seoPost !== null && isUnlocked("showcase_seo_post", chargeable);
+
+  const postsCents = postsUnlocked && seoPost ? seoPost.amountCents * posts : 0;
+
+  /*
+   * Untick the blog and the post count goes with it. Without this the number
+   * survives out of sight, and a client who changed their mind, then changed
+   * it back, would find posts they no longer remember choosing sitting in
+   * their total. The server drops them either way; this keeps the screen
+   * honest about it.
+   */
+  useEffect(() => {
+    if (!postsUnlocked && posts !== 0) setPosts(0);
+  }, [postsUnlocked, posts]);
 
   const planCents =
     plan === "full" && typeof effectiveFull === "number"
@@ -150,7 +196,9 @@ export function ShowcaseCheckout({
         : null;
 
   const totalCents =
-    planCents === null ? null : planCents + addonTotal + pagesCents;
+    planCents === null
+      ? null
+      : planCents + addonTotal + pagesCents + postsCents;
 
   const payLabel =
     totalCents === null
@@ -190,15 +238,28 @@ export function ShowcaseCheckout({
 
           <div className="mt-3 divide-y divide-(--color-faint) border-y border-(--color-faint)">
             {addons.map((addon) => {
-              const isOn = selected.has(addon.key);
+              // Included by something else that is ticked: unchecked,
+              // disabled, and never charged. Shown rather than hidden — a row
+              // that vanished would read as a bug and the client would never
+              // learn they are getting it — but the box stays empty, because a
+              // tick on this screen means "you chose this" and they did not.
+              const owner = includedBy(addon.key, selected);
+              const includedByName = owner
+                ? (addons.find((a) => a.key === owner)?.name ?? null)
+                : null;
+              const isOn = selected.has(addon.key) && !includedByName;
+
               return (
                 <label
                   key={addon.key}
-                  className="flex min-h-12 cursor-pointer items-start gap-3.5 py-3.5"
+                  className={`flex min-h-12 items-start gap-3.5 py-3.5 ${
+                    includedByName ? "cursor-default" : "cursor-pointer"
+                  }`}
                 >
                   <input
                     type="checkbox"
                     checked={isOn}
+                    disabled={includedByName !== null}
                     onChange={() => toggle(addon.key)}
                     className="peer sr-only"
                   />
@@ -236,12 +297,22 @@ export function ShowcaseCheckout({
                           isOn ? "text-(--color-ink)" : "text-(--color-dim)"
                         }`}
                       >
-                        {formatMoney(addon.amountCents, currency)}
+                        {includedByName
+                          ? "Included"
+                          : formatMoney(addon.amountCents, currency)}
                       </span>
                     </span>
                     <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
                       {addon.description}
                     </span>
+                    {includedByName ? (
+                      <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                        {/* [COPY — pending Taylor] */}
+                        Comes with the {includedByName.toLowerCase()} — it
+                        can&apos;t run without one, so you&apos;re not paying
+                        for it twice.
+                      </span>
+                    ) : null}
                     <AddonInfo productKey={addon.key} />
                   </span>
                 </label>
@@ -298,6 +369,60 @@ export function ShowcaseCheckout({
               {pages > 0 ? (
                 <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
                   {formatMoney(pagesCents, currency)}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Counted like pages, but gated unlike them: this section does not
+          exist until the blog above is ticked, because a post written for a
+          site with no blog is work the client cannot use. The gate is a fit
+          rule, not a ladder — the server refuses the same sale independently. */}
+      {postsUnlocked && seoPost ? (
+        <div className="mt-9">
+          <p className="font-body text-[16px] font-medium leading-[1.4] text-(--color-ink)">
+            Posts to start with?
+          </p>
+
+          <div className="mt-3 border-y border-(--color-faint) py-3.5">
+            <div className="flex items-baseline justify-between gap-4">
+              <label
+                htmlFor="seo-posts"
+                className="font-body text-[16px] leading-[1.4] text-(--color-body)"
+              >
+                {seoPost.name}
+              </label>
+              <span className="shrink-0 font-mono text-[12px] tracking-[.06em] text-(--color-dim)">
+                {formatMoney(seoPost.amountCents, currency)} each
+              </span>
+            </div>
+
+            <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+              {/* [COPY — pending Taylor] */}
+              {seoPost.description} Nothing here is urgent — the blog works
+              whether or not you start with posts, and you can commission them
+              any time after launch.
+            </p>
+
+            <div className="mt-3 flex items-center gap-3">
+              <NativeSelect
+                id="seo-posts"
+                value={posts}
+                onChange={(event) => setPosts(Number(event.target.value))}
+                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
+              >
+                {Array.from({ length: SEO_POSTS_MAX + 1 }, (_, n) => (
+                  <option key={n} value={n}>
+                    {n === 0 ? "None" : n === 1 ? "1 post" : `${n} posts`}
+                  </option>
+                ))}
+              </NativeSelect>
+
+              {posts > 0 ? (
+                <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
+                  {formatMoney(postsCents, currency)}
                 </span>
               ) : null}
             </div>
@@ -373,8 +498,9 @@ export function ShowcaseCheckout({
           token={token}
           label={payLabel}
           plan={plan}
-          addonKeys={[...selected]}
+          addonKeys={chargeable}
           extraPages={pages}
+          seoPosts={posts}
           promoCode={active?.code}
           disabled={!agreed || plan === null}
         />

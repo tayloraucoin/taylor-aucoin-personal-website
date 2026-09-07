@@ -212,10 +212,19 @@ export function useStepAutosave({
     [io, key, preview, stepKey, token],
   );
 
-  const flush = useCallback(() => {
+  /**
+   * Saves now rather than at the end of the debounce.
+   *
+   * Returns the save, so a caller that is about to leave the page can wait for
+   * it. Most callers are `onBlur` and ignore the promise, which is the same
+   * fire-and-forget behaviour this always had; the one that does not is the
+   * add-on checkout, where the next thing to happen is a hard navigation to
+   * Stripe and an unawaited save would race it.
+   */
+  const flush = useCallback((): Promise<void> => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!dirtyRef.current) return;
-    void attempt();
+    if (!dirtyRef.current) return Promise.resolve();
+    return attempt();
   }, [attempt]);
 
   /**
@@ -258,6 +267,27 @@ export function useStepAutosave({
       if (debounceRef.current) clearTimeout(debounceRef.current);
       if (dirtyRef.current) void io.save(token, stepKey, valuesRef.current);
     };
+  }, [io, stepKey, token]);
+
+  /**
+   * A hard navigation — closing the tab, a link off the site, the hand-off to
+   * Stripe — does not unmount anything, so the cleanup above never runs.
+   *
+   * Best effort by nature: the request may not outlive the page. The local
+   * write in `setValue` is still the actual no-loss promise, and this is the
+   * cheap extra chance to have it on the server too. `pagehide` rather than
+   * `beforeunload`, which fires on the bfcache path as well and does not
+   * prompt anybody.
+   */
+  useEffect(() => {
+    function onPageHide() {
+      if (!dirtyRef.current) return;
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      void io.save(token, stepKey, valuesRef.current);
+    }
+
+    window.addEventListener("pagehide", onPageHide);
+    return () => window.removeEventListener("pagehide", onPageHide);
   }, [io, stepKey, token]);
 
   /** Coming back online is the moment to retry, not a timer. */

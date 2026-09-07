@@ -136,8 +136,7 @@ export const TAX_EDITING = "txcd_20060035";
 export const STRIPE_PRODUCTS = {
   "Platform · Website build": {
     previousName: "Website build",
-    description:
-      "Five-page website built from your questionnaire answers.",
+    description: "Five-page website built from your questionnaire answers.",
     taxCode: TAX_WEBSITE,
   },
   "Platform · Website changes — standard round": {
@@ -154,7 +153,8 @@ export const STRIPE_PRODUCTS = {
   },
   "Platform · Extra page": {
     previousName: "Extra page",
-    description: "An additional page beyond the standard five. Priced per page.",
+    description:
+      "An additional page beyond the standard five. Priced per page.",
     taxCode: TAX_WEBSITE,
   },
   "Platform · Online booking setup": {
@@ -205,7 +205,8 @@ export const STRIPE_PRODUCTS = {
   },
   "Coded · Extra page": {
     previousName: "Extra page (portfolio)",
-    description: "An additional page beyond the included five. Priced per page.",
+    description:
+      "An additional page beyond the included five. Priced per page.",
     taxCode: TAX_WEBSITE,
   },
   "Coded · Booking setup": {
@@ -573,7 +574,10 @@ const STRIPE_CATALOGUE_IDS: Partial<
       productId: "prod_VBKcpA4cRNRKg9",
       priceId: "price_1UB1qMRzOAOTo9VYWDuJbETi",
     },
-    sandbox: { productId: "", priceId: "" },
+    sandbox: {
+      productId: "prod_VBKcpA4cRNRKg9",
+      priceId: "price_1UAxxGRvld9FSVemrtTSxV3j",
+    },
   },
   // Same blank-nickname situation as `showcase_animations` above.
   showcase_supabase_setup: {
@@ -581,7 +585,10 @@ const STRIPE_CATALOGUE_IDS: Partial<
       productId: "prod_VBKcUI6zv0pkzI",
       priceId: "price_1UB1qORzOAOTo9VYIsHOY6IA",
     },
-    sandbox: { productId: "", priceId: "" },
+    sandbox: {
+      productId: "prod_VBKcUI6zv0pkzI",
+      priceId: "price_1UAxxZRvld9FSVemYPCzIsnZ",
+    },
   },
   // See the duplicate-Product note above — this is the newer of the two.
   // Same blank-nickname situation as `showcase_animations` too.
@@ -590,14 +597,20 @@ const STRIPE_CATALOGUE_IDS: Partial<
       productId: "prod_VBOdWxEXtPuVvV",
       priceId: "price_1UB1qRRzOAOTo9VYYNCvIF8L",
     },
-    sandbox: { productId: "", priceId: "" },
+    sandbox: {
+      productId: "prod_VBKdEcOdoXmeJs",
+      priceId: "price_1UAxxyRvld9FSVemJrwEYsg1",
+    },
   },
   showcase_seo_post: {
     production: {
       productId: "prod_VBKdgEuWyt5kqB",
       priceId: "price_1UB1qTRzOAOTo9VYNr2D6GuR",
     },
-    sandbox: { productId: "", priceId: "" },
+    sandbox: {
+      productId: "prod_VBKdgEuWyt5kqB",
+      priceId: "price_1UAxyLRvld9FSVemy1F1wn42",
+    },
   },
 };
 
@@ -636,7 +649,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.deposit,
     key: "deposit",
-    stripe: { product: "Platform · Website build", nickname: "Deposit — half to start", env: "PRICE_DEPOSIT" },
+    stripe: {
+      product: "Platform · Website build",
+      nickname: "Deposit — half to start",
+      env: "PRICE_DEPOSIT",
+    },
     kind: "build",
     name: "Platform website build — deposit",
     description: "Half to start. The balance is due before the site goes live.",
@@ -647,10 +664,15 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.balance,
     key: "balance",
-    stripe: { product: "Platform · Website build", nickname: "Balance — before go-live", env: "PRICE_BALANCE" },
+    stripe: {
+      product: "Platform · Website build",
+      nickname: "Balance — before go-live",
+      env: "PRICE_BALANCE",
+    },
     kind: "build",
     name: "Platform website build — balance",
-    description: "The second half, due before the site goes live on your domain.",
+    description:
+      "The second half, due before the site goes live on your domain.",
     priceCents: 60000,
     offeredAtCheckout: false,
     sortOrder: 1,
@@ -670,7 +692,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.booking_setup,
     key: "booking_setup",
-    stripe: { product: "Platform · Online booking setup", nickname: "Setup", env: "PRICE_BOOKING_SETUP" },
+    stripe: {
+      product: "Platform · Online booking setup",
+      nickname: "Setup",
+      env: "PRICE_BOOKING_SETUP",
+    },
     kind: "addon",
     name: "Platform · Online booking setup",
     description:
@@ -682,7 +708,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.stripe_setup,
     key: "stripe_setup",
-    stripe: { product: "Platform · Stripe payments setup", nickname: "Setup", env: "PRICE_STRIPE_SETUP" },
+    stripe: {
+      product: "Platform · Stripe payments setup",
+      nickname: "Setup",
+      env: "PRICE_STRIPE_SETUP",
+    },
     kind: "addon",
     name: "Platform · Stripe payments setup",
     description: "Your account connected, products and checkout built.",
@@ -693,7 +723,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.gbp_clean,
     key: "gbp_clean",
-    stripe: { product: "Platform · Google Business Profile deep clean", nickname: "Deep clean", env: "PRICE_GBP_CLEAN" },
+    stripe: {
+      product: "Platform · Google Business Profile deep clean",
+      nickname: "Deep clean",
+      env: "PRICE_GBP_CLEAN",
+    },
     kind: "addon",
     name: "Platform · Google Business Profile deep clean",
     description: "Photos, categories, and description brought up to scratch.",
@@ -704,7 +738,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.logo_refresh,
     key: "logo_refresh",
-    stripe: { product: "Platform · Logo refresh", nickname: "Refresh", env: "PRICE_LOGO" },
+    stripe: {
+      product: "Platform · Logo refresh",
+      nickname: "Refresh",
+      env: "PRICE_LOGO",
+    },
     kind: "addon",
     name: "Platform · Logo refresh",
     description: "A refreshed logo for your business.",
@@ -715,12 +753,17 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.extra_page,
     key: "extra_page",
-    stripe: { product: "Platform · Extra page", nickname: "Per page", env: "PRICE_EXTRA_PAGE" },
+    stripe: {
+      product: "Platform · Extra page",
+      nickname: "Per page",
+      env: "PRICE_EXTRA_PAGE",
+    },
     kind: "addon",
     name: "Platform · Extra page",
     // Quantity-shaped, so it is not offered at checkout: how many pages is
     // questionnaire material, not a pay-screen checkbox.
-    description: "An additional page beyond the standard five. Priced per page.",
+    description:
+      "An additional page beyond the standard five. Priced per page.",
     priceCents: 15000,
     offeredAtCheckout: false,
     sortOrder: 20,
@@ -728,7 +771,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.changes_standard,
     key: "changes_standard",
-    stripe: { product: "Platform · Website changes — standard round", nickname: "Standard round", env: "PRICE_CHANGES_STANDARD" },
+    stripe: {
+      product: "Platform · Website changes — standard round",
+      nickname: "Standard round",
+      env: "PRICE_CHANGES_STANDARD",
+    },
     kind: "round",
     name: "Platform · Website changes — standard round",
     description: "New sections, layout changes, rewritten copy, or a new page.",
@@ -739,7 +786,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.changes_small,
     key: "changes_small",
-    stripe: { product: "Platform · Website changes — small round", nickname: "Small round", env: "PRICE_CHANGES_SMALL" },
+    stripe: {
+      product: "Platform · Website changes — small round",
+      nickname: "Small round",
+      env: "PRICE_CHANGES_SMALL",
+    },
     kind: "round",
     name: "Platform · Website changes — small round",
     description: "A few text edits, swapping photos, updating hours.",
@@ -750,13 +801,18 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.changes_small_promo,
     key: "changes_small_promo",
-    stripe: { product: "Platform · Website changes — small round", nickname: "Included with build — promo", env: "PRICE_CHANGES_SMALL_PROMO" },
+    stripe: {
+      product: "Platform · Website changes — small round",
+      nickname: "Included with build — promo",
+      env: "PRICE_CHANGES_SMALL_PROMO",
+    },
     kind: "round",
     name: "Small round of changes — included",
     // Granted by promo code only (TAYLOR_FREE_ITERATION_ROUND), never a
     // checkbox: a $0 row a client could tick themselves is a pricing bug,
     // not a deal-sweetener. See lib/intake/promo.ts.
-    description: "One batch of small changes after launch, included with your build.",
+    description:
+      "One batch of small changes after launch, included with your build.",
     priceCents: 0,
     offeredAtCheckout: false,
     sortOrder: 32,
@@ -764,7 +820,12 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.care_plan,
     key: "care_plan",
-    stripe: { product: "Platform · Care Plan", nickname: "Monthly", env: "PRICE_CARE_PLAN", recurring: "month" },
+    stripe: {
+      product: "Platform · Care Plan",
+      nickname: "Monthly",
+      env: "PRICE_CARE_PLAN",
+      recurring: "month",
+    },
     kind: "care_plan",
     name: "Platform · Care Plan",
     description:
@@ -788,7 +849,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.showcase_deposit,
     key: "showcase_deposit",
-    stripe: { product: "Coded · Website build", nickname: "Deposit — half to start", env: "PRICE_SHOWCASE_DEPOSIT" },
+    stripe: {
+      product: "Coded · Website build",
+      nickname: "Deposit — half to start",
+      env: "PRICE_SHOWCASE_DEPOSIT",
+    },
     kind: "build",
     track: "showcase",
     name: "Coded website build — deposit",
@@ -803,7 +868,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     // Nickname reads "half to start" (not "before launch") to match the live
     // Stripe Price already minted under it — see the STRIPE_CATALOGUE_IDS
     // note on `showcase_balance`.
-    stripe: { product: "Coded · Website build", nickname: "Balance — half to start", env: "PRICE_SHOWCASE_BALANCE" },
+    stripe: {
+      product: "Coded · Website build",
+      nickname: "Balance — half to start",
+      env: "PRICE_SHOWCASE_BALANCE",
+    },
     kind: "build",
     track: "showcase",
     name: "Coded website build — balance",
@@ -819,7 +888,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     // scoping thread (handoff decision 4).
     id: SEED_PRODUCT_IDS.showcase_full,
     key: "showcase_full",
-    stripe: { product: "Coded · Website build", nickname: "Paid in full — 5% off", env: "PRICE_SHOWCASE_FULL" },
+    stripe: {
+      product: "Coded · Website build",
+      nickname: "Paid in full — 5% off",
+      env: "PRICE_SHOWCASE_FULL",
+    },
     kind: "build",
     track: "showcase",
     name: "Coded website build — paid in full",
@@ -834,7 +907,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     // themselves is a pricing bug, not a deal-sweetener.
     id: SEED_PRODUCT_IDS.showcase_deposit_1600,
     key: "showcase_deposit_1600",
-    stripe: { product: "Coded · Website build", nickname: "Deposit — negotiated rate", env: "PRICE_SHOWCASE_DEPOSIT_1600" },
+    stripe: {
+      product: "Coded · Website build",
+      nickname: "Deposit — negotiated rate",
+      env: "PRICE_SHOWCASE_DEPOSIT_1600",
+    },
     kind: "build",
     track: "showcase",
     name: "Coded website build — deposit",
@@ -846,7 +923,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.showcase_full_1600,
     key: "showcase_full_1600",
-    stripe: { product: "Coded · Website build", nickname: "Paid in full — negotiated rate", env: "PRICE_SHOWCASE_FULL_1600" },
+    stripe: {
+      product: "Coded · Website build",
+      nickname: "Paid in full — negotiated rate",
+      env: "PRICE_SHOWCASE_FULL_1600",
+    },
     kind: "build",
     track: "showcase",
     name: "Coded website build — paid in full",
@@ -861,7 +942,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     // Ruled a live upsell by Taylor, 2026-08-26 (M-PORT-6).
     id: SEED_PRODUCT_IDS.showcase_admin_panel,
     key: "showcase_admin_panel",
-    stripe: { product: "Coded · Admin panel", nickname: "Admin panel", env: "PRICE_SHOWCASE_ADMIN_PANEL" },
+    stripe: {
+      product: "Coded · Admin panel",
+      nickname: "Admin panel",
+      env: "PRICE_SHOWCASE_ADMIN_PANEL",
+    },
     kind: "addon",
     track: "showcase",
     name: "Admin panel",
@@ -874,7 +959,11 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   {
     id: SEED_PRODUCT_IDS.showcase_logo,
     key: "showcase_logo",
-    stripe: { product: "Coded · Logo or wordmark refresh", nickname: "Refresh", env: "PRICE_SHOWCASE_LOGO" },
+    stripe: {
+      product: "Coded · Logo or wordmark refresh",
+      nickname: "Refresh",
+      env: "PRICE_SHOWCASE_LOGO",
+    },
     kind: "addon",
     track: "showcase",
     name: "Logo / wordmark refresh",
@@ -882,12 +971,16 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "Most sites like this don't need a logo; your name in good type usually does it better. This is for when you want the mark anyway.",
     priceCents: 25000,
     offeredAtCheckout: true,
-    sortOrder: 111,
+    sortOrder: 115,
   },
   {
     id: SEED_PRODUCT_IDS.showcase_booking,
     key: "showcase_booking",
-    stripe: { product: "Coded · Booking setup", nickname: "Setup", env: "PRICE_SHOWCASE_BOOKING" },
+    stripe: {
+      product: "Coded · Booking setup",
+      nickname: "Setup",
+      env: "PRICE_SHOWCASE_BOOKING",
+    },
     kind: "addon",
     track: "showcase",
     name: "Booking setup",
@@ -895,7 +988,7 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "A booking page wired to your calendar, for coaching, teaching, or consults. Honestly: you can set Cal.com up yourself in an afternoon — this is for skipping the afternoon.",
     priceCents: 25000,
     offeredAtCheckout: true,
-    sortOrder: 112,
+    sortOrder: 113,
   },
   {
     // Quantity-shaped, so it is never `offeredAtCheckout` — that flag means
@@ -904,21 +997,30 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     // (Taylor, 2026-09-03, reversing PORT-9's Taylor-minted-only rule).
     id: SEED_PRODUCT_IDS.showcase_extra_page,
     key: "showcase_extra_page",
-    stripe: { product: "Coded · Extra page", nickname: "Per page", env: "PRICE_SHOWCASE_EXTRA_PAGE" },
+    stripe: {
+      product: "Coded · Extra page",
+      nickname: "Per page",
+      env: "PRICE_SHOWCASE_EXTRA_PAGE",
+    },
     kind: "addon",
     track: "showcase",
     name: "Extra page",
-    description: "An additional page beyond the included five. Priced per page.",
+    description:
+      "An additional page beyond the included five. Priced per page.",
     priceCents: 15000,
     offeredAtCheckout: false,
-    sortOrder: 115,
+    sortOrder: 120,
   },
   {
     // Added 2026-09-01, per content/websites-coded.ts's addOns. Not yet
     // sellable — see the [NEEDS VALUE AT BUILD] note above.
     id: SEED_PRODUCT_IDS.showcase_animations,
     key: "showcase_animations",
-    stripe: { product: "Coded · Animations", nickname: "Setup", env: "PRICE_SHOWCASE_ANIMATIONS" },
+    stripe: {
+      product: "Coded · Animations",
+      nickname: "Setup",
+      env: "PRICE_SHOWCASE_ANIMATIONS",
+    },
     kind: "addon",
     track: "showcase",
     name: "Animations",
@@ -926,12 +1028,16 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "Standard motion, built with Framer Motion or similar. Bigger asks can cost more, and you'll describe what you want in the intake form.",
     priceCents: 25000,
     offeredAtCheckout: true,
-    sortOrder: 113,
+    sortOrder: 114,
   },
   {
     id: SEED_PRODUCT_IDS.showcase_supabase_setup,
     key: "showcase_supabase_setup",
-    stripe: { product: "Coded · Supabase setup", nickname: "Setup", env: "PRICE_SHOWCASE_SUPABASE_SETUP" },
+    stripe: {
+      product: "Coded · Supabase setup",
+      nickname: "Setup",
+      env: "PRICE_SHOWCASE_SUPABASE_SETUP",
+    },
     kind: "addon",
     track: "showcase",
     name: "Supabase setup",
@@ -939,12 +1045,16 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "A database for your site when it needs one: logins, saved form entries, anything that has to persist beyond the pages themselves.",
     priceCents: 25000,
     offeredAtCheckout: true,
-    sortOrder: 114,
+    sortOrder: 111,
   },
   {
     id: SEED_PRODUCT_IDS.showcase_seo_blog,
     key: "showcase_seo_blog",
-    stripe: { product: "Coded · SEO blog", nickname: "Setup", env: "PRICE_SHOWCASE_SEO_BLOG" },
+    stripe: {
+      product: "Coded · SEO blog",
+      nickname: "Setup",
+      env: "PRICE_SHOWCASE_SEO_BLOG",
+    },
     kind: "addon",
     track: "showcase",
     name: "SEO blog",
@@ -952,14 +1062,26 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "A blog section built into your site, with its own admin so you can publish and manage posts without touching code.",
     priceCents: 75000,
     offeredAtCheckout: true,
-    sortOrder: 116,
+    sortOrder: 112,
   },
   {
     // Quantity-shaped like extra_page above: how many posts is not a
-    // pay-screen checkbox, so this is Taylor-minted only, same reasoning.
+    // pay-screen checkbox, so it is never `offeredAtCheckout` — the pay screen
+    // resolves this row by key and renders a count.
+    //
+    // Unlike extra pages, the count is *gated*: the section does not exist
+    // until `showcase_seo_blog` is ticked, because a post written for a site
+    // with no blog is work the client cannot use. The rule lives in
+    // `lib/intake/addon-bundles.ts` and is enforced in `createDepositCheckout`,
+    // not only on the screen (Taylor, 2026-09-07, reversing the
+    // Taylor-minted-only rule this row carried).
     id: SEED_PRODUCT_IDS.showcase_seo_post,
     key: "showcase_seo_post",
-    stripe: { product: "Coded · Blog post, written for you", nickname: "Per post", env: "PRICE_SHOWCASE_SEO_POST" },
+    stripe: {
+      product: "Coded · Blog post, written for you",
+      nickname: "Per post",
+      env: "PRICE_SHOWCASE_SEO_POST",
+    },
     kind: "addon",
     track: "showcase",
     name: "Blog post, written for you",
@@ -967,7 +1089,7 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "You brain-dump what you know, I turn it into a polished post tuned for the keywords you're chasing. Priced per post.",
     priceCents: 50000,
     offeredAtCheckout: false,
-    sortOrder: 117,
+    sortOrder: 121,
   },
   {
     // Present but dark. Taylor's ruling: "don't charge for the maintenance
@@ -985,7 +1107,7 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
       "Email me a change, it's live within 48 hours — plus I keep the underlying software current.",
     priceCents: 10000,
     offeredAtCheckout: false,
-    sortOrder: 120,
+    sortOrder: 130,
   },
 ];
 
@@ -999,8 +1121,7 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
  */
 export async function seedProducts(): Promise<void> {
   const tier = resolveAppTier();
-  const stripeMode =
-    credentialSet(tier) === "LIVE" ? "production" : "sandbox";
+  const stripeMode = credentialSet(tier) === "LIVE" ? "production" : "sandbox";
   const db = getDb();
 
   for (const row of CATALOGUE_ROWS) {

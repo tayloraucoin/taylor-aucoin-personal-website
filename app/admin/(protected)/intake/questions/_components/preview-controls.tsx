@@ -72,6 +72,22 @@ const MODES: readonly { key: RenderMode; label: string }[] = [
   { key: "document", label: "Document" },
 ];
 
+/**
+ * Whether the reviewer is reading the questionnaire as someone who bought the
+ * add-ons.
+ *
+ * A preview owns no basket, so every add-on's questions stayed shut on the
+ * interface surface — the one surface where you judge whether a screen is a
+ * good thing to be handed. Document mode always showed them, but as prose.
+ *
+ * "None" first, because a client who bought nothing is the ordinary case and a
+ * review surface should open on the ordinary case.
+ */
+const EXTRAS: readonly { key: boolean; label: string }[] = [
+  { key: false, label: "None" },
+  { key: true, label: "All bought" },
+];
+
 /** The all-kinds overview, last after the seven named views. */
 export const EVERY_KIND = "all";
 
@@ -96,18 +112,22 @@ export function PreviewControls({
   film,
   mode,
   everyKind,
+  allExtras,
 }: Readonly<{
   track: IntakeTrackKey;
   kind: ShowcaseKind;
   film: boolean;
   mode: RenderMode;
   everyKind: boolean;
+  /** Whether the add-on blocks are being shown. See `EXTRAS`. */
+  allExtras: boolean;
 }>) {
-  /** Keeps the other two choices while one of them changes. */
+  /** Keeps the other choices while one of them changes. */
   const href = (next: {
     track?: IntakeTrackKey;
     view?: string;
     mode?: RenderMode;
+    extras?: boolean;
   }) => {
     const params = new URLSearchParams();
     const chosenTrack = next.track ?? track;
@@ -122,6 +142,10 @@ export function PreviewControls({
 
     const chosenMode = next.mode ?? mode;
     if (chosenMode === "document") params.set("mode", "document");
+
+    // Only the non-default is serialised, so the ordinary view stays the
+    // shortest URL — the same rule `mode` follows above.
+    if (next.extras ?? allExtras) params.set("extras", "all");
 
     return `${adminRoutes.intakeQuestions}?${params.toString()}`;
   };
@@ -145,6 +169,20 @@ export function PreviewControls({
           label: option.label,
           href: href({ mode: option.key }),
           current: option.key === mode,
+        }))}
+      />
+
+      {/* Orthogonal to all three above: any questionnaire, in either mode,
+          reads either with the add-on blocks open or without them. Shown on
+          both tracks because both have questions behind a purchase — the
+          durable track's booking and Stripe blocks were as unreachable here as
+          the coded track's six. */}
+      <Switch
+        legend="Add-ons"
+        options={EXTRAS.map((option) => ({
+          label: option.label,
+          href: href({ extras: option.key }),
+          current: option.key === allExtras,
         }))}
       />
 

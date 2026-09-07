@@ -94,7 +94,8 @@ export function StepAccess({
    * Extras values already bought on the pay screen (P0 add-ons). Booking and
    * Stripe detail questions render when the matching add-on was purchased.
    */
-  purchasedExtras?: string[];
+  /** Readonly, matching the coded track's steps: nothing here mutates it. */
+  purchasedExtras?: readonly string[];
 }) {
   const form = useStepAutosave({ token, stepKey: "access", initial });
   useReportSaveState(form.state, form.retry);

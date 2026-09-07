@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
+import type { RevealCondition } from "@/lib/intake/reveal-condition";
 
 /**
  * A follow-up question that only appears once something above it is answered.
@@ -12,19 +13,10 @@ import { useIsDocument } from "@/components/intake/preview-mode";
  * screen and unconditionally in document mode, under a line naming what opens
  * them.
  *
- * ## Why the condition is data and not a sentence
- *
- * The obvious API is a `when` boolean plus a hand-written `shownWhen` string
- * for the document to print. It was rejected (D-ADM-10). That string would be a
- * question's label and an option's label typed a second time, in a production
- * component — which breaks the one law this whole surface exists to keep
- * (D-ADM-6, and ADM-2's "no question's words in any file this ticket adds") —
- * and, worse, it would be a second copy of the condition that can silently
- * disagree with the first.
- *
- * So `dependsOn` is structured, this component evaluates it, and the document
- * line is generated from the same data the branch is decided by. There is
- * exactly one source of truth per reveal, and it is machine-checkable.
+ * The condition itself is structured data and lives in
+ * `lib/intake/reveal-condition.ts`, which records why (D-ADM-10). This file
+ * owns the two things done with it: deciding the branch, and generating the
+ * document's line from the same value the branch was decided by.
  *
  * ## The interface path emits nothing
  *
@@ -34,23 +26,11 @@ import { useIsDocument } from "@/components/intake/preview-mode";
  */
 
 /**
- * What opens a reveal.
- *
- * Four shapes, because four are what the intake actually uses. Three read an
- * answer on the same step; the fourth reads what the client bought, which is
- * not an answer at all — the durable track's booking and Stripe blocks appear
- * because an add-on was purchased, and those questions were invisible to the
- * review before ADM-4 because the preview buys nothing.
+ * Re-exported so every existing consumer keeps its import path. The type moved
+ * to `lib/intake/reveal-condition.ts` when add-on copy needed to carry one; see
+ * that file for why it could not stay here.
  */
-export type RevealCondition =
-  /** A radio's stored value is exactly this. */
-  | { field: string; equals: string }
-  /** A radio's stored value is one of these. */
-  | { field: string; in: readonly string[] }
-  /** A checkbox group's stored list contains this. */
-  | { field: string; includes: string }
-  /** A purchased add-on, not an answer. */
-  | { extra: string };
+export type { RevealCondition };
 
 function isVisible(
   condition: RevealCondition,

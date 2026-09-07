@@ -153,6 +153,19 @@ export function StartForm({ promo }: { promo?: string }) {
         </p>
       ) : null}
 
+      {/* An address with an intake already open is answered by email rather
+          than by opening it here, so this form can never show one person
+          another person's answers. [COPY — draft, pending Taylor] */}
+      {result && "sent" in result ? (
+        <p
+          role="status"
+          className="mb-5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)"
+        >
+          You already have one of these on the go. We&rsquo;ve sent the link to
+          that address.
+        </p>
+      ) : null}
+
       <GradientButton type="submit" disabled={pending || preview}>
         {pending ? "Starting…" : "Start →"}
       </GradientButton>

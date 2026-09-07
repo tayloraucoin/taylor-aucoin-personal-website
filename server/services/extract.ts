@@ -97,14 +97,41 @@ export type ExtractionMode = (typeof EXTRACTION_MODES)[number];
  * eval on 2026-09-03, printing `personKey="Mira Castellane"` on every entry of
  * a one-sheet with no roster at all. Which person an entry belongs to is
  * decided by the block a client typed it into, and never by a document.
+ *
+ * **Non-string fields are dropped too, and the reason is answer loss.** Asking
+ * for a string on a key the form validates as something else produces a value
+ * the entry schema then refuses — and because one bad key fails the whole
+ * array, every sorted entry is discarded with it. Two keys did this: `feature`
+ * on an experience entry (a boolean) and `videos` on a project (an array).
+ * The model returned `""` for both, `saveStepAnswers` dropped `experience` and
+ * `projects` entirely, and nothing said so. Found against a real intake on
+ * 2026-09-05.
+ *
+ * Both are also the right things to omit on their own merits: "Feature this"
+ * and which video leads are a client's choices, not facts a document states.
+ * A watch link found in the text still lands — `watchUrl` is a string field and
+ * `videosOf` reads an entry carrying one as a single video.
  */
 const NOT_ANSWERS = new Set(["entryKey", "personKey"]);
 
+/**
+ * Whether a form field is one this extractor may ask the model to fill.
+ *
+ * The output shape derives from the form's own entry schemas, so a field added
+ * there arrives here automatically — including one typed as a boolean, an
+ * array, or an object. Those cannot be answered with a string, so they are not
+ * asked for at all rather than asked for wrongly.
+ */
+function isStringField(field: z.ZodTypeAny): boolean {
+  const inner = field instanceof z.ZodOptional ? field.unwrap() : field;
+  return inner instanceof z.ZodString;
+}
+
 function resultFor(shape: z.ZodObject<Record<string, z.ZodTypeAny>>) {
   const fields = Object.fromEntries(
-    Object.keys(shape.shape)
-      .filter((key) => !NOT_ANSWERS.has(key))
-      .map((key) => [key, z.string()]),
+    Object.entries(shape.shape)
+      .filter(([key, field]) => !NOT_ANSWERS.has(key) && isStringField(field))
+      .map(([key]) => [key, z.string()]),
   );
   return z.object({ entries: z.array(z.object(fields)) });
 }
@@ -319,6 +346,7 @@ export async function sortDocument(
   if (!text) throw new ExtractionUnavailableError("empty");
 
   const schema = RESULTS[mode];
+  const startedAt = Date.now();
 
   let parsed;
   try {
@@ -354,6 +382,10 @@ export async function sortDocument(
   // broken one is nine entries, not a failure.
   const kept = parsed.entries.filter((entry) =>
     Object.values(entry).some((value) => value.trim() !== ""),
+  );
+
+  console.info(
+    `[extract] ${mode} returned ${parsed.entries.length}, kept ${kept.length}, in ${Date.now() - startedAt}ms`,
   );
 
   if (kept.length === 0) throw new ExtractionUnavailableError("empty");

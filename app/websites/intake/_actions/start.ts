@@ -6,13 +6,14 @@ import { intakeRoutes } from "@/lib/routes";
 import { startIntakeInput } from "@/lib/validators/intake";
 import { sendResumeLink } from "@/server/services/emails";
 import {
+  buildEntryUrlFor,
   buildIntakeUrl,
   createEngagement,
   findResumableByEmail,
 } from "@/server/services/engagement";
 import { saveStepAnswers } from "@/server/services/submission";
 
-export type StartResult = { error: string } | never;
+export type StartResult = { error: string } | { sent: true } | never;
 
 /** Lets a client return to the start page on the same device and pick up. */
 const RESUME_COOKIE = "ta_intake";
@@ -65,8 +66,28 @@ export async function startIntake(formData: FormData): Promise<StartResult> {
   if (existing?.token) {
     // They have started before and not finished. Put them back rather than
     // creating a second engagement and a second deposit to reconcile.
-    await setResumeCookie(existing.token);
-    redirect(withPromo(intakeRoutes.entry(existing.token)));
+    //
+    // Only ever into their own browser, though. This form is public, so
+    // returning the link to whoever typed the address let anybody who knew a
+    // client's email open that client's intake. The browser that started it
+    // already holds the token, so matching the cookie discloses nothing;
+    // everyone else is answered at the address instead of on the screen.
+    const held = await readResumeCookie();
+
+    if (held === existing.token) {
+      await setResumeCookie(existing.token);
+      redirect(withPromo(intakeRoutes.entry(existing.token)));
+    }
+
+    // The engagement may be on either track — a showcase client who typed
+    // their address into the durable form gets their own tree's link, not a
+    // durable URL that would 404 for them.
+    void sendResumeLink(
+      existing.engagement,
+      buildEntryUrlFor(existing.engagement.track, existing.token),
+    ).catch(() => {});
+
+    return { sent: true };
   }
 
   const { engagement, token } = await createEngagement({

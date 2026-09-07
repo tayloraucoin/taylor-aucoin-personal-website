@@ -1,6 +1,9 @@
 "use client";
 
-import type { UpsellBlock as UpsellBlockCopy } from "@/lib/intake/showcase-copy";
+import type {
+  UpsellBlock as UpsellBlockCopy,
+  UpsellField as UpsellFieldCopy,
+} from "@/lib/intake/showcase-copy";
 import {
   ChoiceAnswer,
   LongAnswer,
@@ -53,36 +56,65 @@ export function UpsellQuestions({
           </p>
         </div>
 
-        {block.fields.map((field) =>
-          field.options ? (
-            <ChoiceAnswer
-              key={field.key}
-              form={form}
-              name={field.key}
-              label={field.label}
-              help={field.help}
-              options={field.options}
-              multiple={field.multiple}
-            />
-          ) : field.long ? (
-            <LongAnswer
-              key={field.key}
-              form={form}
-              name={field.key}
-              label={field.label}
-              help={field.help}
-            />
-          ) : (
-            <TextAnswer
-              key={field.key}
-              form={form}
-              name={field.key}
-              label={field.label}
-              help={field.help}
-            />
-          ),
-        )}
+        {block.fields.map((field) => (
+          <Nested key={field.key} form={form} field={field} />
+        ))}
       </>
+    </Reveal>
+  );
+}
+
+/**
+ * One field of a block, opened by another of the block's own fields when it
+ * says so.
+ *
+ * A block's questions are a flat list until one of them only makes sense after
+ * another is answered — what gets charged, once they said money changes hands;
+ * which moment, once they picked one showpiece. Those go through the same
+ * `Reveal` every other follow-up on the form uses, so the review document
+ * prints them under the same generated "shown when" line and a nested question
+ * is not a second mechanism.
+ *
+ * `values` rather than `extras`: the block is already behind the purchase, so
+ * nothing in here is ever gated on one again.
+ */
+function Nested({
+  form,
+  field,
+}: Readonly<{
+  form: ReturnType<typeof useStepAutosave>;
+  field: UpsellFieldCopy;
+}>) {
+  const input = field.options ? (
+    <ChoiceAnswer
+      form={form}
+      name={field.key}
+      label={field.label}
+      help={field.help}
+      options={field.options}
+      multiple={field.multiple}
+    />
+  ) : field.long ? (
+    <LongAnswer
+      form={form}
+      name={field.key}
+      label={field.label}
+      help={field.help}
+    />
+  ) : (
+    <TextAnswer
+      form={form}
+      name={field.key}
+      label={field.label}
+      help={field.help}
+    />
+  );
+
+  if (!field.dependsOn) return input;
+
+  return (
+    <Reveal values={form.values} dependsOn={field.dependsOn}>
+      {input}
     </Reveal>
   );
 }

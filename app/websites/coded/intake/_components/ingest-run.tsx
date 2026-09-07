@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useIsDocument, useIsPreview } from "@/components/intake/preview-mode";
-import { GhostButton } from "@/components/ui/GradientButton";
+import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { copyPackFor } from "@/lib/intake/tracks";
+import { copyPackFor, stepsFor } from "@/lib/intake/tracks";
+import { showcaseIntakeRoutes } from "@/lib/routes";
 import { runIngestionForToken } from "../_actions/ingest";
 import { DocHint, DocTag } from "../../../intake/_components/document";
+import { WorkingIndicator } from "../../../intake/_components/working-indicator";
 
 type Reason =
   | "nothingPasted"
@@ -22,6 +23,7 @@ type State =
   | { status: "idle" }
   | { status: "confirming" }
   | { status: "running" }
+  | { status: "done"; filled: number; failed: string[] }
   | { status: "failed"; reason: Reason };
 
 /**
@@ -78,8 +80,15 @@ export function IngestRun({
   const copy = copyPackFor(flavour).ingestion;
   const preview = useIsPreview();
   const document = useIsDocument();
-  const router = useRouter();
   const [state, setState] = useState<State>({ status: "idle" });
+
+  // Ingestion is always step 1 on this track, so step 2 is where the success
+  // card points. Read from the registry rather than named, so a reordering
+  // moves this with it.
+  const nextHref = showcaseIntakeRoutes.step(
+    token,
+    stepsFor("showcase", flavour)[1]!.key,
+  );
 
   const run = async () => {
     // Checked here rather than only on the server, so being offline costs a
@@ -104,10 +113,18 @@ export function IngestRun({
     }
 
     if (result.ok) {
-      // The completed state is server-rendered from the stored record rather
-      // than held here, so it is the same screen on this visit and every one
-      // after it. The overlay stays up until that render replaces this.
-      router.refresh();
+      // Held here as well as server-rendered. The stored record is still the
+      // authority on every later visit, but a `refresh()` alone swapped one
+      // quiet card for another and read as nothing having happened — the run
+      // takes minutes and deserves to be told it finished (Taylor, 2026-09-05).
+      // No `refresh()` here on purpose: the step's page now redirects forward
+      // once the record exists, so refreshing would pull the client off this
+      // card before they had read it. They leave by the button.
+      setState({
+        status: "done",
+        filled: result.filled,
+        failed: result.failed,
+      });
       return;
     }
 
@@ -185,6 +202,70 @@ export function IngestRun({
       ) : null}
 
       {state.status === "running" ? <RunningOverlay copy={copy.running} /> : null}
+
+      {state.status === "done" ? (
+        <DoneOverlay
+          filled={state.filled}
+          failed={state.failed}
+          nextHref={nextHref}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * What the run found, and the way onward.
+ *
+ * Deliberately a modal rather than a line under the button: the thing it is
+ * reporting rewrote most of the form, and the client's next move is forward
+ * rather than back into a step that is now finished. It is the only screen in
+ * the flow that ends by pointing at the next one, because it is the only one
+ * whose work happened somewhere the client could not watch.
+ *
+ * [COPY — draft, pending Taylor]
+ */
+function DoneOverlay({
+  filled,
+  failed,
+  nextHref,
+}: {
+  filled: number;
+  failed: string[];
+  nextHref: string;
+}) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ingest-done-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(6_11_30/.86)] px-[22px] backdrop-blur-[6px]"
+    >
+      <div className="w-full max-w-[420px] rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-6">
+        <p
+          id="ingest-done-title"
+          className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)"
+        >
+          Read it through
+        </p>
+
+        <p className="mt-5 font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          {filled > 0
+            ? `We filled in ${filled} ${filled === 1 ? "answer" : "answers"} from what you sent. They're marked where they land, and every one of them is yours to correct.`
+            : "We read everything you sent. It didn't give us enough to fill anything in confidently, so the questions ahead are yours to answer from scratch."}
+        </p>
+
+        {failed.length > 0 ? (
+          <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+            We couldn&rsquo;t read {failed.join(", ")}. Taylor will ask about
+            that part on the call.
+          </p>
+        ) : null}
+
+        <div className="mt-6">
+          <GradientButton href={nextHref}>Continue →</GradientButton>
+        </div>
+      </div>
     </div>
   );
 }
@@ -293,6 +374,24 @@ function Confirm({
 }
 
 /**
+ * What the wait is spent saying, after the pack's own first line.
+ *
+ * A run can take a couple of minutes on a long paste, and the honest use of
+ * that time is telling someone what the form will ask them next — so the steps
+ * ahead arrive recognised rather than cold (Taylor, 2026-09-05). They stop on
+ * the last line rather than looping.
+ *
+ * [COPY — draft, pending Taylor]
+ */
+const RUNNING_NOTES = [
+  "We're pulling names and dates out of what you wrote.",
+  "Next you'll tell us who the site is for, and what you want them to do.",
+  "After that, your work goes in one project at a time.",
+  "Then you'll rate some real sites so we can see your taste.",
+  "Anything we fill in is yours to change.",
+] as const;
+
+/**
  * The in-progress state: focus trapped, interaction blocked, announced once.
  *
  * There is nothing to press here on purpose. The run is happening on the
@@ -332,30 +431,9 @@ function RunningOverlay({ copy }: { copy: { title: string; body: string } }) {
           {copy.title}
         </p>
 
-        {/* The one moving thing. A hairline that breathes, drawn in the house
-            gradient, settling rather than spinning. */}
-        <div
-          aria-hidden
-          className="mt-5 h-px w-full overflow-hidden bg-(--color-faint)"
-        >
-          <div
-            className="h-px w-full origin-left"
-            style={{
-              background:
-                "linear-gradient(90deg, var(--color-c2), var(--color-c3))",
-              animation:
-                "ingest-breathe var(--dur-slow) ease-(--ease-out) infinite alternate",
-              animationDuration: "2400ms",
-            }}
-          />
+        <div className="mt-5">
+          <WorkingIndicator messages={[copy.body, ...RUNNING_NOTES]} />
         </div>
-
-        <p
-          aria-live="polite"
-          className="mt-5 font-body text-[16px] font-light leading-[1.6] text-(--color-body)"
-        >
-          {copy.body}
-        </p>
       </div>
     </div>
   );

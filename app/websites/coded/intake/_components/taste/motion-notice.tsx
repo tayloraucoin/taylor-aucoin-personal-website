@@ -118,6 +118,7 @@ export function MotionNotice({
       currency={currency}
       returned={returned}
       preview={preview}
+      flush={form.flush}
     />
   );
 }
@@ -128,12 +129,15 @@ function Offer({
   currency,
   returned,
   preview,
+  flush,
 }: {
   token: string;
   priceCents: number | null;
   currency: string;
   returned?: "added" | "canceled";
   preview: boolean;
+  /** Writes anything still sitting in the autosave debounce, before we leave. */
+  flush: () => void | Promise<unknown>;
 }) {
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
@@ -173,6 +177,11 @@ function Offer({
                     setFailed(false);
                     startTransition(async () => {
                       try {
+                        // Stripe is a hard navigation away from this page, and
+                        // the autosave debounce is 900ms — a rating typed just
+                        // before this press would otherwise be lost on a step
+                        // the client never chose to leave.
+                        await flush();
                         await startAddonCheckout(token, "showcase_animations");
                       } catch {
                         // A redirect throws by design and unmounts this;
