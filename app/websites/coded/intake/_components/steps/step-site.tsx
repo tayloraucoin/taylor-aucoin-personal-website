@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useIsDocument } from "@/components/intake/preview-mode";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
@@ -10,6 +11,7 @@ import {
   LongAnswer,
   TextAnswer,
 } from "../../../../intake/_components/answer-inputs";
+import { DocTag } from "../../../../intake/_components/document";
 import { Field } from "../../../../intake/_components/field";
 import { Reveal } from "../../../../intake/_components/reveal";
 import { useReportSaveState } from "../../../../intake/_lib/save-state";
@@ -182,6 +184,8 @@ export function StepSite({
   const total = pages.length + named;
   const over = total > allowance;
 
+  const isDocument = useIsDocument();
+
   return (
     <>
       {/* The count is always shown, not only once they are over it (Taylor,
@@ -237,15 +241,33 @@ export function StepSite({
         />
       </Field>
 
-      {/* Only for someone who already bought pages. Asking everyone else what
-          their extra pages are for is asking about something they do not
-          have. [COPY — pending Taylor] */}
-      {paidExtraPages > 0 ? (
+      {/* Asked once the sitemap they have described runs past what is
+          included.
+
+          It was gated on `paidExtraPages` until 2026-09-07, which meant it
+          never rendered during an intake at all: extra pages are charged after
+          the questionnaire and never at checkout (RUNBOOK-post-intake-charges
+          §1), so that count is always zero while someone is filling this in.
+          The one question that makes an extra page buildable sat behind a
+          purchase that cannot have happened yet, and what arrived instead was
+          a page's name with no idea what goes on it.
+
+          Not a `Reveal`: its condition vocabulary reads one stored answer, and
+          "past the allowance" is computed from two answers and a purchase. The
+          document gets the same treatment by hand, which is the grammar
+          `MotionNotice` already uses for a branch a preview cannot reach
+          (ADM-4). [COPY — pending Taylor] */}
+      {isDocument ? (
+        <DocTag>
+          Shown when the pages chosen run past the included allowance
+        </DocTag>
+      ) : null}
+      {isDocument || over ? (
         <LongAnswer
           form={form}
           name="extraPagesPlan"
-          label={`What the ${paidExtraPages} extra ${paidExtraPages === 1 ? "page is" : "pages are"} for`}
-          help="You paid for these at checkout — tell us what each one does. A page per service, a page per project type, a manifesto, a page for one specific audience: whatever you had in mind when you added them."
+          label="What the extra pages are for"
+          help="You've named more than the five that come with the build. Tell us what each extra one does, and we'll confirm the count and the cost with you before anything is charged."
         />
       ) : null}
 

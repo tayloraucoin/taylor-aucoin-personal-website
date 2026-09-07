@@ -67,6 +67,7 @@ export default async function ShowcaseIntakeEntryPage({
       deposit: half,
       addons,
       extraPage,
+      seoPost,
     } = await getCheckoutCatalogue(false, engagement.track, "half");
     const full = await findSellableProductByKey("showcase_full");
 
@@ -78,6 +79,7 @@ export default async function ShowcaseIntakeEntryPage({
         half={half}
         full={full}
         addons={addons}
+        seoPost={seoPost}
         extraPage={extraPage}
         promoCode={promo}
       />

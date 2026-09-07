@@ -22,6 +22,7 @@ export function ShowcasePayButton({
   plan,
   addonKeys = [],
   extraPages = 0,
+  seoPosts = 0,
   promoCode,
   disabled = false,
 }: {
@@ -32,6 +33,8 @@ export function ShowcasePayButton({
   addonKeys?: string[];
   /** How many pages beyond the included five. A count, never an amount. */
   extraPages?: number;
+  /** How many written blog posts. A count, never an amount. */
+  seoPosts?: number;
   promoCode?: string;
   disabled?: boolean;
 }) {
@@ -61,6 +64,7 @@ export function ShowcasePayButton({
                 addonKeys,
                 promoCode,
                 extraPages,
+                seoPosts,
               );
             } catch {
               // A redirect throws by design and unmounts this; anything that

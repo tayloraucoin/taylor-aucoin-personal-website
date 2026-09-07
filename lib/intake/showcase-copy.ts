@@ -41,6 +41,8 @@
  * that would have split the pass across two files, so they are here instead.
  */
 
+import type { RevealCondition } from "./reveal-condition";
+
 /**
  * Which pack a client's answers earn.
  *
@@ -64,6 +66,57 @@ export type CopyChoice = { value: string; label: string };
 
 /** A label and its one-line "why we're asking", which always travel together. */
 export type CopyField = { label: string; help: string };
+
+/**
+ * One fork on the taste step, asked as a five-stop spectrum between two named
+ * ends (D-PORT-29).
+ *
+ * **`id` is storage and outlives the copy.** Answers are keyed by it in
+ * `taste.spectrums`, so it is chosen once and never renamed — the same contract
+ * a gallery `siteKey` holds. Retiring a spectrum means deleting it from a pack;
+ * the stored answer survives and still prints, because `spectrums` is an open
+ * record rather than a closed enum (M-PORT — the D-PORT-20 keys learned this
+ * the hard way).
+ *
+ * **The group is a placement fact, not part of the answer.** Two blocks render
+ * on the step and they ask different kinds of question:
+ *
+ * - `structure` — what the site *does*. Rendered under the picks list and
+ *   gated on the first pick, because these generalise from sites the client
+ *   has just reacted to. Asked cold they are the radios D-PORT-20 retired.
+ * - `feel` — what the site *feels like*. Ungated: the client is the only
+ *   authority on these, so there is nothing to warm them up with. They sit
+ *   above the three-words field, whose free-text half asks the same thing.
+ *
+ * The distinction that keeps a spectrum honest: **if the design pass would
+ * overrule the client's answer, it was never their question.** Type scale,
+ * whether words overlay media, and gutter treatment all fail that test and are
+ * deliberately absent — see the scope's §13.
+ *
+ * `ends` are the two short names — "Cool" and "Warm". `means` is what each end
+ * **translates into** for the build, one line apiece, and it is the half that
+ * does the work: a client reading "Cool" guesses, and a client reading "Keeps
+ * its distance. Still, spare, a little severe." knows.
+ *
+ * There is no per-stop copy. The track is continuous (1.0 to 7.0), so a value
+ * has no words of its own — the number and the end it leans toward are the
+ * readout, and the two `means` lines carry the meaning of the whole axis. This
+ * replaced forty-five stop phrases with eighteen descriptors, which is both
+ * less to write and less to keep true.
+ *
+ * Site keys were carried here briefly, to name two gallery examples per end.
+ * They are gone (Taylor, 2026-09-07: clients "aren't paying that kind of
+ * attention"), and their removal takes a coupling with them — copy no longer
+ * depends on gallery content, so a site archived in `/admin/intake/examples`
+ * can no longer change what a fork says.
+ */
+export type TasteSpectrum = {
+  id: string;
+  label: string;
+  ends: { low: string; high: string };
+  means: { low: string; high: string };
+  group: "structure" | "feel";
+};
 
 /**
  * Every string that flexes between packs, or that needs Taylor's pass.
@@ -240,6 +293,22 @@ export type ShowcaseCopyPack = {
   reelHelp: string;
   organizationOptions: readonly CopyChoice[];
 
+  /**
+   * Step 5's spectrums, or nothing (D-PORT-29).
+   *
+   * **Optional on purpose, and absent from `GENERIC`.** A pack with no set
+   * renders no block — not an empty instrument, not a placeholder (D-PORT-12's
+   * law, reused). Film is curated first because the research is film, and the
+   * forks that separate film portfolios are not the ones that separate
+   * consultants' sites; every other pack gets its own set written for it rather
+   * than inheriting one that half-fits.
+   *
+   * Being absent from `GENERIC` also keeps it out of `SHOWCASE_COPY_SLOTS`,
+   * which is the verifier's list of slots every pack must fill. That is
+   * correct: this is a per-pack extra, not a floor.
+   */
+  tasteSpectrums?: readonly TasteSpectrum[];
+
   /* ── Steps 5 to 9 (kinds scope §6.5) ────────────────────────────────── */
 
   /**
@@ -394,6 +463,15 @@ export type UpsellField = CopyField & {
   long?: boolean;
   options?: readonly CopyChoice[];
   multiple?: boolean;
+  /**
+   * A follow-up inside the block, opened by another of the block's own fields.
+   *
+   * The same vocabulary every other reveal on the form uses, so a question
+   * nested one level deeper is not a second mechanism to learn. An `extra`
+   * condition would be meaningless here: the block itself is already gated on
+   * the purchase, so nothing inside it can be reached without one.
+   */
+  dependsOn?: RevealCondition;
 };
 
 /**
@@ -460,10 +538,18 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
     eyebrow: "Logo refresh · two rounds",
     body: "A refreshed mark built from what you already have, in two rounds: a board of directions, then the finished version in the files you actually need. Everything below is what the board gets built from, so an hour spent here is worth more than any amount of feedback later.",
     fields: [
+      /**
+       * Relabelled 2026-09-07. It asked what was wrong with the mark they have,
+       * and a client who answered "no" to `logoStatus` and bought the refresh
+       * anyway — which the catalogue copy invites, "for when you want the mark
+       * anyway" — has no mark to fault. The file drop is correctly closed for
+       * them too, so the old wording opened the block on a question they could
+       * only skip.
+       */
       {
         key: "logoFeeling",
-        label: "What's wrong with the one you have?",
-        help: 'Plain words are exactly right. "Too thin", "wrong green", "looks like a tech company", "my nephew made it in 2011". If there is nothing wrong and you just want it tidied, say that instead.',
+        label: "Where are you starting from?",
+        help: 'If you\'ve got a mark, plain words about what\'s wrong with it are exactly right: "too thin", "wrong green", "looks like a tech company", "my nephew made it in 2011". If you haven\'t got one, say so and tell us what you\'ve been using instead.',
         long: true,
       },
       {
@@ -485,6 +571,18 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
           { value: "merch", label: "Merch — embroidery, screen print" },
           { value: "video", label: "Video slates or end cards" },
         ],
+      },
+      /**
+       * What survives and what is off the table. Neither branch of the block
+       * asked it: `logoDirections` collects marks they admire and `logoWhere`
+       * collects usage, and a colour someone already owns is neither.
+       * `coloursYouLike` on the taste step is about the site, not the mark.
+       */
+      {
+        key: "logoConstraints",
+        label: "Anything the mark has to keep, or has to avoid?",
+        help: "A colour you own, a symbol people already recognise, a word that has to sit alongside it. Worth naming anything you'd hate to end up with, too.",
+        long: true,
       },
       {
         key: "logoDirections",
@@ -510,6 +608,40 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
         label: "What calendar do you live in?",
         help: "Google Calendar syncs automatically. Apple, Outlook, or nothing at all — say so anyway and we'll set your hours by hand instead.",
       },
+      /**
+       * The hours themselves, which nothing on this form asked for until
+       * 2026-09-07. The question above promises to set them by hand for anyone
+       * off Google Calendar, and there was no answer to set them from.
+       *
+       * The durable track collects this on its operations step
+       * (`daysWorked`, `typicalHours`, `jobsPerDay`, `howFarAhead`). The coded
+       * track has no such step, so its booking block carries the same facts or
+       * nobody has them. Timezone rides along in the help rather than as a
+       * field of its own: it is one word, and it is the word people forget.
+       */
+      {
+        key: "bookingHours",
+        label: "When are you bookable?",
+        help: "Days and hours, and the timezone they're in. If you need gaps between bookings, or a cap on how many you'll take in a day, say that here too.",
+        long: true,
+      },
+      /**
+       * What the confirmation carries: an address, or a video link the booking
+       * generates. Nothing else on the form distinguishes those, and finding
+       * out at launch means rebuilding the confirmation.
+       */
+      {
+        key: "bookingWhere",
+        label: "Where do these happen?",
+        help: "This decides what the confirmation email holds. Tick everything that applies.",
+        multiple: true,
+        options: [
+          { value: "video", label: "Video call" },
+          { value: "phone", label: "Phone" },
+          { value: "inPerson", label: "In person, at your place" },
+          { value: "travel", label: "In person, you travel to them" },
+        ],
+      },
       {
         key: "bookingLeadTime",
         label: "How much notice, and how far ahead?",
@@ -526,6 +658,27 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
           { value: "unsure", label: "Not sure — let's talk" },
         ],
       },
+      /**
+       * Opens on the two answers that turn a booking page into a payments
+       * build. There is no coded Stripe add-on in the catalogue — the durable
+       * track has `stripe_setup` and this one has nothing — so the help says
+       * plainly that the money half is quoted on its own. It states a fact and
+       * stops: no price, no total, and nothing on this surface can charge
+       * anyone (M-PORT-4).
+       */
+      {
+        key: "bookingPaymentDetail",
+        label: "What gets charged, and have you got a Stripe account?",
+        help: "The amount for each thing on your list, or the deposit if it's a deposit. Taking money at the booking is quoted on its own, and we'll agree it with you before anything gets built.",
+        long: true,
+        dependsOn: { field: "bookingPayment", in: ["full", "deposit"] },
+      },
+      {
+        key: "bookingCollect",
+        label: "What should someone tell you when they book?",
+        help: "Name and email come as standard. This is anything past that: what they want to work on, a budget, where they heard about you.",
+        long: true,
+      },
       {
         key: "bookingPolicy",
         label: "Cancelling and rescheduling",
@@ -537,7 +690,12 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
 
   animations: {
     eyebrow: "Animations · what moves, and how much",
-    body: "Motion built into the site rather than bolted onto it. The questions above about stillness set the temperature; these set the specifics. What you say must never move is as useful as anything you want moving.",
+    // The body no longer restates the confirmation card that always sits
+    // directly above it (`MotionNotice`, §11.2) — the two were ending on the
+    // same sentence, in two stacked callouts. It also dropped a reference to
+    // the stillness question, retired with the taste step at D-PORT-20; the
+    // scope flagged that clause for editing and this is the edit.
+    body: "Motion gets built into the site from the start. What's covered here is standard motion. If what you describe below turns out to be bigger than that, we'll talk before anything changes.",
     fields: [
       {
         key: "animationReferences",
@@ -567,6 +725,18 @@ const UPSELLS: Readonly<Record<UpsellExtra, UpsellBlock>> = {
             label: "One showpiece moment, quiet everywhere else",
           },
         ],
+      },
+      /**
+       * The showpiece option named a thing and then never asked what it was.
+       * One moment is the whole deliverable for that answer, so it is the one
+       * question that cannot be left to the call.
+       */
+      {
+        key: "animationShowpiece",
+        label: "Which moment?",
+        help: "Where it should land and what it does. The thing that loads first, a project opening up, a name that draws itself.",
+        long: true,
+        dependsOn: { field: "animationIntensity", equals: "showpiece" },
       },
       {
         key: "animationNever",
@@ -1055,6 +1225,119 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
     personVerbThird: "directs",
     accountsHelp:
       "IMDb especially, if you have a page — people in film check it.", // (v2)
+
+    /**
+     * The nine forks (D-PORT-29). Every string here is `[COPY — draft]`.
+     *
+     * Drawn from ~44 of the 85 gallery sites loaded by eye on 2026-09-07 rather
+     * than from the stored tags, because the tags could not have produced them:
+     * Maurine Pagani is tagged `sparse` and arrives as a packed wall, Myrthe
+     * Mosterman is tagged `sparse` and arrives as one image, and no axis in the
+     * taxonomy separates those two.
+     *
+     * `structure` first, then `feel`, which is also the order the step renders
+     * them — but placement is decided by `group`, not by position here.
+     *
+     * Each `means` line is what that end **turns into** on the built site. They
+     * are the only prose a client reads on a fork, so they carry the whole
+     * question; the ends above them are just the two short names.
+     */
+    tasteSpectrums: [
+      {
+        id: "meetFirst",
+        group: "structure",
+        label: "Who they meet first",
+        ends: { low: "The work", high: "You" },
+        means: {
+          low: "They're inside a film before they know whose it is.",
+          high: "Your name, your role, what you do — up front.",
+        },
+      },
+      {
+        id: "wayThrough",
+        group: "structure",
+        label: "How they get through it",
+        ends: { low: "They roam", high: "You lead" },
+        means: {
+          low: "Everything's on screen at once. They pick.",
+          high: "One at a time, in the order you chose.",
+        },
+      },
+      {
+        id: "aroundTheWork",
+        group: "structure",
+        label: "What sits around each piece",
+        ends: { low: "Just the piece", high: "The whole story" },
+        means: {
+          low: "A title, and nothing else to read.",
+          high: "Credits, client, festivals, what you did on it.",
+        },
+      },
+      {
+        id: "whereTheLookLives",
+        group: "structure",
+        label: "Where the personality lives",
+        ends: { low: "In the work", high: "In the site" },
+        means: {
+          low: "The site gets out of the way. Your frames are the whole look.",
+          high: "The site has a look of its own, and you'd notice it.",
+        },
+      },
+      {
+        id: "whatCarriesIt",
+        group: "structure",
+        label: "What carries the work",
+        ends: { low: "Frames", high: "Footage" },
+        means: {
+          low: "Stills carry it. Video's there if they go looking.",
+          high: "Something's moving the second they land.",
+        },
+      },
+
+      /* ── Feel. Ungated, and vaguer on purpose — see the type's docstring. ── */
+
+      {
+        id: "temperature",
+        group: "feel",
+        label: "Cool or warm",
+        ends: { low: "Cool", high: "Warm" },
+        means: {
+          low: "Keeps its distance. Still, spare, a little severe.",
+          high: "Feels like there's a person in the room with you.",
+        },
+      },
+      {
+        id: "presence",
+        group: "feel",
+        label: "Understated or bold",
+        ends: { low: "Understated", high: "Bold" },
+        means: {
+          low: "Says almost nothing. Lets them find it.",
+          high: "Walks in and announces itself.",
+        },
+      },
+      {
+        id: "levity",
+        group: "feel",
+        label: "Serious or playful",
+        ends: { low: "Serious", high: "Playful" },
+        means: {
+          low: "Straight-faced throughout. No winking.",
+          high: "Has fun with it, and shows it.",
+        },
+      },
+      {
+        id: "era",
+        group: "feel",
+        label: "Timeless or of its moment",
+        ends: { low: "Timeless", high: "Of its moment" },
+        means: {
+          low: "Should look the same in ten years.",
+          high: "Unmistakably now.",
+        },
+      },
+    ],
+
     darkOrLightHelp:
       "Most film sites run dark so the footage glows — but there is a lot of room between near-black and bright white, and the middle is where most of the good ones live. Yours doesn't have to run dark at all.", // [COPY — pending Taylor] — was v2 verbatim until the question stopped being binary (2026-09-03)
   },

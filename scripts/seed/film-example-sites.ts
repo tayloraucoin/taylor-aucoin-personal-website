@@ -1,5 +1,5 @@
 /**
- * The film pack's seed gallery — 73 sites, tagged from Taylor's two research
+ * The film pack's seed gallery — 85 sites, tagged from Taylor's two research
  * libraries (film batch one and batch two, August 2026).
  *
  * **The tags are the research's, not invented.** Every `group`, axis, style,
@@ -13,10 +13,11 @@
  * `role` is the occupation line the row renders under the name, kept short
  * enough to sit on one line at 375px.
  *
- * `screenshot` is the filename in Taylor's capture folder. Four sites moved
+ * `screenshot` is the filename in Taylor's capture folder. Five sites moved
  * since the research was written and carry their current URL here:
- * matiasboucard.com → boucardmatias.com, and the Format subdomains for Mike
- * Call, Othello Banaci, and Petros are now custom domains.
+ * matiasboucard.com → boucardmatias.com, kahanipictures.ca → kahani.ca, and
+ * the Format subdomains for Mike Call, Othello Banaci, and Petros are now
+ * custom domains.
  */
 export type SeedSite = {
   slug: string;
@@ -41,6 +42,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     styles: ["oversized-type", "serif"], build: "template",
     screenshot: "aaronallsop.com.png",
     alt: "A stripped-back white page with the name set large in black display type and almost nothing else.",
+  },
+  {
+    slug: "airview-cinematography", name: "Airview Cinematography", url: "https://airview.us",
+    role: "Aerial cinematography · Portland, Wellington",
+    group: "statement", ground: "dark", motion: "alive", density: "sparse",
+    styles: ["full-bleed-video", "oversized-type"], build: "custom",
+    screenshot: "airview.us.png",
+    alt: "A dark hand-built page where a full-bleed aerial reel plays behind oversized type and a ticker of client names.",
   },
   {
     slug: "alexandros-maragos", name: "Alexandros Maragos", url: "https://alexandrosmaragos.com",
@@ -187,6 +196,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     alt: "An off-white page with a fine grain texture over it and a muted film playing behind.",
   },
   {
+    slug: "dave-moppert", name: "Dave Moppert", url: "https://www.davemoppert.com",
+    role: "Creative director and filmmaker",
+    group: "light-editorial", ground: "light", motion: "still", density: "balanced",
+    styles: [], build: "designer",
+    screenshot: "davemoppert.com.png",
+    alt: "A light page led by a portrait of him, with gradient-filled headline type and a book-a-call button.",
+  },
+  {
     slug: "duran-levinson", name: "Duran Levinson", url: "https://www.duranlevinson.com/hello/musicvideo",
     role: "Director · Berlin and South Africa",
     group: "warm-textured", ground: "warm", motion: "alive", density: "dense",
@@ -259,6 +276,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     alt: "A dark template homepage with a full-screen video hero and a standard menu bar.",
   },
   {
+    slug: "josip-jukic-sunaric", name: "Josip Jukic-Sunaric", url: "https://www.jjs-photo.com",
+    role: "Cinematographer and photographer · Vienna",
+    group: "light-editorial", ground: "light", motion: "still", density: "balanced",
+    styles: ["full-bleed-video"], build: "template",
+    screenshot: "jjs-photo.com.png",
+    alt: "A light page opening on one full-width hero frame, with slow-motion clips further down.",
+  },
+  {
     slug: "jose-betancourt", name: "José Betancourt", url: "https://www.jodejos.com",
     role: "Film director and DP",
     group: "light-editorial", ground: "light", motion: "still", density: "balanced",
@@ -299,12 +324,44 @@ export const FILM_SEED_SITES: SeedSite[] = [
     alt: "A dark minimal page with the name set large and a very simple structure beneath.",
   },
   {
+    slug: "jordyn-dunseath", name: "Jordyn Dunseath", url: "https://jordyndunseath.com",
+    role: "Videographer, photographer, designer · Oregon",
+    group: "light-editorial", ground: "light", motion: "still", density: "sparse",
+    styles: ["grid"], build: "template",
+    screenshot: "jordyndunseath.com.png",
+    alt: "A white two-column grid with so much space around each piece that a small body of work reads as deliberate.",
+  },
+  {
     slug: "julia-rossetti", name: "Julia Rossetti", url: "https://juliarossetti.com",
     role: "Colorist · Barcelona",
     group: "dark-cinematic", ground: "dark", motion: "alive", density: "dense",
     styles: ["grid", "hover-preview"], build: "template",
     screenshot: "juliarossetti.com.png",
     alt: "A wall-to-wall dark grid of graded frames with category filters above it.",
+  },
+  {
+    slug: "julien-widmer", name: "Julien Widmer", url: "https://www.julienwidmer.com",
+    role: "Director, photographer, composer · Paris",
+    group: "type-first", ground: "dark", motion: "still", density: "dense",
+    styles: ["index-nav"], build: "designer",
+    screenshot: "julienwidmer.com.png",
+    alt: "A dark page whose left sidebar is a long index of project titles, the work opening beside it.",
+  },
+  {
+    slug: "kahani-pictures", name: "Kahani Pictures", url: "https://www.kahani.ca",
+    role: "Branded content studio",
+    group: "dark-cinematic", ground: "dark", motion: "alive", density: "balanced",
+    styles: ["full-bleed-video"], build: "designer",
+    screenshot: "kahani.ca.png",
+    alt: "A dark studio page with documentary footage playing full-bleed behind the masthead and client testimonials below.",
+  },
+  {
+    slug: "kanin-howell", name: "Kanin Howell", url: "https://www.kaninhowell.com",
+    role: "Stunt coordinator and performer · Los Angeles",
+    group: "stills-credits", ground: "light", motion: "still", density: "dense",
+    styles: ["credits-heavy", "grid"], build: "template",
+    screenshot: "kaninhowell.com.png",
+    alt: "A light page carrying long film and brand credit lists, galleries of production stills, and a downloadable resume.",
   },
   {
     slug: "kelsey-hannah-walsh", name: "Kelsey Hannah Walsh", url: "https://www.kelseyhannahwalsh.com",
@@ -337,6 +394,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     styles: ["full-bleed-video"], build: "custom",
     screenshot: "ligthelm.work.png",
     alt: "An immersive dark page of looping film with navigation that behaves unlike a normal menu.",
+  },
+  {
+    slug: "lisa-cambours", name: "Lisa Cambours", url: "https://www.lisacambours.com",
+    role: "Director · brand films, documentary · France",
+    group: "light-editorial", ground: "light", motion: "alive", density: "balanced",
+    styles: ["horizontal-scroll", "full-bleed-video"], build: "designer",
+    screenshot: "lisacambours.com.png",
+    alt: "A light page that scrolls sideways through the work, opening on a hero film.",
   },
   {
     slug: "lluis-murua", name: "Lluís Murúa", url: "http://lluismurua.com",
@@ -483,6 +548,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     alt: "A near-black two-column grid that mimics the viewing conditions of a grading suite.",
   },
   {
+    slug: "noel-fenez", name: "Noel Fenez", url: "https://www.noelfenez.com",
+    role: "Video and brand designer · Montreal",
+    group: "dark-cinematic", ground: "dark", motion: "alive", density: "balanced",
+    styles: ["full-bleed-video", "one-colour-accent"], build: "designer",
+    screenshot: "noelfenez.com.png",
+    alt: "A dark page with video running behind the type and a single neon colour picking out the headings.",
+  },
+  {
     slug: "othello-banaci", name: "Othello Banaci", url: "https://www.othellobanaci.tv",
     role: "Filmmaker and DP · documentary",
     group: "stills-credits", ground: "dark", motion: "still", density: "balanced",
@@ -505,6 +578,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     styles: ["full-bleed-video"], build: "template",
     screenshot: "patrickfileti.com.png",
     alt: "A dark cover of full-width film with thumbnails stacked underneath.",
+  },
+  {
+    slug: "peter-mckinnon", name: "Peter McKinnon", url: "https://www.petermckinnon.com",
+    role: "Filmmaker, photographer, YouTuber · Toronto",
+    group: "light-editorial", ground: "light", motion: "still", density: "balanced",
+    styles: ["grid"], build: "template",
+    screenshot: "petermckinnon.com.png",
+    alt: "A light page of full-width photographs in a fluid grid, warm in tone and built to hold a lot of work.",
   },
   {
     slug: "petros", name: "Petros", url: "https://www.petros.productions",
@@ -579,6 +660,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     alt: "A single column of text divided by horizontal rules, structured like a filmography document.",
   },
   {
+    slug: "simon-tonev", name: "Simon Tonev", url: "https://www.simontonev.com",
+    role: "Director · branded, commercial · Norway",
+    group: "dark-cinematic", ground: "dark", motion: "alive", density: "balanced",
+    styles: ["grid", "full-bleed-video"], build: "designer",
+    screenshot: "simontonev.com.png",
+    alt: "A dark page opening on a montage reel, the work below in a grid that reflows as it scrolls.",
+  },
+  {
     slug: "steven-olver", name: "Steven Olver", url: "https://www.stevenolver.com",
     role: "Motion designer and VFX · London",
     group: "dark-cinematic", ground: "dark", motion: "alive", density: "dense",
@@ -593,6 +682,14 @@ export const FILM_SEED_SITES: SeedSite[] = [
     styles: ["monochrome", "index-nav", "full-bleed-video"], build: "custom",
     screenshot: "taotajima.jp.png",
     alt: "A stark black-and-white page of numbered works where transitions ripple like a liquid effect.",
+  },
+  {
+    slug: "chris-hau", name: "Chris Hau", url: "https://thechrishau.com",
+    role: "Filmmaker, photographer, creative director",
+    group: "warm-textured", ground: "warm", motion: "still", density: "dense",
+    styles: [], build: "designer",
+    screenshot: "thechrishau.com.png",
+    alt: "A warm page built on paper-craft textures, sections sliding at different speeds under a nav that stays put.",
   },
   {
     slug: "the-directors-bureau", name: "The Directors Bureau", url: "https://www.thedirectorsbureau.com",

@@ -586,6 +586,33 @@ export const stepTasteSchema = z.object({
     .optional(),
   styleBrief: text,
 
+  /**
+   * The nine forks, keyed by the copy pack's spectrum id (D-PORT-29).
+   *
+   * ## Why one key and not nine
+   *
+   * `collectUnanswered` and `answerTally` in `server/services/output.ts` derive
+   * "questions still to cover" from this schema's keys. Nine top-level keys
+   * would put nine lines on the done screen for anyone who skipped the block —
+   * which is the exact failure `RETIRED_TASTE_KEYS` exists to prevent, arriving
+   * through a different door. One key is one honest row.
+   *
+   * ## Why an open record and not an enum of ids
+   *
+   * A `z.enum` of the current ids would strip a spectrum's answer from the
+   * document the moment that spectrum left the copy pack — and this schema is
+   * the shape guard, so stripping here means erasing on the client's next save.
+   * The retired D-PORT-20 keys below learned this the hard way. An id that no
+   * longer resolves still stores, still prints, and is marked in the document.
+   *
+   * The value is a **decimal from 1.0 to 7.0**, not an integer: the track is
+   * continuous, so 4.3 is a real answer and rounding it to 4 would discard
+   * something the client deliberately expressed. Bounded because out of range
+   * is a bug rather than an answer, and with no zero, because a bipolar track
+   * has no "off" position — unanswered is the key being absent.
+   */
+  spectrums: z.record(z.string(), z.number().min(1).max(7)).optional(),
+
   wordOne: text,
   wordTwo: text,
   wordThree: text,
@@ -608,6 +635,8 @@ export const stepTasteSchema = z.object({
      step (PORT-26). */
   animationReferences: text,
   animationIntensity: text,
+  /** Revealed when `animationIntensity` is "showpiece" (2026-09-07). */
+  animationShowpiece: text,
   animationNever: text,
 
   /* ── Legacy (PORT-7). Read by `picksOf`, never written. ──────────────── */
@@ -679,6 +708,8 @@ export const stepMediaSchema = z.object({
   logoFeeling: text,
   logoExactWording: text,
   logoWhere: choice,
+  /** Colours, symbols, or words the mark must keep or must avoid (2026-09-07). */
+  logoConstraints: text,
   logoDirections: text,
 });
 
@@ -809,8 +840,25 @@ export const stepAccessSchema = z.object({
   /* ── Bought the booking add-on (2026-09-03) ────────────────────────────── */
   bookingWhat: text,
   bookingCalendar: text,
+  /**
+   * The hours themselves, with the timezone (2026-09-07).
+   *
+   * `bookingCalendar` promised to set these by hand for anyone off Google
+   * Calendar and nothing collected them. The durable track has an operations
+   * step for this; the coded track has this field.
+   */
+  bookingHours: text,
+  /** Video, phone, or in person — what the confirmation email carries. */
+  bookingWhere: choice,
   bookingLeadTime: text,
   bookingPayment: text,
+  /**
+   * Amounts and whether a Stripe account exists. Revealed by `bookingPayment`,
+   * because it is only a question once money changes hands at the booking.
+   */
+  bookingPaymentDetail: text,
+  /** Anything past name and email the booking form should ask for. */
+  bookingCollect: text,
   bookingPolicy: text,
 
   handsOn: text,

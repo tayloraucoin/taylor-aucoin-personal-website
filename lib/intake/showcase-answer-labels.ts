@@ -151,6 +151,7 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   note: "Note",
   references: "Sites they found",
   styleBrief: "The style they described",
+  spectrums: "Which way it leans",
   wordOne: "Feel word 1",
   wordTwo: "Feel word 2",
   wordThree: "Feel word 3",
@@ -184,7 +185,11 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
 
   // Step 8 — The site itself
   pages: "Pages they want",
+  // `pagesOther` was one text box; `pagesCustom` is the list of rows that
+  // replaced it (2026-09-04). Both are kept: the old key still prints for the
+  // engagements that answered it.
   pagesOther: "Other pages",
+  pagesCustom: "Pages they added themselves",
   howSeparate: "How separate the different things should be",
   extraPagesPlan: "What the extra pages are for",
   howToReach: "How people should reach them",
@@ -220,10 +225,12 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   // Add-on questions, shown only to the clients who bought them.
   animationReferences: "Motion they liked",
   animationIntensity: "How much the motion announces itself",
+  animationShowpiece: "The showpiece moment",
   animationNever: "What must never move",
-  logoFeeling: "What's wrong with the logo they have",
+  logoFeeling: "Where the mark is starting from",
   logoExactWording: "Exact wording for the mark",
   logoWhere: "Where the mark has to work",
+  logoConstraints: "What the mark must keep or avoid",
   logoDirections: "Marks they like, and why",
   supabaseWhatPersists: "What the site must remember",
   supabaseWhoLogsIn: "Who logs in, and what they see",
@@ -237,8 +244,12 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   adminEditWhat: "What they want to change themselves",
   bookingWhat: "What can be booked, and how long",
   bookingCalendar: "Calendar they live in",
+  bookingHours: "When they're bookable",
+  bookingWhere: "Where the bookings happen",
   bookingLeadTime: "Notice, and how far ahead",
   bookingPayment: "Whether they pay at booking",
+  bookingPaymentDetail: "What gets charged, and their Stripe account",
+  bookingCollect: "What the booking form should ask for",
   bookingPolicy: "Cancelling and rescheduling",
 
   // File field keys, so the document's Files section reads in words.

@@ -7,11 +7,12 @@ import {
   requireEnv,
   stripeTaxEnabled,
 } from "@/lib/env";
+import { withoutBundled } from "@/lib/intake/addon-bundles";
 import { resolvePromoCode } from "@/lib/intake/promo";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { intakeRoutes, showcaseIntakeRoutes } from "@/lib/routes";
 import type { IntakeTrackKey } from "@/lib/types/intake";
-import { EXTRA_PAGES_MAX } from "@/lib/validators/intake";
+import { EXTRA_PAGES_MAX, SEO_POSTS_MAX } from "@/lib/validators/intake";
 import type { Engagement } from "./engagement";
 import {
   findSellableProductByKey,
@@ -46,6 +47,32 @@ const DEPOSIT_DESCRIPTOR_SUFFIX = "DEPOSIT";
 function extraPageKeyFor(track: IntakeTrackKey): string {
   return track === "showcase" ? "showcase_extra_page" : "extra_page";
 }
+
+/**
+ * The written-blog-post row, which exists on the coded track only.
+ *
+ * Null for the durable track rather than a key that resolves to nothing: the
+ * platform track sells no blog, so there is no post to write, and returning a
+ * key would make the absence look like a missing catalogue row.
+ */
+function seoPostKeyFor(track: IntakeTrackKey): string | null {
+  return track === "showcase" ? "showcase_seo_post" : null;
+}
+
+/**
+ * The counted rows a pay screen can propose, as counts and never as amounts.
+ *
+ * An object rather than trailing positional arguments: `createDepositCheckout`
+ * already carries six, and the seventh and eighth being two bare numbers in a
+ * row is how a caller eventually passes pages as posts. Each field is bounded
+ * at the action's edge and again where its line item is built.
+ */
+export type CheckoutCounts = {
+  /** Pages beyond the included five. */
+  extraPages?: number;
+  /** Blog posts written for the client. Coded track only, and gated on the blog. */
+  seoPosts?: number;
+};
 
 /**
  * Lazy, for the same reason the database client is: a module-level client
@@ -116,13 +143,25 @@ export async function getCheckoutCatalogue(
    * than offering a count it cannot charge.
    */
   extraPage: SellableProduct | null;
+  /**
+   * Blog posts, written per post. Counted like `extraPage` and null on the
+   * durable track, which sells no blog for them to live on. Offering it is
+   * further gated on the blog add-on actually being ticked — see
+   * `ADDON_REQUIRES`; this field only says the row is sellable.
+   */
+  seoPost: SellableProduct | null;
 }> {
   const useTestPrice = useAdminTestPrice && adminTestPaymentEnabled();
 
   if (useTestPrice) {
     const testProduct = await findSellableProductByKey("admin_test_payment");
     if (testProduct) {
-      return { deposit: testProduct, addons: [], extraPage: null };
+      return {
+        deposit: testProduct,
+        addons: [],
+        extraPage: null,
+        seoPost: null,
+      };
     }
 
     console.warn(
@@ -130,13 +169,16 @@ export async function getCheckoutCatalogue(
     );
   }
 
-  const [deposit, addons, extraPage] = await Promise.all([
+  const postKey = seoPostKeyFor(track);
+
+  const [deposit, addons, extraPage, seoPost] = await Promise.all([
     getBuildProduct(track, plan, overrideKey),
     listCheckoutAddons(track),
     findSellableProductByKey(extraPageKeyFor(track)),
+    postKey ? findSellableProductByKey(postKey) : Promise.resolve(null),
   ]);
 
-  return { deposit, addons, extraPage };
+  return { deposit, addons, extraPage, seoPost };
 }
 
 /**
@@ -324,7 +366,7 @@ export async function createDepositCheckout(
   promoCode?: string,
   adminTestPayment = false,
   plan: BuildPlan = "half",
-  extraPages = 0,
+  counts: CheckoutCounts = {},
 ): Promise<string> {
   if (!engagement.depositRequired || engagement.paidAt) {
     throw new Error("Engagement does not require a deposit.");
@@ -339,7 +381,7 @@ export async function createDepositCheckout(
     ? { granted: null, overrideKey: undefined }
     : await resolvePromoEffect(track, promoCode, plan);
 
-  const { deposit, addons, extraPage } = await getCheckoutCatalogue(
+  const { deposit, addons, extraPage, seoPost } = await getCheckoutCatalogue(
     useTestPrice,
     track,
     plan,
@@ -357,7 +399,18 @@ export async function createDepositCheckout(
       );
     }
 
-    selected = addons.filter((a) => addonKeys.includes(a.key));
+    /*
+     * Bundled rows are dropped here, not just on the pay screen.
+     *
+     * The admin panel includes the Supabase setup it runs on. The screen greys
+     * that row out, but the screen is a courtesy — this is the function that
+     * builds a Stripe line, so it is the one that has to guarantee a client is
+     * never charged for a dependency they already bought. Deliberately not
+     * conditional on what the browser sent.
+     */
+    const chargeable = withoutBundled(addonKeys);
+
+    selected = addons.filter((a) => chargeable.includes(a.key));
   }
 
   /**
@@ -369,6 +422,8 @@ export async function createDepositCheckout(
    * past the ceiling, an absent catalogue row, or the admin test price all
    * land in the same place — no extra-page line at all.
    */
+  const extraPages = counts.extraPages ?? 0;
+
   const pages =
     !useTestPrice &&
     extraPage &&
@@ -376,6 +431,28 @@ export async function createDepositCheckout(
     extraPages > 0 &&
     extraPages <= EXTRA_PAGES_MAX
       ? extraPages
+      : 0;
+
+  /**
+   * Written blog posts, counted — and gated, which pages are not.
+   *
+   * A post is only sellable alongside the blog it publishes to, so the gate
+   * reads the *chargeable* selection rather than what the browser proposed:
+   * a call that asks for six posts without the blog buys zero, silently and
+   * on the server. Bounded here as well as at the edge, same as pages, because
+   * this is the function that turns a count into a Stripe line.
+   */
+  const seoPosts = counts.seoPosts ?? 0;
+  const blogSelected = selected.some((a) => a.key === "showcase_seo_blog");
+
+  const posts =
+    !useTestPrice &&
+    seoPost &&
+    blogSelected &&
+    Number.isInteger(seoPosts) &&
+    seoPosts > 0 &&
+    seoPosts <= SEO_POSTS_MAX
+      ? seoPosts
       : 0;
 
   /**
@@ -393,6 +470,7 @@ export async function createDepositCheckout(
     ...(pages > 0 && extraPage
       ? [{ product: extraPage, quantity: pages }]
       : []),
+    ...(posts > 0 && seoPost ? [{ product: seoPost, quantity: posts }] : []),
     ...(granted ? [{ product: granted, quantity: 1 }] : []),
   ];
 
@@ -416,6 +494,7 @@ export async function createDepositCheckout(
       terms_version: TERMS_VERSION,
       addon_keys: selected.map((a) => a.key).join(","),
       ...(pages > 0 ? { extra_pages: String(pages) } : {}),
+      ...(posts > 0 ? { seo_posts: String(posts) } : {}),
       track,
       build_key: deposit.key,
       ...(granted ? { promo_grant: granted.key } : {}),

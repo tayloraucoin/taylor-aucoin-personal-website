@@ -20,7 +20,10 @@ import {
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { getCheckoutCatalogue } from "@/server/services/deposit";
 import { loadExampleSet } from "@/server/services/example-sites";
-import { findSellableProductByKey } from "@/server/services/products";
+import {
+  ALL_EXTRAS,
+  findSellableProductByKey,
+} from "@/server/services/products";
 import { AccordionControls, AccordionProvider } from "./_components/accordion";
 import { DownloadMarkdown } from "./_components/download-markdown";
 import { FlowSection, SectionUnavailable } from "./_components/flow-sections";
@@ -57,6 +60,7 @@ export default async function IntakeQuestionsPage({
     kind?: string;
     pack?: string;
     mode?: string;
+    extras?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -83,6 +87,22 @@ export default async function IntakeQuestionsPage({
   const everyKind = params.kind === EVERY_KIND;
   const scope: KindScope = everyKind ? "all" : "one";
   const document = mode === "document";
+
+  /**
+   * Whether to read the questionnaire as a client who bought every add-on.
+   *
+   * A fourth orthogonal switch, in the URL beside the other three. Document
+   * mode has always shown these blocks — `Reveal` opens every branch there and
+   * names what opens it — but interface mode is where you judge whether a
+   * screen is a good thing to be handed, and until now an add-on block could
+   * not be seen on that surface at all. A preview owns no basket, so the rail
+   * supplies one.
+   *
+   * Off by default: a client who bought nothing is the ordinary case, and the
+   * default view of a review surface should be the ordinary case.
+   */
+  const allExtras = params.extras === "all";
+  const extras = allExtras ? ALL_EXTRAS : [];
 
   // Only a portfolio's pack still moves with its disciplines.
   const film = params.pack === "film";
@@ -112,6 +132,7 @@ export default async function IntakeQuestionsPage({
       search.set("kind", kind);
       if (film) search.set("pack", "film");
     }
+    if (allExtras) search.set("extras", "all");
     return search.toString();
   })();
 
@@ -135,6 +156,7 @@ export default async function IntakeQuestionsPage({
             film={film}
             mode={mode}
             everyKind={everyKind}
+            allExtras={allExtras}
           />
         }
       />
@@ -206,6 +228,7 @@ export default async function IntakeQuestionsPage({
                   full={catalogue.full}
                   addons={catalogue.addons}
                   extraPage={catalogue.extraPage}
+                  seoPost={catalogue.seoPost}
                 />
               ) : (
                 <DepositGate
@@ -244,6 +267,7 @@ export default async function IntakeQuestionsPage({
                 kind={kind}
                 gallery={gallery}
                 previewQuery={previewQuery}
+                extras={extras}
               />
 
               {/* The other half of "what is unique to a kind": not which
@@ -296,6 +320,7 @@ type Catalogue =
       deposit: Awaited<ReturnType<typeof getCheckoutCatalogue>>["deposit"];
       addons: Awaited<ReturnType<typeof getCheckoutCatalogue>>["addons"];
       extraPage: Awaited<ReturnType<typeof getCheckoutCatalogue>>["extraPage"];
+      seoPost: Awaited<ReturnType<typeof getCheckoutCatalogue>>["seoPost"];
       full: Awaited<ReturnType<typeof findSellableProductByKey>>;
     }
   | { kind: "missing"; reason: string };
@@ -310,7 +335,7 @@ type Catalogue =
  */
 async function loadCatalogue(track: IntakeTrackKey): Promise<Catalogue> {
   try {
-    const { deposit, addons, extraPage } = await getCheckoutCatalogue(
+    const { deposit, addons, extraPage, seoPost } = await getCheckoutCatalogue(
       false,
       track,
       "half",
@@ -319,7 +344,7 @@ async function loadCatalogue(track: IntakeTrackKey): Promise<Catalogue> {
       track === "showcase"
         ? await findSellableProductByKey("showcase_full")
         : null;
-    return { kind: "found", deposit, addons, extraPage, full };
+    return { kind: "found", deposit, addons, extraPage, seoPost, full };
   } catch (error) {
     // Surface the thrown message verbatim. `getBuildProduct` already raises the
     // exact remedy ("Run `yarn stripe:catalogue --apply` and `yarn db:seed`…"),

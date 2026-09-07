@@ -177,6 +177,23 @@ const PRODUCT_KEY_TO_EXTRA: Record<string, string> = {
 };
 
 /**
+ * Every extras key the questionnaire can branch on, deduped.
+ *
+ * Derived from the map above rather than typed out a second time, so an add-on
+ * cannot be added to the catalogue without the admin review surface being able
+ * to show the questions it opens. That surface has no engagement and therefore
+ * buys nothing, so it hands this list down instead — the one place a reveal's
+ * `extra` condition is satisfied by something other than a settled basket.
+ *
+ * Both tracks in one list on purpose. The review surface wants every block
+ * open, and `booking` and `logo` are deliberately the same word on both tracks
+ * (see the map), so splitting by track would buy nothing and could drift.
+ */
+export const ALL_EXTRAS: readonly string[] = [
+  ...new Set(Object.values(PRODUCT_KEY_TO_EXTRA)),
+];
+
+/**
  * How many extra pages this engagement has paid for.
  *
  * Zero for almost everyone, and zero is the honest answer for an unpaid row

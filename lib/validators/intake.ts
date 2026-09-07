@@ -390,6 +390,33 @@ export const extraPagesInput = z.coerce
   .default(0);
 
 /**
+ * The ceiling on blog posts bought at checkout, for the same reason
+ * `EXTRA_PAGES_MAX` exists: a count is the cheapest way to overcharge someone
+ * by a typo, and the browser's picker and the server's refusal must be built
+ * from one number.
+ *
+ * Lower than the page ceiling on purpose. Twenty posts is a content contract,
+ * not a checkbox on a deposit screen — past this the conversation is a
+ * conversation, and Taylor invoices it.
+ */
+export const SEO_POSTS_MAX = 10;
+
+/**
+ * How many written blog posts the client asked for on the pay screen.
+ *
+ * Zero is the ordinary answer. Gated as well as bounded: the service drops
+ * this count entirely unless the blog itself is being bought, because a post
+ * with nowhere to publish is work the client cannot use.
+ */
+export const seoPostsInput = z.coerce
+  .number()
+  .int()
+  .min(0)
+  .max(SEO_POSTS_MAX)
+  .catch(0)
+  .default(0);
+
+/**
  * A promo code as typed by a client. Bounds only — whether it means anything
  * is decided by `lib/intake/promo.ts`, in one place, on the server.
  */

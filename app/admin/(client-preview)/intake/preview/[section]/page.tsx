@@ -18,7 +18,10 @@ import { adminRoutes } from "@/lib/routes";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { getCheckoutCatalogue } from "@/server/services/deposit";
 import { loadExampleSet } from "@/server/services/example-sites";
-import { findSellableProductByKey } from "@/server/services/products";
+import {
+  ALL_EXTRAS,
+  findSellableProductByKey,
+} from "@/server/services/products";
 
 /**
  * One section of the intake, alone, as a client meets it.
@@ -44,7 +47,12 @@ export default async function IntakeSectionPreviewPage({
   searchParams,
 }: {
   params: Promise<{ section: string }>;
-  searchParams: Promise<{ track?: string; kind?: string; pack?: string }>;
+  searchParams: Promise<{
+    track?: string;
+    kind?: string;
+    pack?: string;
+    extras?: string;
+  }>;
 }) {
   const { section } = await params;
   const query = await searchParams;
@@ -57,6 +65,13 @@ export default async function IntakeSectionPreviewPage({
     (showcaseKinds().find((entry) => entry.key === query.kind)
       ?.key as ShowcaseKind) ?? "portfolio";
   const film = query.pack === "film";
+  /**
+   * The add-ons switch, forwarded from the review page's Preview link so the
+   * screen this opens is the screen that page was showing. A preview still owns
+   * no basket; this is the rail lending it one (see the review page).
+   */
+  const allExtras = query.extras === "all";
+  const extras = allExtras ? ALL_EXTRAS : [];
   const flavour = flavourForKind(kind, film ? ["film"] : undefined);
 
   const engagement = previewEngagement(track, {
@@ -66,7 +81,7 @@ export default async function IntakeSectionPreviewPage({
 
   // The same three values this URL already carries, rebuilt for the links this
   // page renders: a step walked to from here stays on the view it was opened in.
-  const previewQuery = searchFor(track, kind, film);
+  const previewQuery = searchFor(track, kind, film, allExtras);
 
   return (
     <>
@@ -74,7 +89,7 @@ export default async function IntakeSectionPreviewPage({
         track={track}
         kind={kind}
         film={film}
-        backHref={backToReview(track, kind, film)}
+        backHref={backToReview(track, kind, film, allExtras)}
       />
 
       <PreviewModeProvider render="interface" scope="one">
@@ -85,23 +100,26 @@ export default async function IntakeSectionPreviewPage({
           flavour,
           engagement,
           query: previewQuery,
+          extras,
         })}
       </PreviewModeProvider>
     </>
   );
 }
 
-/** The track, kind, and pack, as this route's own query string. */
+/** The track, kind, pack, and add-ons switch, as this route's own query. */
 function searchFor(
   track: IntakeTrackKey,
   kind: ShowcaseKind,
   film: boolean,
+  allExtras: boolean,
 ): string {
   const search = new URLSearchParams({ track });
   if (track === "showcase") {
     search.set("kind", kind);
     if (film) search.set("pack", "film");
   }
+  if (allExtras) search.set("extras", "all");
   return search.toString();
 }
 
@@ -110,8 +128,9 @@ function backToReview(
   track: IntakeTrackKey,
   kind: ShowcaseKind,
   film: boolean,
+  allExtras: boolean,
 ): string {
-  return `${adminRoutes.intakeQuestions}?${searchFor(track, kind, film)}`;
+  return `${adminRoutes.intakeQuestions}?${searchFor(track, kind, film, allExtras)}`;
 }
 
 async function sectionBody({
@@ -121,14 +140,17 @@ async function sectionBody({
   flavour,
   engagement,
   query,
+  extras,
 }: {
   section: string;
   track: IntakeTrackKey;
   kind: ShowcaseKind;
   flavour: ReturnType<typeof flavourForKind>;
   engagement: ReturnType<typeof previewEngagement>;
-  /** The track/kind/pack this preview is showing, for its own step links. */
+  /** The view this preview is showing, for its own step links. */
   query: string;
+  /** What the rail is pretending this client bought. Empty is the default. */
+  extras: readonly string[];
 }) {
   if (section === "start") {
     return track === "showcase" ? <ShowcaseStartForm /> : <StartForm />;
@@ -156,7 +178,7 @@ async function sectionBody({
     // Real prices, read live, exactly as the review page does — a preview of a
     // money screen that invented a number would be worse than no preview.
     try {
-      const { deposit, addons, extraPage } = await getCheckoutCatalogue(
+      const { deposit, addons, extraPage, seoPost } = await getCheckoutCatalogue(
         false,
         track,
         "half",
@@ -175,6 +197,7 @@ async function sectionBody({
           full={full}
           addons={addons}
           extraPage={extraPage}
+          seoPost={seoPost}
         />
       ) : (
         <DepositGate
@@ -240,6 +263,7 @@ async function sectionBody({
         flavour={flavour}
         kind={kind}
         gallery={gallery}
+        extras={extras}
       />
     </StepShell>
   );

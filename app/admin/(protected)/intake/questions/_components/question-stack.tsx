@@ -64,8 +64,17 @@ export function QuestionStack({
   kind,
   gallery,
   previewQuery,
+  extras,
 }: Readonly<{
   track: IntakeTrackKey;
+  /**
+   * What the rail is pretending this client bought.
+   *
+   * Empty by default, which is the ordinary screen. The add-ons switch fills it
+   * so a reviewer can read the questions a purchase opens without leaving
+   * interface mode — document mode has always shown them, but only as prose.
+   */
+  extras: readonly string[];
   flavour: ShowcaseFlavour;
   /** What the site is for. Decides which field groups exist at all. */
   kind: ShowcaseKind;
@@ -151,6 +160,7 @@ export function QuestionStack({
                   flavour={flavour}
                   kind={kind}
                   gallery={gallery}
+                  extras={extras}
                 />
               </div>
             </AccordionSection>
@@ -179,12 +189,15 @@ export function StepBody({
   flavour,
   kind,
   gallery,
+  extras = [],
 }: Readonly<{
   track: IntakeTrackKey;
   stepKey: string;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
   gallery: ExampleSet;
+  /** See `QuestionStack`. Empty is the ordinary screen and the default. */
+  extras?: readonly string[];
 }>) {
   const shared = { token: NO_TOKEN, initial: NO_ANSWERS };
 
@@ -236,7 +249,7 @@ export function StepBody({
       case "team":
         return <StepTeam {...shared} />;
       case "access":
-        return <StepAccess {...shared} purchasedExtras={[]} />;
+        return <StepAccess {...shared} purchasedExtras={extras} />;
       default:
         return <UnrenderedStep stepKey={stepKey} />;
     }
@@ -298,8 +311,10 @@ export function StepBody({
           flavour={flavour}
           gallery={gallery}
           files={{ inspiration: NO_FILES }}
-          // A preview buys nothing and quotes nothing: the document renders
-          // both add-on states under a line naming what opens each.
+          purchasedExtras={extras}
+          // A preview quotes nothing: the offer card renders its unavailable
+          // state, and the document renders both add-on states under a line
+          // naming what opens each.
           motion={{ priceCents: null, currency: "cad" }}
         />
       );
@@ -309,6 +324,7 @@ export function StepBody({
           {...shared}
           flavour={flavour}
           kind={kind}
+          purchasedExtras={extras}
           files={{
             portrait: NO_FILES,
             behindScenes: NO_FILES,
@@ -321,9 +337,23 @@ export function StepBody({
         />
       );
     case "site":
-      return <StepSite {...shared} flavour={flavour} kind={kind} />;
+      return (
+        <StepSite
+          {...shared}
+          flavour={flavour}
+          kind={kind}
+          purchasedExtras={extras}
+        />
+      );
     case "access":
-      return <ShowcaseAccess {...shared} flavour={flavour} kind={kind} />;
+      return (
+        <ShowcaseAccess
+          {...shared}
+          flavour={flavour}
+          kind={kind}
+          purchasedExtras={extras}
+        />
+      );
     default:
       return <UnrenderedStep stepKey={stepKey} />;
   }
