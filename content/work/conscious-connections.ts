@@ -1,4 +1,10 @@
 import type { CaseStudy } from "./types";
+import { workMediaUrl } from "@/lib/work-media";
+import marketingHeroDesktop from "@/public/work/conscious-connections/marketing/marketing-hero-desktop.png";
+import strengthsSection from "@/public/work/conscious-connections/onboarding/strengths-section.png";
+import brainDumpTaylor from "@/public/work/conscious-connections/brain-dump/brain-dump-taylor.png";
+import brainDumpJane from "@/public/work/conscious-connections/brain-dump/brain-dump-jane.png";
+import actionButtons from "@/public/work/conscious-connections/session/action-buttons.png";
 
 /**
  * All claims verified against the Conscious Connections repo's docs and
@@ -267,7 +273,60 @@ export const consciousConnections = {
       "The same build method I bring to client engagements, demonstrated at full depth on my own product",
     ],
   },
-  media: [],
+  media: [
+    {
+      frame: "panel",
+      label: "MARKETING SITE",
+      items: [
+        {
+          src: marketingHeroDesktop,
+          alt: "Conscious Connections marketing site — hero",
+        },
+      ],
+    },
+    {
+      frame: "panel",
+      label: "ONBOARDING & LIVING PROFILE",
+      items: [
+        {
+          src: strengthsSection,
+          alt: "Conscious Connections onboarding — discovery interview, strengths layer",
+          size: "narrow",
+        },
+      ],
+    },
+    {
+      frame: "panel",
+      label: "SESSION ENGINE",
+      items: [
+        {
+          src: brainDumpTaylor,
+          alt: "Conscious Connections session — Taylor's private brain-dump, waiting for Jane to join",
+          size: "narrow",
+        },
+        {
+          src: brainDumpJane,
+          alt: "Conscious Connections session — Jane's private brain-dump, with Taylor already in the room",
+          size: "narrow",
+        },
+        {
+          src: actionButtons,
+          alt: "Conscious Connections session — the action menu (Get Perspective, I'm Stuck, Coach Privately, Make a Request, Take a Break, Remember Why)",
+          size: "narrow",
+        },
+        {
+          src: actionButtons,
+          alt: "Conscious Connections session — starting a new session and getting an initial perspective, screen recording",
+          size: "narrow",
+          video: {
+            src: workMediaUrl(
+              "work/conscious-connections/session/new-session-initial-perspective.mp4",
+            ),
+          },
+        },
+      ],
+    },
+  ],
   links: [
     {
       label: "Site",

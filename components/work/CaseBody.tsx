@@ -2,7 +2,10 @@ import type { CaseStudy } from "@/content/work";
 import { publishedWork } from "@/content/work";
 import { visibleTestimonials } from "@/content/testimonials";
 import CaseLinks from "@/components/work/CaseLinks";
-import CaseMedia, { flattenZoomable } from "@/components/work/CaseMedia";
+import CaseMedia, {
+  flattenZoomable,
+  railLightboxOrder,
+} from "@/components/work/CaseMedia";
 import MediaLightbox from "@/components/work/MediaLightbox";
 import MediaRail from "@/components/work/MediaRail";
 import ProcessSection from "@/components/work/ProcessSection";
@@ -23,8 +26,8 @@ import TestimonialCard from "@/components/testimonials/TestimonialCard";
  * and what was built, then tradeoffs and outcome. Media is enrichment, not scaffolding.
  *
  * Brief / process / built / broke / outcome each accept either a plain string
- * (the original shape — still used as-is by every case study besides the
- * family office platform) or a structured shape with an intro paragraph plus
+ * (the original shape — still used as-is by every case study besides
+ * Cho Ventures) or a structured shape with an intro paragraph plus
  * sub-headers/bullets/cards. Branch on `typeof` before rendering either.
  */
 export default function CaseBody({ c }: { c: CaseStudy }) {
@@ -48,6 +51,7 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
    * shell hydrates. Studies with no media skip the wrapper entirely.
    */
   const zoomable = flattenZoomable(c.media);
+  const railItems = railLightboxOrder(c.media);
 
   const body = (
     <article className="mx-auto max-w-[1080px] px-[22px] py-14 md:px-14">
@@ -253,7 +257,7 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
     </article>
   );
 
-  if (zoomable.length === 0) return body;
+  if (zoomable.length === 0 && railItems.length === 0) return body;
 
   return (
     <MediaLightbox
@@ -261,6 +265,12 @@ export default function CaseBody({ c }: { c: CaseStudy }) {
         src: m.src,
         alt: m.alt,
         caption: m.caption,
+      }))}
+      railItems={railItems.map((m) => ({
+        src: m.src,
+        alt: m.alt,
+        caption: m.caption,
+        video: m.video,
       }))}
     >
       {body}

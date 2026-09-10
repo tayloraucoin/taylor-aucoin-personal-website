@@ -10,8 +10,8 @@ import type { CaseLink } from "@/content/work";
  * wide-tracked, --color-dim at rest, --color-ink with a gold border shift on
  * hover. Inscribed reference, not marketing. No gradient, no fill, no icons.
  *
- * If there are no links, render nothing. The family office case is anonymized
- * and must have zero outbound links.
+ * If there are no links, render nothing. The Cho Ventures case ships with no
+ * outbound links: the platform is entirely behind a login.
  */
 export default function CaseLinks({ links }: { links?: CaseLink[] }) {
   if (!links || links.length === 0) return null;

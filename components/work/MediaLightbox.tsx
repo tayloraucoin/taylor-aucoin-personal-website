@@ -4,8 +4,74 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import type { MediaItem } from "@/content/work";
+import { PLAY_TRIANGLE_PATH } from "@/components/work/play-icon";
 
-export type ZoomItem = Pick<MediaItem, "src" | "alt" | "caption">;
+export type ZoomItem = Pick<MediaItem, "src" | "alt" | "caption" | "video">;
+
+type OpenState = { list: "strip" | "rail"; index: number };
+
+function LightboxVideo({
+  poster,
+  videoSrc,
+  altSrc,
+  altType,
+  width,
+  height,
+}: {
+  poster: string;
+  videoSrc: string;
+  altSrc?: string;
+  altType?: string;
+  width?: number;
+  height?: number;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      style={width && height ? { width, height } : undefined}
+    >
+      <video
+        ref={videoRef}
+        controls
+        preload="none"
+        poster={poster}
+        width={width}
+        height={height}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        className="rounded-(--radius) border border-(--color-faint)"
+      >
+        {altSrc && <source src={altSrc} type={altType} />}
+        <source src={videoSrc} type="video/mp4" />
+      </video>
+      <span
+        className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-(--dur-fast) ease-(--ease-out) ${
+          playing ? "opacity-0" : "opacity-100"
+        }`}
+        aria-hidden={playing}
+      >
+        <button
+          type="button"
+          aria-label="Play video"
+          disabled={playing}
+          onClick={() => videoRef.current?.play()}
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-(--color-faint) bg-[rgb(3_5_16/.72)] backdrop-blur-[2px] transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:pointer-events-none"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="ml-0.5 h-5 w-5 fill-(--color-ink)"
+            aria-hidden
+          >
+            <path d={PLAY_TRIANGLE_PATH} />
+          </svg>
+        </button>
+      </span>
+    </div>
+  );
+}
 
 /**
  * Click-to-zoom for the case-study media strip.
@@ -34,25 +100,28 @@ export type ZoomItem = Pick<MediaItem, "src" | "alt" | "caption">;
  * does. The strip is the last thing on a long page and TBT is already a known
  * problem here (ATM-02); this is not the place to add hydration work.
  *
- * Zoom triggers are located by `[data-zoom-index]` and clicks are delegated, so
- * the figures stay server components. They are real `<button>`s, which also
- * enrolls them in the root field's cursor-glow fade for free — RootField watches
- * `a,button,[data-interactive]`, and the interface always wins over the
- * atmosphere.
+ * Strip figures use `[data-zoom-index]`; the header rail uses `[data-rail-index]`
+ * into a separate paging order (featured items, then the full strip bottom-up).
+ * Clicks are delegated so the figures stay server components. They are real
+ * `<button>`s, which also enrolls them in the root field's cursor-glow fade for
+ * free — RootField watches `a,button,[data-interactive]`, and the interface
+ * always wins over the atmosphere.
  */
 export default function MediaLightbox({
   items,
+  railItems = [],
   children,
 }: {
   items: ZoomItem[];
+  railItems?: ZoomItem[];
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<OpenState | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
-  /** Last viewed index, so focus returns to the right thumbnail after paging. */
-  const lastIndex = useRef(0);
+  /** Last viewed slot, so focus returns to the right thumbnail after paging. */
+  const lastOpen = useRef<OpenState>({ list: "strip", index: 0 });
   const [mounted, setMounted] = useState(false);
   /**
    * The box the zoomed capture has to fit inside: viewport minus the scrim's
@@ -70,17 +139,28 @@ export default function MediaLightbox({
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (open !== null) lastIndex.current = open;
+    if (open !== null) lastOpen.current = open;
   }, [open]);
 
   const isOpen = open !== null;
-  const count = items.length;
+  const activeList = open?.list === "rail" ? railItems : items;
+  const count = activeList.length;
+  const item = open === null ? null : activeList[open.index];
 
   useEffect(() => {
     if (!isOpen) return;
 
     const step = (delta: number) =>
-      setOpen((i) => (i === null ? null : (i + delta + count) % count));
+      setOpen((current) => {
+        if (current === null) return null;
+        const list = current.list === "rail" ? railItems : items;
+        const len = list.length;
+        if (len === 0) return null;
+        return {
+          list: current.list,
+          index: (current.index + delta + len) % len,
+        };
+      });
 
     const onKey = (e: KeyboardEvent) => {
       // Escape must not reach the case-study Overlay's own document listener.
@@ -120,6 +200,7 @@ export default function MediaLightbox({
 
     // Captured here, not read in cleanup — the ref could point elsewhere by then.
     const container = containerRef.current;
+    const restore = lastOpen.current;
 
     const priorOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -144,19 +225,34 @@ export default function MediaLightbox({
       document.body.style.overflow = priorOverflow;
       scrim?.removeEventListener("wheel", block);
       scrim?.removeEventListener("touchmove", block);
+      const attr =
+        restore.list === "rail" ? "data-rail-index" : "data-zoom-index";
       container
-        ?.querySelector<HTMLElement>(`[data-zoom-index="${lastIndex.current}"]`)
+        ?.querySelector<HTMLElement>(`[${attr}="${restore.index}"]`)
         ?.focus();
     };
-  }, [isOpen, count]);
+  }, [isOpen, items, railItems]);
 
   const onDelegatedClick = (e: React.MouseEvent) => {
-    const trigger = (e.target as HTMLElement).closest<HTMLElement>("[data-zoom-index]");
-    if (!trigger) return;
-    setOpen(Number(trigger.dataset.zoomIndex));
+    const railTrigger = (e.target as HTMLElement).closest<HTMLElement>(
+      "[data-rail-index]",
+    );
+    if (railTrigger) {
+      setOpen({
+        list: "rail",
+        index: Number(railTrigger.dataset.railIndex),
+      });
+      return;
+    }
+    const stripTrigger = (e.target as HTMLElement).closest<HTMLElement>(
+      "[data-zoom-index]",
+    );
+    if (!stripTrigger) return;
+    setOpen({
+      list: "strip",
+      index: Number(stripTrigger.dataset.zoomIndex),
+    });
   };
-
-  const item = open === null ? null : items[open];
 
   /**
    * Scale the capture to fit `box`, preserving ratio, never upscaling past the
@@ -173,6 +269,18 @@ export default function MediaLightbox({
 
   const chip =
     "rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.7)] px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink) disabled:opacity-40";
+
+  const stepList = (delta: number) =>
+    setOpen((current) => {
+      if (current === null) return null;
+      const list = current.list === "rail" ? railItems : items;
+      const len = list.length;
+      if (len === 0) return null;
+      return {
+        list: current.list,
+        index: (current.index + delta + len) % len,
+      };
+    });
 
   return (
     <div ref={containerRef} onClick={onDelegatedClick}>
@@ -224,7 +332,17 @@ export default function MediaLightbox({
                 reader is already waiting on it, and it never competes with the
                 initial page load.
               */}
-              {fitted ? (
+              {item.video ? (
+                <LightboxVideo
+                  key={item.video.src}
+                  poster={typeof item.src === "string" ? item.src : item.src.src}
+                  videoSrc={item.video.src}
+                  altSrc={item.video.altSrc}
+                  altType={item.video.altType}
+                  width={fitted?.w}
+                  height={fitted?.h}
+                />
+              ) : fitted ? (
                 <Image
                   src={item.src}
                   alt={item.alt}
@@ -252,7 +370,7 @@ export default function MediaLightbox({
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setOpen((i) => (i === null ? null : (i - 1 + count) % count))}
+                  onClick={() => stepList(-1)}
                   aria-label="Previous image"
                   disabled={count < 2}
                   className={chip}
@@ -260,11 +378,11 @@ export default function MediaLightbox({
                   ←
                 </button>
                 <span className="font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim)">
-                  {open + 1} / {count}
+                  {open.index + 1} / {count}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setOpen((i) => (i === null ? null : (i + 1) % count))}
+                  onClick={() => stepList(1)}
                   aria-label="Next image"
                   disabled={count < 2}
                   className={chip}

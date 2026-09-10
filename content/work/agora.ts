@@ -1,5 +1,18 @@
 import type { CaseStudy } from "./types";
-import openAiPipeline from "@/public/work/agora/open-ai-pipeline.png";
+import { workMediaUrl } from "@/lib/work-media";
+import homeDesktop from "@/public/work/agora/home/home-desktop.png";
+import homeMobile from "@/public/work/agora/home/home-mobile.png";
+import mobileNav from "@/public/work/agora/nav/mobile-nav.png";
+import swipeProduct from "@/public/work/agora/swipe/swipe-product.png";
+import swipeViewProduct from "@/public/work/agora/swipe/swipe-view-product.png";
+import openAiPipelineDiagram from "@/public/work/agora/openai-enrichment/open-ai-pipeline-system-diagram.png";
+import openAiEnrichmentDashboard from "@/public/work/agora/openai-enrichment/openai-enrichment-admin-dashboard.png";
+import v2HomeDesktop from "@/public/work/agora/v2/agora-v2-home-desktop.png";
+import v2HomeMobile from "@/public/work/agora/v2/agora-v2-home-mobile.png";
+import v2InApp from "@/public/work/agora/v2/agora-v2-in-app-experience.png";
+import v2WhatToExpect from "@/public/work/agora/v2/agora-v2-what-to-expect-app-preview.png";
+import v1Home from "@/public/work/agora/v1/agora-v1-home.png";
+import v1HomeMobile from "@/public/work/agora/v1/agora-v1-home-mobile.png";
 
 export const agora = {
   slug: "agora",
@@ -13,6 +26,7 @@ export const agora = {
   role: "Founder, engineer",
   period: "2021 — 2026",
   engagementType: "Maps to · 0→1 Build",
+  mediaPreview: true,
   stack: [
     "Next.js",
     "TypeScript",
@@ -261,16 +275,176 @@ export const agora = {
   },
   media: [
     {
+      generation: "V3 · CURRENT",
+      frame: "panel",
+      label: "HOME",
+      items: [
+        {
+          src: homeDesktop,
+          alt: "Agora V3 home — desktop discovery feed with personalized product collage",
+        },
+        {
+          src: homeMobile,
+          alt: "Agora V3 home — mobile discovery feed",
+          size: "narrow",
+        },
+        {
+          src: homeDesktop,
+          alt: "Agora V3 home — screen recording of the discovery feed",
+          video: {
+            src: workMediaUrl("work/agora/home/agora-home-demo.mp4"),
+          },
+        },
+      ],
+    },
+    {
+      generation: "V3 · CURRENT",
+      frame: "panel",
+      label: "NAV",
+      items: [
+        {
+          src: mobileNav,
+          alt: "Agora V3 — mobile navigation",
+          size: "narrow",
+        },
+      ],
+    },
+    {
+      generation: "V3 · CURRENT",
+      frame: "panel",
+      label: "SWIPE",
+      collapseAfter: 3,
+      items: [
+        {
+          src: swipeProduct,
+          alt: "Agora swipe — product card with save and skip actions",
+          size: "narrow",
+        },
+        {
+          src: swipeViewProduct,
+          alt: "Agora swipe — expanded product detail with outbound shop link",
+          size: "narrow",
+        },
+        {
+          src: swipeViewProduct,
+          alt: "Agora swipe — opening a product from the deck",
+          size: "narrow",
+          video: {
+            src: workMediaUrl(
+              "work/agora/swipe/agora-swipe-see-product.mp4",
+            ),
+          },
+        },
+        {
+          src: swipeProduct,
+          alt: "Agora swipe — adding a product to a collection",
+          size: "narrow",
+          video: {
+            src: workMediaUrl(
+              "work/agora/swipe/agora-swipe-add-to-collection.mp4",
+            ),
+          },
+        },
+        {
+          src: swipeProduct,
+          alt: "Agora swipe — deck mechanics",
+          size: "narrow",
+          video: {
+            src: workMediaUrl("work/agora/swipe/agora-swipe-mechanics.mp4"),
+          },
+        },
+        {
+          src: swipeProduct,
+          alt: "Agora swipe — filter walkthrough",
+          size: "narrow",
+          video: {
+            src: workMediaUrl(
+              "work/agora/swipe/agora-filter-walkthrough.mp4",
+            ),
+          },
+        },
+        {
+          src: swipeViewProduct,
+          alt: "Agora swipe — outbound to Etsy",
+          size: "narrow",
+          video: {
+            src: workMediaUrl("work/agora/swipe/agora-_etsy.mp4"),
+          },
+        },
+        {
+          src: swipeProduct,
+          alt: "Agora swipe — full app demo",
+          size: "narrow",
+          video: {
+            src: workMediaUrl(
+              "work/agora/swipe/agora-swipe-app-demo-full.mp4",
+            ),
+          },
+        },
+      ],
+    },
+    {
+      generation: "V3 · CURRENT",
+      frame: "panel",
       label: "ENRICHMENT PIPELINE",
       items: [
         {
-          src: openAiPipeline,
+          src: openAiPipelineDiagram,
           alt: "Architecture diagram of the OpenAI enrichment pipeline — cron producer, Postgres job queue, phased gpt-5-mini and embedding calls",
-          caption:
-            "The enrichment pipeline: the ML system the metadata problem forced me to build.",
-          // A light-background diagram, so it is inset on a dark field rather
-          // than butting against the page gradient.
           frame: "panel",
+        },
+        {
+          src: openAiEnrichmentDashboard,
+          alt: "Agora admin dashboard — enrichment pipeline job queue and per-product classification status",
+        },
+        {
+          src: openAiEnrichmentDashboard,
+          alt: "Agora admin dashboard — enrichment pipeline preview recording",
+          video: {
+            src: workMediaUrl(
+              "work/agora/openai-enrichment/openai-enrichment-preview.mp4",
+            ),
+          },
+        },
+      ],
+    },
+    {
+      generation: "V2",
+      frame: "panel",
+      label: "V2",
+      items: [
+        {
+          src: v2HomeDesktop,
+          alt: "Agora V2 artist directory — desktop home with style-guide personalization",
+        },
+        {
+          src: v2HomeMobile,
+          alt: "Agora V2 artist directory — mobile home",
+          size: "narrow",
+        },
+        {
+          src: v2InApp,
+          alt: "Agora V2 — in-app artist profile and listing experience",
+        },
+        {
+          src: v2WhatToExpect,
+          alt: "Agora V2 — what to expect app preview for onboarding",
+        },
+      ],
+    },
+    {
+      generation: "V1 · 2021",
+      frame: "panel",
+      label: "V1",
+      items: [
+        {
+          src: v1Home,
+          alt: "Agora V1 marketplace — desktop home with multi-vendor product grid",
+        },
+        {
+          src: v1HomeMobile,
+          alt: "Agora V1 marketplace — mobile home",
+          size: "narrow",
         },
       ],
     },
@@ -284,6 +458,11 @@ export const agora = {
       status: "archived",
       note: "API shut down",
     },
-    { label: "V1", status: "deprecated", note: "fully deprecated" },
+    {
+      label: "V1",
+      href: "https://marketplace.theagoranetwork.com/",
+      status: "archived",
+      note: "API shut down",
+    },
   ],
 } satisfies CaseStudy;

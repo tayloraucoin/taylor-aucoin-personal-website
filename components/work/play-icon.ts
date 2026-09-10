@@ -1,0 +1,2 @@
+export const PLAY_TRIANGLE_PATH =
+  "M8 5.14v14.72a1 1 0 0 0 1.5.87l11.04-7.36a1 1 0 0 0 0-1.74L9.5 4.27A1 1 0 0 0 8 5.14Z";

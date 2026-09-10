@@ -138,7 +138,27 @@ export class UnknownStepError extends Error {
    the path — a name that arrives from outside is not trusted input.
    ──────────────────────────────────────────────────────────────────────────── */
 
-const BUCKET = "intake";
+/**
+ * The bucket a client's own uploads land in — **infrastructure, not a code fact**.
+ *
+ * This was the literal `"intake"`, and no project has a bucket by that name:
+ * staging holds `public`, production holds `PUBLIC` and `PRIVATE` (found
+ * 2026-09-07 while seeding the taste gallery). Every call below therefore
+ * fails with "Bucket not found", which means **no client file has ever been
+ * stored** — logos, stills, inspiration images, voice notes, documents.
+ *
+ * The default stays `"intake"` deliberately. Pointing it somewhere on my own
+ * would be choosing where confidential client uploads live, which is a
+ * disclosure decision and not a typo fix: `PRIVATE` is the only existing bucket
+ * that could hold them, and it is shared with invoice PDFs. Set
+ * `SUPABASE_LIVE_INTAKE_BUCKET` / `SUPABASE_STAGING_INTAKE_BUCKET`, or create
+ * an `intake` bucket in both projects, and this reads it.
+ *
+ * `[NEEDS DECISION — Taylor]` create the bucket, or point this at `PRIVATE`.
+ */
+function intakeBucket(): string {
+  return process.env.SUPABASE_INTAKE_BUCKET?.trim() || "intake";
+}
 
 let storage: ReturnType<typeof createClient> | null = null;
 
@@ -190,7 +210,7 @@ export async function issueUploadTicket(input: {
   const storagePath = `${engagement.id}/${input.fieldKey}/${randomUUID()}${safeExtension(input.filename)}`;
 
   const { data, error } = await getStorage()
-    .storage.from(BUCKET)
+    .storage.from(intakeBucket())
     .createSignedUploadUrl(storagePath);
 
   if (error || !data) {
@@ -251,7 +271,7 @@ export async function writeSourceObject(input: {
   const storagePath = `${input.engagementId}/${input.fieldKey}/${randomUUID()}.txt`;
 
   const { error } = await getStorage()
-    .storage.from(BUCKET)
+    .storage.from(intakeBucket())
     .upload(storagePath, bytes, { contentType: "text/plain; charset=utf-8" });
 
   if (error) {
@@ -314,7 +334,7 @@ export async function confirmUpload(
  */
 export async function downloadUpload(storagePath: string): Promise<Uint8Array> {
   const { data, error } = await getStorage()
-    .storage.from(BUCKET)
+    .storage.from(intakeBucket())
     .download(storagePath);
 
   if (error || !data) {
@@ -394,7 +414,7 @@ export async function linkUploads(
 
       try {
         const { data } = await getStorage()
-          .storage.from(BUCKET)
+          .storage.from(intakeBucket())
           .createSignedUrl(row.storagePath, expiresInSeconds);
         url = data?.signedUrl ?? null;
       } catch {

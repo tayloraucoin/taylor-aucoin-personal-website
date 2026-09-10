@@ -84,7 +84,7 @@ export const SHOW_PENDING_TESTIMONIALS = false;
  */
 export const HOME_TESTIMONIALS = [
   "dawson-whitfield",
-  "bruno",
+  "bruno-vitale",
   "yogesh-verma",
 ] as const;
 

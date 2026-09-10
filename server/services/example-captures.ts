@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { requireEnv } from "@/lib/env";
 import {
-  CAPTURE_BUCKET as BUCKET,
+  captureBucket,
   CAPTURE_PREFIX as PREFIX,
   capturePathFor,
   captureUrlFor,
@@ -142,7 +142,7 @@ export async function storeCapture(input: {
   const storagePath = `${PREFIX}/${input.slug}/${input.position}-${randomBytes(4).toString("hex")}.${extension}`;
 
   const { error } = await getStorage()
-    .storage.from(BUCKET)
+    .storage.from(captureBucket())
     .upload(storagePath, input.bytes, {
       contentType: input.mimeType,
       upsert: false,
@@ -263,7 +263,7 @@ export async function fetchCaptureBytes(rawUrl: string): Promise<{
  * afternoon.
  */
 export async function deleteCapture(storagePath: string): Promise<void> {
-  const { error } = await getStorage().storage.from(BUCKET).remove([storagePath]);
+  const { error } = await getStorage().storage.from(captureBucket()).remove([storagePath]);
   if (error) {
     console.warn(`example capture object not removed: ${error.message}`);
   }
