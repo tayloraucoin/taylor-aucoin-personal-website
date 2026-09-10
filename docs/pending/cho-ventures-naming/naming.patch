@@ -1,0 +1,302 @@
+--- a/content/capabilities.ts
++++ b/content/capabilities.ts
+@@ -143,9 +143,9 @@
+     title: "Data and state architecture that survives feature growth",
+     tech: "typed end-to-end · schema design · RLS",
+     approach:
+-      "Full database ERDs designed before the first migration: the family office platform's 200+ models with row-level security across 150+ tables, and deny-by-default RLS on every Conscious Connections table, declared through per-table policy factories. Typed contracts from Postgres to the pixel.",
++      "Full database ERDs designed before the first migration: the Cho Ventures platform's 200+ models with row-level security across 150+ tables, and deny-by-default RLS on every Conscious Connections table, declared through per-table policy factories. Typed contracts from Postgres to the pixel.",
+     proof: [
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+       { label: "Conscious Connections", href: "/work/conscious-connections" },
+       { label: "Everbook", href: "/work/everbook" },
+     ],
+@@ -174,7 +174,7 @@
+     tech: "monorepo · shared schema · migrations",
+     approach:
+       "Ten legacy databases across five business entities became one monorepo, one database, one login. Migration and reconciliation came first, visible features second, and the legacy code kept running while the ground moved under it.",
+-    proof: [{ label: "Family Office Platform", href: "/work/family-office-platform" }],
++    proof: [{ label: "Cho Ventures", href: "/work/cho-ventures" }],
+     offer: "Fractional CTO",
+     keywords: [
+       "monorepo",
+@@ -197,7 +197,7 @@
+       "My daily workflow, systematized: Cursor and Claude Code held to layered convention files, locked architecture contracts, and a cast of thirty-plus written roles (staff engineer, QA, security, behavioral scientist), each injected into the thread that needs it. Specs are executable tickets with kickoff and completion protocols; decisions and deviations land in append-only logs. An unwritten convention doesn't exist.",
+     proof: [
+       { label: "Conscious Connections", href: "/work/conscious-connections" },
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+     ],
+     offer: "Fractional CTO",
+     keywords: [
+@@ -222,10 +222,10 @@
+     title: "Booking, inventory, and accommodation flows",
+     tech: "allocation · availability · edge cases",
+     approach:
+-      "Roomvy's event-scoped group booking (allocated hotel inventory, hold blocks, multi-room checkout) and the retreat booking engine on the family office platform. Zero issues reported against the Roomvy client.",
++      "Roomvy's event-scoped group booking (allocated hotel inventory, hold blocks, multi-room checkout) and the ChoZen booking engine on the Cho Ventures platform. Zero issues reported against the Roomvy client.",
+     proof: [
+       { label: "Roomvy", href: "/work/roomvy" },
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+     ],
+     offer: "Contract",
+     keywords: [
+@@ -405,9 +405,9 @@
+     title: "Write the spec everyone else can build from",
+     tech: "specification · decision records",
+     approach:
+-      "Tutorial-grade tickets that map every layer of a feature before it's built — writing a spec that precise is coding the feature through another person, or an AI agent. The family office handoff shipped with role-scoped SOPs and contributor guides an AI-assisted team still builds from; Conscious Connections runs on slice specs with kickoff and completion protocols.",
++      "Tutorial-grade tickets that map every layer of a feature before it's built — writing a spec that precise is coding the feature through another person, or an AI agent. The Cho Ventures handoff shipped with role-scoped SOPs and contributor guides an AI-assisted team still builds from; Conscious Connections runs on slice specs with kickoff and completion protocols.",
+     proof: [
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+       { label: "Conscious Connections", href: "/work/conscious-connections" },
+     ],
+     offer: "Fractional CTO",
+@@ -429,11 +429,11 @@
+     title: "Design the interface, not just build it",
+     tech: "product design · UX · UI",
+     approach:
+-      "I design the interfaces I ship: Everbook's author dashboard and book previews, the family office CRM, Agora's storefront, and all of Conscious Connections. Design and engineering in one head means nothing gets lost between the mock and the build.",
++      "I design the interfaces I ship: Everbook's author dashboard and book previews, the Cho Ventures CRM, Agora's storefront, and all of Conscious Connections. Design and engineering in one head means nothing gets lost between the mock and the build.",
+     proof: [
+       { label: "Everbook", href: "/work/everbook" },
+       { label: "Conscious Connections", href: "/work/conscious-connections" },
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+       { label: "Agora", href: "/work/agora" },
+     ],
+     offer: "Fixed-scope 0→1 build",
+@@ -454,10 +454,10 @@
+     title: "Run with loose guidelines, deliver a finished product",
+     tech: "minimal direction · full ownership",
+     approach:
+-      "Everbook started as light Notion notes and a market reference; the family office asked for one platform where ten systems stood. Both times the input was a direction rather than a spec, and the output was a shipped product.",
++      "Everbook started as light Notion notes and a market reference; Cho Ventures asked for one platform where ten systems stood. Both times the input was a direction rather than a spec, and the output was a shipped product.",
+     proof: [
+       { label: "Everbook", href: "/work/everbook" },
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+     ],
+     offer: "Fixed-scope 0→1 build",
+     keywords: [
+@@ -570,9 +570,9 @@
+     title: "Build the component kit your team ships from",
+     tech: "Storybook · design systems · shared UI",
+     approach:
+-      "Component libraries in Storybook across the family office platform, Everbook, and Agora: shared UI that keeps five apps looking like one product, so the next engineer composes instead of reinventing.",
++      "Component libraries in Storybook across the Cho Ventures platform, Everbook, and Agora: shared UI that keeps five apps looking like one product, so the next engineer composes instead of reinventing.",
+     proof: [
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+       { label: "Everbook", href: "/work/everbook" },
+       { label: "Agora", href: "/work/agora" },
+     ],
+@@ -692,9 +692,9 @@
+     title: "Scope the build and sequence the roadmap",
+     tech: "scoping · sequencing · build plans",
+     approach:
+-      "Deciding what gets built, and in what order: the family office engagement was sequenced data-first even though it meant weeks without visible features. Specs come after; this is the layer above them.",
++      "Deciding what gets built, and in what order: the Cho Ventures engagement was sequenced data-first even though it meant weeks without visible features. Specs come after; this is the layer above them.",
+     proof: [
+-      { label: "Family Office Platform", href: "/work/family-office-platform" },
++      { label: "Cho Ventures", href: "/work/cho-ventures" },
+       { label: "Everbook", href: "/work/everbook" },
+       { label: "Agora", href: "/work/agora" },
+     ],
+--- a/content/testimonials.ts
++++ b/content/testimonials.ts
+@@ -61,11 +61,11 @@
+     approved: true,
+   },
+   {
+-    slug: "bruno",
+-    name: "Bruno",
+-    title: "Creative Director, Family Office",
++    slug: "bruno-vitale",
++    name: "Bruno Vitale",
++    title: "Creative Director, Cho Ventures",
+     relationship: "worked-for",
+-    relationshipLine: "Creative Director · family office engagement · 2026",
++    relationshipLine: "Creative Director · Cho Ventures engagement · 2026",
+     quote:
+       "He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
+     full: [
+@@ -76,8 +76,8 @@
+       "I highly recommend Taylor to any organization seeking a true strategic technical partner.",
+     ],
+     project: {
+-      label: "Family Office Platform",
+-      href: "/work/family-office-platform",
++      label: "Cho Ventures",
++      href: "/work/cho-ventures",
+     },
+     approved: true,
+   },
+--- a/content/work/index.ts
++++ b/content/work/index.ts
+@@ -2,7 +2,7 @@
+ import { calculateQxmd } from "./calculate-qxmd";
+ import { consciousConnections } from "./conscious-connections";
+ import { everbook } from "./everbook";
+-import { familyOfficePlatform } from "./family-office-platform";
++import { choVentures } from "./cho-ventures";
+ import { roomvy } from "./roomvy";
+ import { isWorkPublished } from "@/lib/config";
+ import type { CaseStudy } from "./types";
+@@ -27,7 +27,7 @@
+ 
+ /** Display order. Reorder imports here when slot order changes. */
+ export const work: CaseStudy[] = [
+-  familyOfficePlatform,
++  choVentures,
+   consciousConnections,
+   everbook,
+   roomvy,
+--- a/lib/config.ts
++++ b/lib/config.ts
+@@ -84,7 +84,7 @@
+  */
+ export const HOME_TESTIMONIALS = [
+   "dawson-whitfield",
+-  "bruno",
++  "bruno-vitale",
+   "yogesh-verma",
+ ] as const;
+ 
+--- a/components/sections/Specialties.tsx
++++ b/components/sections/Specialties.tsx
+@@ -11,7 +11,7 @@
+ const specialties = [
+   {
+     label: "Commerce & checkout",
+-    body: "Carts, payments, taxes, refunds, bookings, post-purchase. Built across Agora, Roomvy, Everbook's print orders, and a retreat booking platform.",
++    body: "Carts, payments, taxes, refunds, bookings, post-purchase. Built across Agora, Roomvy, Everbook's print orders, and ChoZen's retreat booking platform.",
+   },
+   {
+     label: "Data & state architecture",
+--- a/components/work/CaseLinks.tsx
++++ b/components/work/CaseLinks.tsx
+@@ -10,8 +10,8 @@
+  * wide-tracked, --color-dim at rest, --color-ink with a gold border shift on
+  * hover. Inscribed reference, not marketing. No gradient, no fill, no icons.
+  *
+- * If there are no links, render nothing. The family office case is anonymized
+- * and must have zero outbound links.
++ * If there are no links, render nothing. The Cho Ventures case ships with no
++ * outbound links: the platform is entirely behind a login.
+  */
+ export default function CaseLinks({ links }: { links?: CaseLink[] }) {
+   if (!links || links.length === 0) return null;
+--- a/components/work/CaseBody.tsx
++++ b/components/work/CaseBody.tsx
+@@ -26,8 +26,8 @@
+  * and what was built, then tradeoffs and outcome. Media is enrichment, not scaffolding.
+  *
+  * Brief / process / built / broke / outcome each accept either a plain string
+- * (the original shape — still used as-is by every case study besides the
+- * family office platform) or a structured shape with an intro paragraph plus
++ * (the original shape — still used as-is by every case study besides
++ * Cho Ventures) or a structured shape with an intro paragraph plus
+  * sub-headers/bullets/cards. Branch on `typeof` before rendering either.
+  */
+ export default function CaseBody({ c }: { c: CaseStudy }) {
+--- a/next.config.ts
++++ b/next.config.ts
+@@ -120,6 +120,23 @@
+   env: tierEnv,
+ 
+   /**
++   * The Cho Ventures case study shipped anonymized at
++   * `/work/family-office-platform` and was renamed once Tony Cho gave
++   * permission to name the client. Case-study URLs get pasted into email and
++   * Slack by recruiters, so the old one has to keep resolving — permanent, so
++   * search engines move the ranking across rather than indexing both.
++   */
++  async redirects() {
++    return [
++      {
++        source: "/work/family-office-platform",
++        destination: "/work/cho-ventures",
++        permanent: true,
++      },
++    ];
++  },
++
++  /**
+    * The vendored PDF fonts are read from disk at runtime by
+    * `server/services/invoice-pdf.tsx`. Nothing imports them, so Vercel's
+    * file tracer cannot see them and would ship a function that throws on the
+--- a/content/work/cho-ventures.ts
++++ b/content/work/cho-ventures.ts
+@@ -1,14 +1,14 @@
+ import type { CaseStudy } from "./types";
+-import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
++import architecture from "@/public/work/cho-ventures/cho-ventures-architecture.webp";
+ 
+-export const familyOfficePlatform = {
+-  slug: "family-office-platform",
+-  title: "Multi-Entity Family Office Platform",
++export const choVentures = {
++  slug: "cho-ventures",
++  title: "Cho Ventures",
+   meta: "Platform · CRM",
+   tagline:
+-    "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
++    "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for ChoZen, the group's retreat centre.",
+   metaDescription:
+-    "Fractional CTO build: ten legacy databases across five business entities unified into one monorepo and one login. Five production apps in six weeks.",
++    "Fractional CTO for Cho Ventures: ten legacy databases across five business entities unified into one monorepo and one login. Five production apps in six weeks.",
+   roleLabel: "Fractional CTO",
+   role: "Fractional CTO",
+   period: "2026",
+@@ -49,7 +49,7 @@
+     {
+       label: "Booking & subscription systems",
+       value:
+-        "End-to-end booking and subscription payments for the retreat centre and the education platform, delivered to a fixed event deadline",
++        "End-to-end booking and subscription payments for ChoZen and the education platform, delivered to a fixed event deadline",
+     },
+     {
+       label: "Handoff",
+@@ -59,7 +59,7 @@
+   ],
+   brief: {
+     intro:
+-      "The client was a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
++      "The client was Cho Ventures, Tony Cho's family office, operating five business entities: ChoZen Eco-Retreat, Future of Cities, an events operation, Tony's personal brand, and the Cho Ventures headquarters tying them together.",
+     groups: [
+       {
+         header: "EXISTING CONDITIONS",
+@@ -120,9 +120,9 @@
+       {
+         header: "Booking engine",
+         intro:
+-          "The retreat center's booking and sales flow, built to let a contested processor decision be made with evidence.",
++          "ChoZen's booking and sales flow, built to let a contested processor decision be made with evidence.",
+         bullets: [
+-          "Retreat booking and membership platform, end to end",
++          "ChoZen booking and membership platform, end to end",
+           "Booking flow complete on both Stripe and Square, switchable behind a toggle",
+           "Advised the split: Stripe for bookings, the existing processor kept for on-site purchases",
+         ],
+@@ -181,7 +181,7 @@
+       },
+       {
+         label: "RETREAT BOOKING PLATFORM",
+-        body: "Booking and membership for the retreat center, with the full booking flow working on both Stripe and Square behind a toggle.",
++        body: "Booking and membership for ChoZen, with the full booking flow working on both Stripe and Square behind a toggle.",
+       },
+       {
+         label: "MEMBERSHIP PORTALS",
+@@ -258,7 +258,7 @@
+       items: [
+         {
+           src: architecture,
+-          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
++          alt: "Architecture diagram of the Cho Ventures platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+           caption:
+             "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
+           // A light-background diagram, so it is inset on a dark field rather
