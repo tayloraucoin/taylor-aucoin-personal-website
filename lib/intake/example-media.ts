@@ -13,21 +13,31 @@ import { requireEnv } from "@/lib/env";
  */
 
 /**
- * The bucket captures live in.
+ * The bucket captures live in — **infrastructure, not a code fact**.
  *
- * ⚠️ **Check the casing against the Supabase dashboard.** Bucket ids are
- * case-sensitive, and the Storage list renders names in a column uppercased by
- * CSS, so a bucket shown as `PUBLIC` may be stored as `public`. If uploads fail
- * with "Bucket not found", this is the one line to change.
+ * This was the literal `"public"` and the warning above it said to check the
+ * casing if uploads ever failed with "Bucket not found". They did, on the first
+ * production seed (2026-09-07), and the warning turned out to understate the
+ * problem: bucket ids are case-sensitive *and the two projects disagree*.
+ * Staging holds one bucket named `public`; production holds `PUBLIC` and
+ * `PRIVATE`. No literal is correct in both, so a note telling the next person
+ * to edit the line was never going to hold — every edit breaks the other tier.
+ *
+ * Read per tier instead, the way `invoices.ts` already reads its archive
+ * bucket. The default is staging's name, because that is the value this
+ * constant had and an unset variable should not change what any environment
+ * did yesterday.
  *
  * The **public** bucket rather than the private one: these are screenshots of
  * public websites shown to every client who reaches the taste step. Signed URLs
  * would expire under a gallery of twenty-four images, and `next/image` would
  * cache an optimised copy keyed on a URL that later stops working. A client's
- * own uploads keep going to the private `intake` bucket, and the two promises
+ * own uploads keep going to the private intake bucket, and the two promises
  * stay separate (M-PORT-45).
  */
-export const CAPTURE_BUCKET = "public";
+export function captureBucket(): string {
+  return process.env.SUPABASE_PUBLIC_BUCKET?.trim() || "public";
+}
 
 /** Taylor's layout inside that bucket. */
 export const CAPTURE_PREFIX = "sites/examples";
@@ -54,5 +64,5 @@ export function capturePathFor(slug: string, filename: string): string {
  * wrong project the moment that row was copied between them.
  */
 export function captureUrlFor(storagePath: string): string {
-  return `${requireEnv("SUPABASE_URL")}/storage/v1/object/public/${CAPTURE_BUCKET}/${storagePath}`;
+  return `${requireEnv("SUPABASE_URL")}/storage/v1/object/public/${captureBucket()}/${storagePath}`;
 }

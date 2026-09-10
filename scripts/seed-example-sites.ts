@@ -38,10 +38,11 @@ applyTierEnv();
  * converted with `sips`, which ships with macOS, so this costs no dependency.
  * Quality 82 is what `capture:example` shoots at.
  *
- * **Publishing is opt-in** (`--publish`), and the pack switch stays off
- * regardless: nothing this script does can put a gallery in front of a client.
- * That is D-PORT-21, and a seed script is exactly the kind of thing it exists
- * to stop.
+ * **Publishing is opt-in** (`--publish`), and it runs the same `publishBlockers`
+ * gate the admin does — a row that is not whole is reported and left a draft.
+ * The pack switch stays off regardless: nothing this script does can put a
+ * gallery in front of a client. That is D-PORT-21, and a seed script is exactly
+ * the kind of thing it exists to stop.
  */
 
 const QUALITY = 82;
@@ -66,6 +67,7 @@ async function main(): Promise<void> {
     "@/db/schema"
   );
   const { and, eq } = await import("drizzle-orm");
+  const { publishBlockers } = await import("@/lib/intake/example-site-rules");
   // Its own storage client rather than the app service's: that module is
   // `server-only` — correctly, it holds the service-role key — and this runs
   // outside Next. The one thing that must not be duplicated is the key a
@@ -74,7 +76,7 @@ async function main(): Promise<void> {
   const { createClient } = await import("@supabase/supabase-js");
   const { requireEnv } = await import("@/lib/env");
   const { intrinsicSizeOf } = await import("@/lib/media/intrinsic-size");
-  const { CAPTURE_BUCKET, CAPTURE_PREFIX, capturePathFor } = await import(
+  const { captureBucket, CAPTURE_PREFIX, capturePathFor } = await import(
     "@/lib/intake/example-media"
   );
 
@@ -82,7 +84,7 @@ async function main(): Promise<void> {
     requireEnv("SUPABASE_URL"),
     requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
     { auth: { persistSession: false } },
-  ).storage.from(CAPTURE_BUCKET);
+  ).storage.from(captureBucket());
 
   /**
    * What is already stored for one site.
@@ -243,17 +245,64 @@ async function main(): Promise<void> {
       uploaded += 1;
     }
 
-    // ── Publishing, only if asked ────────────────────────────────────────
+    /* ── Publishing, only if asked ─────────────────────────────────────────
+       Done here rather than through `setExampleSiteStatus`, which lives in a
+       `server-only` module. That marker is a bundler guard, and outside Next it
+       is not a no-op: `server-only` is not a real dependency here — Next aliases
+       it during its own build — so importing it from a script fails with
+       "Cannot find module 'server-only'". Installing the package makes it
+       *worse*, because plain Node resolves its `default` export to a file whose
+       whole body is a `throw`; only Next's `react-server` condition gets the
+       empty one. So the documented `--publish` flag could never have worked
+       (found 2026-09-07, the first time it was run).
+
+       What must not be duplicated is the **rule**, and it is not:
+       `publishBlockers` is the same function the admin's publish gate calls,
+       from `lib/intake/example-site-rules.ts`, which carries no marker
+       precisely so both readers can have it. What is repeated is three lines of
+       orchestration — check, stamp, update — and `firstPublishedAt` is written
+       only when it is null, which is what `slugLocked` means at the service. */
     if (values.publish) {
-      const { setExampleSiteStatus } = await import(
-        "@/server/services/example-sites"
-      );
-      try {
-        await setExampleSiteStatus(seed.slug, "published");
-      } catch (error) {
+      const [row] = await db
+        .select()
+        .from(exampleSites)
+        .where(eq(exampleSites.id, siteId))
+        .limit(1);
+
+      const shots = await db
+        .select({
+          width: exampleCaptures.width,
+          height: exampleCaptures.height,
+          alt: exampleCaptures.alt,
+          mimeType: exampleCaptures.mimeType,
+        })
+        .from(exampleCaptures)
+        .where(eq(exampleCaptures.exampleSiteId, siteId));
+
+      const packs = await db
+        .select({ pack: exampleSitePacks.pack })
+        .from(exampleSitePacks)
+        .where(eq(exampleSitePacks.exampleSiteId, siteId));
+
+      const blockers = publishBlockers({
+        ...row!,
+        captures: shots,
+        packs: packs.map((entry) => entry.pack),
+      });
+
+      if (blockers.length > 0) {
         console.warn(
-          `note  ${seed.slug} not published — ${error instanceof Error ? error.message : error}`,
+          `note  ${seed.slug} not published — ${blockers.join(", and ")}.`,
         );
+      } else {
+        await db
+          .update(exampleSites)
+          .set({
+            status: "published",
+            updatedAt: new Date(),
+            ...(row!.firstPublishedAt ? {} : { firstPublishedAt: new Date() }),
+          })
+          .where(eq(exampleSites.id, siteId));
       }
     }
 

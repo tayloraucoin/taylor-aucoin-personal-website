@@ -146,6 +146,23 @@ export type MediaGroup = {
   label?: string;
   /** One or two sentences of body copy introducing the cluster. Taylor's words. */
   intro?: string;
+  /**
+   * Outline the whole cluster on a dark inset field — the "these belong together"
+   * signal for version- or subsystem-scoped runs (e.g. Agora Home, Swipe).
+   * Distinct from per-item `frame:"panel"`, which insets a single light capture.
+   */
+  frame?: "plain" | "panel";
+  /**
+   * Show the first N items; the rest sit behind a native `+ N more` disclosure.
+   * All items stay in the DOM so the lightbox paging order is unchanged.
+   */
+  collapseAfter?: number;
+  /**
+   * Lineage eyebrow rendered when this value differs from the prior group —
+   * e.g. `V3 · CURRENT`, `V2`, `V1 · 2021`. Consecutive groups sharing a
+   * value render under one divider.
+   */
+  generation?: string;
   items: MediaItem[];
 };
 
@@ -154,7 +171,7 @@ export type MediaGroup = {
  * These are inscribed metadata exits, not CTAs. See CaseLinks.tsx.
  *
  * `href` is optional: a `deprecated` entry with no href renders as
- * non-interactive dim text (e.g. Agora V1). Live/archived links have an href.
+ * non-interactive dim text. Live/archived links have an href.
  */
 export type CaseLink = {
   label: string;

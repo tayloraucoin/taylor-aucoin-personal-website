@@ -14,6 +14,7 @@ export const roomvy = {
   role: "Senior frontend engineer (Pathfinder Studios)",
   period: "2023",
   engagementType: "Maps to · Contract",
+  mediaPreview: true,
   stack: [
     "Next.js",
     "TypeScript",

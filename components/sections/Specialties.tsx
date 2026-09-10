@@ -11,7 +11,7 @@ import LabelCard from "@/components/ui/LabelCard";
 const specialties = [
   {
     label: "Commerce & checkout",
-    body: "Carts, payments, taxes, refunds, bookings, post-purchase. Built across Agora, Roomvy, Everbook's print orders, and a retreat booking platform.",
+    body: "Carts, payments, taxes, refunds, bookings, post-purchase. Built across Agora, Roomvy, Everbook's print orders, and ChoZen's retreat booking platform.",
   },
   {
     label: "Data & state architecture",

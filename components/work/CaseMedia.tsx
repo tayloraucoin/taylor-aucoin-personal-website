@@ -1,6 +1,8 @@
 import Image from "next/image";
 import type { MediaGroup, MediaItem } from "@/content/work";
 import Section from "@/components/work/Section";
+import VideoFigure from "@/components/work/VideoFigure";
+import { PLAY_TRIANGLE_PATH } from "@/components/work/play-icon";
 
 /**
  * The case-study media strip. Renders only when there is something to show —
@@ -46,7 +48,8 @@ const SIZES = {
 } as const;
 
 /** Static imports resolve to an object; plain strings stay strings. */
-const srcKey = (m: MediaItem) => (typeof m.src === "string" ? m.src : m.src.src);
+export const srcKey = (m: MediaItem) =>
+  m.video ? m.video.src : typeof m.src === "string" ? m.src : m.src.src;
 
 /**
  * Group items into rows of one or two. Only `half` and `narrow` pair, and only
@@ -67,6 +70,24 @@ function toRows(items: MediaItem[]): MediaItem[][] {
     }
   }
   return rows;
+}
+
+/** Quiet corner chip on MediaRail thumbnails when a cluster includes video. */
+export function RailVideoBadge() {
+  return (
+    <span
+      className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded-full border border-(--color-faint) bg-[rgb(3_5_16/.72)] backdrop-blur-[2px]"
+      aria-hidden
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="ml-px h-2.5 w-2.5 fill-(--color-ink)"
+        aria-hidden
+      >
+        <path d={PLAY_TRIANGLE_PATH} />
+      </svg>
+    </span>
+  );
 }
 
 function Figure({
@@ -111,20 +132,29 @@ function Figure({
     const poster = typeof m.src === "string" ? m.src : m.src.src;
     const ratio =
       typeof m.src === "string" ? undefined : `${m.src.width} / ${m.src.height}`;
+    const player = (
+      <VideoFigure
+        poster={poster}
+        ratio={ratio}
+        videoSrc={m.video.src}
+        altSrc={m.video.altSrc}
+        altType={m.video.altType}
+        narrow={effective === "narrow"}
+      />
+    );
     return (
       <figure>
-        <video
-          controls
-          preload="none"
-          poster={poster}
-          style={ratio ? { aspectRatio: ratio } : undefined}
-          className="h-auto w-full rounded-(--radius) border border-(--color-faint)"
-        >
-          {m.video.altSrc && (
-            <source src={m.video.altSrc} type={m.video.altType} />
-          )}
-          <source src={m.video.src} type="video/mp4" />
-        </video>
+        {panelled ? (
+          <div
+            className={`flex justify-center rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 ${
+              effective === "narrow" ? "py-10" : "py-8"
+            }`}
+          >
+            {player}
+          </div>
+        ) : (
+          player
+        )}
         {m.caption && (
           <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim)">
             {m.caption}
@@ -182,6 +212,99 @@ function Figure({
   );
 }
 
+function MediaGrid({
+  items,
+  zoomIndex,
+}: {
+  items: MediaItem[];
+  zoomIndex: Map<MediaItem, number>;
+}) {
+  return (
+    <div className="grid gap-4">
+      {toRows(items).map((row) => (
+        <div
+          key={srcKey(row[0])}
+          className={row.length === 2 ? "grid gap-4 md:grid-cols-2" : undefined}
+        >
+          {row.map((m) => (
+            <Figure
+              key={srcKey(m)}
+              m={m}
+              paired={row.length === 2}
+              /* -1 for video entries, which never use it. */
+              zoomIndex={zoomIndex.get(m) ?? -1}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function GroupLabel({ label }: { label: string }) {
+  return (
+    <div className="mb-3 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-ink)">
+      {label}
+    </div>
+  );
+}
+
+function GenerationEyebrow({ generation }: { generation: string }) {
+  return (
+    <div className="mb-6 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      {generation}
+    </div>
+  );
+}
+
+function MediaGroupBlock({
+  g,
+  zoomIndex,
+}: {
+  g: MediaGroup;
+  zoomIndex: Map<MediaItem, number>;
+}) {
+  const collapseAfter = g.collapseAfter;
+  const hasOverflow =
+    collapseAfter !== undefined && g.items.length > collapseAfter;
+  const visible = hasOverflow ? g.items.slice(0, collapseAfter) : g.items;
+  const overflow = hasOverflow ? g.items.slice(collapseAfter) : [];
+
+  const body = (
+    <>
+      {g.label && <GroupLabel label={g.label} />}
+      {g.intro && (
+        <p className="mb-5 max-w-[62ch] font-light leading-[1.7] text-(--color-body)">
+          {g.intro}
+        </p>
+      )}
+      <MediaGrid items={visible} zoomIndex={zoomIndex} />
+      {overflow.length > 0 && (
+        <details className="mt-4 group/details">
+          <summary
+            className="cursor-pointer list-none font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) [&::-webkit-details-marker]:hidden"
+          >
+            + {overflow.length} more
+          </summary>
+          <div className="mt-4">
+            <MediaGrid items={overflow} zoomIndex={zoomIndex} />
+          </div>
+        </details>
+      )}
+    </>
+  );
+
+  if (g.frame === "panel") {
+    return (
+      <div className="rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 py-8">
+        {body}
+      </div>
+    );
+  }
+
+  return body;
+}
+
 /**
  * One flat running order across every group — the lightbox pages through the
  * whole strip, not just the cluster the reader clicked into. Video entries are
@@ -193,6 +316,35 @@ export function flattenZoomable(media: MediaGroup[]): MediaItem[] {
     .filter((g) => g.items.length > 0)
     .flatMap((g) => g.items)
     .filter((m) => !m.video);
+}
+
+const RAIL_MAX = 4;
+
+/** Every item, across every group, unfiltered — stills and video alike. */
+function flattenAll(media: MediaGroup[]): MediaItem[] {
+  return media.filter((g) => g.items.length > 0).flatMap((g) => g.items);
+}
+
+/**
+ * What the header rail shows, in display order: one item per group for 2+
+ * groups (preferring a video when the group has one, so a badged thumbnail's
+ * slide IS the video), or the first RAIL_MAX zoomable items for one group.
+ */
+export function railOrder(media: MediaGroup[]): MediaItem[] {
+  const groups = media.filter((g) => g.items.length > 0);
+  if (groups.length >= 2) {
+    return groups.map((g) => g.items.find((m) => m.video) ?? g.items[0]);
+  }
+  return flattenZoomable(media).slice(0, RAIL_MAX);
+}
+
+/**
+ * Paging order when the lightbox opens from the rail: the featured sequence
+ * first, then every item on the page once more, walked from the bottom of
+ * the strip upward.
+ */
+export function railLightboxOrder(media: MediaGroup[]): MediaItem[] {
+  return [...railOrder(media), ...flattenAll(media).slice().reverse()];
 }
 
 /** Anchor id for the strip — the header rail's "All captures" jump target. */
@@ -207,40 +359,20 @@ export default function CaseMedia({ media }: { media: MediaGroup[] }) {
   return (
     <Section label="Interface" id={MEDIA_SECTION_ID}>
       <>
-        {groups.map((g, gi) => (
-          <div key={g.label ?? gi} className={gi > 0 ? "mt-12" : undefined}>
-            {/* Same treatment as the sub-headers in `brief.groups` — the strip
-                borrows the existing vocabulary rather than inventing a second one. */}
-            {g.label && (
-              <div className="mb-3 font-mono text-[10px] uppercase tracking-[.24em] text-(--color-ink)">
-                {g.label}
-              </div>
-            )}
-            {g.intro && (
-              <p className="mb-5 max-w-[62ch] font-light leading-[1.7] text-(--color-body)">
-                {g.intro}
-              </p>
-            )}
-            <div className="grid gap-4">
-              {toRows(g.items).map((row) => (
-                <div
-                  key={srcKey(row[0])}
-                  className={row.length === 2 ? "grid gap-4 md:grid-cols-2" : undefined}
-                >
-                  {row.map((m) => (
-                    <Figure
-                      key={srcKey(m)}
-                      m={m}
-                      paired={row.length === 2}
-                      /* -1 for video entries, which never use it. */
-                      zoomIndex={zoomIndex.get(m) ?? -1}
-                    />
-                  ))}
-                </div>
-              ))}
+        {groups.map((g, gi) => {
+          const showGeneration =
+            g.generation !== undefined &&
+            (gi === 0 || g.generation !== groups[gi - 1]?.generation);
+
+          return (
+            <div key={g.label ?? gi} className={gi > 0 ? "mt-12" : undefined}>
+              {showGeneration && g.generation && (
+                <GenerationEyebrow generation={g.generation} />
+              )}
+              <MediaGroupBlock g={g} zoomIndex={zoomIndex} />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </>
     </Section>
   );

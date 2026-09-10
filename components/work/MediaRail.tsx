@@ -1,5 +1,10 @@
 import Image from "next/image";
-import { flattenZoomable, MEDIA_SECTION_ID } from "@/components/work/CaseMedia";
+import {
+  railOrder,
+  RailVideoBadge,
+  srcKey,
+  MEDIA_SECTION_ID,
+} from "@/components/work/CaseMedia";
 import type { MediaGroup } from "@/content/work";
 
 /**
@@ -12,38 +17,36 @@ import type { MediaGroup } from "@/content/work";
  * "All captures" jump link in the same idiom as CaseLinks. No gradient, no
  * ring — the title and stack keep the header.
  *
- * Thumbnails are real buttons carrying `data-zoom-index`; CaseBody wraps the
- * whole article in one MediaLightbox, whose delegated click handler picks
- * them up exactly like the strip's figures. Indices come from
- * `flattenZoomable`, the shared source of truth, so rail slot N and strip
- * figure N are the same capture.
+ * Thumbnails are real buttons carrying `data-rail-index`; CaseBody wraps the
+ * whole article in one MediaLightbox, whose delegated click handler opens the
+ * rail paging order (featured items first, then the full strip bottom-up).
+ * Video groups show their video as the thumbnail; the play badge marks it.
  *
  * Fixed h/w boxes with `object-cover` on purpose — never `w-auto` (see the
  * next/image sizing trap in CLAUDE.md). Server component; nothing hydrates.
  */
-const RAIL_MAX = 4;
-
 export default function MediaRail({ media }: { media: MediaGroup[] }) {
-  const flat = flattenZoomable(media);
-  if (flat.length === 0) return null;
-
-  const shown = flat.slice(0, RAIL_MAX);
+  const shown = railOrder(media);
+  if (shown.length === 0) return null;
 
   return (
     <div className="mb-12 flex flex-wrap items-center gap-3">
-      {shown.map((m, i) => (
+      {shown.map((item, i) => (
         <button
-          key={typeof m.src === "string" ? m.src : m.src.src}
+          key={srcKey(item)}
           type="button"
-          data-zoom-index={i}
+          data-rail-index={i}
           className="group block cursor-zoom-in rounded-(--radius) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
         >
-          <Image
-            src={m.src}
-            alt={m.alt}
-            sizes="96px"
-            className="h-14 w-24 rounded-(--radius) border border-(--color-faint) object-cover object-top opacity-75 transition-[opacity,border-color] duration-(--dur-fast) ease-(--ease-out) group-hover:border-[rgb(232_185_97/.55)] group-hover:opacity-100"
-          />
+          <span className="relative block">
+            <Image
+              src={item.src}
+              alt={item.alt}
+              sizes="96px"
+              className="h-14 w-24 rounded-(--radius) border border-(--color-faint) object-cover object-top opacity-75 transition-[opacity,border-color] duration-(--dur-fast) ease-(--ease-out) group-hover:border-[rgb(232_185_97/.55)] group-hover:opacity-100"
+            />
+            {item.video && <RailVideoBadge />}
+          </span>
         </button>
       ))}
       <a

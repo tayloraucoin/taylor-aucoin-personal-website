@@ -120,6 +120,23 @@ const nextConfig: NextConfig = {
   env: tierEnv,
 
   /**
+   * The Cho Ventures case study shipped anonymized at
+   * `/work/family-office-platform` and was renamed once Tony Cho gave
+   * permission to name the client. Case-study URLs get pasted into email and
+   * Slack by recruiters, so the old one has to keep resolving — permanent, so
+   * search engines move the ranking across rather than indexing both.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/work/family-office-platform",
+        destination: "/work/cho-ventures",
+        permanent: true,
+      },
+    ];
+  },
+
+  /**
    * The vendored PDF fonts are read from disk at runtime by
    * `server/services/invoice-pdf.tsx`. Nothing imports them, so Vercel's
    * file tracer cannot see them and would ship a function that throws on the

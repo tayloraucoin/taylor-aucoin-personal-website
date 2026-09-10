@@ -118,6 +118,18 @@ export function buildIntakeEnvForNextConfig(): Record<string, string> {
   set("DIRECT_DATABASE_URL", `DIRECT_${T}_DATABASE_URL`);
 
   set("SUPABASE_URL", `SUPABASE_${T}_URL`);
+  /**
+   * Bucket ids, which differ between projects and are not a code fact.
+   *
+   * Staging holds one bucket named `public`; production holds `PUBLIC` and
+   * `PRIVATE`. Bucket ids are case-sensitive, so no single literal is correct
+   * in both — which is how `CAPTURE_BUCKET = "public"` passed every check on
+   * staging and failed with "Bucket not found" the first time the gallery was
+   * seeded into production (2026-09-07). `invoices.ts` already treated its
+   * bucket this way; these are the same rule applied to the other two.
+   */
+  set("SUPABASE_PUBLIC_BUCKET", `SUPABASE_${T}_PUBLIC_BUCKET`);
+  set("SUPABASE_INTAKE_BUCKET", `SUPABASE_${T}_INTAKE_BUCKET`);
   set("SUPABASE_ANON_KEY", `SUPABASE_${T}_ANON_KEY`);
   set("SUPABASE_SERVICE_ROLE_KEY", `SUPABASE_${T}_SERVICE_ROLE_KEY`);
 
