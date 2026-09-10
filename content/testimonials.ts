@@ -61,11 +61,11 @@ export const testimonials: Testimonial[] = [
     approved: true,
   },
   {
-    slug: "bruno-vitale",
-    name: "Bruno Vitale",
-    title: "Creative Director, Cho Ventures",
+    slug: "bruno",
+    name: "Bruno",
+    title: "Creative Director, Family Office",
     relationship: "worked-for",
-    relationshipLine: "Creative Director · Cho Ventures engagement · 2026",
+    relationshipLine: "Creative Director · family office engagement · 2026",
     quote:
       "He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
     full: [
@@ -76,8 +76,8 @@ export const testimonials: Testimonial[] = [
       "I highly recommend Taylor to any organization seeking a true strategic technical partner.",
     ],
     project: {
-      label: "Cho Ventures",
-      href: "/work/cho-ventures",
+      label: "Family Office Platform",
+      href: "/work/family-office-platform",
     },
     approved: true,
   },

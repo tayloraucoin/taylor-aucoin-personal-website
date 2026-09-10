@@ -26,8 +26,8 @@ import TestimonialCard from "@/components/testimonials/TestimonialCard";
  * and what was built, then tradeoffs and outcome. Media is enrichment, not scaffolding.
  *
  * Brief / process / built / broke / outcome each accept either a plain string
- * (the original shape — still used as-is by every case study besides
- * Cho Ventures) or a structured shape with an intro paragraph plus
+ * (the original shape — still used as-is by every case study besides the
+ * family office platform) or a structured shape with an intro paragraph plus
  * sub-headers/bullets/cards. Branch on `typeof` before rendering either.
  */
 export default function CaseBody({ c }: { c: CaseStudy }) {

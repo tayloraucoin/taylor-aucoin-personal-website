@@ -2,7 +2,7 @@ import { agora } from "./agora";
 import { calculateQxmd } from "./calculate-qxmd";
 import { consciousConnections } from "./conscious-connections";
 import { everbook } from "./everbook";
-import { choVentures } from "./cho-ventures";
+import { familyOfficePlatform } from "./family-office-platform";
 import { roomvy } from "./roomvy";
 import { isWorkPublished } from "@/lib/config";
 import type { CaseStudy } from "./types";
@@ -27,7 +27,7 @@ export type {
 
 /** Display order. Reorder imports here when slot order changes. */
 export const work: CaseStudy[] = [
-  choVentures,
+  familyOfficePlatform,
   consciousConnections,
   everbook,
   roomvy,

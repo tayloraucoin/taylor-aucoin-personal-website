@@ -1,14 +1,14 @@
 import type { CaseStudy } from "./types";
-import architecture from "@/public/work/cho-ventures/cho-ventures-architecture.webp";
+import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
 
-export const choVentures = {
-  slug: "cho-ventures",
-  title: "Cho Ventures",
+export const familyOfficePlatform = {
+  slug: "family-office-platform",
+  title: "Multi-Entity Family Office Platform",
   meta: "Platform · CRM",
   tagline:
-    "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for ChoZen, the group's retreat centre.",
+    "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
   metaDescription:
-    "Fractional CTO for Cho Ventures: ten legacy databases across five business entities unified into one monorepo and one login. Five production apps in six weeks.",
+    "Fractional CTO build: ten legacy databases across five business entities unified into one monorepo and one login. Five production apps in six weeks.",
   roleLabel: "Fractional CTO",
   role: "Fractional CTO",
   period: "2026",
@@ -49,7 +49,7 @@ export const choVentures = {
     {
       label: "Booking & subscription systems",
       value:
-        "End-to-end booking and subscription payments for ChoZen and the education platform, delivered to a fixed event deadline",
+        "End-to-end booking and subscription payments for the retreat centre and the education platform, delivered to a fixed event deadline",
     },
     {
       label: "Handoff",
@@ -59,7 +59,7 @@ export const choVentures = {
   ],
   brief: {
     intro:
-      "The client was Cho Ventures, Tony Cho's family office, operating five business entities: ChoZen Eco-Retreat, Future of Cities, an events operation, Tony's personal brand, and the Cho Ventures headquarters tying them together.",
+      "The client was a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
     groups: [
       {
         header: "EXISTING CONDITIONS",
@@ -120,9 +120,9 @@ export const choVentures = {
       {
         header: "Booking engine",
         intro:
-          "ChoZen's booking and sales flow, built to let a contested processor decision be made with evidence.",
+          "The retreat center's booking and sales flow, built to let a contested processor decision be made with evidence.",
         bullets: [
-          "ChoZen booking and membership platform, end to end",
+          "Retreat booking and membership platform, end to end",
           "Booking flow complete on both Stripe and Square, switchable behind a toggle",
           "Advised the split: Stripe for bookings, the existing processor kept for on-site purchases",
         ],
@@ -181,7 +181,7 @@ export const choVentures = {
       },
       {
         label: "RETREAT BOOKING PLATFORM",
-        body: "Booking and membership for ChoZen, with the full booking flow working on both Stripe and Square behind a toggle.",
+        body: "Booking and membership for the retreat center, with the full booking flow working on both Stripe and Square behind a toggle.",
       },
       {
         label: "MEMBERSHIP PORTALS",
@@ -258,7 +258,7 @@ export const choVentures = {
       items: [
         {
           src: architecture,
-          alt: "Architecture diagram of the Cho Ventures platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
           caption:
             "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
           // A light-background diagram, so it is inset on a dark field rather
