@@ -31,6 +31,7 @@
     "capture:example": "node --import tsx scripts/capture-example-site.ts",
     "seed:examples": "node --env-file-if-exists=.env.local --import tsx scripts/seed-example-sites.ts",
     "charge:extra-pages": "node --env-file-if-exists=.env.local --import tsx scripts/create-extra-page-checkout.ts",
+    "orders:backfill": "node --env-file-if-exists=.env.local --import tsx scripts/backfill-orders.ts",
     "admin:grant": "node --env-file-if-exists=.env.local --import tsx scripts/grant-admin.ts",
     "eval:extract": "node --env-file-if-exists=.env.local --import tsx scripts/eval-extract.ts",
     "transcribe:voice-note": "node --env-file-if-exists=.env.local --import tsx scripts/transcribe-voice-note.ts"

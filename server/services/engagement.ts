@@ -328,6 +328,35 @@ export async function reissueEngagementToken(
 }
 
 /**
+ * The engagement a dashboard invoice most plausibly belongs to (M-FIN-3).
+ *
+ * Most recent engagement with the build bought for that address, else the
+ * most recent of any. Id only: the caller is `recordOrder`, which needs
+ * nothing else and must not carry a token anywhere near a Stripe object.
+ * Returns null on no match rather than throwing — an unlinked order is a
+ * state, not an error.
+ */
+export async function findEngagementIdByContactEmail(
+  contactEmail: string,
+): Promise<string | null> {
+  const email = contactEmail.trim().toLowerCase();
+  if (!email) return null;
+
+  const [row] = await getDb()
+    .select({ id: engagements.id })
+    .from(engagements)
+    .where(eq(engagements.contactEmail, email))
+    // Paid rows first, then newest — one ORDER BY, no second query.
+    .orderBy(
+      sql`${engagements.paidAt} is null`,
+      desc(engagements.createdAt),
+    )
+    .limit(1);
+
+  return row?.id ?? null;
+}
+
+/**
  * Finds an unfinished engagement for an email address.
  *
  * The public start form is open to anyone, so a client who fills it twice —

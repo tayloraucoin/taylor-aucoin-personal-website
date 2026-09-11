@@ -41,7 +41,8 @@ migration, if any, has been run by Taylor — the builder authors SQL and stops.
 
 ## Phase 1 — the ledger
 
-- [ ] **FIN-1** — The `orders` table, `recordOrder`, webhook writes, backfill
+- [x] **FIN-1** — The `orders` table, `recordOrder`, webhook writes, backfill
+      **Code complete 2026-09-11 — awaiting Taylor's migration run.**
       Size M · **One-way door: migration** · Mason reviews the DDL diff and the
       `recordOrder` fill-nulls contract · Forge exercises the webhook paths
       Unblocks: everything. Converts today's production order (Kryshan) the

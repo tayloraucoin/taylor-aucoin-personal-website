@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
 import { notifyOps } from "@/server/services/emails";
+import { recordOrder } from "@/server/services/orders";
 import type { StripeEventHandler } from "./types";
 
 /**
@@ -20,6 +21,11 @@ export const handleInvoicePaymentFailed: StripeEventHandler = async (event) => {
   console.warn(
     `[stripe] ${event.id}: invoice ${invoice.id} payment failed — ${invoice.currency} ${invoice.amount_due}`,
   );
+
+  // The ledger row (M-FIN-1). First, so the row exists even if the email
+  // below throws and Stripe retries.
+  await recordOrder({ kind: "invoice", invoice, status: "failed" });
+
 
   await notifyOps(`Invoice payment failed — ${who}, ${amount}`, [
     `A payment against ${invoice.number ?? invoice.id} was declined.`,

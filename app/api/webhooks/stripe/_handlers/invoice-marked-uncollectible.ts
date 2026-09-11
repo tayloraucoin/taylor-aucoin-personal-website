@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
 import { notifyOps } from "@/server/services/emails";
+import { recordOrder } from "@/server/services/orders";
 import type { StripeEventHandler } from "./types";
 
 /**
@@ -22,6 +23,11 @@ export const handleInvoiceMarkedUncollectible: StripeEventHandler = async (
   console.warn(
     `[stripe] ${event.id}: invoice ${invoice.id} marked uncollectible — ${invoice.currency} ${invoice.amount_due}`,
   );
+
+  // The ledger row (M-FIN-1). First, so the row exists even if the email
+  // below throws and Stripe retries.
+  await recordOrder({ kind: "invoice", invoice });
+
 
   await notifyOps(`Invoice written off — ${who}, ${amount}`, [
     `${invoice.number ?? invoice.id} has been marked uncollectible.`,

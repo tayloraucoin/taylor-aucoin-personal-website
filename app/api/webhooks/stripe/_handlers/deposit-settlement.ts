@@ -2,11 +2,13 @@ import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
 import {
   fulfillDeposit,
+  getStripe,
   settleAncillaryPurchase,
 } from "@/server/services/deposit";
 import { notifyOps } from "@/server/services/emails";
 import { findEngagementById } from "@/server/services/engagement";
 import { sendDepositInvoiceEmail } from "@/server/services/invoices";
+import { recordOrder } from "@/server/services/orders";
 
 /**
  * The shared settlement path for a deposit Checkout session.
@@ -75,6 +77,12 @@ export async function settleDepositSession(
 
   if (outcome === "unknown") return;
 
+  // The ledger row (M-FIN-1). After the settlement writes, so a Stripe
+  // timeout fetching line items can never hold up `paid_at`; before the
+  // invoice email, so a failure here throws into the route's catch and
+  // Stripe's retry redoes exactly this — the claim keeps the email single.
+  await recordSessionOrder(event, session);
+
   // The client's paid invoice. Attempted on `already_paid` as well as on the
   // transition, because a retry after a failed send arrives as a replay —
   // the `invoice_emails` claim is what makes this exactly-once, and a send
@@ -128,6 +136,8 @@ async function settleAddon(
   const outcome = await settleAncillaryPurchase(engagementId, productKey);
   console.info(`[stripe] ${event.id}: ${engagementId} add-on → ${outcome}`);
 
+  await recordSessionOrder(event, session);
+
   // A replay has already been announced once.
   if (outcome !== "settled") return;
 
@@ -171,6 +181,8 @@ async function settleExtraPages(
   const outcome = await settleAncillaryPurchase(engagementId, productKey);
   console.info(`[stripe] ${event.id}: ${engagementId} extra pages → ${outcome}`);
 
+  await recordSessionOrder(event, session);
+
   // A replay has already been announced once.
   if (outcome !== "settled") return;
 
@@ -188,4 +200,33 @@ async function settleExtraPages(
     ``,
     `Their deposit state is untouched by this.`,
   ]);
+}
+
+/**
+ * Writes the ledger row for a settled session.
+ *
+ * The event payload carries no line items, so this is the one Stripe call on
+ * the settlement path — and it comes after every write that matters. The
+ * line items are what let `recordOrder` name which basket rows this payment
+ * bought.
+ */
+async function recordSessionOrder(
+  event: Stripe.Event,
+  session: Stripe.Checkout.Session,
+): Promise<void> {
+  const lineItems = await getStripe().checkout.sessions.listLineItems(
+    session.id,
+    { limit: 100 },
+  );
+
+  const { order, created } = await recordOrder({
+    kind: "checkout",
+    session,
+    lineItems: lineItems.data,
+    settledAt: new Date(),
+  });
+
+  console.info(
+    `[stripe] ${event.id}: order ${order.id} ${created ? "recorded" : "already recorded"}`,
+  );
 }

@@ -81,7 +81,12 @@ export type CheckoutCounts = {
  */
 let stripe: Stripe | null = null;
 
-function getStripe(): Stripe {
+/**
+ * Exported for `orders.ts` and the backfill, which fetch sessions and
+ * invoices by id. One client, one API version pin, one place that reads the
+ * secret — a second `new Stripe(...)` anywhere would be a second pin to drift.
+ */
+export function getStripe(): Stripe {
   stripe ??= new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
     apiVersion: STRIPE_API_VERSION,
   });

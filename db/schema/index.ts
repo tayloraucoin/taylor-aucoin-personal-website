@@ -14,6 +14,7 @@ import type { invoiceEmails } from "./invoice-emails";
 import type { leadEmails } from "./lead-emails";
 import type { leadSyncs } from "./lead-syncs";
 import type { leads } from "./leads";
+import type { orders } from "./orders";
 import type { products } from "./products";
 import type { stripeEvents } from "./stripe-events";
 
@@ -30,6 +31,7 @@ export * from "./invoice-emails";
 export * from "./lead-emails";
 export * from "./lead-syncs";
 export * from "./leads";
+export * from "./orders";
 export * from "./products";
 export * from "./stripe-events";
 
@@ -84,6 +86,14 @@ export type EngagementProductRow = typeof engagementProducts.$inferSelect;
 export type NewEngagementProductRow = typeof engagementProducts.$inferInsert;
 
 export type InvoiceEmailRow = typeof invoiceEmails.$inferSelect;
+
+/**
+ * The ledger row (M-FIN-1). Written only by `recordOrder`; the admin reads it
+ * through `server/services/orders.ts`, which is where the customer email is
+ * dropped for every surface but the unlinked-order detail.
+ */
+export type OrderRow = typeof orders.$inferSelect;
+export type NewOrderRow = typeof orders.$inferInsert;
 
 /**
  * CRM rows.
