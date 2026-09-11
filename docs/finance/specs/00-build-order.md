@@ -3,31 +3,41 @@
 Sequenced by dependency and blast radius. One ticket at a time. Nothing is cut
 downstream until its upstream reads Complete in `PROGRESS.md`.
 
-## Gate — before FIN-1 · OPEN
+## Gate — before FIN-1 · PARTIALLY CLEARED 2026-09-11
 
 Decisions for Taylor, batched. Each carries a recommendation and the default
 that applies if no answer arrives by the date the work needs one.
 
-- [ ] **M-FIN-1** — the `orders` table is the ledger; one writer. **Ratified
-      verbally 2026-09-11 ("yes to the orders table")** — awaiting the line in
-      `TECHNICAL-DECISIONS.md` being marked Adopted. Blocks FIN-1.
-- [ ] **M-FIN-2** — fulfillment by Stripe-verified fact (webhook *or* admin
-      import by object id). Recommendation: ratify. Cost of being wrong: one
-      admin action to delete. Default if silent by FIN-2's start: build it.
-      Blocks FIN-2's Import; FIN-1's backfill runs under the same rule.
-- [ ] **M-FIN-3** — dashboard invoices attach by customer email, manual link
-      for misses. Recommendation: ratify. Default if silent: build it. Blocks
-      nothing in FIN-1 (the column exists either way); shapes FIN-2's list.
+- [x] **M-FIN-1** — the `orders` table is the ledger; one writer. **Ratified
+      2026-09-11** ("yes to the orders table"; "have Mason begin the first
+      batch"). Adopted in `TECHNICAL-DECISIONS.md`.
+- [x] **M-FIN-2** — fulfillment by Stripe-verified fact (webhook *or* admin
+      import by object id). **Default in force 2026-09-11: build it.** Still
+      `[PROPOSED]` in the log until Taylor says ratified; one action to delete
+      if he says no. Batch 2 proceeds on the default.
+- [x] **M-FIN-3** — dashboard invoices attach by customer email, manual link
+      for misses. **Default in force 2026-09-11: build it.** Same status.
 - [ ] **D-FIN-1** — amend M-PORT-38's allow-list: a *paid* client may initiate
       Checkout for any active `offeredAtCheckout` add-on of their track, from
       the add-ons page, in one multi-item session. Recommendation: ratify —
-      it is the pay screen's own set, sold after the fact. Default if silent:
-      **FIN-6 is not cut.** This one is money and stays a founder call.
-- [ ] **D-FIN-2** — the extras purchase gets Agora's PDF invoice like the
-      deposit does (`invoice_emails.kind` gains `extras_paid`). Recommendation:
-      yes; a bookkeeper wants one document per payment. Default: yes.
-- [ ] **D-FIN-3** — the sign-in URL is `/websites/client`. Recommendation:
-      yes; short, on the card, under the service it belongs to. Default: yes.
+      it is the pay screen's own set, sold after the fact. **No default. FIN-6
+      is not cut until Taylor answers.** Money stays a founder call.
+- [x] **D-FIN-2** — the extras purchase gets Agora's PDF invoice
+      (`invoice_emails.kind` gains `extras_paid`). Default in force: yes.
+- [x] **D-FIN-3** — the sign-in URL is `/websites/client`. Default in force: yes.
+
+## Execution batches (Reeve, 2026-09-11)
+
+One batch per Mason session. Taylor advances with "begin next batch". A batch
+is not begun until the previous one reads Complete in `PROGRESS.md` *and* its
+migration, if any, has been run by Taylor — the builder authors SQL and stops.
+
+| Batch | Tickets | Why they travel together | Taylor does before the next |
+|---|---|---|---|
+| **1** | FIN-1 | One-way door. Alone, so the migration diff is the whole review. | Review `0015`, run it on staging then production; run `yarn orders:backfill` on both; confirm Kryshan's order appears |
+| **2** | FIN-2 → FIN-3 | One surface (`/admin/finances`), one service file, FIN-3's button lives on FIN-2's row. Two migrations authored (`0016` audit columns). | Run `0016`; say ratified or no on M-FIN-2 / M-FIN-3 |
+| **3** | FIN-4 → FIN-5 | The link machinery: admin side then client side, same service functions. No migration. | Nothing blocking; answer D-FIN-1 to unlock Batch 4 |
+| **4** | FIN-6 → FIN-7 | Money path then its email. **Gated on D-FIN-1.** Two migrations authored (`0017` `extras_paid`, `0018` `addons_offer`). | Run both; write the offer copy |
 
 ## Phase 1 — the ledger
 
