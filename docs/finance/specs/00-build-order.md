@@ -3,7 +3,7 @@
 Sequenced by dependency and blast radius. One ticket at a time. Nothing is cut
 downstream until its upstream reads Complete in `PROGRESS.md`.
 
-## Gate — before FIN-1 · PARTIALLY CLEARED 2026-09-11
+## Gate — before FIN-1 · CLEARED 2026-09-11
 
 Decisions for Taylor, batched. Each carries a recommendation and the default
 that applies if no answer arrives by the date the work needs one.
@@ -12,16 +12,19 @@ that applies if no answer arrives by the date the work needs one.
       2026-09-11** ("yes to the orders table"; "have Mason begin the first
       batch"). Adopted in `TECHNICAL-DECISIONS.md`.
 - [x] **M-FIN-2** — fulfillment by Stripe-verified fact (webhook *or* admin
-      import by object id). **Default in force 2026-09-11: build it.** Still
-      `[PROPOSED]` in the log until Taylor says ratified; one action to delete
-      if he says no. Batch 2 proceeds on the default.
+      import by object id). **Ratified 2026-09-11** — Taylor deferred to
+      Mason's judgement ("make this work for me as an operational
+      stakeholder"). Adopted.
 - [x] **M-FIN-3** — dashboard invoices attach by customer email, manual link
-      for misses. **Default in force 2026-09-11: build it.** Same status.
-- [ ] **D-FIN-1** — amend M-PORT-38's allow-list: a *paid* client may initiate
-      Checkout for any active `offeredAtCheckout` add-on of their track, from
-      the add-ons page, in one multi-item session. Recommendation: ratify —
-      it is the pay screen's own set, sold after the fact. **No default. FIN-6
-      is not cut until Taylor answers.** Money stays a founder call.
+      for misses. **Ratified 2026-09-11**, same deferral. Adopted.
+- [x] **D-FIN-1** — a *paid* client may buy, from the add-ons page, any
+      active add-on of their track **and extra pages with a page count**, in
+      one Checkout. **Ratified by requirement 2026-09-11** ("allow for the
+      purchase of extra pages from this add-upsells page"; "just make my
+      requirements work"). The M-PORT-38 allow-list is amended accordingly and
+      the runbook's "have the conversation first" for extra pages becomes
+      Taylor's choice, not the only path — logged in `DEVIATIONS.md`. FIN-6
+      is cut.
 - [x] **D-FIN-2** — the extras purchase gets Agora's PDF invoice
       (`invoice_emails.kind` gains `extras_paid`). Default in force: yes.
 - [x] **D-FIN-3** — the sign-in URL is `/websites/client`. Default in force: yes.
@@ -36,8 +39,8 @@ migration, if any, has been run by Taylor — the builder authors SQL and stops.
 |---|---|---|---|
 | **1** | FIN-1 | One-way door. Alone, so the migration diff is the whole review. | Review `0015`, run it on staging then production; run `yarn orders:backfill` on both; confirm Kryshan's order appears |
 | **2** | FIN-2 → FIN-3 | One surface (`/admin/finances`), one service file, FIN-3's button lives on FIN-2's row. Two migrations authored (`0016` audit columns). | Run `0016`; say ratified or no on M-FIN-2 / M-FIN-3 |
-| **3** | FIN-4 → FIN-5 | The link machinery: admin side then client side, same service functions. No migration. | Nothing blocking; answer D-FIN-1 to unlock Batch 4 |
-| **4** | FIN-6 → FIN-7 | Money path then its email. **Gated on D-FIN-1.** Two migrations authored (`0017` `extras_paid`, `0018` `addons_offer`). | Run both; write the offer copy |
+| **3** | FIN-4 → FIN-5 | The link machinery: admin side then client side, same service functions. No migration. | Nothing blocking |
+| **4** | FIN-6 → FIN-7 | Money path then its email. Two migrations authored (`0017` `extras_paid`, `0018` `addons_offer`). | Run both; write the offer copy |
 
 ## Phase 1 — the ledger
 
@@ -69,10 +72,10 @@ migration, if any, has been run by Taylor — the builder authors SQL and stops.
       Size S · Reversible · Enumeration is the risk surface
       Depends on nothing in FIN; sequenced here so `/done` is already the
       paid client's landing when FIN-6 adds links to it.
-- [ ] **FIN-6** — The add-ons page under the token; multi-item ancillary
-      Checkout; `charge_kind: "extras"`; invoice for extras
+- [ ] **FIN-6** — The add-ons page under the token; add-ons and extra pages
+      in one Checkout; `charge_kind: "extras"`; invoice for extras
       Size L · **Money path** · Forge — settlement, replays, `paid_at`
-      untouched · Mason — the M-PORT-38 amendment · **Gated on D-FIN-1**
+      untouched · Mason — the M-PORT-38 amendment · D-FIN-1 ratified
       Depends on FIN-1 (orders are written), FIN-5 (the client can reach it).
 - [ ] **FIN-7** — The add-ons offer email; `/done` gains its two links
       Size S · Reversible · Copy is Taylor's
