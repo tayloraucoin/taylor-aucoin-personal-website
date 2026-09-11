@@ -8,6 +8,8 @@ Tickets marked **[SCAFFOLDED]** already have working code in the repo. Your job 
 
 > **Also scoped, not started:** ADM — admin shell restructure (CC-style grouped left rail) + intake question review surface. Specs and build order live in [`admin/specs/`](admin/specs/00-build-order.md); that folder runs on the CC spec system, not this file's format. Three items in `admin/ADMIN-UX-SPEC.md` §7 await Taylor's ratification.
 
+> **FIN — Finances (scoped 2026-09-11, gated):** the `orders` ledger, the admin Finances section (orders, import, resend invoice), the client magic-link sign-in, and the post-payment add-ons page. Specs, decision gate, and build order live in [`finance/specs/`](finance/specs/00-build-order.md) — the CC spec system, not this file's format. FIN-1 is cut; FIN-2 and FIN-6 wait on the gate.
+
 > **Next track (scoped, not started):** v4 — Client intake system (Stripe deposit via Agora → nine-step questionnaire → markdown output). Specs and build order live in [`intake/specs/`](intake/specs/README.md) — that folder runs on the CC spec system (its own kickoff contract and logs), not this file's format. Do not start INT tickets until Taylor green-lights the build.
 
 ---
