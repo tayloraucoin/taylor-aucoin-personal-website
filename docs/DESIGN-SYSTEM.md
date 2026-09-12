@@ -393,11 +393,31 @@ two-line revert.
 
 ## D-ADM-13 · Admin light theme (Light / Dark / System)
 
-Requested by Taylor 2026-09-03. `/admin` only: the public site has no light
-mode and this section does not license one. Mechanism and scoping are in
-`docs/admin/specs/TECHNICAL-DECISIONS.md` M-ADM-8; the UX in
+Requested by Taylor 2026-09-03. `/admin` only at first; the marketing site
+has no light mode and this section does not license one. Mechanism and
+scoping are in `docs/admin/specs/TECHNICAL-DECISIONS.md` M-ADM-8; the UX in
 `docs/admin/ADMIN-UX-SPEC.md` §9. All rules live in one block in
-`app/globals.css`, gated on `html.light:has(.admin-theme)`.
+`app/globals.css`, gated on `html.light:has(.admin-theme, .intake-theme)`.
+
+**Amended 2026-09-12 (Taylor): the two intake trees get the same control.**
+A client filling a long questionnaire should be able to read it in daylight.
+Same block, same values, same mechanism — the admin preview had already
+rendered every intake section on these tokens, so nothing new was drawn. The
+provider and the segmented control moved to `components/ui/` (two homes); the
+intake mounts them from `app/websites/intake/_components/intake-theme.tsx`,
+top-right of the column, at the surface's 48px target floor, keyed under
+`ta-intake-theme` so the client's choice is the client's. M-ADM-10.
+
+The one thing the intake needed that the admin did not: its hover, selected,
+focused, and invalid borders were gold-500 at inline alphas — invisible on
+paper (55% over white is ~1.4:1). Three role tokens replace them, dark values
+exact, light values `[PROPOSED]`:
+
+| Token                      | Dark (as shipped)      | Light value | Source                                     |
+| -------------------------- | ---------------------- | ----------- | ------------------------------------------ |
+| `--color-gold-line-soft`   | `rgb(232 185 97 / .28)` | `#B48934`   | `[PROPOSED]` gold-600 — hover hint, 3.2:1 |
+| `--color-gold-line`        | `rgb(232 185 97 / .55)` | `#815D07`   | `[PROPOSED]` gold-700 — selected/focus     |
+| `--color-gold-line-strong` | `rgb(232 185 97 / .70)` | `#4D3601`   | `[PROPOSED]` gold-800 — invalid            |
 
 The light values are **Palette D on paper (D-DOC-1) applied to the admin's
 tokens** — the same palette the invoices already print in — plus the ramps.

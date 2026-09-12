@@ -6,7 +6,7 @@ import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { adminRoutes } from "@/lib/routes";
 import { NAV_SECTIONS } from "./admin-nav";
 import { AdminNavSection } from "./admin-nav-section";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 /**
  * The rail. Rendered twice: as the persistent desktop column, and inside the

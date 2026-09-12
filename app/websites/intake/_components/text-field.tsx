@@ -20,14 +20,14 @@ const CONTROL_CLASS =
   "w-full rounded-(--radius) border bg-(--color-card) px-3.5 font-body text-[16px] font-light text-(--color-ink) transition-colors duration-(--dur-fast) ease-(--ease-out) placeholder:text-(--color-dim) disabled:cursor-not-allowed disabled:opacity-60";
 
 const BORDER_DEFAULT =
-  "border-(--color-faint) hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]";
+  "border-(--color-faint) hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)";
 
 /**
  * An invalid field warms toward gold rather than turning red. The palette has
  * no red, and a form whose whole promise is "nothing you write here is wrong"
  * should not shout at someone for a typo in their own email address.
  */
-const BORDER_INVALID = "border-[rgb(232_185_97/.7)]";
+const BORDER_INVALID = "border-(--color-gold-line-strong)";
 
 /**
  * Per-mode input attributes, following the Conscious Connections `Input`

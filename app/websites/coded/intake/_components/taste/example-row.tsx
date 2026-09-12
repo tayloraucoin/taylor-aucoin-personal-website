@@ -72,7 +72,7 @@ export function ExampleRow({
       ref={row}
       className={`overflow-hidden rounded-(--radius) border transition-colors duration-(--dur-fast) ease-(--ease-out) ${
         picked
-          ? "border-[rgb(232_185_97/.55)] bg-(--color-card-hover)"
+          ? "border-(--color-gold-line) bg-(--color-card-hover)"
           : "border-(--color-faint) bg-(--color-card)"
       }`}
     >

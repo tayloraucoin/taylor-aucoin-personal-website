@@ -357,7 +357,7 @@ export function ShowcaseCheckout({
                 id="extra-pages"
                 value={pages}
                 onChange={(event) => setPages(Number(event.target.value))}
-                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
+                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)"
               >
                 {Array.from({ length: EXTRA_PAGES_MAX + 1 }, (_, n) => (
                   <option key={n} value={n}>
@@ -411,7 +411,7 @@ export function ShowcaseCheckout({
                 id="seo-posts"
                 value={posts}
                 onChange={(event) => setPosts(Number(event.target.value))}
-                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-[rgb(232_185_97/.28)] focus:border-[rgb(232_185_97/.55)]"
+                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)"
               >
                 {Array.from({ length: SEO_POSTS_MAX + 1 }, (_, n) => (
                   <option key={n} value={n}>
@@ -541,8 +541,8 @@ function PlanCard({
     <label
       className={`flex min-h-12 cursor-pointer items-center justify-between gap-4 rounded-(--radius) border px-4 py-3.5 transition-colors duration-(--dur-fast) ease-(--ease-out) ${
         selected
-          ? "border-[rgb(232_185_97/.55)] bg-(--color-card-hover)"
-          : "border-(--color-faint) bg-(--color-card) hover:border-[rgb(232_185_97/.28)] hover:bg-(--color-card-hover)"
+          ? "border-(--color-gold-line) bg-(--color-card-hover)"
+          : "border-(--color-faint) bg-(--color-card) hover:border-(--color-gold-line-soft) hover:bg-(--color-card-hover)"
       }`}
     >
       <span className="flex min-w-0 items-center gap-3">

@@ -141,20 +141,23 @@ export class UnknownStepError extends Error {
 /**
  * The bucket a client's own uploads land in — **infrastructure, not a code fact**.
  *
- * This was the literal `"intake"`, and no project has a bucket by that name:
- * staging holds `public`, production holds `PUBLIC` and `PRIVATE` (found
- * 2026-09-07 while seeding the taste gallery). Every call below therefore
- * fails with "Bucket not found", which means **no client file has ever been
- * stored** — logos, stills, inspiration images, voice notes, documents.
+ * A private bucket with the id `intake`, in each Supabase project. It is a
+ * bucket, not a folder under `PRIVATE`: `storage.from()` takes a bucket id,
+ * and keeping client stills, voice notes, and documents in their own
+ * container — apart from the invoice archive — means a signed-URL mistake in
+ * either feature can only ever reach its own files.
  *
- * The default stays `"intake"` deliberately. Pointing it somewhere on my own
- * would be choosing where confidential client uploads live, which is a
- * disclosure decision and not a typo fix: `PRIVATE` is the only existing bucket
- * that could hold them, and it is shared with invoice PDFs. Set
- * `SUPABASE_LIVE_INTAKE_BUCKET` / `SUPABASE_STAGING_INTAKE_BUCKET`, or create
- * an `intake` bucket in both projects, and this reads it.
+ * Decided by Taylor 2026-09-12, the morning after the first client hit this
+ * in production: neither project had a bucket by that name, and every call
+ * below failed with Supabase's foreign-key message ("The related resource
+ * does not exist") — documents, project images, media, all of it. The
+ * production bucket was created by hand in the dashboard; staging the same
+ * way. `db/supabase/setup/01-rls-and-bucket.sql` also creates it, but do not
+ * run that file against production: it inserts a lowercase `public` beside
+ * the project's `PUBLIC`.
  *
- * `[NEEDS DECISION — Taylor]` create the bucket, or point this at `PRIVATE`.
+ * `SUPABASE_LIVE_INTAKE_BUCKET` / `SUPABASE_STAGING_INTAKE_BUCKET` override
+ * the id; unset reads `intake`.
  */
 function intakeBucket(): string {
   return process.env.SUPABASE_INTAKE_BUCKET?.trim() || "intake";
