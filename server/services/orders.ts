@@ -21,11 +21,14 @@ import { findEngagementIdByContactEmail } from "./engagement";
  * Stripe's fact and never from a form value or a query string.
  *
  * **Fill nulls, never overwrite.** The upsert is `coalesce(existing, incoming)`
- * on every column except `status` and `updated_at`, which always take the
- * incoming value: status is Stripe's and may legitimately move (open → paid →
- * refunded). So a replay, a backfill, and an import can run over the same
- * payment in any order and leave one correct row — and an import can never
- * erase the timestamp the webhook wrote first.
+ * on every column except `status` and `updated_at`, which take the incoming
+ * value: status is Stripe's and may legitimately move (open → paid →
+ * refunded). The one guard on it: Stripe does not order deliveries, and an
+ * auto-charged invoice fires `invoice.finalized` (status `open`) and
+ * `invoice.paid` within a second — so an incoming `open` or `failed` never
+ * lands on a row that already has `paid_at`. So a replay, a backfill, and an
+ * import can run over the same payment in any order and leave one correct
+ * row — and an import can never erase the timestamp the webhook wrote first.
  *
  * Nothing here touches `engagements.paid_at`. That stays `fulfillDeposit`'s.
  */
@@ -99,7 +102,9 @@ export async function recordOrder(
         // its reason even if a later call would have matched differently.
         linkReason: sql`case when ${orders.engagementId} is null then excluded.link_reason else ${orders.linkReason} end`,
         paidAt: sql`coalesce(${orders.paidAt}, excluded.paid_at)`,
-        status: sql`excluded.status`,
+        // A late `open` (finalized) or `failed` (an earlier attempt) must not
+        // regress a row the paid event already settled.
+        status: sql`case when excluded.status in ('open', 'failed') and ${orders.paidAt} is not null then ${orders.status} else excluded.status end`,
         stripeCustomerEmail: sql`coalesce(${orders.stripeCustomerEmail}, excluded.stripe_customer_email)`,
         stripePaymentIntentId: sql`coalesce(${orders.stripePaymentIntentId}, excluded.stripe_payment_intent_id)`,
         taxCents: sql`coalesce(${orders.taxCents}, excluded.tax_cents)`,
@@ -115,7 +120,16 @@ export async function recordOrder(
 
   const { created, ...order } = row;
 
-  if (input.kind === "checkout" && order.engagementId && order.status === "paid") {
+  // Only a link the site's own Checkout carried may stamp a basket or fill
+  // the engagement: it names the engagement that was actually charged. A
+  // link by email or by hand says which client, not which basket, and an
+  // add-on stamped on the wrong engagement would be a fabricated purchase.
+  if (
+    input.kind === "checkout" &&
+    order.engagementId &&
+    order.linkReason === "metadata" &&
+    order.status === "paid"
+  ) {
     await linkBasketRows(order, input.lineItems);
     await reconcileEngagement(order, input.session, input.lineItems);
   }
@@ -201,9 +215,11 @@ async function fromInvoice(
  * Metadata wins — a typed id is an explicit statement. Then the customer's
  * email (M-FIN-3). Then nothing: unlinked is a state the admin resolves.
  *
- * A metadata id that names no engagement is treated as absent rather than
- * trusted: the FK would reject it, and a Checkout the site created cannot
- * carry an id the site does not know unless the row was deleted since.
+ * A metadata id that names no engagement records unlinked (FIN-1 § edge
+ * states), not by email: the FK would reject the id, and a Checkout the site
+ * created cannot carry one the site does not know unless the row was deleted
+ * since — in which case the same address's other engagement did not buy
+ * this, and must not be handed it.
  */
 async function resolveLink(
   metadataEngagementId: string | null,
@@ -221,6 +237,7 @@ async function resolveLink(
     console.warn(
       `[orders] metadata names engagement ${metadataEngagementId}, which does not exist — recording unlinked`,
     );
+    return { engagementId: null, reason: null };
   }
 
   if (email) {
