@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  index,
   integer,
   pgTable,
   timestamp,
@@ -7,6 +8,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { engagements } from "./engagements";
+import { orders } from "./orders";
 import { products } from "./products";
 
 /**
@@ -35,6 +37,12 @@ export const engagementProducts = pgTable(
     engagementId: uuid("engagement_id")
       .notNull()
       .references(() => engagements.id, { onDelete: "cascade" }),
+    // Which order bought this row (M-FIN-1). Null on rows created before the
+    // ledger existed and on unpaid rows; `recordOrder` fills it by matching
+    // the payment's line items to the catalogue's Stripe price ids.
+    orderId: uuid("order_id").references(() => orders.id, {
+      onDelete: "set null",
+    }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
     productId: uuid("product_id")
       .notNull()
@@ -46,6 +54,7 @@ export const engagementProducts = pgTable(
       table.engagementId,
       table.productId,
     ),
+    index("engagement_products_order_id_idx").on(table.orderId),
   ],
 );
 
@@ -55,6 +64,10 @@ export const engagementProductsRelations = relations(
     engagement: one(engagements, {
       fields: [engagementProducts.engagementId],
       references: [engagements.id],
+    }),
+    order: one(orders, {
+      fields: [engagementProducts.orderId],
+      references: [orders.id],
     }),
     product: one(products, {
       fields: [engagementProducts.productId],

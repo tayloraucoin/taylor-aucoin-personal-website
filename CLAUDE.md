@@ -64,7 +64,7 @@ thumbnails do) is immune; only `w-auto` exposes this.
 ## Do not
 
 - Do not add a bento grid.
-- Do not add a light mode to the public site. `/admin` has one — Light / Dark / System, D-ADM-13 — gated on the admin tree in `globals.css`; it must never reach a public route.
+- Do not add a light mode to the marketing site. Two surfaces have one — Light / Dark / System, D-ADM-13: `/admin`, and the two intake trees (`/websites/intake`, `/websites/coded/intake`, the amendment of 2026-09-12). Both are gated in `globals.css` on a marker their layout renders; it must never reach any other route.
 - Do not use Inter.
 - Do not make the background "more exciting." It is deliberately quiet at ~11% so text stays readable.
 - Do not add a blog, a newsletter, or a "now" page. Those routes are reserved but out of scope for v1.

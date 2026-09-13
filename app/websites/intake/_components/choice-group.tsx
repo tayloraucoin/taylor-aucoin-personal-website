@@ -41,10 +41,10 @@ export const CARD_CLASS =
   "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left font-body text-[16px] font-light leading-[1.4] transition-colors duration-(--dur-fast) ease-(--ease-out)";
 
 export const UNSELECTED_CLASS =
-  "border-(--color-faint) bg-(--color-card) text-(--color-body) hover:border-[rgb(232_185_97/.28)] hover:bg-(--color-card-hover)";
+  "border-(--color-faint) bg-(--color-card) text-(--color-body) hover:border-(--color-gold-line-soft) hover:bg-(--color-card-hover)";
 
 export const SELECTED_CLASS =
-  "border-[rgb(232_185_97/.55)] bg-(--color-card-hover) text-(--color-ink)";
+  "border-(--color-gold-line) bg-(--color-card-hover) text-(--color-ink)";
 
 const DISABLED_CLASS =
   "border-(--color-faint) bg-(--color-card) text-(--color-dim) opacity-60";

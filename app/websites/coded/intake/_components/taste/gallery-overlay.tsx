@@ -306,7 +306,7 @@ function PageButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-card) font-mono text-[16px] text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.28)] hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
+      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-card) font-mono text-[16px] text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-gold-line-soft) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
     >
       <span aria-hidden>{children}</span>
     </button>

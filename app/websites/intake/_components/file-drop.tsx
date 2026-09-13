@@ -221,7 +221,7 @@ export function FileDrop({
 
           <label
             htmlFor={inputId}
-            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-[rgb(232_185_97/.42)] hover:text-(--color-c2)"
+            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-(--color-ghost-line) hover:text-(--color-c2)"
           >
             {label}
           </label>

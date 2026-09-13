@@ -85,6 +85,8 @@ Consequence beyond the log line: **the links were fetched and then thrown away.*
 
 **Taylor's action:** run the setup SQL against local and hosted, create `PRIVATE` and `public` by hand, confirm the casing.
 
+**Closed on production 2026-09-12.** Kryshan (the first client through) could not upload documents or project images; the deployment log carried Supabase's foreign-key message, `The related resource does not exist`, on every `POST /api/intake/upload`. Production held `PRIVATE` and `PUBLIC` and no `intake`. Taylor created `intake` (private) by hand in both projects; uploads confirmed working by the client the same day. The setup SQL was not run against production, deliberately — it would add a lowercase `public` beside `PUBLIC`. Decision recorded at `intakeBucket()` in `server/services/submission.ts` and in `.env.example`.
+
 ### 2.2 The durable track has the identical takeover hole
 
 `app/websites/intake/_actions/start.ts:63-70` is 1.1 unfixed, and slightly worse: there is no track check, so a showcase engagement's token can be handed out from the durable form too. **Not touched** — the durable track is locked scope under this folder's README, and a security change there is Taylor's call, not a build thread's. The fix is the shape already shipped at 1.1.

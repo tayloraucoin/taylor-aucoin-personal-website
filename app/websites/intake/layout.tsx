@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { socialCard } from "@/lib/metadata";
+import { IntakeTheme } from "./_components/intake-theme";
 import { ScrollToTop } from "./_components/scroll-to-top";
 import { INTAKE_COLUMN } from "./_lib/column";
 
@@ -24,6 +25,10 @@ import { INTAKE_COLUMN } from "./_lib/column";
  * nothing measured there is nothing for a banner to gate.
  *
  * No site header or footer. A form is not a page to navigate away from.
+ *
+ * One control does sit above the form: Light / Dark / System, via
+ * `IntakeTheme` — the intake amendment to D-ADM-13. It is a setting, not
+ * navigation, and it is the one exception to "no chrome" on this surface.
  */
 export const dynamic = "force-dynamic";
 
@@ -55,7 +60,7 @@ export default function IntakeLayout({ children }: { children: ReactNode }) {
   return (
     <div className={`relative z-[2] min-h-dvh py-10 md:py-16 ${INTAKE_COLUMN}`}>
       <ScrollToTop />
-      {children}
+      <IntakeTheme>{children}</IntakeTheme>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { formatMoney } from "@/lib/intake/money";
 import { notifyOps } from "@/server/services/emails";
 import { sendStripeInvoiceEmail } from "@/server/services/invoices";
+import { recordOrder } from "@/server/services/orders";
 import type { StripeEventHandler } from "./types";
 
 /**
@@ -21,6 +22,11 @@ export const handleInvoicePaid: StripeEventHandler = async (event) => {
   console.info(
     `[stripe] ${event.id}: invoice ${invoice.id} paid — ${invoice.currency} ${invoice.amount_paid}`,
   );
+
+  // The ledger row (M-FIN-1). First, so the row exists even if the email
+  // below throws and Stripe retries.
+  await recordOrder({ kind: "invoice", invoice });
+
 
   const sent = await sendStripeInvoiceEmail(invoice, "invoice_paid");
 

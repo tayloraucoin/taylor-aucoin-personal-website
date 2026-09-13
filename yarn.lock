@@ -1916,7 +1916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/renderer@npm:^4.6.1":
+"@react-pdf/renderer@npm:4.6.1":
   version: 4.6.1
   resolution: "@react-pdf/renderer@npm:4.6.1"
   dependencies:
@@ -6472,7 +6472,7 @@ __metadata:
     "@next/third-parties": "npm:^15.5.20"
     "@radix-ui/react-dialog": "npm:1.1.23"
     "@radix-ui/react-select": "npm:2.3.7"
-    "@react-pdf/renderer": "npm:^4.6.1"
+    "@react-pdf/renderer": "npm:4.6.1"
     "@supabase/ssr": "npm:0.12.4"
     "@supabase/supabase-js": "npm:2.112.3"
     "@tailwindcss/postcss": "npm:^4.0.0"

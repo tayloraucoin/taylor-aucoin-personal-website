@@ -103,6 +103,19 @@
   --color-ghost-line: rgb(232 185 97 / 0.42);
   --color-ghost-line-hover: rgb(232 185 97 / 0.72);
 
+  /* Gold lines on the intake (D-ADM-13, intake amendment). The questionnaire
+     drew its hover, selected, focus, and invalid borders as gold-500 at three
+     alphas, written inline. Those are theme-fixed the same way the admin's
+     `white/N` classes were (M-ADM-9): gold-500 at 55% over paper is ~1.4:1,
+     so a ticked choice card lost its border the moment the intake could be
+     read in light. Three role tokens, each declared with the exact value its
+     call sites used, so the dark render is unchanged; the light block steps
+     them down the gold ramp. The drop zone's 42% hover was already
+     `--color-ghost-line` and reads that instead. */
+  --color-gold-line-soft: rgb(232 185 97 / 0.28); /* hover on a field or card */
+  --color-gold-line: rgb(232 185 97 / 0.55); /* selected, focused, strong hover */
+  --color-gold-line-strong: rgb(232 185 97 / 0.7); /* invalid — the one gold "alarm" this surface allows */
+
   /* Admin surface tokens (D-ADM-13, M-ADM-9). The CRM was written with
      `white/N` and `black/N` alpha classes standing in for "the foreground at
      N%" and "the ground at N%". Those are theme-fixed: on a light ground a
@@ -245,16 +258,20 @@ html {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Admin light theme (D-ADM-13, M-ADM-8). /admin only.
+   Light theme (D-ADM-13, M-ADM-8). /admin and the two intake trees only.
 
-   next-themes writes `.light` / `.dark` to <html>. The public site has no
+   next-themes writes `.light` / `.dark` to <html>. The marketing site has no
    light mode (repo CLAUDE.md) and never gets one from this block: every rule
-   is gated on `:has(.admin-theme)`, the marker `app/admin/layout.tsx`
-   renders, so the class alone does nothing. That gate is what stops a
-   back-navigation from a light admin into the public site carrying the
-   theme along, and putting the tokens on <html> rather than on the marker is
-   what lets Radix portals (the mobile sheet, dialogs — mounted on <body>)
-   inherit them.
+   is gated on `:has(.admin-theme, .intake-theme)` — markers rendered by
+   `app/admin/layout.tsx` and the intake layouts' `IntakeTheme` — so the
+   class alone does nothing. That gate is what stops a back-navigation from
+   a light admin or questionnaire into the public site carrying the theme
+   along, and putting the tokens on <html> rather than on the marker is what
+   lets Radix portals (the mobile sheet, dialogs — mounted on <body>) inherit
+   them. The intake was added to the gate on 2026-09-12 (Taylor: a client
+   filling a long form should be able to read it in daylight); it reuses
+   this block unchanged, because the admin preview had already rendered
+   every intake section on these values.
 
    Values are Palette D on paper (DESIGN-SYSTEM D-DOC-1) plus the ramps, not
    inventions: ink = ground-a; body, dim, and hairline are the paper
@@ -264,7 +281,7 @@ html {
    one step past the tint at ~3%) and well (ground-a at 4%, the sunken twin
    of the tint).
    ───────────────────────────────────────────────────────────── */
-html.light:has(.admin-theme) {
+html.light:has(.admin-theme, .intake-theme) {
   color-scheme: light;
   --color-ground-a: #ffffff; /* paper — flyouts, dialogs, the sheet */
   --color-ink: #060b1e;
@@ -278,6 +295,9 @@ html.light:has(.admin-theme) {
   --color-ghost-fill-hover: #f7f6fa;
   --color-ghost-line: #b48934; /* gold-600 — 3.2:1, the UI-component floor */
   --color-ghost-line-hover: #815d07;
+  --color-gold-line-soft: #b48934; /* [PROPOSED] gold-600 — a hover hint at the UI floor; on paper a hover deepens */
+  --color-gold-line: #815d07; /* [PROPOSED] gold-700 — selected and focused, 6.0:1 */
+  --color-gold-line-strong: #4d3601; /* [PROPOSED] gold-800 — invalid */
   --color-card: #f7f6fa; /* the tint — rail and panels */
   --color-card-hover: rgb(6 11 30 / 0.07);
   --color-line: rgb(6 11 30 / 0.15);
@@ -287,11 +307,11 @@ html.light:has(.admin-theme) {
   --color-tint: rgb(6 11 30 / 0.05);
   --color-tint-strong: rgb(6 11 30 / 0.15);
 }
-html.light:has(.admin-theme) body {
+html.light:has(.admin-theme, .intake-theme) body {
   background: var(--color-ground-a);
 }
 /* Grain is atmosphere for the dark ground; on paper it is dirt. */
-html.light:has(.admin-theme) body::after {
+html.light:has(.admin-theme, .intake-theme) body::after {
   display: none;
 }
 

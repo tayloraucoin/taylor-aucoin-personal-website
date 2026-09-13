@@ -31,6 +31,7 @@
     "capture:example": "node --import tsx scripts/capture-example-site.ts",
     "seed:examples": "node --env-file-if-exists=.env.local --import tsx scripts/seed-example-sites.ts",
     "charge:extra-pages": "node --env-file-if-exists=.env.local --import tsx scripts/create-extra-page-checkout.ts",
+    "orders:backfill": "node --env-file-if-exists=.env.local --import tsx scripts/backfill-orders.ts",
     "admin:grant": "node --env-file-if-exists=.env.local --import tsx scripts/grant-admin.ts",
     "eval:extract": "node --env-file-if-exists=.env.local --import tsx scripts/eval-extract.ts",
     "transcribe:voice-note": "node --env-file-if-exists=.env.local --import tsx scripts/transcribe-voice-note.ts"
@@ -40,7 +41,7 @@
     "@next/third-parties": "^15.5.20",
     "@radix-ui/react-dialog": "1.1.23",
     "@radix-ui/react-select": "2.3.7",
-    "@react-pdf/renderer": "^4.6.1",
+    "@react-pdf/renderer": "4.6.1",
     "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.112.3",
     "csv-parse": "7.0.2",

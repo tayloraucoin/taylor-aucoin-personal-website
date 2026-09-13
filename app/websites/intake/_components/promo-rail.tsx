@@ -81,7 +81,7 @@ export function PromoRail({
           type="button"
           disabled={state.status === "checking" || !value.trim()}
           onClick={onApply}
-          className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) transition-colors hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) transition-colors hover:border-(--color-gold-line) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
         >
           {state.status === "checking" ? "Checking…" : "Apply"}
         </button>

@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GhostButton } from "@/components/ui/GradientButton";
@@ -10,6 +11,7 @@ import {
 } from "@/server/services/engagement";
 import { answerTally } from "@/server/services/output";
 import { LinkUnavailable } from "../../../../intake/_components/link-unavailable";
+import { RefreshIfStale } from "../../../../intake/_components/refresh-if-stale";
 
 /**
  * Everything this client has answered, and the way back into any of it.
@@ -62,6 +64,11 @@ export default async function ShowcaseIntakeReviewPage({
 
   return (
     <div className="py-2">
+      {/* The counts are read on the server, so a return here after editing a
+          step is exactly the replayed render `RefreshIfStale` exists for. No
+          key on the list: nothing below holds client state to re-seed. */}
+      <RefreshIfStale renderId={randomUUID()} />
+
       <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
         Your answers
       </p>

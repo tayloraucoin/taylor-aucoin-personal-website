@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { socialCard } from "@/lib/metadata";
+import { IntakeTheme } from "../../intake/_components/intake-theme";
 import { ScrollToTop } from "../../intake/_components/scroll-to-top";
 import { INTAKE_COLUMN } from "../../intake/_lib/column";
 
@@ -42,7 +43,7 @@ export default function ShowcaseIntakeLayout({
   return (
     <div className={`relative z-[2] min-h-dvh py-10 md:py-16 ${INTAKE_COLUMN}`}>
       <ScrollToTop />
-      {children}
+      <IntakeTheme>{children}</IntakeTheme>
     </div>
   );
 }

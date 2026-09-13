@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { ReactNode } from "react";
 import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
 import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
@@ -11,6 +12,7 @@ import type {
 import { INTAKE_COLUMN } from "../_lib/column";
 import { FooterEnd } from "../_lib/save-state";
 import { Eyebrow } from "./eyebrow";
+import { RefreshIfStale } from "./refresh-if-stale";
 import { StepHeading } from "./step-heading";
 import { StepProgress } from "./step-progress";
 
@@ -41,6 +43,17 @@ import { StepProgress } from "./step-progress";
  * The bar measures roughly 102px (16 + a 44px control + 10 + 16 + 16); `pb-32`
  * is the next value up the scale and leaves the last field a comfortable
  * margin rather than tucking it under glass.
+ *
+ * Every render is stamped with an id, and `main` is keyed by it. Two things
+ * depend on that. `RefreshIfStale` uses the id to tell a fresh render from one
+ * the client router replayed from its cache — see that file for the Next
+ * behaviour it guards against. And because a `router.refresh()` preserves
+ * client state by design, the key is what makes a refreshed render re-seed the
+ * step's form: `useStepAutosave` reads `initial` once, on mount, so without a
+ * remount a refresh would fetch the right answers and show the old ones. The
+ * in-step refreshes (`step-proposals`, `source-list`, `step-ingest`) rely on
+ * the same remount. Nothing typed is lost to it: an unsaved edit is already in
+ * localStorage and rehydrates on mount, and a saved one is in `initial`.
  */
 export function StepShell({
   track,
@@ -93,9 +106,12 @@ export function StepShell({
     step: (stepKey: AnyIntakeStepKey) => routes.step(token, stepKey),
     done: routes.done(token),
   };
+  const renderId = randomUUID();
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <RefreshIfStale renderId={renderId} />
+
       <header className="mb-8">
         <Eyebrow>{`Step ${step.number} of ${stepCount}`}</Eyebrow>
 
@@ -116,7 +132,9 @@ export function StepShell({
         <StepProgress track={track} current={step.number} />
       </header>
 
-      <main className="flex-1 pb-32">{children}</main>
+      <main key={renderId} className="flex-1 pb-32">
+        {children}
+      </main>
 
       <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-(--color-faint) bg-(--color-card) backdrop-blur-[6px]">
         <div className={`py-4 ${INTAKE_COLUMN}`}>

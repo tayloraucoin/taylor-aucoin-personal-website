@@ -60,8 +60,22 @@ function useHydrated(): boolean {
  *
  * Selection is ink on `--color-tint`, not gold — gold in the rail marks
  * *where you are* (the active route), and this is a setting.
+ *
+ * `size` exists for the second home this got at the intake amendment to
+ * D-ADM-13. The rail's 28px is a desktop concession the intake cannot make:
+ * that surface is filled on a phone and its floor is a 48px target
+ * (INTAKE-UX-SPEC §4), so `touch` is the same group at that height. Nothing
+ * else about the control changes between the two.
  */
-export function ThemeToggle({ collapsed }: Readonly<{ collapsed: boolean }>) {
+export function ThemeToggle({
+  collapsed = false,
+  size = "compact",
+}: Readonly<{
+  /** Stack vertically — the admin rail when it is narrowed. */
+  collapsed?: boolean;
+  /** `compact` is the rail's 28px; `touch` is the intake's 48px floor. */
+  size?: "compact" | "touch";
+}>) {
   const { theme, setTheme } = useTheme();
   const hydrated = useHydrated();
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -124,7 +138,9 @@ export function ThemeToggle({ collapsed }: Readonly<{ collapsed: boolean }>) {
               tabIndex={index === tabbableIndex ? 0 : -1}
               onFocus={() => setFocusedIndex(index)}
               onClick={() => setTheme(value)}
-              className={`flex size-7 items-center justify-center transition-colors focus:z-10 focus-visible:z-10 ${
+              className={`flex items-center justify-center transition-colors focus:z-10 focus-visible:z-10 ${
+                size === "touch" ? "size-12" : "size-7"
+              } ${
                 collapsed
                   ? "first:rounded-t-md last:rounded-b-md"
                   : "first:rounded-l-md last:rounded-r-md"
@@ -134,7 +150,10 @@ export function ThemeToggle({ collapsed }: Readonly<{ collapsed: boolean }>) {
                   : "text-(--color-dim) hover:bg-(--color-card-hover) hover:text-(--color-ink)"
               }`}
             >
-              <Icon aria-hidden className="size-3.5" />
+              <Icon
+                aria-hidden
+                className={size === "touch" ? "size-4" : "size-3.5"}
+              />
               <span className="sr-only">{label}</span>
             </button>
           );
