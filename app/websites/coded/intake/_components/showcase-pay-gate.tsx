@@ -92,13 +92,16 @@ export function ShowcasePayGate({
         extraPage={extraPage ? toView(extraPage) : null}
         seoPost={seoPost ? toView(seoPost) : null}
         initialPromoCode={promoCode}
+        // Under the button, and only while there is a payment for them to be
+        // true of — the checkout drops them when the free code is active.
+        trust={
+          <div className="mt-5 space-y-1.5 font-mono text-[10px] uppercase leading-[1.7] tracking-[.18em] text-(--color-dim)">
+            <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
+            <p>Shows as TAYLORAUCOIN.COM on your statement</p>
+            <p>Receipt emailed automatically</p>
+          </div>
+        }
       />
-
-      <div className="mt-5 space-y-1.5 font-mono text-[10px] uppercase leading-[1.7] tracking-[.18em] text-(--color-dim)">
-        <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
-        <p>Shows as TAYLORAUCOIN.COM on your statement</p>
-        <p>Receipt emailed automatically</p>
-      </div>
     </div>
   );
 }

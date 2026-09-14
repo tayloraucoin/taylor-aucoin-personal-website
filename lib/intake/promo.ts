@@ -11,7 +11,15 @@
  * `?promo=`), so they are not secrets — the grant is priced into the deal
  * Taylor chose to offer. Anything a code grants must exist as a $0 Stripe
  * price via the seed + catalogue scripts.
+ *
+ * The one exception is the free code, which waives the deposit outright. It
+ * is not in this file: it comes from `SHOWCASE_FREE_CODE` in the environment,
+ * because a code that opens a build for nothing is a credential rather than
+ * an offer. It resolves through the same function as the rest, so the screen
+ * and the server still agree on what every code means.
  */
+
+import { showcaseFreeCode } from "@/lib/env";
 
 export type PromoGrant = {
   /** `products.key` of the $0 catalogue item this code adds to the order. */
@@ -30,6 +38,17 @@ export type PromoGrant = {
    * pay-in-full option that resolves to nothing is a screen that lies.
    */
   overridesBuildKey?: { half: string; full?: string };
+  /**
+   * The deposit is waived: no Checkout, no charge, no Stripe object at all.
+   *
+   * Deliberately not a $0 build row. Stripe can run a no-cost Checkout, but
+   * routing a comp through a payment processor to make a webhook fire would
+   * leave `paid_at` and a ledger row for money that never moved. In this
+   * schema's own vocabulary a free build is a *waived* deposit — the state
+   * the `--no-deposit` script has always produced — so that is what the code
+   * produces. Coded track only; see `waiveDepositByCode`.
+   */
+  waivesDeposit?: true;
 };
 
 const PROMO_CODES: Record<string, PromoGrant> = {
@@ -56,5 +75,16 @@ export function normalizePromoCode(raw: string): string {
 }
 
 export function resolvePromoCode(raw: string): PromoGrant | null {
-  return PROMO_CODES[normalizePromoCode(raw)] ?? null;
+  const code = normalizePromoCode(raw);
+  if (!code) return null;
+
+  const listed = PROMO_CODES[code];
+  if (listed) return listed;
+
+  // The free code is compared normalized on both sides, so it can be set in
+  // the environment with hyphens and typed with spaces and still match.
+  const free = showcaseFreeCode();
+  if (free && normalizePromoCode(free) === code) return { waivesDeposit: true };
+
+  return null;
 }

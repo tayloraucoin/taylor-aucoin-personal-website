@@ -48,6 +48,7 @@ All of `docs/intake/specs/README.md`'s non-negotiables inherit (answers never lo
 - **No charge the client did not themselves initiate on hosted Checkout at a published price** (M-PORT-4 as amended by M-PORT-38, Taylor 2026-09-03). Post-intake extra pages, the care plan, and the balance stay Taylor-initiated; the one client-initiated mid-intake path is allow-listed to `showcase_animations` and settles through `settleAncillaryPurchase`, never `fulfillDeposit`.
 - **The gradient ring appears exactly once in the flow: the step-6 voice-note card** (D-INT-3 / D-PORT-7).
 - **This repo is Yarn 4.** `yarn build` · `npx tsc --noEmit` · `yarn lint`. Never npm (the INT-era `npm run` strings are stale).
+- **Dependencies beyond `lucide-react`: four, approved by Taylor 2026-09-14 for PORT-34 and pinned exactly** — `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`, `@radix-ui/react-dropdown-menu`. Anything else still stops and asks.
 
 ## Kickoff contract (paste into a fresh build thread, verbatim)
 

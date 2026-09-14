@@ -1,6 +1,10 @@
 "use client";
 
 import { mintEntryKey } from "@/lib/intake/entry-key";
+import {
+  mergeIncomingEntries,
+  standardListActions,
+} from "@/lib/intake/entry-merge";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
 import type {
@@ -55,20 +59,6 @@ function ownerOf(entry: ExperienceEntry): string | undefined {
 }
 
 /**
- * True when an entry holds anything at all.
- *
- * The repeatable block always renders one empty card as an invitation, and
- * that card is not an answer. Dropping the empties before appending extracted
- * entries stops a blank row wedging itself between two real ones.
- */
-function hasContent(entry: ExperienceEntry): boolean {
-  return Object.entries(entry).some(
-    ([key, value]) =>
-      key !== "entryKey" && typeof value === "string" && value.trim() !== "",
-  );
-}
-
-/**
  * One list of positions, for one owner.
  *
  * Extracted from the step so a roster kind can render it per person without
@@ -103,6 +93,11 @@ function ExperienceEntries({
       <RepeatableBlock<ExperienceEntry>
         items={items as ExperienceEntry[]}
         onChange={onChange}
+        reorderable
+        keyOf={(entry) => entry.entryKey}
+        draggable
+        actions={standardListActions<ExperienceEntry>()}
+        menuLabel="Actions for this list"
         emptyItem={() => ({ entryKey: mintEntryKey() })}
         addLabel="Add another"
         renderItem={(item, index, update) => (
@@ -256,14 +251,16 @@ export function StepExperience({
         }
         onChange={(next) => form.setValue("fastWay", next)}
         onBlur={form.flush}
-        // Appends. A second run never touches an entry already on screen —
-        // including one the client has just corrected.
-        onEntries={(incoming) =>
-          form.setValue("experience", [
-            ...asEntries(form.values.experience).filter(hasContent),
-            ...(incoming as unknown as ExperienceEntry[]),
-          ])
-        }
+        // Appends, newest first, minus anything already on the list. A second
+        // run never touches an entry already on screen — including one the
+        // client has just corrected — and no longer doubles it either.
+        onEntries={(incoming) => {
+          const { kept, added } = mergeIncomingEntries<Record<string, unknown>>(
+            asEntries(form.values.experience),
+            incoming,
+          );
+          form.setValue("experience", [...kept, ...added] as ExperienceEntry[]);
+        }}
       />
 
       {/*

@@ -106,7 +106,9 @@ export function ExtractionBlock({
     }
 
     // Each entry gets its key here, on arrival, so an extracted project can
-    // hold images the moment it renders.
+    // hold images the moment it renders. Order and duplicates are the step's
+    // concern: it lands the batch through `mergeIncomingEntries`, which sorts
+    // newest first and drops what is already on the list (PORT-33).
     onEntries(
       result.entries.map((entry) => ({ ...entry, entryKey: mintEntryKey() })),
     );
