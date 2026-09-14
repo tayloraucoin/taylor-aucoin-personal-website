@@ -1,4 +1,4 @@
-import { mintEntryKey } from "./entry-key";
+import { mergeIncomingEntries } from "./entry-merge";
 import type { PrimerProposal } from "./primer-proposal";
 
 /**
@@ -222,18 +222,6 @@ function isBlank(value: unknown): boolean {
 }
 
 /**
- * True when an entry holds anything at all. The repeatable block keeps one
- * empty card as an invitation, and appending after it would leave a blank row
- * wedged between real ones — the same filter the step components apply.
- */
-function entryHasContent(entry: Record<string, unknown>): boolean {
-  return Object.entries(entry).some(
-    ([key, value]) =>
-      key !== "entryKey" && typeof value === "string" && value.trim() !== "",
-  );
-}
-
-/**
  * The merge, pure: what each touched step's object becomes, and the provenance
  * of every value written.
  *
@@ -284,10 +272,9 @@ export function mergeIngestion(
     const existing = (
       Array.isArray(object[batch.stage]) ? object[batch.stage] : []
     ) as Record<string, unknown>[];
-    const kept = existing.filter(entryHasContent);
-    const added = batch.entries
-      .filter(entryHasContent)
-      .map((entry) => ({ ...entry, entryKey: mintEntryKey() }));
+    // Newest first and deduplicated against what is already there
+    // (`entry-merge.ts`); the existing, already-seen entries never move.
+    const { kept, added } = mergeIncomingEntries(existing, batch.entries);
     if (added.length === 0) continue;
 
     object[batch.stage] = [...kept, ...added];

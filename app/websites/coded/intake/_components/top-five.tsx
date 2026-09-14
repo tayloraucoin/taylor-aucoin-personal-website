@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
+import { sortNewestFirst } from "@/lib/intake/entry-order";
 import type { ProjectEntry } from "@/lib/validators/showcase-intake";
 import {
   CARD_CLASS,
@@ -9,6 +10,7 @@ import {
   UNSELECTED_CLASS,
 } from "../../../intake/_components/choice-group";
 import { DocHint, DocTag } from "../../../intake/_components/document";
+import { RankButton } from "../../../intake/_components/rank-button";
 
 const LIMIT = 5;
 
@@ -47,6 +49,14 @@ export function TopFive({
   const [announcement, setAnnouncement] = useState("");
   const [refused, setRefused] = useState(false);
   const document = useIsDocument();
+
+  // Display-only (PORT-33): the rows tick in this order, but the stored
+  // `projects` array — and the "Untitled project N" numbering, which has to
+  // agree with the card above — is never touched.
+  const sortedProjects = useMemo(
+    () => sortNewestFirst(projects, (p) => p.year),
+    [projects],
+  );
 
   const titleFor = (key: string, index?: number) => {
     const project = projects.find((p) => p.entryKey === key);
@@ -119,10 +129,13 @@ export function TopFive({
       </p>
 
       <div className="flex flex-col gap-2">
-        {projects.map((project, index) => {
+        {sortedProjects.map((project) => {
           const key = project.entryKey;
           const rank = picks.indexOf(key);
           const picked = rank >= 0;
+          // The card above numbers by its own (unsorted) position — this row
+          // has to agree with it, not with its position in this sorted list.
+          const cardNumber = projects.indexOf(project) + 1;
 
           return (
             <label
@@ -146,7 +159,7 @@ export function TopFive({
                 {picked ? String(rank + 1).padStart(2, "0") : "—"}
               </span>
               <span className="min-w-0 grow">
-                {project.title?.trim() || `Untitled project ${index + 1}`}
+                {project.title?.trim() || `Untitled project ${cardNumber}`}
                 {project.year ? (
                   <span className="text-(--color-dim)"> · {project.year}</span>
                 ) : null}
@@ -221,29 +234,5 @@ export function TopFive({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function RankButton({
-  label,
-  disabled,
-  onClick,
-  children,
-}: {
-  label: string;
-  disabled?: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-      className="rounded-(--radius) px-2 py-1 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-(--color-dim)"
-    >
-      {children}
-    </button>
   );
 }

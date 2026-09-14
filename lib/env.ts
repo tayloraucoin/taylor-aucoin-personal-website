@@ -190,6 +190,21 @@ export function adminTestPaymentEnabled(): boolean {
 }
 
 /**
+ * The one code that waives the coded track's deposit outright.
+ *
+ * Environment, not the promo map in source: the other codes are priced into a
+ * deal and read out on calls, but a code that opens a $2,000 build for free is
+ * a credential, and credentials do not live in git history. Unset means no
+ * such code exists and nothing can be waived this way. Rotate by changing the
+ * value — the old one stops working on the next deploy. Untiered, like the
+ * other opt-in flags: set per Vercel environment.
+ */
+export function showcaseFreeCode(): string | null {
+  const value = process.env.SHOWCASE_FREE_CODE?.trim();
+  return value ? value : null;
+}
+
+/**
  * Agora's GST/HST registration number, for invoice emails.
  *
  * CRA requires it on invoices over $100 when the supplier is registered —

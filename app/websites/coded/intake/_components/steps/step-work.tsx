@@ -1,6 +1,11 @@
 "use client";
 
 import { mintEntryKey } from "@/lib/intake/entry-key";
+import {
+  entryRichness,
+  mergeIncomingEntries,
+  standardListActions,
+} from "@/lib/intake/entry-merge";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor, workShapeFor } from "@/lib/intake/tracks";
@@ -39,20 +44,6 @@ function asProjects(value: unknown): ProjectEntry[] {
 
 function asEntries<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
-}
-
-/**
- * True when an entry holds anything at all.
- *
- * The repeatable block always renders one empty card as an invitation, and
- * that card is not an answer. Dropping the empties before appending extracted
- * projects stops a blank row wedging itself between two real ones.
- */
-function hasContent(entry: Record<string, unknown>): boolean {
-  return Object.entries(entry).some(
-    ([key, value]) =>
-      key !== "entryKey" && typeof value === "string" && value.trim() !== "",
-  );
 }
 
 /**
@@ -105,6 +96,22 @@ export function StepWork({
   const pieceFilesFor = (key: string) =>
     pieceFiles.filter((file) => file.entryKey === key);
 
+  /**
+   * Whole-list actions for the ⋮ (PORT-34). The weight makes a copy with
+   * images always win Remove duplicates: stills are keyed to the entry, and
+   * the entry that holds them is the one to keep however sparse its fields.
+   */
+  const withFiles =
+    (files: (key: string) => readonly unknown[]) =>
+    (entry: { entryKey: string }) =>
+      1000 * files(entry.entryKey).length;
+  const projectActions = standardListActions<ProjectEntry>({
+    weight: (entry) => withFiles(filesFor)(entry) + entryRichness(entry),
+  });
+  const pieceActions = standardListActions<PieceEntry>({
+    weight: (entry) => withFiles(pieceFilesFor)(entry) + entryRichness(entry),
+  });
+
   return (
     <>
       {/* The mode follows the kind, and so does the array it fills. Between
@@ -121,23 +128,22 @@ export function StepWork({
         }
         onChange={(next) => form.setValue("fastWay", next)}
         onBlur={form.flush}
-        // Appends. A second run never touches an entry already on screen —
-        // including one the client has just corrected.
-        onEntries={(incoming) =>
-          form.setValue(entryKey, [
-            ...asEntries<Record<string, unknown>>(form.values[entryKey]).filter(
-              hasContent,
-            ),
-            ...incoming.map((entry) => ({
+        // Appends, newest first, minus anything already on the list. A second
+        // run never touches an entry already on screen — including one the
+        // client has just corrected — and no longer doubles it either.
+        onEntries={(incoming) => {
+          const { kept, added } = mergeIncomingEntries(
+            asEntries<Record<string, unknown>>(form.values[entryKey]),
+            incoming.map((entry) => ({
               // Public is the answer for most work and the one a client would
               // otherwise tick a dozen times; the two careful answers stay one
               // click away. Their own value always wins.
               ...(entryKey === "projects" ? { rights: DEFAULT_RIGHTS } : {}),
               ...entry,
-              entryKey: mintEntryKey(),
             })),
-          ])
-        }
+          );
+          form.setValue(entryKey, [...kept, ...added]);
+        }}
       />
 
       <ForKinds kind={kind} test={fills("projects")}>
@@ -145,6 +151,11 @@ export function StepWork({
           <RepeatableBlock<ProjectEntry>
             items={projects}
             onChange={(next) => form.setValue("projects", next)}
+            reorderable
+            keyOf={(entry) => entry.entryKey}
+            draggable
+            actions={projectActions}
+            menuLabel="Actions for your projects"
             emptyItem={() => ({
               entryKey: mintEntryKey(),
               rights: DEFAULT_RIGHTS,
@@ -174,6 +185,11 @@ export function StepWork({
           <RepeatableBlock<OfferingEntry>
             items={asEntries<OfferingEntry>(form.values.offerings)}
             onChange={(next) => form.setValue("offerings", next)}
+            reorderable
+            keyOf={(entry) => entry.entryKey}
+            draggable
+            actions={standardListActions<OfferingEntry>()}
+            menuLabel="Actions for this list"
             emptyItem={() => ({ entryKey: mintEntryKey() })}
             addLabel={pack.workAddLabel}
             renderItem={(item, index, update) => (
@@ -196,6 +212,11 @@ export function StepWork({
           <RepeatableBlock<PieceEntry>
             items={asEntries<PieceEntry>(form.values.pieces)}
             onChange={(next) => form.setValue("pieces", next)}
+            reorderable
+            keyOf={(entry) => entry.entryKey}
+            draggable
+            actions={pieceActions}
+            menuLabel="Actions for this list"
             emptyItem={() => ({ entryKey: mintEntryKey() })}
             addLabel={pack.workAddLabel}
             renderItem={(item, index, update) => (
@@ -220,6 +241,11 @@ export function StepWork({
           <RepeatableBlock<ServiceEntry>
             items={asEntries<ServiceEntry>(form.values.services)}
             onChange={(next) => form.setValue("services", next)}
+            reorderable
+            keyOf={(entry) => entry.entryKey}
+            draggable
+            actions={standardListActions<ServiceEntry>()}
+            menuLabel="Actions for this list"
             emptyItem={() => ({ entryKey: mintEntryKey() })}
             addLabel={pack.workAddLabel}
             renderItem={(item, index, update) => (
@@ -248,6 +274,11 @@ export function StepWork({
           <RepeatableBlock<AskEntry>
             items={asEntries<AskEntry>(form.values.asks)}
             onChange={(next) => form.setValue("asks", next)}
+            reorderable
+            keyOf={(entry) => entry.entryKey}
+            draggable
+            actions={standardListActions<AskEntry>()}
+            menuLabel="Actions for this list"
             emptyItem={() => ({ entryKey: mintEntryKey() })}
             addLabel={pack.ask.addLabel}
             renderItem={(item, index, update) => (

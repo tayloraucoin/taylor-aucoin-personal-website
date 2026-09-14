@@ -40,6 +40,14 @@ import {
   stepsFor,
 } from "@/lib/intake/tracks";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import { sortNewestFirst, yearOf } from "@/lib/intake/entry-order";
+import {
+  dedupeEntries,
+  entryIdentity,
+  entryRichness,
+  mergeIncomingEntries,
+  standardListActions,
+} from "@/lib/intake/entry-merge";
 import { EMPTY_EXAMPLE_SET } from "@/content/intake-examples";
 import {
   captureNotes,
@@ -1297,6 +1305,149 @@ function checkShowcaseCopy(): void {
   );
 }
 
+/* ── PORT-33 — entry ordering (no test runner in this repo; cases live here) */
+
+function checkEntryOrder(): void {
+  const thisYear = new Date().getFullYear();
+  const openEnded = thisYear + 0.5;
+
+  check("yearOf a bare year", yearOf("2018"), 2018);
+  check(
+    "yearOf a season range reads its later end",
+    yearOf("Fall 2020 – Spring 2021"),
+    2021,
+  );
+  check("yearOf a slash range reads the larger year", yearOf("2018/2019"), 2019);
+  check("yearOf an open range with 'now'", yearOf("2019-now"), openEnded);
+  check("yearOf an open range with 'present'", yearOf("1999–present"), openEnded);
+  check("yearOf a bare month", yearOf("March"), null);
+  check("yearOf an empty string", yearOf(""), null);
+  check("yearOf undefined", yearOf(undefined), null);
+  check("yearOf null", yearOf(null), null);
+  check(
+    "yearOf a five-digit run is not a year with a stray digit",
+    yearOf("20180"),
+    null,
+  );
+  check("yearOf a 'c.' prefix", yearOf("c. 2005"), 2005);
+
+  const rows = [
+    { y: "2018" },
+    { y: "2026" },
+    { y: "March" },
+    { y: "2020" },
+    { y: "" },
+  ];
+  check(
+    "sortNewestFirst: dated entries descending, undated tail keeps its order",
+    sortNewestFirst(rows, (r) => r.y).map((r) => r.y),
+    ["2026", "2020", "2018", "March", ""],
+  );
+
+  const ties = [{ y: "2020", n: "a" }, { y: "2020", n: "b" }];
+  check(
+    "sortNewestFirst: equal years keep their original relative order",
+    sortNewestFirst(ties, (r) => r.y).map((r) => r.n),
+    ["a", "b"],
+  );
+
+  // Identity: name + where + date, normalised. A second run on the same paste
+  // must add nothing (Taylor, 2026-09-14: 76 projects where there were 34).
+  check(
+    "entryIdentity ignores case and spacing",
+    entryIdentity({ title: "  Freaks  Part II ", year: "2026" }) ===
+      entryIdentity({ title: "freaks part ii", year: "2026" }),
+    true,
+  );
+  check(
+    "entryIdentity separates a remake from the original",
+    entryIdentity({ title: "Freaks", year: "2018" }) ===
+      entryIdentity({ title: "Freaks", year: "2026" }),
+    false,
+  );
+  check(
+    "entryIdentity cannot join two fields into another's value",
+    entryIdentity({ title: "a b", where: "c" }) ===
+      entryIdentity({ title: "a", where: "b c" }),
+    false,
+  );
+  check("entryIdentity is null without a name", entryIdentity({ year: "2020" }), null);
+
+  const doubled = [
+    { title: "Skyscraper", year: "2018", role: "" },
+    { title: "Sonic", year: "2020", role: "" },
+    { title: "Skyscraper", year: "2018", role: "Camera" },
+    { title: "Sonic", year: "2020", role: "" },
+    { title: "", year: "" },
+  ];
+  check(
+    "dedupeEntries keeps the richest copy, in the group's first position",
+    dedupeEntries(doubled).map((e) => `${e.title}|${e.role ?? ""}`),
+    ["Skyscraper|Camera", "Sonic|", "|"],
+  );
+
+  const merged = mergeIncomingEntries<Record<string, unknown>>(
+    [{ title: "Skyscraper", year: "2018", entryKey: "keep-me" }, { entryKey: "blank" }],
+    [
+      { title: "Skyscraper", year: "2018" },
+      { title: "Time Helmet", year: "2025" },
+      { title: "Freaks Part II", year: "2026" },
+      { title: "Time Helmet", year: "2025" },
+    ],
+  );
+  check(
+    "mergeIncomingEntries never touches an existing entry",
+    merged.kept,
+    [{ title: "Skyscraper", year: "2018", entryKey: "keep-me" }],
+  );
+  check(
+    "mergeIncomingEntries adds only what is new, newest first, once each",
+    merged.added.map((e) => e.title),
+    ["Freaks Part II", "Time Helmet"],
+  );
+  check(
+    "mergeIncomingEntries mints a key on every added entry",
+    merged.added.every((e) => typeof e.entryKey === "string" && e.entryKey.length === 12),
+    true,
+  );
+
+  // PORT-34: the copy with images wins a dedupe over a richer copy without.
+  const filesByKey: Record<string, number> = { withStills: 3 };
+  const weighted = [
+    { entryKey: "typed", title: "Skyscraper", year: "2018", role: "Camera", kind: "Feature" },
+    { entryKey: "withStills", title: "Skyscraper", year: "2018" },
+  ];
+  check(
+    "dedupeEntries: a weighted copy with files beats a richer one without",
+    dedupeEntries(weighted, (e) => 1000 * (filesByKey[e.entryKey] ?? 0) + entryRichness(e)).map((e) => e.entryKey),
+    ["withStills"],
+  );
+
+  const actions = standardListActions<Record<string, unknown>>();
+  const sort = actions.find((a) => a.key === "sort-by-date")!;
+  const dedupe = actions.find((a) => a.key === "remove-duplicates")!;
+  check(
+    "Sort by date is disabled with fewer than two dated entries",
+    sort.disabledReason([{ title: "a", year: "2020" }, { title: "b" }]),
+    "Nothing to sort by date yet",
+  );
+  check(
+    "Sort by date re-sorts a held list only when applied",
+    sort.apply([{ y: "2018" }, { y: "2026" }, { y: "2020" }].map((r) => ({ title: "t", year: r.y }))).map((e) => e.year),
+    ["2026", "2020", "2018"],
+  );
+  check(
+    "Remove duplicates is disabled when there are none",
+    dedupe.disabledReason([{ title: "a" }, { title: "b" }]),
+    "No duplicates",
+  );
+  check(
+    "Remove duplicates announces the count",
+    dedupe.announce([{ title: "a" }, { title: "a" }, { title: "a" }], [{ title: "a" }]),
+    "Removed 2 duplicates.",
+  );
+}
+
 /* ── Criterion 5 — the durable regression oracle ─────────────────────────── */
 
 const FIXTURE_ANSWERS: IntakeAnswers = {
@@ -1421,6 +1572,7 @@ function main(): void {
   checkTasteContract();
   checkKindChangeIsNonDestructive();
   checkShowcaseCopy();
+  checkEntryOrder();
 
   // The document renders at all, and still reports the durable flags. Byte
   // equality against the previous commit is the `--document` mode's job.

@@ -169,7 +169,10 @@ export default async function ShowcaseIntakeStepPage({
     if (after) redirect(showcaseIntakeRoutes.step(token, after.key));
   }
 
-  const uploadsFor = (fieldKey: string) => listUploads(engagement.id, fieldKey);
+  // With thumbnails (PORT-33 follow-up): a photo uploaded on an earlier visit
+  // comes back as the photo. The durable track's page does not opt in.
+  const uploadsFor = (fieldKey: string) =>
+    listUploads(engagement.id, fieldKey, { previews: true });
 
   /**
    * Everything the client has already given us, for step 9's home shortlist.

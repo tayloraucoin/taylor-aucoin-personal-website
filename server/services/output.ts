@@ -1251,7 +1251,11 @@ function resolveShowcaseKeys(
 function termsLine(engagement: Engagement): string | null {
   if (!engagement.termsAcceptedAt || !engagement.termsVersion) return null;
 
-  return `Terms: version ${engagement.termsVersion} accepted ${day(engagement.termsAcceptedAt)} by deposit payment`;
+  // Paying is agreeing (terms §2); so is continuing past a waived deposit —
+  // the free code shows the same agreement box before it lets anyone through.
+  const how = engagement.paidAt ? "by deposit payment" : "at the pay screen";
+
+  return `Terms: version ${engagement.termsVersion} accepted ${day(engagement.termsAcceptedAt)} ${how}`;
 }
 
 export function renderIntakeMarkdown(input: {

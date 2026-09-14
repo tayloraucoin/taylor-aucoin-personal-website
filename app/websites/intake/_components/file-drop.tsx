@@ -19,6 +19,12 @@ export type ExistingFile = {
   id: string;
   originalName: string | null;
   uploadedAt: Date | null;
+  /**
+   * A short-lived signed link to the image itself, when the caller asked for
+   * one and the file is an image. Absent on the durable track, which renders
+   * the filename chip it always has.
+   */
+  previewUrl?: string | null;
 };
 
 /**
@@ -242,14 +248,29 @@ export function FileDrop({
           {existing.map((file) => (
             <li
               key={file.id}
-              className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-2"
+              className="overflow-hidden rounded-(--radius) border border-(--color-faint) bg-(--color-card)"
             >
-              <p className="truncate font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
-                {file.originalName ?? "File"}
-              </p>
-              <p className="mt-1 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-c2)">
-                Sent
-              </p>
+              {/* The same tile a just-chosen file gets, so a photo does not
+                  turn into its filename the moment the step is revisited. A
+                  signed link into the private bucket, not an optimizer URL —
+                  `remotePatterns` covers the public route only, on purpose. */}
+              {file.previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={file.previewUrl}
+                  alt=""
+                  className="h-20 w-full object-cover"
+                />
+              ) : null}
+
+              <div className="p-2">
+                <p className="truncate font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
+                  {file.originalName ?? "File"}
+                </p>
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-c2)">
+                  Sent
+                </p>
+              </div>
             </li>
           ))}
 

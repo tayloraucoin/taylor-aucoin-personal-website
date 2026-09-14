@@ -49,7 +49,7 @@ type InvoiceEmailKind = InvoiceEmailRow["kind"];
  * CDN in front of it. Overridable because the bucket name is infrastructure,
  * not a code fact.
  */
-function archiveBucket(): string {
+export function archiveBucket(): string {
   return process.env.INVOICE_PDF_BUCKET?.trim() || "PRIVATE";
 }
 

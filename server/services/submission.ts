@@ -151,15 +151,24 @@ export class UnknownStepError extends Error {
  * in production: neither project had a bucket by that name, and every call
  * below failed with Supabase's foreign-key message ("The related resource
  * does not exist") — documents, project images, media, all of it. The
- * production bucket was created by hand in the dashboard; staging the same
- * way. `db/supabase/setup/01-rls-and-bucket.sql` also creates it, but do not
+ * production bucket was created by hand in the dashboard that day.
+ *
+ * **Staging did not get the same fix until 2026-09-14** — a docblock here
+ * once claimed otherwise ("staging the same way"), and that was wrong for two
+ * days: every upload and the voice note failed on localhost (local borrows
+ * staging's credentials) with the identical foreign-key message, because
+ * `intake` and `PRIVATE` were absent from the staging project the whole time
+ * (PORT-H5). Both are now created by hand there too. Run `yarn storage:verify`
+ * before trusting either tier again.
+ *
+ * `db/supabase/setup/01-rls-and-bucket.sql` also creates `intake`, but do not
  * run that file against production: it inserts a lowercase `public` beside
  * the project's `PUBLIC`.
  *
  * `SUPABASE_LIVE_INTAKE_BUCKET` / `SUPABASE_STAGING_INTAKE_BUCKET` override
  * the id; unset reads `intake`.
  */
-function intakeBucket(): string {
+export function intakeBucket(): string {
   return process.env.SUPABASE_INTAKE_BUCKET?.trim() || "intake";
 }
 
@@ -218,7 +227,7 @@ export async function issueUploadTicket(input: {
 
   if (error || !data) {
     throw new Error(
-      `Could not create an upload URL: ${error?.message ?? "unknown"}`,
+      `Could not create an upload URL (bucket "${intakeBucket()}"): ${error?.message ?? "unknown"}`,
     );
   }
 
@@ -278,7 +287,9 @@ export async function writeSourceObject(input: {
     .upload(storagePath, bytes, { contentType: "text/plain; charset=utf-8" });
 
   if (error) {
-    throw new Error(`Could not store the source: ${error.message}`);
+    throw new Error(
+      `Could not store the source (bucket "${intakeBucket()}"): ${error.message}`,
+    );
   }
 
   const [row] = await getDb()
@@ -341,11 +352,23 @@ export async function downloadUpload(storagePath: string): Promise<Uint8Array> {
     .download(storagePath);
 
   if (error || !data) {
-    throw new Error(`Could not read the upload: ${error?.message ?? "unknown"}`);
+    throw new Error(
+      `Could not read the upload (bucket "${intakeBucket()}"): ${error?.message ?? "unknown"}`,
+    );
   }
 
   return new Uint8Array(await data.arrayBuffer());
 }
+
+/**
+ * How long a thumbnail link minted for a step render stays good.
+ *
+ * A step is filled in one sitting; an hour covers a long one, and a link that
+ * has lapsed shows as the filename chip it was before previews existed rather
+ * than as an error. Short on purpose: these are signed links into a private
+ * bucket and every one that exists is one that can be pasted somewhere.
+ */
+const PREVIEW_TTL_SECONDS = 60 * 60;
 
 /**
  * Files already delivered for one field, oldest first.
@@ -354,9 +377,21 @@ export async function downloadUpload(storagePath: string): Promise<Uint8Array> {
  * that needs them — step 7's voice-note card — already calls this per field,
  * and six more columns on a query that returns at most a handful of rows is
  * free. There is nothing to join to.
+ *
+ * `previews` adds a short-lived signed link on every image row, so a photo a
+ * client uploaded on an earlier visit comes back as the photo rather than as
+ * its filename. That was the "it disappeared" of 2026-09-14: the upload had
+ * landed, the row was there, and the tile that replaced the thumbnail after a
+ * remount was a nine-point mono filename saying "Sent". One batched storage
+ * call per field, images only, and opt-in — the durable track's steps do not
+ * ask for it and are unchanged.
  */
-export async function listUploads(engagementId: string, fieldKey: string) {
-  return getDb()
+export async function listUploads(
+  engagementId: string,
+  fieldKey: string,
+  options: { previews?: boolean } = {},
+) {
+  const rows = await getDb()
     .select({
       id: intakeFiles.id,
       entryKey: intakeFiles.entryKey,
@@ -364,6 +399,7 @@ export async function listUploads(engagementId: string, fieldKey: string) {
       originalName: intakeFiles.originalName,
       sizeBytes: intakeFiles.sizeBytes,
       uploadedAt: intakeFiles.uploadedAt,
+      storagePath: intakeFiles.storagePath,
       transcript: intakeFiles.transcript,
       transcriptAttempts: intakeFiles.transcriptAttempts,
       transcriptEditedAt: intakeFiles.transcriptEditedAt,
@@ -377,6 +413,37 @@ export async function listUploads(engagementId: string, fieldKey: string) {
       ),
     )
     .orderBy(asc(intakeFiles.createdAt));
+
+  const previewByPath = new Map<string, string>();
+
+  if (options.previews) {
+    const imagePaths = rows
+      .filter((row) => row.uploadedAt && row.mimeType?.startsWith("image/"))
+      .map((row) => row.storagePath);
+
+    if (imagePaths.length > 0) {
+      // A per-row failure costs that row its thumbnail, never the page.
+      try {
+        const { data } = await getStorage()
+          .storage.from(intakeBucket())
+          .createSignedUrls(imagePaths, PREVIEW_TTL_SECONDS);
+        for (const signed of data ?? []) {
+          if (signed.path && signed.signedUrl) {
+            previewByPath.set(signed.path, signed.signedUrl);
+          }
+        }
+      } catch {
+        /* the chips still render */
+      }
+    }
+  }
+
+  // The storage path stays inside this module: it carries the engagement id
+  // and is not something a page needs. The link is what a tile can use.
+  return rows.map(({ storagePath, ...row }) => ({
+    ...row,
+    previewUrl: previewByPath.get(storagePath) ?? null,
+  }));
 }
 
 /**

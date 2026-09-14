@@ -15,6 +15,7 @@ import type { CheckoutAddonView } from "../../../intake/_components/deposit-chec
 import { LegalAgreement } from "../../../intake/_components/legal-agreement";
 import { PromoRail } from "../../../intake/_components/promo-rail";
 import { ShowcasePayButton } from "./showcase-pay-button";
+import { ShowcaseWaiveButton } from "./showcase-waive-button";
 import { NativeSelect } from "@/components/ui/native-select";
 
 type PromoState =
@@ -26,6 +27,7 @@ type PromoState =
       code: string;
       granted?: { key: string; name: string; description: string };
       build?: { halfCents: number; fullCents?: number };
+      waivesDeposit?: true;
     };
 
 /**
@@ -46,6 +48,14 @@ type PromoState =
  * The CTA is disabled until the terms box is ticked (D-INT-11 as amended), with
  * one dim line under the button stating the fact rather than issuing a
  * correction. No red anywhere, as ever.
+ *
+ * The free code collapses all of it. With the deposit waived there is no plan
+ * to choose, nothing to add, and no total to show — a "$0" plan card would be
+ * a price for something that is not being sold. What remains is the applied
+ * line, the same agreement box (waived is still agreed), and a continue button
+ * that points at the waiver action rather than Checkout. Add-ons are not
+ * offered on that path; anything the client wants beyond the build is bought
+ * mid-intake or by Taylor afterwards, through the paths that already exist.
  */
 export function ShowcaseCheckout({
   token,
@@ -56,6 +66,7 @@ export function ShowcaseCheckout({
   extraPage,
   seoPost,
   initialPromoCode,
+  trust,
 }: {
   token: string;
   currency: string;
@@ -75,6 +86,12 @@ export function ShowcaseCheckout({
    */
   seoPost: CheckoutAddonView | null;
   initialPromoCode?: string;
+  /**
+   * The trust lines under the button — Stripe, the statement descriptor, the
+   * receipt. Rendered here rather than by the parent so they can go with
+   * everything else when the free code makes each of them untrue.
+   */
+  trust?: React.ReactNode;
 }) {
   // Promo validation round-trips to a server action against a real token.
   const preview = useIsPreview();
@@ -106,6 +123,7 @@ export function ShowcaseCheckout({
               code,
               granted: result.granted,
               build: result.build,
+              waivesDeposit: result.waivesDeposit,
             }
           : { status: "invalid" },
       );
@@ -124,6 +142,7 @@ export function ShowcaseCheckout({
   }, [initialPromoCode]);
 
   const active = promo.status === "active" ? promo : null;
+  const waived = active?.waivesDeposit === true;
 
   // A negotiated code replaces the published prices on the cards themselves,
   // so what the client reads is what they are charged.
@@ -204,6 +223,93 @@ export function ShowcaseCheckout({
     totalCents === null
       ? "Pay deposit"
       : `Pay today — ${formatMoney(totalCents, currency)}`;
+
+  const promoRail = (
+    <PromoRail
+      open={promoOpen}
+      state={{ status: promo.status }}
+      value={promoInput}
+      onOpen={() => setPromoOpen(true)}
+      onChange={(next) => {
+        setPromoInput(next);
+        if (promo.status === "invalid") setPromo({ status: "idle" });
+      }}
+      onApply={() => void applyPromo(promoInput)}
+      activeSlot={
+        active ? (
+          <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-3.5">
+            {active.waivesDeposit ? (
+              <>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="font-body text-[16px] text-(--color-ink)">
+                    {/* [COPY — pending Taylor] */}
+                    Your build is covered
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                    Applied
+                  </span>
+                </div>
+                <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                  {/* [COPY — pending Taylor] */}
+                  Nothing to pay today. Tick the agreement below and carry on
+                  to the questionnaire.
+                </p>
+              </>
+            ) : active.granted ? (
+              <>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="font-body text-[16px] text-(--color-ink)">
+                    {active.granted.name}
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                    Included
+                  </span>
+                </div>
+                <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                  {active.granted.description} Nothing added to today&apos;s
+                  total.
+                </p>
+              </>
+            ) : (
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="font-body text-[16px] text-(--color-ink)">
+                  Your agreed price
+                </span>
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                  Applied
+                </span>
+              </div>
+            )}
+          </div>
+        ) : null
+      }
+    />
+  );
+
+  if (waived && active) {
+    return (
+      <div>
+        <div className="mt-8">{promoRail}</div>
+
+        <div className="mt-8">
+          <LegalAgreement checked={agreed} onChange={setAgreed} />
+        </div>
+
+        <div className="mt-4">
+          <ShowcaseWaiveButton
+            token={token}
+            code={active.code}
+            disabled={!agreed}
+          />
+          {!agreed ? (
+            <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+              The button unlocks once you&apos;ve ticked the agreement above.
+            </p>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -444,50 +550,7 @@ export function ShowcaseCheckout({
         </div>
       ) : null}
 
-      <div className="mt-6">
-        <PromoRail
-          open={promoOpen}
-          state={{ status: promo.status }}
-          value={promoInput}
-          onOpen={() => setPromoOpen(true)}
-          onChange={(next) => {
-            setPromoInput(next);
-            if (promo.status === "invalid") setPromo({ status: "idle" });
-          }}
-          onApply={() => void applyPromo(promoInput)}
-          activeSlot={
-            active ? (
-              <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-3.5">
-                {active.granted ? (
-                  <>
-                    <div className="flex items-baseline justify-between gap-4">
-                      <span className="font-body text-[16px] text-(--color-ink)">
-                        {active.granted.name}
-                      </span>
-                      <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-                        Included
-                      </span>
-                    </div>
-                    <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-                      {active.granted.description} Nothing added to today&apos;s
-                      total.
-                    </p>
-                  </>
-                ) : (
-                  <div className="flex items-baseline justify-between gap-4">
-                    <span className="font-body text-[16px] text-(--color-ink)">
-                      Your agreed price
-                    </span>
-                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-                      Applied
-                    </span>
-                  </div>
-                )}
-              </div>
-            ) : null
-          }
-        />
-      </div>
+      <div className="mt-6">{promoRail}</div>
 
       <div className="mt-8">
         <LegalAgreement checked={agreed} onChange={setAgreed} />
@@ -514,6 +577,8 @@ export function ShowcaseCheckout({
           </p>
         ) : null}
       </div>
+
+      {trust}
     </div>
   );
 }

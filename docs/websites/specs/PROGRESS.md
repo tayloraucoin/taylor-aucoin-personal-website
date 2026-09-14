@@ -4,6 +4,8 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 
 **Migrations 0010 and 0011 are applied on staging** (confirmed 2026-09-04: `engagements.track`, `intake_files.transcript`, and `intake_files.transcript_status` all exist, journal entry dated 2026-09-03). The earlier note here said both were pending Taylor's run against the hosted databases; that is stale for staging. **Production is unchecked** — a `db:migrate` on this machine resolves to staging (local borrows staging credentials), so nothing here says anything about the live tier. PORT-20 still needs `OPENAI_API_KEY` set; without it a recording still records, uploads, and reaches the intake document as audio — it just arrives with the old "transcribe this" heading.
 
+**Storage, checked 2026-09-14, closed same day:** staging (`wnsejddseaucmsirsfwo`, what local borrows) held only `public` when checked; every upload and the voice note failed on localhost with `The related resource does not exist` — the 2026-09-12 note that the bucket was created "in both projects" was true of production only. Taylor created `intake` and `PRIVATE` by hand on staging the same day. `yarn storage:verify` now confirms both tiers hold `intake` (private) and `PRIVATE` (private) with matching flags — PORT-H5's bucket-parity goal is met; the ticket's remaining scope (the verify script, bucket-named error messages, the corrected docblocks) is code-complete, see PORT-H5 row below. Separately, production has no bucket named `public` (only `PUBLIC`), so `captureBucket()`'s default resolves to nothing there — the taste gallery is broken in production until `SUPABASE_LIVE_PUBLIC_BUCKET=PUBLIC` is set on Vercel (unverifiable from this machine; the Phase 10 open item, now confirmed).
+
 **Outstanding for the taste gallery (PORT-28…32):** migration `0012_warm_harpoon.sql` and `db/supabase/setup/03-example-sites-rls.sql` are **written and reviewed but not applied** — Taylor runs both, in that order. Until then `/admin/intake/examples` cannot load and the taste step keeps rendering the absent state (which is the correct behaviour, not a symptom). The capture bucket constant in `server/services/example-captures.ts` reads `public`; Supabase bucket ids are case-sensitive and the dashboard uppercases that column in CSS, so it may need to become `PUBLIC`.
 
 **Outstanding for the coded track's money paths:** `showcase_animations` (and any other add-on row) has no minted Stripe price on the sandbox tier, so the mid-intake add-on Checkout cannot be created there. `yarn stripe:catalogue --apply` per tier, then paste the ids into `scripts/seed-products.ts` and `yarn db:seed` — the same PORT-3 action that has been outstanding since 2026-08-26.
@@ -43,6 +45,10 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 | PORT-30 | `loadExampleSet`; the six set files deleted; `verify:tracks` rebuilt | PORT-28, PORT-29 | Complete (exercised without a database — see DEVIATIONS) | 2026-09-04 |
 | PORT-31 | Admin CRUD: the three screens, publish gate, pack switch, archive | PORT-30 | Complete in code — **no browser pass** (needs the migration) | 2026-09-04 |
 | PORT-32 | Captures: upload, image URL, storage, `next.config`, CLI narrowed | PORT-31 | Complete in code — **upload path unexercised** (needs the migration and the bucket) | 2026-09-04 |
+| PORT-H5 | Hotfix: the `intake` bucket is missing on staging — `yarn storage:verify`, bucket-named errors, corrected records | Taylor creates the bucket | Complete — Taylor created `intake`/`PRIVATE` on staging 2026-09-14; `yarn storage:verify` added and passing on both tiers for the intake-process buckets; no browser walk of an actual upload against the running app | 2026-09-14 |
+| PORT-33 | Entries arrive newest-first (fast way, ingest run, top-five rows); Move up / Move down on every coded repeatable block | — | Complete — walked live against the real extractor with Taylor's own six-project list; durable document byte-identical before/after | 2026-09-14 |
+| PORT-33b | Follow-up: a second "Sort this for me" adds only what is new (`entry-merge.ts`, one home for the four append paths); uploaded photos come back as photos on return (`listUploads({ previews })`, coded track only) | PORT-33 | Complete — dedupe cases in `verify:tracks`; thumbnail confirmed in the browser on Taylor's engagement; durable document byte-identical | 2026-09-14 |
+| PORT-34 | Drag to reorder (dnd-kit) and a block ⋮ menu: Sort by date · Remove duplicates | PORT-33 | Complete — four deps approved and pinned; pointer drag, Sort, Remove duplicates + Undo walked live on Taylor's engagement; keyboard drag verified once under synthetic events, hands-on check wanted; durable byte-identical | 2026-09-14 |
 
 ## Checklist (mirrors `00-build-order.md`)
 
@@ -79,3 +85,7 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 - [x] PORT-30 · Rows behind `examplesFor`
 - [x] PORT-31 · Admin CRUD (no browser pass)
 - [x] PORT-32 · Captures (upload unexercised)
+- [x] PORT-H5 · Storage buckets by tier
+- [x] PORT-33 · Entry order + reorder
+- [x] PORT-33b · Dedupe on append + thumbnails on return
+- [x] PORT-34 · Drag reorder + block menu

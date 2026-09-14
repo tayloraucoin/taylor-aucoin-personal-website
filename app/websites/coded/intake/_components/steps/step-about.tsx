@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { mintEntryKey } from "@/lib/intake/entry-key";
+import {
+  entryRichness,
+  mergeIncomingEntries,
+  standardListActions,
+} from "@/lib/intake/entry-merge";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import {
   copyPackFor,
@@ -501,28 +506,29 @@ function Roster({
             }
             onChange={(next) => form.setValue("peoplePaste", next)}
             onBlur={form.flush}
-            onEntries={(incoming) =>
-              form.setValue("people", [
-                ...people.filter((person) =>
-                  Object.entries(person).some(
-                    ([key, value]) =>
-                      key !== "entryKey" &&
-                      typeof value === "string" &&
-                      value.trim() !== "",
-                  ),
-                ),
-                ...incoming.map((entry) => ({
-                  ...entry,
-                  entryKey: mintEntryKey(),
-                })),
-              ] as PersonEntry[])
-            }
+            onEntries={(incoming) => {
+              // Appends, minus anyone already on the roster; a second run
+              // never touches a person already on screen.
+              const { kept, added } = mergeIncomingEntries<
+                Record<string, unknown>
+              >(people, incoming);
+              form.setValue("people", [...kept, ...added] as PersonEntry[]);
+            }}
           />
 
           <Field id="f-people" label="Names and roles">
             <RepeatableBlock<PersonEntry>
               items={people}
               onChange={(next) => form.setValue("people", next)}
+              reorderable
+              keyOf={(entry) => entry.entryKey}
+              draggable
+              actions={standardListActions<PersonEntry>({
+                // A person whose headshot has landed is the copy to keep.
+                weight: (entry) =>
+                  1000 * filesFor(entry.entryKey).length + entryRichness(entry),
+              })}
+              menuLabel="Actions for the roster"
               emptyItem={() => ({ entryKey: mintEntryKey() })}
               addLabel="Add another person"
               renderItem={(item, index, update) => (

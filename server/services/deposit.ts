@@ -201,6 +201,15 @@ export async function resolvePromoEffect(
   const grant = code ? resolvePromoCode(code) : null;
   if (!grant) return { granted: null };
 
+  // The free code has no rows to compose — it waives the deposit through
+  // `waiveDepositByCode` and never reaches Checkout. Failing closed here
+  // rather than charging list price under it: the screen that sent this code
+  // promised nothing would be charged, and a session that contradicts the
+  // screen is the one thing this file must never create.
+  if (grant.waivesDeposit) {
+    throw new Error("This code waives the deposit; nothing is charged with it.");
+  }
+
   const overrideKey =
     plan === "full"
       ? grant.overridesBuildKey?.full
@@ -250,6 +259,11 @@ export type PromoDescription =
       granted?: { key: string; name: string; description: string };
       /** Negotiated build prices, in cents, for the plan cards to render. */
       build?: { halfCents: number; fullCents?: number };
+      /**
+       * The deposit is waived. The screen drops every price and offers the
+       * agreement and a continue button instead of a pay button.
+       */
+      waivesDeposit?: true;
     };
 
 /**
@@ -267,6 +281,16 @@ export async function describePromo(
 ): Promise<PromoDescription> {
   const grant = code ? resolvePromoCode(code) : null;
   if (!grant) return { valid: false };
+
+  // The free code touches no rows, so there is nothing to check against the
+  // catalogue — only the track. It is a coded-track code and means nothing
+  // on the platform track, whose deposits are waived by Taylor's script and
+  // not by anything a client can type.
+  if (grant.waivesDeposit) {
+    return track === "showcase"
+      ? { valid: true, waivesDeposit: true }
+      : { valid: false };
+  }
 
   // Every row a code touches has to belong to this track. Without that check
   // a platform-track code would add a platform-track row to a coded order —
@@ -927,4 +951,76 @@ export async function fulfillDeposit(
     .limit(1);
 
   return existing ? "already_paid" : "unknown";
+}
+
+/**
+ * Waives the deposit on the strength of the free code — the coded track's
+ * other way past the pay screen, and the only one that never touches Stripe.
+ *
+ * Not a $0 payment. Stripe can run a no-cost Checkout, but routing a comp
+ * through a payment processor so a webhook will fire would leave `paid_at`
+ * and an `orders` row for money that never moved, and the ledger's one rule
+ * is that every row is a Stripe fact (M-FIN-1). What a free build *is*, in
+ * this schema's own vocabulary, is a waived deposit — the state the
+ * `--no-deposit` script has always produced and the admin already renders as
+ * "Deposit waived" — so that is the state this writes. `paid_at` stays null,
+ * `fulfillDeposit` stays its only writer, and the ledger never learns this
+ * happened.
+ *
+ * The terms are still accepted here. The client ticks the same agreement box
+ * before pressing continue, so the record carries the version the screen
+ * displayed and the moment they agreed, exactly as a payment would stamp it.
+ *
+ * Idempotent by the UPDATE's own predicate, the same shape as fulfillment: a
+ * second tap flips nothing twice, and the caller announces nothing twice.
+ */
+export async function waiveDepositByCode(
+  engagement: Engagement,
+  code: string,
+): Promise<"waived" | "already_open"> {
+  if (engagement.track !== "showcase") {
+    throw new Error("The free code is a coded-track code.");
+  }
+
+  const grant = resolvePromoCode(code);
+  if (!grant?.waivesDeposit) {
+    throw new Error("That code does not waive the deposit.");
+  }
+
+  if (!engagement.depositRequired || engagement.paidAt) return "already_open";
+
+  const now = new Date();
+  const db = getDb();
+
+  const [updated] = await db
+    .update(engagements)
+    .set({
+      depositRequired: false,
+      termsAcceptedAt: now,
+      termsVersion: TERMS_VERSION,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(engagements.id, engagement.id),
+        eq(engagements.depositRequired, true),
+        isNull(engagements.paidAt),
+      ),
+    )
+    .returning({ id: engagements.id });
+
+  if (!updated) return "already_open";
+
+  // An abandoned Checkout attempt may have left a basket behind. It was never
+  // paid and now never will be, and the admin should not read it as one.
+  await db
+    .delete(engagementProducts)
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagement.id),
+        isNull(engagementProducts.paidAt),
+      ),
+    );
+
+  return "waived";
 }
