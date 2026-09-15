@@ -103,3 +103,45 @@ export async function uploadIntakeFile(
 
   return { fileId, confirmed };
 }
+
+/**
+ * Takes a file out, for good. The surface waits its six seconds of undo
+ * before calling this; nothing here is reversible.
+ */
+export async function removeIntakeFile(
+  token: string,
+  fileId: string,
+): Promise<void> {
+  const response = await fetch("/api/intake/upload", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token, remove: fileId }),
+  });
+
+  if (!response.ok) throw new Error("remove");
+}
+
+/**
+ * Writes the order the client put a field's files in (PORT-35). The whole
+ * scope, as they see it; the server keeps anything it knows about that the
+ * client does not after the listed ones.
+ */
+export async function reorderIntakeFiles(
+  target: Pick<UploadTarget, "token" | "fieldKey" | "entryKey">,
+  ids: readonly string[],
+): Promise<void> {
+  const response = await fetch("/api/intake/upload", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      token: target.token,
+      reorder: {
+        fieldKey: target.fieldKey,
+        entryKey: target.entryKey ?? null,
+        ids,
+      },
+    }),
+  });
+
+  if (!response.ok) throw new Error("reorder");
+}

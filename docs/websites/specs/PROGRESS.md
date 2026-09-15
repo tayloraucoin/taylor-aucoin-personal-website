@@ -49,6 +49,7 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 | PORT-33 | Entries arrive newest-first (fast way, ingest run, top-five rows); Move up / Move down on every coded repeatable block | — | Complete — walked live against the real extractor with Taylor's own six-project list; durable document byte-identical before/after | 2026-09-14 |
 | PORT-33b | Follow-up: a second "Sort this for me" adds only what is new (`entry-merge.ts`, one home for the four append paths); uploaded photos come back as photos on return (`listUploads({ previews })`, coded track only) | PORT-33 | Complete — dedupe cases in `verify:tracks`; thumbnail confirmed in the browser on Taylor's engagement; durable document byte-identical | 2026-09-14 |
 | PORT-34 | Drag to reorder (dnd-kit) and a block ⋮ menu: Sort by date · Remove duplicates | PORT-33 | Complete — four deps approved and pinned; pointer drag, Sort, Remove duplicates + Undo walked live on Taylor's engagement; keyboard drag verified once under synthetic events, hands-on check wanted; durable byte-identical | 2026-09-14 |
+| PORT-35 | Every upload removable (6s undo, then delete); multi-file drops orderable by grip or Earlier/Later; `intake_files.position` written and read everywhere | PORT-34, **migration 0016 (Taylor runs)** | Code complete — **not runnable until 0016 is applied; not walked in a browser**; mechanical checks pass; durable document byte-identical; both tracks get it | 2026-09-14 |
 
 ## Checklist (mirrors `00-build-order.md`)
 
@@ -89,3 +90,4 @@ The **only** authoritative answer to "is this Complete." A downstream ticket is 
 - [x] PORT-33 · Entry order + reorder
 - [x] PORT-33b · Dedupe on append + thumbnails on return
 - [x] PORT-34 · Drag reorder + block menu
+- [ ] PORT-35 · Remove + order uploads (migration 0016 first; browser walk after)

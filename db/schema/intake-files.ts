@@ -82,6 +82,19 @@ export const intakeFiles = pgTable(
 
     uploadedAt: timestamp("uploaded_at", { withTimezone: true }),
 
+    /**
+     * Where this file sits among its siblings — the same engagement, field,
+     * and entry — and therefore how the site will present them (PORT-35).
+     *
+     * Assigned at issuance as one past the current highest in its scope, so
+     * a new upload lands last; rewritten as a dense 0…n-1 whenever the client
+     * reorders. Rows from before the column existed carry 0 and fall back to
+     * `created_at`, which is the order they always had. Lists read
+     * `position asc, created_at asc`; the intake document prints in that
+     * order, which is the whole reason the column exists.
+     */
+    position: integer("position").notNull().default(0),
+
     engagementId: uuid("engagement_id")
       .notNull()
       .references(() => engagements.id, { onDelete: "cascade" }),
