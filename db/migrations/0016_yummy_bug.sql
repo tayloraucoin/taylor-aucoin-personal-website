@@ -1,0 +1,1 @@
+ALTER TABLE "intake_files" ADD COLUMN "position" integer DEFAULT 0 NOT NULL;

@@ -189,6 +189,32 @@ function safeExtension(filename: string): string {
   return match ? `.${match[1].toLowerCase()}` : "";
 }
 
+/**
+ * The scope a file's position is meaningful in: its siblings under the same
+ * engagement, field, and entry. `entry_key` is nullable, so the comparison
+ * is `IS NOT DISTINCT FROM` rather than `=`, which never matches null.
+ */
+function siblingsOf(engagementId: string, fieldKey: string, entryKey: string | null) {
+  return and(
+    eq(intakeFiles.engagementId, engagementId),
+    eq(intakeFiles.fieldKey, fieldKey),
+    sql`${intakeFiles.entryKey} is not distinct from ${entryKey}`,
+  );
+}
+
+/**
+ * One past the highest position among a file's siblings, computed inside the
+ * INSERT so two uploads issued together cannot both read the same maximum.
+ * Rows from before the column carry 0; the first new upload beside them
+ * lands at 1, after them, which is the order the client already saw.
+ */
+function nextPosition(engagementId: string, fieldKey: string, entryKey: string | null) {
+  return sql<number>`(select coalesce(max(${intakeFiles.position}), 0) + 1 from ${intakeFiles} where ${siblingsOf(engagementId, fieldKey, entryKey)})`;
+}
+
+/** The order every list and the document agree on. */
+const FILE_ORDER = [asc(intakeFiles.position), asc(intakeFiles.createdAt)];
+
 export type UploadTicket = {
   fileId: string;
   uploadUrl: string;
@@ -242,6 +268,7 @@ export async function issueUploadTicket(input: {
       sizeBytes: input.sizeBytes,
       step: null,
       storagePath,
+      position: nextPosition(engagement.id, input.fieldKey, input.entryKey ?? null),
     })
     .returning({ id: intakeFiles.id });
 
@@ -304,6 +331,7 @@ export async function writeSourceObject(input: {
       step: null,
       storagePath,
       uploadedAt: new Date(),
+      position: nextPosition(input.engagementId, input.fieldKey, null),
     })
     .returning({ id: intakeFiles.id });
 
@@ -336,6 +364,83 @@ export async function confirmUpload(
         eq(intakeFiles.engagementId, engagement.id),
       ),
     );
+}
+
+/**
+ * Takes one file out — the object and the row, in that order (PORT-35).
+ *
+ * Scoped to the engagement the token resolves to, like `confirmUpload`, so
+ * one client's link can never remove another's file. The storage delete
+ * goes first: a row without an object is a dead link the document can show
+ * as such, while an object without a row is a file nobody can find or
+ * remove. An object already gone (a retried remove) is not an error.
+ *
+ * Irreversible by design at this layer; the six seconds of undo live in the
+ * surface, which waits before calling this at all.
+ */
+export async function removeUpload(token: string, fileId: string): Promise<void> {
+  const engagement = await requireEngagement(token);
+
+  const [row] = await getDb()
+    .select({ id: intakeFiles.id, storagePath: intakeFiles.storagePath })
+    .from(intakeFiles)
+    .where(
+      and(eq(intakeFiles.id, fileId), eq(intakeFiles.engagementId, engagement.id)),
+    )
+    .limit(1);
+
+  if (!row) return;
+
+  const { error } = await getStorage()
+    .storage.from(intakeBucket())
+    .remove([row.storagePath]);
+
+  if (error && !/not found/i.test(error.message)) {
+    throw new Error(
+      `Could not remove the upload (bucket "${intakeBucket()}"): ${error.message}`,
+    );
+  }
+
+  await getDb().delete(intakeFiles).where(eq(intakeFiles.id, row.id));
+}
+
+/**
+ * Writes the client's order for one field's files (PORT-35).
+ *
+ * `orderedIds` is the whole scope as the client sees it; ids outside the
+ * engagement, the field, or the entry are ignored rather than refused, so a
+ * stale tab cannot move a file it should not know about. Files in the scope
+ * but not in the list keep going after the listed ones, in their old order —
+ * a newer upload from another tab is not lost, it is last.
+ */
+export async function reorderUploads(
+  token: string,
+  fieldKey: string,
+  entryKey: string | null,
+  orderedIds: readonly string[],
+): Promise<void> {
+  const engagement = await requireEngagement(token);
+  const scope = siblingsOf(engagement.id, fieldKey, entryKey);
+
+  const rows = await getDb()
+    .select({ id: intakeFiles.id })
+    .from(intakeFiles)
+    .where(scope)
+    .orderBy(...FILE_ORDER);
+
+  const inScope = new Set(rows.map((r) => r.id));
+  const listed = orderedIds.filter((id) => inScope.has(id));
+  const unlisted = rows.map((r) => r.id).filter((id) => !listed.includes(id));
+  const finalOrder = [...listed, ...unlisted];
+
+  await getDb().transaction(async (tx) => {
+    for (const [position, id] of finalOrder.entries()) {
+      await tx
+        .update(intakeFiles)
+        .set({ position })
+        .where(and(eq(intakeFiles.id, id), scope));
+    }
+  });
 }
 
 /**
@@ -400,6 +505,7 @@ export async function listUploads(
       sizeBytes: intakeFiles.sizeBytes,
       uploadedAt: intakeFiles.uploadedAt,
       storagePath: intakeFiles.storagePath,
+      position: intakeFiles.position,
       transcript: intakeFiles.transcript,
       transcriptAttempts: intakeFiles.transcriptAttempts,
       transcriptEditedAt: intakeFiles.transcriptEditedAt,
@@ -412,7 +518,7 @@ export async function listUploads(
         eq(intakeFiles.fieldKey, fieldKey),
       ),
     )
-    .orderBy(asc(intakeFiles.createdAt));
+    .orderBy(...FILE_ORDER);
 
   const previewByPath = new Map<string, string>();
 
@@ -476,7 +582,9 @@ export async function linkUploads(
     .select()
     .from(intakeFiles)
     .where(eq(intakeFiles.engagementId, engagementId))
-    .orderBy(asc(intakeFiles.createdAt));
+    // The client's order, so the document presents the stills the way they
+    // will be presented (PORT-35). Rows never reordered fall back to arrival.
+    .orderBy(...FILE_ORDER);
 
   return Promise.all(
     rows.map(async (row) => {

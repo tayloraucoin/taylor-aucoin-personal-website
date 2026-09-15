@@ -188,6 +188,9 @@ export function StepIngest({
                   );
                 }
           }
+          // The source list below is the server's view of the same files;
+          // a removal has to reach it too.
+          onRemoved={() => router.refresh()}
         />
       </Field>
 

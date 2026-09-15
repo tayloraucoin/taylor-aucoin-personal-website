@@ -174,9 +174,15 @@ export function VoiceRecorder({
   token,
   existing,
   dropped = [],
+  removed = [],
 }: {
   token: string;
   existing: readonly VoiceNoteFile[];
+  /**
+   * Row ids the file drop has removed on the server (PORT-35). The row is
+   * gone and its transcript with it, so the block for it goes too.
+   */
+  removed?: readonly string[];
   /**
    * Row ids of voice notes uploaded through the file drop during this visit.
    *
@@ -383,6 +389,12 @@ export function VoiceRecorder({
       void transcribe(fileId);
     }
   }, [dropped, transcribe]);
+
+  useEffect(() => {
+    if (removed.length === 0) return;
+    const gone = new Set(removed);
+    setRows((current) => current.filter((row) => !gone.has(row.fileId)));
+  }, [removed]);
 
   /* ── The transcript box ─────────────────────────────────────────────────── */
 

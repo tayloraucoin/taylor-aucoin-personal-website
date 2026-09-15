@@ -167,6 +167,7 @@ Nothing in PORT gates the Durable track, the CRM, or the portfolio site itself. 
 | PORT-H5 | — (Taylor creates the bucket)  |
 | PORT-33 | — (PORT-H5 first, for the walk) |
 | PORT-34 | PORT-33 · Taylor's dependency ruling |
+| PORT-35 | PORT-34 · migration 0016 (Taylor)  |
 
 ## Ticket-authoring batches (record)
 

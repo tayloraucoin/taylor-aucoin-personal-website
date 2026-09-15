@@ -5,7 +5,10 @@ import {
   UploadTooLargeError,
   confirmUpload,
   issueUploadTicket,
+  removeUpload,
+  reorderUploads,
 } from "@/server/services/submission";
+import { z } from "zod";
 
 /**
  * Issues a one-shot upload URL, and confirms delivery afterwards.
@@ -17,13 +20,66 @@ import {
  * The token is the only credential and it is checked before anything is
  * signed, so a URL is never minted for a link that does not resolve. Errors
  * carry no detail about which of those two things went wrong.
+ *
+ * Four shapes on one endpoint, told apart by their one distinguishing key:
+ * issue (the default), `confirm`, `remove`, and `reorder` (PORT-35). One
+ * place where the token is resolved, one reply shape the client acts on.
  */
+const removeInput = z.object({ token: z.string().min(1), remove: z.uuid() });
+const reorderInput = z.object({
+  token: z.string().min(1),
+  reorder: z.object({
+    fieldKey: z.string().min(1),
+    entryKey: z.string().min(1).nullable().optional(),
+    ids: z.array(z.uuid()).max(500),
+  }),
+});
+
 export async function POST(request: NextRequest) {
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  const removal = removeInput.safeParse(body);
+  if (removal.success) {
+    try {
+      await removeUpload(removal.data.token, removal.data.remove);
+      return Response.json({ ok: true });
+    } catch (error) {
+      if (error instanceof EngagementNotFoundError) {
+        return Response.json({ error: "link" }, { status: 404 });
+      }
+      console.error(
+        "[intake] upload removal failed",
+        error instanceof Error ? error.message : "unknown error",
+      );
+      return Response.json({ error: "server" }, { status: 500 });
+    }
+  }
+
+  const reorder = reorderInput.safeParse(body);
+  if (reorder.success) {
+    try {
+      await reorderUploads(
+        reorder.data.token,
+        reorder.data.reorder.fieldKey,
+        reorder.data.reorder.entryKey ?? null,
+        reorder.data.reorder.ids,
+      );
+      return Response.json({ ok: true });
+    } catch (error) {
+      if (error instanceof EngagementNotFoundError) {
+        return Response.json({ error: "link" }, { status: 404 });
+      }
+      console.error(
+        "[intake] upload reorder failed",
+        error instanceof Error ? error.message : "unknown error",
+      );
+      return Response.json({ error: "server" }, { status: 500 });
+    }
   }
 
   // Confirmation is the same endpoint with a different shape: one round trip

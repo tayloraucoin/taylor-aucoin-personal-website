@@ -67,6 +67,7 @@ export function StepWords({
 
   /** Voice notes uploaded through the drop this visit, for the recorder. */
   const [droppedVoiceNotes, setDroppedVoiceNotes] = useState<string[]>([]);
+  const [removedVoiceNotes, setRemovedVoiceNotes] = useState<string[]>([]);
 
   const pack = copyPackFor(flavour);
   const person = personVoiceOptionsFor(flavour, displayName);
@@ -99,6 +100,7 @@ export function StepWords({
             token={token}
             existing={files.voiceNote}
             dropped={droppedVoiceNotes}
+            removed={removedVoiceNotes}
           />
         </div>
 
@@ -115,6 +117,11 @@ export function StepWords({
             // here and back down to it.
             onUploaded={(fileId) =>
               setDroppedVoiceNotes((current) => [...current, fileId])
+            }
+            // A removed note takes its transcript with it — the row is gone,
+            // so the recorder's block for it has to go too.
+            onRemoved={(fileId) =>
+              setRemovedVoiceNotes((current) => [...current, fileId])
             }
           />
         </div>
