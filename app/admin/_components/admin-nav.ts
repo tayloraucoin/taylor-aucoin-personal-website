@@ -7,6 +7,7 @@ import {
   Handshake,
   Images,
   ListChecks,
+  MessageSquareText,
   PhoneCall,
   RefreshCw,
   Trophy,
@@ -109,6 +110,14 @@ export const NAV_SECTIONS: AdminNavSection[] = [
     label: "Engagements",
     icon: Handshake,
     items: [
+      {
+        // The client's one feedback round before the build (REV-3): it
+        // happens inside an engagement, so it sits in that stage.
+        title: "Design reviews",
+        href: adminRoutes.designReviews,
+        icon: MessageSquareText,
+        ready: true,
+      },
       {
         title: "Engagements",
         href: adminRoutes.engagements,

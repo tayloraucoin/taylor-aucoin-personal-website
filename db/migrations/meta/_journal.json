@@ -120,6 +120,27 @@
       "when": 1789430132957,
       "tag": "0016_yummy_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790120658351,
+      "tag": "0017_spotty_spyke",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790133365673,
+      "tag": "0018_amused_falcon",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1790133426308,
+      "tag": "0019_giant_mastermind",
+      "breakpoints": true
     }
   ]
 }

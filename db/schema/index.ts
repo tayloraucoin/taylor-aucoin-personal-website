@@ -16,6 +16,9 @@ import type { leadSyncs } from "./lead-syncs";
 import type { leads } from "./leads";
 import type { orders } from "./orders";
 import type { products } from "./products";
+import type { reviewComments } from "./review-comments";
+import type { reviewRounds } from "./review-rounds";
+import type { reviewSubmissions } from "./review-submissions";
 import type { stripeEvents } from "./stripe-events";
 
 export * from "./call-attempts";
@@ -33,6 +36,9 @@ export * from "./lead-syncs";
 export * from "./leads";
 export * from "./orders";
 export * from "./products";
+export * from "./review-comments";
+export * from "./review-rounds";
+export * from "./review-submissions";
 export * from "./stripe-events";
 
 /**
@@ -114,3 +120,20 @@ export type NewLeadEmailRow = typeof leadEmails.$inferInsert;
 
 export type LeadSyncRow = typeof leadSyncs.$inferSelect;
 export type NewLeadSyncRow = typeof leadSyncs.$inferInsert;
+
+/**
+ * Review-ingest rows (REV-1).
+ *
+ * `ReviewRoundRow` carries the key hash and stays inside `db/` and
+ * `server/services/`. Route handlers and the CLI receive the narrowed
+ * `ReviewRound` domain type from `server/services/review.ts`, which drops it
+ * — structurally, so it cannot leak by accident (M-REV-1).
+ */
+export type ReviewRoundRow = typeof reviewRounds.$inferSelect;
+export type NewReviewRoundRow = typeof reviewRounds.$inferInsert;
+
+export type ReviewCommentRow = typeof reviewComments.$inferSelect;
+export type NewReviewCommentRow = typeof reviewComments.$inferInsert;
+
+export type ReviewSubmissionRow = typeof reviewSubmissions.$inferSelect;
+export type NewReviewSubmissionRow = typeof reviewSubmissions.$inferInsert;
