@@ -28,6 +28,7 @@ export type ServerEnvVar =
   | "NEXT_PUBLIC_SITE_URL"
   | "OPENAI_API_KEY"
   | "RESEND_API_KEY"
+  | "REVIEW_INGEST_KEY"
   | "STRIPE_PUBLISHABLE_KEY"
   | "STRIPE_SECRET_KEY"
   | "STRIPE_WEBHOOK_SECRET"
@@ -65,6 +66,8 @@ function rawValue(name: ServerEnvVar): string | undefined {
       return process.env.OPENAI_API_KEY;
     case "RESEND_API_KEY":
       return process.env.RESEND_API_KEY;
+    case "REVIEW_INGEST_KEY":
+      return process.env.REVIEW_INGEST_KEY;
     case "STRIPE_PUBLISHABLE_KEY":
       return process.env.STRIPE_PUBLISHABLE_KEY;
     case "STRIPE_SECRET_KEY":

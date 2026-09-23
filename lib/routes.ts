@@ -158,6 +158,9 @@ export const adminRoutes = {
   lead: (id: string) => `${ADMIN_PREFIX}/leads/${id}`,
   engagements: `${ADMIN_PREFIX}/engagements`,
   engagement: (id: string) => `${ADMIN_PREFIX}/engagements/${id}`,
+  /** Client design-review rounds (REV-3): what the client site's reviewer sent back. */
+  designReviews: `${ADMIN_PREFIX}/design-reviews`,
+  designReview: (id: string) => `${ADMIN_PREFIX}/design-reviews/${id}`,
   sync: `${ADMIN_PREFIX}/sync`,
   scoreboard: `${ADMIN_PREFIX}/scoreboard`,
   transcripts: `${ADMIN_PREFIX}/transcripts`,
