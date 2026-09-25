@@ -141,6 +141,13 @@
       "when": 1790133426308,
       "tag": "0019_giant_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1790364315138,
+      "tag": "0020_overjoyed_black_bolt",
+      "breakpoints": true
     }
   ]
 }

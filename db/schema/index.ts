@@ -1,6 +1,8 @@
 import type { callAttempts } from "./call-attempts";
 import type { emailEvents } from "./email-events";
+import type { engagementEmails } from "./engagement-emails";
 import type { engagementProducts } from "./engagement-products";
+import type { engagementStepCompletions } from "./engagement-step-completions";
 import type { engagements } from "./engagements";
 import type {
   exampleCaptures,
@@ -15,6 +17,7 @@ import type { leadEmails } from "./lead-emails";
 import type { leadSyncs } from "./lead-syncs";
 import type { leads } from "./leads";
 import type { orders } from "./orders";
+import type { pipelineSteps } from "./pipeline-steps";
 import type { products } from "./products";
 import type { reviewComments } from "./review-comments";
 import type { reviewRounds } from "./review-rounds";
@@ -23,7 +26,9 @@ import type { stripeEvents } from "./stripe-events";
 
 export * from "./call-attempts";
 export * from "./email-events";
+export * from "./engagement-emails";
 export * from "./engagement-products";
+export * from "./engagement-step-completions";
 export * from "./engagements";
 export * from "./example-pack";
 export * from "./example-sites";
@@ -35,6 +40,7 @@ export * from "./lead-emails";
 export * from "./lead-syncs";
 export * from "./leads";
 export * from "./orders";
+export * from "./pipeline-steps";
 export * from "./products";
 export * from "./review-comments";
 export * from "./review-rounds";
@@ -137,3 +143,21 @@ export type NewReviewCommentRow = typeof reviewComments.$inferInsert;
 
 export type ReviewSubmissionRow = typeof reviewSubmissions.$inferSelect;
 export type NewReviewSubmissionRow = typeof reviewSubmissions.$inferInsert;
+
+/**
+ * Engagement-pipeline rows (PIPE-1).
+ *
+ * The playbook's steps, which of them an engagement has done, and every
+ * client email sent from a step as sent (M-PIPE-1, M-PIPE-3, M-PIPE-5).
+ * Surfaces read them through `server/services/pipeline.ts`.
+ */
+export type PipelineStepRow = typeof pipelineSteps.$inferSelect;
+export type NewPipelineStepRow = typeof pipelineSteps.$inferInsert;
+
+export type EngagementStepCompletionRow =
+  typeof engagementStepCompletions.$inferSelect;
+export type NewEngagementStepCompletionRow =
+  typeof engagementStepCompletions.$inferInsert;
+
+export type EngagementEmailRow = typeof engagementEmails.$inferSelect;
+export type NewEngagementEmailRow = typeof engagementEmails.$inferInsert;
