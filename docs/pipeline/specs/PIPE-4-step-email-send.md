@@ -4,7 +4,7 @@
 **Slice type:** A client-facing send from the admin. Risk class: an email to the wrong engagement; a literal `{{placeholder}}` in a client's inbox; a letter lost to a failed send; a send that leaves no record.
 **Review:** Mason (the send service; refusal of unresolved names in the service) · Vesper (the dialog; the confirm) · full verification depth — real inbox, staging.
 
-**Status:** Code complete (2026-09-25) — typecheck and lint clean, `yarn verify:pipeline` 13/13, jsonb merge exercised on Postgres 15; **`yarn build:agent` not run (disk full)**; no staging send (see PROGRESS.md)
+**Status:** Complete (2026-09-25) — build, typecheck, lint clean; `yarn verify:pipeline` 13/13; jsonb merge exercised on Postgres 15; no staging send (see PROGRESS.md)
 
 > **Verification — risk surface.** On staging, to an inbox Taylor controls: send each of the three briefs' templates once. Send with a field empty (refused, in the UI and — by posting directly — in the service). Kill the network mid-send (row with null `resend_id`, draft kept). Send twice (confirm, second row). Open on a phone: plain text, links tappable.
 

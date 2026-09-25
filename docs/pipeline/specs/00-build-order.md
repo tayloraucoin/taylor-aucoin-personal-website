@@ -32,7 +32,7 @@ PIPE-1 → PIPE-2 → PIPE-3 → PIPE-4 → PIPE-5 (Taylor)
 ### Phase 3 — On an engagement
 
 - [x] **PIPE-3** · The engagement checklist, filled-in prompts, done and undo — **Mason seam review** · M · (PIPE-2) — code complete 2026-09-25; not rendered
-- [ ] **PIPE-4** · Compose and send a step's email — **full verification, real inbox** · M · (PIPE-3) — code complete 2026-09-25; `yarn build:agent` not run (disk full); staging send outstanding
+- [x] **PIPE-4** · Compose and send a step's email — **full verification, real inbox** · M · (PIPE-3) — code complete 2026-09-25; staging send outstanding
 
 ### Phase 4 — Content (Taylor, not a build ticket)
 

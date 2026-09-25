@@ -26,3 +26,4 @@ YYYY-MM-DD · <ticket-id> · <what changed> · <why>
 2026-09-25 · PIPE-4 · `server/services/emails.ts` not run through Prettier · it was not Prettier-clean at the base commit, and formatting it would rewrite code outside this slice. The appended `sendStepEmail` follows the file's style by hand.
 2026-09-25 · PIPE-4 · The commit carries Prettier formatting of the PIPE-1..3 files and docs · they were authored unformatted; formatting only, no semantic change.
 2026-09-25 · PIPE-4 · `yarn build:agent` not run · the disk had <500 MB free; closure is "code complete", not Complete, until it runs.
+2026-09-25 · PIPE-4 · Build run after Taylor freed disk space; clean · closes the earlier 'not run' line — PIPE-4 is Complete.

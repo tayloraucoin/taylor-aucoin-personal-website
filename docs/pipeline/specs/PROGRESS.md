@@ -9,14 +9,14 @@ The **only** authoritative answer to "is this Complete."
 | PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values   | —                                                    | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database                                                       | 2026-09-25 |
 | PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database                                                                                                                      | 2026-09-25 |
 | PIPE-3 | The engagement checklist, filled-in prompts, done and undo            | PIPE-2 (code complete)                               | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database                                                                                          | 2026-09-25 |
-| PIPE-4 | Compose and send a step's email                                       | PIPE-3 (code complete)                               | **Code complete, not Complete** — typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; `yarn build:agent` not run (disk full); staging send pass outstanding | 2026-09-25 |
+| PIPE-4 | Compose and send a step's email | PIPE-3 (code complete) | Complete — build, typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; staging send pass outstanding | 2026-09-25 |
 
 ## Checklist
 
 - [x] PIPE-1 · Schema
 - [x] PIPE-2 · The playbook admin
 - [x] PIPE-3 · The engagement checklist
-- [ ] PIPE-4 · Step email send — code complete; build not run
+- [x] PIPE-4 · Step email send
 - [ ] PIPE-5 · Content (Taylor)
 
 ## What has been verified, and how
@@ -78,6 +78,6 @@ Built without rendering: the agent has no admin session (the login is Taylor's),
 | Logging           | `[pipeline]` lines carry ids only                                                                                                                                 |
 | Typecheck / lint  | `npx tsc --noEmit` · `yarn lint` clean                                                                                                                            |
 
-**Not run — `yarn build:agent`.** The disk had under 500 MB free (`.next-build` alone rewrites ~1.3 GB). Run it once space is freed; PIPE-4 is Complete only after it passes.
+**Build:** `yarn build:agent` run 2026-09-25 after Taylor freed disk space — clean.
 
 **Not verified — Taylor's pass after `0020`, on staging, to his own inbox:** criteria 1–9 in the ticket; the `[PROPOSED]` field/letter behaviour.
