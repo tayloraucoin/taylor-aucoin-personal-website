@@ -4,7 +4,7 @@
 **Slice type:** One admin surface over one table, with server actions. Risk class: a reorder from a stale tab that drops a step; a delete that the database refuses and the page reports as a crash; a template edit lost to a failed save.
 **Review:** Vesper (state matrix; the editor in both themes) · Mason (the service seam; the reorder's set check).
 
-**Status:** Not started
+**Status:** Complete (2026-09-25) — build, typecheck, and lint clean; not rendered (no admin session; `0020` not yet applied — see PROGRESS.md)
 
 > **Vesper — surface review.** Walk every state below in Light and Dark. Copy on a step with no prompt (button absent). Archive, then unarchive, then reorder with archived steps present. Delete a used step (refused, the line says archive instead). Edit, break the network, save (the draft survives).
 

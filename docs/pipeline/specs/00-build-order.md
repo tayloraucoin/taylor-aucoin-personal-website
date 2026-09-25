@@ -27,7 +27,7 @@ PIPE-1 → PIPE-2 → PIPE-3 → PIPE-4 → PIPE-5 (Taylor)
 
 ### Phase 2 — The playbook
 
-- [ ] **PIPE-2** · `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy — **Vesper surface review** · M · (PIPE-1, `0020` run)
+- [x] **PIPE-2** · `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy — **Vesper surface review** · M · (PIPE-1) — code complete 2026-09-25; not rendered
 
 ### Phase 3 — On an engagement
 

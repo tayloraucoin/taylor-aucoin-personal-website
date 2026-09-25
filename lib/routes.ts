@@ -161,6 +161,10 @@ export const adminRoutes = {
   /** Client design-review rounds (REV-3): what the client site's reviewer sent back. */
   designReviews: `${ADMIN_PREFIX}/design-reviews`,
   designReview: (id: string) => `${ADMIN_PREFIX}/design-reviews/${id}`,
+  /** The delivery playbook (PIPE-2): the ordered steps every engagement runs through. */
+  pipeline: `${ADMIN_PREFIX}/pipeline`,
+  pipelineNew: `${ADMIN_PREFIX}/pipeline/new`,
+  pipelineStep: (id: string) => `${ADMIN_PREFIX}/pipeline/${id}`,
   sync: `${ADMIN_PREFIX}/sync`,
   scoreboard: `${ADMIN_PREFIX}/scoreboard`,
   transcripts: `${ADMIN_PREFIX}/transcripts`,
