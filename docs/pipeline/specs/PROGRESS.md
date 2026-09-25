@@ -4,12 +4,12 @@ The **only** authoritative answer to "is this Complete."
 
 **Gate policy:** inherits `docs/intake/specs/PROGRESS.md`'s (Taylor, 2026-08-18) — downstream work may start against an upstream that is _code complete_, except where a ticket names an applied migration as its gate (PIPE-2 renders against `0020`).
 
-| Ticket | Title                                                                 | Depends on                                           | Status                                                                                                                                                                                        | Date       |
-| ------ | --------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values   | —                                                    | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database                                                       | 2026-09-25 |
-| PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database                                                                                                                      | 2026-09-25 |
-| PIPE-3 | The engagement checklist, filled-in prompts, done and undo            | PIPE-2 (code complete)                               | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database                                                                                          | 2026-09-25 |
-| PIPE-4 | Compose and send a step's email | PIPE-3 (code complete) | Complete — build, typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; staging send pass outstanding | 2026-09-25 |
+| Ticket | Title                                                                 | Depends on                                           | Status                                                                                                                                  | Date       |
+| ------ | --------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values   | —                                                    | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database | 2026-09-25 |
+| PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database                                                                | 2026-09-25 |
+| PIPE-3 | The engagement checklist, filled-in prompts, done and undo            | PIPE-2 (code complete)                               | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database                                    | 2026-09-25 |
+| PIPE-4 | Compose and send a step's email                                       | PIPE-3 (code complete)                               | Complete — build, typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; staging send pass outstanding   | 2026-09-25 |
 
 ## Checklist
 
@@ -81,3 +81,24 @@ Built without rendering: the agent has no admin session (the login is Taylor's),
 **Build:** `yarn build:agent` run 2026-09-25 after Taylor freed disk space — clean.
 
 **Not verified — Taylor's pass after `0020`, on staging, to his own inbox:** criteria 1–9 in the ticket; the `[PROPOSED]` field/letter behaviour.
+
+### Integration pass — PIPE-1..4 against a real database (2026-09-25)
+
+After the disk was freed: a throwaway Postgres 15 on `127.0.0.1:54399`, created and destroyed in the agent's scratchpad, never Taylor's staging or production. Migrations `0000`–`0020` applied in order, then every `db/supabase/setup/*.sql`; the three new tables report RLS enabled. The services were then driven by a script run with an empty environment except that database's URL, a deliberately invalid `RESEND_API_KEY`, and the site URL — so no `.env.local` value could be read and no email could leave. 20 checks, all passing:
+
+| Area                    | Result                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `0020` on existing rows | an engagement inserted without the column reads `pipeline_values = {}`                                                                                                                           |
+| Create                  | steps go last; blank prompt/email stored as null; subject trimmed                                                                                                                                |
+| Pair rule               | refused by the validator with a field message, and by the check constraint on a direct update                                                                                                    |
+| Reorder                 | full set rewrites positions 0..n-1; a missing id and a duplicated id are both refused as stale                                                                                                   |
+| Done / undo             | a double press is one row; undo twice is a no-op; the checklist fills `firstName`/`businessName` and reports `reviewCode` unresolved; a blank intake `registrar` is unresolved                   |
+| Delete                  | a used step refused by the service, and a direct `delete` refused by the `restrict` FK; an unused step deleted                                                                                   |
+| Archive                 | leaves the playbook, stays on the engagement that completed it (marked archived, listed after active); unarchive returns it to the end                                                           |
+| Remembered values       | a corrected `domain` stored and read back over the intake's; set back to the intake's value, the override is cleared                                                                             |
+| Send refusals           | leftover `{{ review code }}` → refused, no row; a prompt-only step → refused; a two-line subject and a malformed value name → validation errors                                                  |
+| Send failure            | Resend 401 → one `engagement_emails` row, `resend_id` null, `to_email` from the record, body as posted; step not marked done; values not saved; the checklist lists the attempt as not delivered |
+| Bad ids                 | a non-uuid and an unknown uuid return null, not a database error                                                                                                                                 |
+| Cascade                 | deleting the engagement removes its completions and emails                                                                                                                                       |
+
+The script is not committed — it writes rows and must never be pointed at a shared database. **Still Taylor's:** the rendered walk (admin auth is his Supabase session) and one real send on staging to his own inbox.
