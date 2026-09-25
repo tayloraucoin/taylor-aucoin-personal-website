@@ -11,6 +11,9 @@ import { z } from "zod";
 
 export const pipelineStepId = z.uuid();
 
+/** An engagement, as the pipeline surfaces address it. */
+export const pipelineEngagementId = z.uuid();
+
 /** Trimmed-empty becomes null; anything else is kept exactly as typed. */
 const blankToNull = (max: number) =>
   z
@@ -43,3 +46,10 @@ export type PipelineStepInput = z.input<typeof pipelineStepInput>;
 
 /** The full active order, first to last (M-PIPE-6). */
 export const reorderPipelineInput = z.array(pipelineStepId).max(500);
+
+/** Done or not done, for one step on one engagement (PIPE-3). */
+export const setStepDoneInput = z.object({
+  engagementId: pipelineEngagementId,
+  stepId: pipelineStepId,
+  done: z.boolean(),
+});

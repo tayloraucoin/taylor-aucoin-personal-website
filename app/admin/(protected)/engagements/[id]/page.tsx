@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { EngagementPipeline } from "@/app/admin/_components/engagement-pipeline";
 import {
   EngagementState,
   MoneyTable,
@@ -10,6 +11,7 @@ import { requireAdmin } from "@/server/services/admin-auth";
 import { findEngagementById } from "@/server/services/engagement";
 import { loadEngagementAdminDetail } from "@/server/services/engagement-admin";
 import { galleryForEngagement } from "@/server/services/example-sites";
+import { loadEngagementPipeline } from "@/server/services/pipeline";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { linkUploads } from "@/server/services/submission";
 
@@ -30,6 +32,18 @@ export default async function EngagementDetailPage({
   if (!detail) notFound();
 
   const { summary } = detail;
+
+  // Same law as the document below: a pipeline that will not load must not
+  // take the money and the reminder switch with it — including on a
+  // database where migration 0020 has not been applied yet.
+  let pipeline: Awaited<ReturnType<typeof loadEngagementPipeline>> = null;
+  let pipelineFailed = false;
+  try {
+    pipeline = await loadEngagementPipeline(id);
+  } catch {
+    console.error("[pipeline] engagement pipeline failed to load", id);
+    pipelineFailed = true;
+  }
 
   // The document is generated on view rather than stored: the answers move
   // while a client works, and a cached copy would be a second, stale home for
@@ -92,6 +106,31 @@ export default async function EngagementDetailPage({
             {detail.projectSummary}
           </p>
         ) : null}
+      </section>
+
+      {/* The pipeline is what Taylor opens this page to work through; money
+          and reminders below it are reference (PIPE-3). */}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm text-(--color-ink)">Pipeline</h2>
+        {pipelineFailed ? (
+          <p className="text-sm text-(--color-dim)">
+            The pipeline couldn&rsquo;t be loaded right now. Nothing on this
+            engagement has changed — try again shortly.
+          </p>
+        ) : (
+          <EngagementPipeline
+            engagementId={summary.id}
+            steps={(pipeline?.steps ?? []).map((step) => ({
+              id: step.id,
+              title: step.title,
+              archived: step.archived,
+              completedAt: step.completedAt?.toISOString() ?? null,
+              prompt: step.prompt,
+              promptUnresolved: step.promptUnresolved,
+              emailSubject: step.email?.subject ?? null,
+            }))}
+          />
+        )}
       </section>
 
       <section className="flex flex-col gap-2">

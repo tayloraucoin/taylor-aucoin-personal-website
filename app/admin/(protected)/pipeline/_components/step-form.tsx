@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Markup } from "@/app/admin/_components/markup";
+import { RECORD_NAMES } from "@/lib/pipeline/template";
 import { adminRoutes } from "@/lib/routes";
 import {
   createStepAction,
@@ -296,9 +297,9 @@ export function StepForm(props: StepFormProps) {
         <legend className="text-sm text-(--color-ink)">Client email</legend>
         <p className="max-w-[60ch] text-xs text-(--color-dim)">
           Optional. Write <code className="font-(family-name:--font-mono)">{"{{name}}"}</code>{" "}
-          where a value goes. These fill themselves from the engagement:
-          firstName, contactName, businessName, contactEmail, domain, registrar.
-          Any other name is asked for when you send.
+          where a value goes. These fill themselves from the engagement:{" "}
+          {RECORD_NAMES.join(", ")}. Any other name is asked for when you send.
+          Prompts can use them too.
         </p>
 
         <label className="flex flex-col gap-1.5">

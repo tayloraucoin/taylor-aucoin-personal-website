@@ -14,3 +14,8 @@ YYYY-MM-DD · <ticket-id> · <what changed> · <why>
 2026-09-25 · PIPE-2 · The new-step button reads "Add step", the list's action "New step" · the button names the act, the header link the destination.
 2026-09-25 · PIPE-2 · The step page's description says "Used on an engagement, so it can be archived but not deleted" when Delete is absent · an absent button with no reason reads as a bug.
 2026-09-25 · PIPE-2 · Engagement pages are revalidated on every step write, ahead of PIPE-3 · PIPE-3's checklist reads the same rows; the call is cheap and saves a second edit to the action file.
+2026-09-25 · PIPE-3 · Names may be padded inside the braces — `{{ reviewCode }}` is `reviewCode` — beyond M-PIPE-2's bare grammar · the padded form is what a person types naturally, and treating it as literal would let it reach a client unfilled. `{{ two words }}` stays literal.
+2026-09-25 · PIPE-3 · The engagement page's pipeline load is wrapped and fails to one line, beyond the ticket · the page's own law (the answers document) is that nothing may take Money and Reminders with it; with `0020` deferred to the end, an unwrapped load would break every engagement page on a database without the tables.
+2026-09-25 · PIPE-3 · The renderer check is `scripts/verify-pipeline-template.ts` (`yarn verify:pipeline`), as the ticket's advisory note suggested · the repo has no unit runner; `verify:tracks` is the precedent.
+2026-09-25 · PIPE-3 · `pipelineEngagementId` validator added to `lib/validators/pipeline.ts` · the engagement id needed its own named schema rather than borrowing the step id's.
+2026-09-25 · PIPE-3 · The editor's help text reads its list from `RECORD_NAMES` · one home for which names fill themselves; a hand-typed list would drift.

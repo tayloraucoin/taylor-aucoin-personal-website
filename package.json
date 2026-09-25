@@ -24,6 +24,7 @@
     "db:seed": "node --env-file-if-exists=.env.local --import tsx scripts/db-seed.ts",
     "crm:verify-leads": "node --env-file-if-exists=.env.local --import tsx scripts/verify-lead-workspace.ts",
     "verify:tracks": "node --import tsx scripts/verify-track-cartridge.ts",
+    "verify:pipeline": "node --import tsx scripts/verify-pipeline-template.ts",
     "eval:primer": "node --env-file-if-exists=.env.local --import tsx scripts/eval-primer.ts",
     "eval:primer:live": "node --env-file-if-exists=.env.local --import tsx scripts/eval-primer-live.ts",
     "eval:ingest:live": "node --env-file-if-exists=.env.local --import tsx scripts/eval-primer-live.ts --ingestion",

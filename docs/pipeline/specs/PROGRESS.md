@@ -8,12 +8,13 @@ The **only** authoritative answer to "is this Complete."
 |---|---|---|---|---|
 | PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values | — | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database | 2026-09-25 |
 | PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database | 2026-09-25 |
+| PIPE-3 | The engagement checklist, filled-in prompts, done and undo | PIPE-2 (code complete) | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database | 2026-09-25 |
 
 ## Checklist
 
 - [x] PIPE-1 · Schema
 - [x] PIPE-2 · The playbook admin
-- [ ] PIPE-3 · The engagement checklist
+- [x] PIPE-3 · The engagement checklist
 - [ ] PIPE-4 · Step email send
 - [ ] PIPE-5 · Content (Taylor)
 
@@ -50,3 +51,15 @@ Built without rendering: the agent has no admin session (the login is Taylor's),
 | Build | `yarn build:agent` · `npx tsc --noEmit` · `yarn lint` clean |
 
 **Not verified — Taylor's pass after `0020`:** criteria 1–8 in the ticket, in Light and Dark; the two `[PROPOSED]` rulings (edit on its own page; copy as the row's primary action) ratified or overruled.
+
+### PIPE-3
+
+| Verified | Result |
+|---|---|
+| Renderer (criterion 6) | `yarn verify:pipeline`, 9 checks: record names; blank intake answer unresolved; saved over record; blank saved value ignored; unknown names literal and reported once in order; `{{ padded }}` is a name; `{{ not a name }}`, `{{2x}}`, `{{}}`, `{{a-b}}` literal and unreported; names found across templates; the global pattern carries no state between calls |
+| One renderer | `grep` for `{{` parsing finds only `lib/pipeline/template.ts` |
+| Values server-side | the checklist receives rendered prompts; the action posts ids and a boolean only |
+| Page survives | `loadEngagementPipeline` is wrapped; a failure (including `0020` not applied) prints one line in the section and leaves Money, Reminders and the answers intact |
+| Build | `yarn build:agent` · `npx tsc --noEmit` · `yarn lint` clean |
+
+**Not verified — Taylor's pass after `0020`:** criteria 1–5 on a real engagement, in Light and Dark; the `[PROPOSED]` placement (Pipeline above Money).

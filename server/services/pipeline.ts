@@ -4,13 +4,20 @@ import { getDb } from "@/db/client";
 import {
   engagementEmails,
   engagementStepCompletions,
+  engagements,
   pipelineSteps,
   type PipelineStepRow,
 } from "@/db/schema";
 import {
+  renderPipelineTemplate,
+  resolveTemplateValues,
+} from "@/lib/pipeline/template";
+import {
+  pipelineEngagementId,
   pipelineStepId,
   pipelineStepInput,
   reorderPipelineInput,
+  setStepDoneInput,
 } from "@/lib/validators/pipeline";
 
 /**
@@ -252,4 +259,123 @@ export async function deletePipelineStep(rawId: string): Promise<void> {
     }
     throw error;
   }
+}
+
+/** One step as it stands on one engagement (PIPE-3). */
+export type EngagementPipelineStep = {
+  id: string;
+  title: string;
+  archived: boolean;
+  completedAt: Date | null;
+  /** The prompt with this engagement's values filled; null on an email-only step. */
+  prompt: string | null;
+  /** Names the prompt uses that have no value yet. */
+  promptUnresolved: string[];
+  /** The email template, unrendered — the send dialog renders it live. */
+  email: { subject: string; body: string } | null;
+};
+
+export type EngagementPipeline = {
+  steps: EngagementPipelineStep[];
+  /** Record values with Taylor's saved values over them (M-PIPE-2). */
+  values: Record<string, string | undefined>;
+};
+
+/**
+ * The checklist for one engagement: every active step in order, then any
+ * archived step this engagement already completed — marked archived, so the
+ * record of what was done stays true after the playbook moves on.
+ *
+ * Values are resolved here, from the engagement id, and nowhere a browser can
+ * choose them.
+ */
+export async function loadEngagementPipeline(
+  engagementId: string,
+): Promise<EngagementPipeline | null> {
+  const id = pipelineEngagementId.safeParse(engagementId);
+  if (!id.success) return null;
+
+  const db = getDb();
+  const [engagement] = await db
+    .select({
+      contactName: engagements.contactName,
+      businessName: engagements.businessName,
+      contactEmail: engagements.contactEmail,
+      answers: engagements.answers,
+      pipelineValues: engagements.pipelineValues,
+    })
+    .from(engagements)
+    .where(eq(engagements.id, id.data));
+  if (!engagement) return null;
+
+  const [steps, completions] = await Promise.all([
+    db.select(STEP_COLUMNS).from(pipelineSteps).orderBy(...IN_ORDER),
+    db
+      .select({
+        stepId: engagementStepCompletions.stepId,
+        completedAt: engagementStepCompletions.completedAt,
+      })
+      .from(engagementStepCompletions)
+      .where(eq(engagementStepCompletions.engagementId, id.data)),
+  ]);
+
+  const doneAt = new Map(completions.map((row) => [row.stepId, row.completedAt]));
+  const values = resolveTemplateValues(engagement, engagement.pipelineValues);
+
+  const shown = [
+    ...steps.filter((step) => step.archivedAt === null),
+    ...steps.filter((step) => step.archivedAt !== null && doneAt.has(step.id)),
+  ];
+
+  return {
+    values,
+    steps: shown.map((step) => {
+      const rendered = step.prompt
+        ? renderPipelineTemplate(step.prompt, values)
+        : null;
+      return {
+        id: step.id,
+        title: step.title,
+        archived: step.archivedAt !== null,
+        completedAt: doneAt.get(step.id) ?? null,
+        prompt: rendered?.text ?? null,
+        promptUnresolved: rendered?.unresolved ?? [],
+        email:
+          step.emailSubject !== null && step.emailBody !== null
+            ? { subject: step.emailSubject, body: step.emailBody }
+            : null,
+      };
+    }),
+  };
+}
+
+/**
+ * Marks a step done or not done on one engagement (M-PIPE-5). Both directions
+ * are idempotent: a double press inserts one row, an undo of an undone step
+ * deletes nothing.
+ */
+export async function setStepDone(
+  raw: z.input<typeof setStepDoneInput>,
+): Promise<void> {
+  const input = setStepDoneInput.parse(raw);
+  const db = getDb();
+
+  if (input.done) {
+    await db
+      .insert(engagementStepCompletions)
+      .values({ engagementId: input.engagementId, stepId: input.stepId })
+      .onConflictDoNothing({
+        target: [engagementStepCompletions.engagementId, engagementStepCompletions.stepId],
+      });
+    return;
+  }
+
+  await db
+    .delete(engagementStepCompletions)
+    .where(
+      and(
+        eq(engagementStepCompletions.engagementId, input.engagementId),
+        eq(engagementStepCompletions.stepId, input.stepId),
+      ),
+    );
 }

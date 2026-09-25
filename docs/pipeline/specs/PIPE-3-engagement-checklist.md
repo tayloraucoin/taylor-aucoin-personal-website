@@ -4,7 +4,7 @@
 **Slice type:** A section on an existing admin page, plus the variable renderer every later slice uses. Risk class: a prompt copied with the wrong client's values; the renderer resolving a name differently here than in the send.
 **Review:** Mason (the renderer is the single home for variable resolution) · Vesper (the section inside the engagement page's rhythm).
 
-**Status:** Not started
+**Status:** Complete (2026-09-25) — build, typecheck, lint clean; renderer verified by `yarn verify:pipeline`; not rendered (see PROGRESS.md)
 
 > **Mason — seam review.** `renderPipelineTemplate` is the only code that resolves `{{name}}`; PIPE-4 must call it, not reimplement it. Read the resolution order (saved value → record value → unresolved) and the name grammar against M-PIPE-2.
 
