@@ -13,7 +13,10 @@ import {
 // Relative, not the `@/` alias: drizzle-kit bundles this file outside Next's
 // resolver and does not read tsconfig paths.
 import type { IntakeAnswers } from "../../lib/types/intake";
+import type { PipelineValues } from "../../lib/types/pipeline";
 import { emailEvents } from "./email-events";
+import { engagementEmails } from "./engagement-emails";
+import { engagementStepCompletions } from "./engagement-step-completions";
 import { intakeFiles } from "./intake-files";
 import { intakeTrackEnum } from "./intake-track";
 
@@ -66,6 +69,15 @@ export const engagements = pgTable(
     extractionRuns: integer("extraction_runs").notNull().default(0),
     lastActivityAt: timestamp("last_activity_at", { withTimezone: true }),
     paidAt: timestamp("paid_at", { withTimezone: true }),
+    // JSON shape: PipelineValues — see lib/types/pipeline.ts
+    //
+    // What Taylor typed at send time for this client's pipeline emails, by
+    // variable name. JSONB for the reason `answers` is: a new variable in a
+    // template must never require a migration (M-PIPE-2).
+    pipelineValues: jsonb("pipeline_values")
+      .$type<PipelineValues>()
+      .notNull()
+      .default({}),
     projectSummary: text("project_summary"),
     /**
      * The per-engagement reminder kill switch (D-CRM-13).
@@ -132,4 +144,6 @@ export const engagements = pgTable(
 export const engagementsRelations = relations(engagements, ({ many }) => ({
   emailEvents: many(emailEvents),
   files: many(intakeFiles),
+  pipelineCompletions: many(engagementStepCompletions),
+  pipelineEmails: many(engagementEmails),
 }));

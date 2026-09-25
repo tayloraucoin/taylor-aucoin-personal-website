@@ -7,6 +7,7 @@ import {
   Handshake,
   Images,
   ListChecks,
+  ListOrdered,
   MessageSquareText,
   PhoneCall,
   RefreshCw,
@@ -122,6 +123,14 @@ export const NAV_SECTIONS: AdminNavSection[] = [
         title: "Engagements",
         href: adminRoutes.engagements,
         icon: Handshake,
+        ready: true,
+      },
+      {
+        // The delivery playbook (PIPE-2). Its steps run on an engagement, so
+        // it sits in that stage; alphabetical within it (D-ADM-2).
+        title: "Pipeline",
+        href: adminRoutes.pipeline,
+        icon: ListOrdered,
         ready: true,
       },
     ],
