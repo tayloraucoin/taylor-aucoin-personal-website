@@ -31,7 +31,7 @@ The database can hold the playbook and each engagement's run through it. There a
 
 **No surface.** Observable in the generated SQL and the types.
 
-**States (exhaustive):** a step is *active* (`archived_at` null) or *archived*; it is a *prompt step*, an *email step* (subject and body set), or both. An engagement × step is *done* (row exists) or *not done*. An email row is *sent* (`resend_id` set) or *failed / in flight* (`resend_id` null).
+**States (exhaustive):** a step is _active_ (`archived_at` null) or _archived_; it is a _prompt step_, an _email step_ (subject and body set), or both. An engagement × step is _done_ (row exists) or _not done_. An email row is _sent_ (`resend_id` set) or _failed / in flight_ (`resend_id` null).
 
 **Failure / edge states (named):** deleting a step with a completion or an email → FK violation (the service maps it in PIPE-2) · a step with a subject and no body → check violation · a second completion for the same pair → unique violation, absorbed by `onConflictDoNothing` in PIPE-3/4 · an engagement deleted → its completions and emails cascade.
 

@@ -2,7 +2,10 @@ import Link from "next/link";
 import { AdminPageHeader } from "@/app/admin/_components/admin-page-header";
 import { adminRoutes } from "@/lib/routes";
 import { requireAdmin } from "@/server/services/admin-auth";
-import { listPipelineSteps, type PipelineStep } from "@/server/services/pipeline";
+import {
+  listPipelineSteps,
+  type PipelineStep,
+} from "@/server/services/pipeline";
 import { StepList, type StepListItem } from "./_components/step-list";
 
 export const dynamic = "force-dynamic";

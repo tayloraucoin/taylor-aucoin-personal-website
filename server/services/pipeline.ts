@@ -3,15 +3,17 @@ import type { z } from "zod";
 import { getDb } from "@/db/client";
 import {
   engagementEmails,
-  engagementStepCompletions,
   engagements,
+  engagementStepCompletions,
   pipelineSteps,
   type PipelineStepRow,
 } from "@/db/schema";
 import {
   renderPipelineTemplate,
   resolveTemplateValues,
+  valuesToRemember,
 } from "@/lib/pipeline/template";
+import type { PipelineValues } from "@/lib/types/pipeline";
 import {
   pipelineEngagementId,
   pipelineStepId,
@@ -64,7 +66,11 @@ const USED_ON_AN_ENGAGEMENT =
 /** Postgres `foreign_key_violation`, however deep the driver wrapped it. */
 function isForeignKeyViolation(error: unknown): boolean {
   let current: unknown = error;
-  for (let depth = 0; depth < 4 && current && typeof current === "object"; depth++) {
+  for (
+    let depth = 0;
+    depth < 4 && current && typeof current === "object";
+    depth++
+  ) {
     if ((current as { code?: unknown }).code === "23503") return true;
     current = (current as { cause?: unknown }).cause;
   }
@@ -209,7 +215,9 @@ export async function setPipelineStepArchived(
  * was added, archived, or deleted would otherwise drop or resurrect one by
  * reordering a list that no longer exists.
  */
-export async function reorderPipelineSteps(raw: readonly string[]): Promise<void> {
+export async function reorderPipelineSteps(
+  raw: readonly string[],
+): Promise<void> {
   const ids = reorderPipelineInput.parse(raw);
   const db = getDb();
 
@@ -248,7 +256,8 @@ export async function reorderPipelineSteps(raw: readonly string[]): Promise<void
 export async function deletePipelineStep(rawId: string): Promise<void> {
   const id = pipelineStepId.parse(rawId);
 
-  if (await isStepUsed(id)) throw new PipelineStepRejected(USED_ON_AN_ENGAGEMENT);
+  if (await isStepUsed(id))
+    throw new PipelineStepRejected(USED_ON_AN_ENGAGEMENT);
 
   try {
     await getDb().delete(pipelineSteps).where(eq(pipelineSteps.id, id));
@@ -273,6 +282,8 @@ export type EngagementPipelineStep = {
   promptUnresolved: string[];
   /** The email template, unrendered — the send dialog renders it live. */
   email: { subject: string; body: string } | null;
+  /** Every send of this step to this client, oldest first (PIPE-4). */
+  sends: { at: Date; delivered: boolean }[];
 };
 
 export type EngagementPipeline = {
@@ -308,8 +319,11 @@ export async function loadEngagementPipeline(
     .where(eq(engagements.id, id.data));
   if (!engagement) return null;
 
-  const [steps, completions] = await Promise.all([
-    db.select(STEP_COLUMNS).from(pipelineSteps).orderBy(...IN_ORDER),
+  const [steps, completions, emails] = await Promise.all([
+    db
+      .select(STEP_COLUMNS)
+      .from(pipelineSteps)
+      .orderBy(...IN_ORDER),
     db
       .select({
         stepId: engagementStepCompletions.stepId,
@@ -317,14 +331,35 @@ export async function loadEngagementPipeline(
       })
       .from(engagementStepCompletions)
       .where(eq(engagementStepCompletions.engagementId, id.data)),
+    db
+      .select({
+        stepId: engagementEmails.stepId,
+        createdAt: engagementEmails.createdAt,
+        resendId: engagementEmails.resendId,
+      })
+      .from(engagementEmails)
+      .where(eq(engagementEmails.engagementId, id.data))
+      .orderBy(asc(engagementEmails.createdAt)),
   ]);
 
-  const doneAt = new Map(completions.map((row) => [row.stepId, row.completedAt]));
+  const doneAt = new Map(
+    completions.map((row) => [row.stepId, row.completedAt]),
+  );
+  const sendsByStep = new Map<string, { at: Date; delivered: boolean }[]>();
+  for (const row of emails) {
+    const list = sendsByStep.get(row.stepId) ?? [];
+    list.push({ at: row.createdAt, delivered: row.resendId !== null });
+    sendsByStep.set(row.stepId, list);
+  }
   const values = resolveTemplateValues(engagement, engagement.pipelineValues);
 
   const shown = [
     ...steps.filter((step) => step.archivedAt === null),
-    ...steps.filter((step) => step.archivedAt !== null && doneAt.has(step.id)),
+    ...steps.filter(
+      (step) =>
+        step.archivedAt !== null &&
+        (doneAt.has(step.id) || sendsByStep.has(step.id)),
+    ),
   ];
 
   return {
@@ -344,6 +379,7 @@ export async function loadEngagementPipeline(
           step.emailSubject !== null && step.emailBody !== null
             ? { subject: step.emailSubject, body: step.emailBody }
             : null,
+        sends: sendsByStep.get(step.id) ?? [],
       };
     }),
   };
@@ -365,7 +401,10 @@ export async function setStepDone(
       .insert(engagementStepCompletions)
       .values({ engagementId: input.engagementId, stepId: input.stepId })
       .onConflictDoNothing({
-        target: [engagementStepCompletions.engagementId, engagementStepCompletions.stepId],
+        target: [
+          engagementStepCompletions.engagementId,
+          engagementStepCompletions.stepId,
+        ],
       });
     return;
   }
@@ -378,4 +417,30 @@ export async function setStepDone(
         eq(engagementStepCompletions.stepId, input.stepId),
       ),
     );
+}
+
+/**
+ * Remembers what Taylor typed at send time, so the next step that uses a name
+ * opens with it filled (M-PIPE-2). Called only after a send succeeded.
+ *
+ * A record name is kept only when Taylor changed it — a corrected domain must
+ * carry forward; an untouched first name must not freeze the record's value.
+ * A record name set back to the record's own value clears any earlier
+ * override, or the old correction would keep winning. One statement — remove
+ * then merge with jsonb `-` and `||` — so there is no read-modify-write.
+ */
+export async function rememberPipelineValues(
+  engagementId: string,
+  typed: PipelineValues,
+  fromRecord: Record<string, string | undefined>,
+): Promise<void> {
+  const { kept, cleared } = valuesToRemember(typed, fromRecord);
+  if (Object.keys(kept).length === 0 && cleared.length === 0) return;
+
+  await getDb()
+    .update(engagements)
+    .set({
+      pipelineValues: sql`(${engagements.pipelineValues} - array(select jsonb_array_elements_text(${JSON.stringify(cleared)}::jsonb))) || ${JSON.stringify(kept)}::jsonb`,
+    })
+    .where(eq(engagements.id, engagementId));
 }

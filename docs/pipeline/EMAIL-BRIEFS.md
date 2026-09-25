@@ -2,7 +2,7 @@
 
 What each client email in the pipeline must carry. **Facts and obligations only.** The words are Taylor's: he writes each template in `/admin/pipeline` (PIPE-5), and nothing here is draft copy to be pasted. Every template passes `docs/TASTE-PROFILE.md` § voice and the human-hand copy standard: no urgency, no exclamation marks, no startup voice.
 
-Variable names below are the ones the templates should use, so the values carry from one email to the next on the same engagement (M-PIPE-2). Names marked *record* fill themselves from the engagement; the rest are asked for at send time and remembered.
+Variable names below are the ones the templates should use, so the values carry from one email to the next on the same engagement (M-PIPE-2). Names marked _record_ fill themselves from the engagement; the rest are asked for at send time and remembered.
 
 ---
 

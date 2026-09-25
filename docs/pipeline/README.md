@@ -7,12 +7,12 @@
 
 ## Folder layout
 
-| Path | What |
-|---|---|
-| `EMAIL-BRIEFS.md` | What each of the three client emails must say. Facts and obligations only — the words are Taylor's |
-| `specs/00-build-order.md` | The ordered, checkable queue |
-| `specs/PIPE-*.md` | One implementable slice each |
-| `specs/PROGRESS.md` / `specs/DEVIATIONS.md` / `specs/TECHNICAL-DECISIONS.md` | The records. `PROGRESS.md` is the only source of truth for Complete |
+| Path                                                                         | What                                                                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `EMAIL-BRIEFS.md`                                                            | What each of the three client emails must say. Facts and obligations only — the words are Taylor's |
+| `specs/00-build-order.md`                                                    | The ordered, checkable queue                                                                       |
+| `specs/PIPE-*.md`                                                            | One implementable slice each                                                                       |
+| `specs/PROGRESS.md` / `specs/DEVIATIONS.md` / `specs/TECHNICAL-DECISIONS.md` | The records. `PROGRESS.md` is the only source of truth for Complete                                |
 
 ## Source precedence (when documents disagree)
 

@@ -29,9 +29,18 @@ export type StepResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? object : { data: T }))
   | { ok: false; message: string; field?: StepField; stale?: boolean };
 
-const FIELDS: readonly StepField[] = ["title", "prompt", "emailSubject", "emailBody"];
+const FIELDS: readonly StepField[] = [
+  "title",
+  "prompt",
+  "emailSubject",
+  "emailBody",
+];
 
-function failed(error: unknown): { ok: false; message: string; field?: StepField } {
+function failed(error: unknown): {
+  ok: false;
+  message: string;
+  field?: StepField;
+} {
   if (error instanceof PipelineStepRejected) {
     return { ok: false, message: error.message };
   }
@@ -103,7 +112,9 @@ export async function reorderStepsAction(ids: string[]): Promise<StepResult> {
   } catch (error) {
     // A stale set is the one refusal the list answers by reloading.
     const result = failed(error);
-    return error instanceof PipelineStepRejected ? { ...result, stale: true } : result;
+    return error instanceof PipelineStepRejected
+      ? { ...result, stale: true }
+      : result;
   }
 }
 

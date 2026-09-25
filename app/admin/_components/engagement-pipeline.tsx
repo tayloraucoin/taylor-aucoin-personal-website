@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
-import { setStepDoneAction } from "@/app/admin/(protected)/engagements/_actions/pipeline";
+import Link from "next/link";
 import { CopyButton } from "@/app/admin/_components/copy-button";
+import { StepEmailDialog } from "@/app/admin/_components/step-email-dialog";
+import { setStepDoneAction } from "@/app/admin/(protected)/engagements/_actions/pipeline";
 import { adminRoutes } from "@/lib/routes";
 
 /**
@@ -13,6 +14,9 @@ import { adminRoutes } from "@/lib/routes";
  * server from the engagement id, never chosen here — and copying one says
  * which names it could not fill. Done and undo are optimistic and put
  * themselves back, with a line saying so, when the server refuses.
+ *
+ * An email step opens the send dialog (PIPE-4) and lists every send of it
+ * to this client under its title, failed attempts included.
  */
 
 export type EngagementPipelineItem = {
@@ -23,7 +27,17 @@ export type EngagementPipelineItem = {
   completedAt: string | null;
   prompt: string | null;
   promptUnresolved: string[];
-  emailSubject: string | null;
+  email: { subject: string; body: string } | null;
+  /** ISO times; `delivered` false for an attempt the provider refused. */
+  sends: { at: string; delivered: boolean }[];
+};
+
+/** What every email step on this engagement is sent with (PIPE-4). */
+export type EngagementEmailContext = {
+  recipient: { name: string; email: string };
+  businessName: string;
+  moneyLine: string;
+  values: Record<string, string | undefined>;
 };
 
 const WHEN = new Intl.DateTimeFormat("en-CA", {
@@ -31,17 +45,29 @@ const WHEN = new Intl.DateTimeFormat("en-CA", {
   dateStyle: "medium",
 });
 
+const WHEN_TIME = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Vancouver",
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
 export function EngagementPipeline({
   engagementId,
   steps,
+  emailContext,
 }: {
   engagementId: string;
   steps: EngagementPipelineItem[];
+  emailContext: EngagementEmailContext;
 }) {
   const [done, setDone] = useState(
     () => new Map(steps.map((step) => [step.id, step.completedAt])),
   );
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{
+    text: string;
+    failed: boolean;
+  } | null>(null);
+  const [writing, setWriting] = useState<EngagementPipelineItem | null>(null);
   const [pending, startTransition] = useTransition();
 
   // The server's record is the truth; take it whenever it changes.
@@ -66,7 +92,7 @@ export function EngagementPipeline({
     const next = new Map(done);
     next.set(step.id, wasDone ? null : new Date().toISOString());
     setDone(next);
-    setMessage("");
+    setMessage(null);
 
     startTransition(async () => {
       const result = await setStepDoneAction({
@@ -76,7 +102,7 @@ export function EngagementPipeline({
       });
       if (result.ok) return;
       setDone((current) => new Map(current).set(step.id, wasDone));
-      setMessage(`${step.title}: ${result.message}`);
+      setMessage({ text: `${step.title}: ${result.message}`, failed: true });
     });
   }
 
@@ -105,14 +131,40 @@ export function EngagementPipeline({
                 </span>
                 <span className="text-xs text-(--color-dim)">
                   {[
-                    completedAt ? `Done ${WHEN.format(new Date(completedAt))}` : null,
+                    completedAt
+                      ? `Done ${WHEN.format(new Date(completedAt))}`
+                      : null,
                     step.archived ? "Archived step" : null,
-                    step.emailSubject ? `Email: ${step.emailSubject}` : null,
+                    step.email ? `Email: ${step.email.subject}` : null,
                   ]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
+                {step.sends.map((send) => (
+                  <span
+                    key={send.at}
+                    className={`text-xs ${send.delivered ? "text-(--color-body)" : "text-(--color-c2)"}`}
+                  >
+                    {send.delivered
+                      ? `Sent ${WHEN_TIME.format(new Date(send.at))}`
+                      : `Not sent — ${WHEN_TIME.format(new Date(send.at))}`}
+                  </span>
+                ))}
               </span>
+
+              {step.email ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage(null);
+                    setWriting(step);
+                  }}
+                  aria-label={`Write the email for ${step.title}`}
+                  className="min-h-[44px] rounded-(--radius) border border-(--color-line-strong) px-3 text-sm text-(--color-ink) hover:bg-(--color-card-hover) focus-visible:border-(--color-c2) focus-visible:outline-none"
+                >
+                  Write email
+                </button>
+              ) : null}
 
               {step.prompt ? (
                 <CopyButton
@@ -142,9 +194,33 @@ export function EngagementPipeline({
         })}
       </ol>
 
-      <p role="status" className="min-h-5 text-sm text-(--color-c2)">
-        {message}
+      <p
+        role="status"
+        className={`min-h-5 text-sm ${message?.failed ? "text-(--color-c2)" : "text-(--color-body)"}`}
+      >
+        {message?.text ?? ""}
       </p>
+
+      {writing?.email ? (
+        <StepEmailDialog
+          engagementId={engagementId}
+          stepId={writing.id}
+          stepTitle={writing.title}
+          template={writing.email}
+          values={emailContext.values}
+          recipient={emailContext.recipient}
+          businessName={emailContext.businessName}
+          moneyLine={emailContext.moneyLine}
+          lastSentAt={
+            writing.sends.filter((send) => send.delivered).at(-1)?.at ?? null
+          }
+          onClose={() => setWriting(null)}
+          onSent={(text) => {
+            setWriting(null);
+            setMessage({ text: `${writing.title}: ${text}`, failed: false });
+          }}
+        />
+      ) : null}
     </div>
   );
 }

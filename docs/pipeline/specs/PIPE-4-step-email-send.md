@@ -4,7 +4,7 @@
 **Slice type:** A client-facing send from the admin. Risk class: an email to the wrong engagement; a literal `{{placeholder}}` in a client's inbox; a letter lost to a failed send; a send that leaves no record.
 **Review:** Mason (the send service; refusal of unresolved names in the service) · Vesper (the dialog; the confirm) · full verification depth — real inbox, staging.
 
-**Status:** Not started
+**Status:** Code complete (2026-09-25) — typecheck and lint clean, `yarn verify:pipeline` 13/13, jsonb merge exercised on Postgres 15; **`yarn build:agent` not run (disk full)**; no staging send (see PROGRESS.md)
 
 > **Verification — risk surface.** On staging, to an inbox Taylor controls: send each of the three briefs' templates once. Send with a field empty (refused, in the UI and — by posting directly — in the service). Kill the network mid-send (row with null `resend_id`, draft kept). Send twice (confirm, second row). Open on a phone: plain text, links tappable.
 
@@ -25,7 +25,7 @@ On an email step in an engagement's pipeline, Taylor presses **Write email**. A 
 **Rulings this slice makes (labelled, logged):**
 
 - **`sendStepEmail` lives in `server/services/emails.ts`** beside `sendIntroEmail`, and reads the recipient from the engagement row itself. The action posts engagement id, step id, subject, body, and the values map — never an address. Logged.
-- **The fields fill the letter; the letter does not fill the fields.** A variable field edits the value everywhere it appears in the current subject and body until Taylor edits that stretch of text by hand; after a hand edit the literal text wins. Implementation: the dialog keeps the *template* and the *values* and renders; the first hand edit to subject or body freezes that field to literal text, and further value changes then only fill remaining `{{name}}` tokens. `[PROPOSED — Mason/Vesper, needs sign-off]`. Logged.
+- **The fields fill the letter; the letter does not fill the fields.** A variable field edits the value everywhere it appears in the current subject and body until Taylor edits that stretch of text by hand; after a hand edit the literal text wins. Implementation: the dialog keeps the _template_ and the _values_ and renders; the first hand edit to subject or body freezes that field to literal text, and further value changes then only fill remaining `{{name}}` tokens. `[PROPOSED — Mason/Vesper, needs sign-off]`. Logged.
 - **Values saved on success only**, and only names that are not record names — or record names whose value Taylor changed. Logged.
 - **Plain text, one `text` part, no HTML.** Same as the intro email. Logged.
 

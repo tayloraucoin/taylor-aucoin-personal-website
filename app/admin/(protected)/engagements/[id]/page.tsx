@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { EngagementPipeline } from "@/app/admin/_components/engagement-pipeline";
 import {
   EngagementState,
+  money,
   MoneyTable,
 } from "@/app/admin/_components/engagement-state";
 import { ReminderSwitch } from "@/app/admin/_components/reminder-switch";
@@ -11,8 +12,8 @@ import { requireAdmin } from "@/server/services/admin-auth";
 import { findEngagementById } from "@/server/services/engagement";
 import { loadEngagementAdminDetail } from "@/server/services/engagement-admin";
 import { galleryForEngagement } from "@/server/services/example-sites";
-import { loadEngagementPipeline } from "@/server/services/pipeline";
 import { renderIntakeMarkdown } from "@/server/services/output";
+import { loadEngagementPipeline } from "@/server/services/pipeline";
 import { linkUploads } from "@/server/services/submission";
 
 export const dynamic = "force-dynamic";
@@ -127,8 +128,30 @@ export default async function EngagementDetailPage({
               completedAt: step.completedAt?.toISOString() ?? null,
               prompt: step.prompt,
               promptUnresolved: step.promptUnresolved,
-              emailSubject: step.email?.subject ?? null,
+              email: step.email,
+              sends: step.sends.map((send) => ({
+                at: send.at.toISOString(),
+                delivered: send.delivered,
+              })),
             }))}
+            emailContext={{
+              recipient: {
+                name: summary.contactName,
+                email: summary.contactEmail,
+              },
+              businessName: summary.businessName,
+              // The terms: the balance launches the site. The line is a
+              // reminder beside Send, never a gate (EMAIL-BRIEFS §3).
+              moneyLine:
+                detail.money.lines.length === 0
+                  ? "Nothing charged yet."
+                  : `${money(detail.money.paidCents)} paid${
+                      detail.money.pendingCents > 0
+                        ? ` · ${money(detail.money.pendingCents)} outstanding`
+                        : ""
+                    }`,
+              values: pipeline?.values ?? {},
+            }}
           />
         )}
       </section>

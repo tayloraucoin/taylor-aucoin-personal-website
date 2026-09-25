@@ -10,9 +10,11 @@
 
 import assert from "node:assert/strict";
 import {
+  findLeftoverPlaceholders,
   findTemplateNames,
   renderPipelineTemplate,
   resolveTemplateValues,
+  valuesToRemember,
 } from "../lib/pipeline/template";
 
 const record = {
@@ -40,14 +42,20 @@ check("record names resolve; first name is the first word", () => {
 check("a blank intake answer is unresolved, not empty", () => {
   const values = resolveTemplateValues(record, {});
   assert.equal(values.registrar, undefined);
-  const { text, unresolved } = renderPipelineTemplate("At {{registrar}}.", values);
+  const { text, unresolved } = renderPipelineTemplate(
+    "At {{registrar}}.",
+    values,
+  );
   assert.equal(text, "At {{registrar}}.");
   assert.deepEqual(unresolved, ["registrar"]);
 });
 
 check("a saved value overrides the record's value of the same name", () => {
   const values = resolveTemplateValues(record, { domain: "corrected.example" });
-  assert.equal(renderPipelineTemplate("{{domain}}", values).text, "corrected.example");
+  assert.equal(
+    renderPipelineTemplate("{{domain}}", values).text,
+    "corrected.example",
+  );
 });
 
 check("a blank saved value does not erase the record's value", () => {
@@ -61,13 +69,19 @@ check("unknown names stay literal and are reported once, in order", () => {
     "Hi {{firstName}}: {{reviewUrl}} / {{reviewCode}} / {{reviewUrl}}",
     values,
   );
-  assert.equal(text, "Hi Fixture: {{reviewUrl}} / {{reviewCode}} / {{reviewUrl}}");
+  assert.equal(
+    text,
+    "Hi Fixture: {{reviewUrl}} / {{reviewCode}} / {{reviewUrl}}",
+  );
   assert.deepEqual(unresolved, ["reviewUrl", "reviewCode"]);
 });
 
 check("padding inside the braces is still a name", () => {
   const values = resolveTemplateValues(record, { reviewCode: "fixture-code" });
-  assert.equal(renderPipelineTemplate("{{ reviewCode }}", values).text, "fixture-code");
+  assert.equal(
+    renderPipelineTemplate("{{ reviewCode }}", values).text,
+    "fixture-code",
+  );
 });
 
 check("malformed braces are literal and not reported", () => {
@@ -88,9 +102,64 @@ check("names are found across templates in order of first appearance", () => {
 check("the pattern is reusable — no lastIndex carried between calls", () => {
   const values = resolveTemplateValues(record, {});
   for (let i = 0; i < 3; i++) {
-    assert.equal(renderPipelineTemplate("{{firstName}}", values).text, "Fixture");
+    assert.equal(
+      renderPipelineTemplate("{{firstName}}", values).text,
+      "Fixture",
+    );
     assert.deepEqual(findTemplateNames("{{firstName}}"), ["firstName"]);
   }
+});
+
+check("the send guard catches every double-braced stretch, name or not", () => {
+  assert.deepEqual(
+    findLeftoverPlaceholders(
+      "Hi {{firstName}} — {{ review code }} {{}} {{firstName}} {single}",
+    ),
+    ["{{firstName}}", "{{ review code }}", "{{}}"],
+  );
+  assert.deepEqual(findLeftoverPlaceholders("All filled in."), []);
+});
+
+check("a filled letter has nothing left for the guard", () => {
+  const values = resolveTemplateValues(record, {
+    reviewUrl: "https://x.invalid",
+  });
+  const { text } = renderPipelineTemplate(
+    "{{firstName}} {{reviewUrl}}",
+    values,
+  );
+  assert.deepEqual(findLeftoverPlaceholders(text), []);
+});
+
+check(
+  "remembered: typed names kept, untouched record names cleared, blanks dropped",
+  () => {
+    const fromRecord = resolveTemplateValues(record, {});
+    const { kept, cleared } = valuesToRemember(
+      {
+        firstName: "Fixture",
+        domain: "corrected.example",
+        reviewCode: "fixture-code",
+        previewUrl: "   ",
+      },
+      fromRecord,
+    );
+    assert.deepEqual(kept, {
+      domain: "corrected.example",
+      reviewCode: "fixture-code",
+    });
+    assert.deepEqual(cleared, ["firstName"]);
+  },
+);
+
+check("a record name set back to the record value is cleared, not kept", () => {
+  const fromRecord = resolveTemplateValues(record, {});
+  const { kept, cleared } = valuesToRemember(
+    { domain: "fixture.example" },
+    fromRecord,
+  );
+  assert.deepEqual(kept, {});
+  assert.deepEqual(cleared, ["domain"]);
 });
 
 console.log(`\n${checks} checks passed.`);

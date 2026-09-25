@@ -32,7 +32,7 @@ PIPE-1 → PIPE-2 → PIPE-3 → PIPE-4 → PIPE-5 (Taylor)
 ### Phase 3 — On an engagement
 
 - [x] **PIPE-3** · The engagement checklist, filled-in prompts, done and undo — **Mason seam review** · M · (PIPE-2) — code complete 2026-09-25; not rendered
-- [ ] **PIPE-4** · Compose and send a step's email — **full verification, real inbox** · M · (PIPE-3)
+- [ ] **PIPE-4** · Compose and send a step's email — **full verification, real inbox** · M · (PIPE-3) — code complete 2026-09-25; `yarn build:agent` not run (disk full); staging send outstanding
 
 ### Phase 4 — Content (Taylor, not a build ticket)
 
@@ -47,17 +47,17 @@ PIPE-1 → PIPE-2 → PIPE-3 → PIPE-4 → PIPE-5 (Taylor)
 
 ## Taylor does before the next
 
-| After | Taylor does |
-|---|---|
+| After  | Taylor does                                                                           |
+| ------ | ------------------------------------------------------------------------------------- |
 | PIPE-1 | Review `0020`; run `yarn db:migrate` then `yarn db:setup` on staging, then production |
-| PIPE-2 | Walk the page; ratify or overrule the two `[PROPOSED]` rulings; start PIPE-5 |
-| PIPE-4 | The staging send pass in the ticket, to his own inbox |
+| PIPE-2 | Walk the page; ratify or overrule the two `[PROPOSED]` rulings; start PIPE-5          |
+| PIPE-4 | The staging send pass in the ticket, to his own inbox                                 |
 
 ## Full dependency table
 
 | Ticket | Complete-required dependencies |
 | ------ | ------------------------------ |
-| PIPE-1 | — |
-| PIPE-2 | PIPE-1 (and `0020` applied) |
-| PIPE-3 | PIPE-2 |
-| PIPE-4 | PIPE-3 |
+| PIPE-1 | —                              |
+| PIPE-2 | PIPE-1 (and `0020` applied)    |
+| PIPE-3 | PIPE-2                         |
+| PIPE-4 | PIPE-3                         |

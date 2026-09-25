@@ -1,10 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  pgTable,
-  timestamp,
-  uniqueIndex,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 // Relative, not the `@/` alias: drizzle-kit bundles this file outside Next's
 // resolver and does not read tsconfig paths.
 import { engagements } from "./engagements";

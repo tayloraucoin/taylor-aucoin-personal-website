@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BARE_NAME } from "@/lib/pipeline/template";
 
 /**
  * Validation for every engagement-pipeline write (PIPE), defined once and
@@ -20,7 +21,9 @@ const blankToNull = (max: number) =>
     .string()
     .max(max)
     .nullable()
-    .transform((value) => (value === null || value.trim() === "" ? null : value));
+    .transform((value) =>
+      value === null || value.trim() === "" ? null : value,
+    );
 
 export const pipelineStepInput = z
   .object({
@@ -53,3 +56,27 @@ export const setStepDoneInput = z.object({
   stepId: pipelineStepId,
   done: z.boolean(),
 });
+
+/**
+ * One step's email, as Taylor finished it (PIPE-4). The recipient is not
+ * here on purpose: the service reads it from the engagement row, so no form
+ * can address a client's letter to someone else.
+ */
+export const sendStepEmailInput = z.object({
+  engagementId: pipelineEngagementId,
+  stepId: pipelineStepId,
+  subject: z
+    .string()
+    .trim()
+    .min(1, "Give the email a subject.")
+    .max(300)
+    .regex(/^[^\r\n]*$/, "A subject is one line."),
+  body: z
+    .string()
+    .max(20_000)
+    .refine((value) => value.trim() !== "", "Write the email before sending."),
+  /** What Taylor typed into the variable fields, remembered on success. */
+  values: z.record(z.string().max(64).regex(BARE_NAME), z.string().max(2000)),
+});
+
+export type SendStepEmailInput = z.input<typeof sendStepEmailInput>;

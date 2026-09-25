@@ -15,7 +15,10 @@ export default async function NewPipelineStepPage() {
       >
         Pipeline
       </Link>
-      <AdminPageHeader title="New step" description="It goes at the end of the list." />
+      <AdminPageHeader
+        title="New step"
+        description="It goes at the end of the list."
+      />
       <StepForm mode="new" />
     </div>
   );

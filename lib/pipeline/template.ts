@@ -14,8 +14,29 @@ import type { PipelineValues } from "@/lib/types/pipeline";
  * between braces is literal text and is left exactly as written.
  */
 
+const NAME = "[a-zA-Z][a-zA-Z0-9]*";
+
 /** Matches one placeholder; group 1 is the name. Global — reset before reuse. */
-export const NAME_PATTERN = /\{\{\s*([a-zA-Z][a-zA-Z0-9]*)\s*\}\}/g;
+export const NAME_PATTERN = new RegExp(`\\{\\{\\s*(${NAME})\\s*\\}\\}`, "g");
+
+/** A bare variable name, for validating the names a send posts. */
+export const BARE_NAME = new RegExp(`^${NAME}$`);
+
+/**
+ * Anything in double braces, name or not. The send refuses a letter with any
+ * of these left in it (M-PIPE-2): `{{ review code }}` is not a name, and it
+ * must not reach a client either.
+ */
+const ANY_BRACES = /\{\{[^{}]*\}\}/g;
+
+/** Every double-braced stretch still in the text, distinct, in order. */
+export function findLeftoverPlaceholders(text: string): string[] {
+  const found: string[] = [];
+  for (const match of text.matchAll(ANY_BRACES)) {
+    if (!found.includes(match[0])) found.push(match[0]);
+  }
+  return found;
+}
 
 /**
  * Names that fill themselves from the engagement, in the order the editor
@@ -82,7 +103,9 @@ export type TemplateRecord = {
 
 function answerText(answers: IntakeAnswers, key: string): string | undefined {
   const value = answers.access?.[key];
-  return typeof value === "string" && value.trim() !== "" ? value.trim() : undefined;
+  return typeof value === "string" && value.trim() !== ""
+    ? value.trim()
+    : undefined;
 }
 
 /**
@@ -108,4 +131,30 @@ export function resolveTemplateValues(
     if (typeof value === "string" && value.trim() !== "") merged[name] = value;
   }
   return merged;
+}
+
+/**
+ * Which typed values a successful send remembers (M-PIPE-2). Pure, so the
+ * rule is provable without a database.
+ *
+ * - A blank value is never remembered.
+ * - A record name equal to the record's own value is not an override; it is
+ *   *cleared*, so an earlier correction stops winning.
+ * - Everything else is kept.
+ */
+export function valuesToRemember(
+  typed: PipelineValues,
+  fromRecord: Record<string, string | undefined>,
+): { kept: PipelineValues; cleared: string[] } {
+  const kept: PipelineValues = {};
+  const cleared: string[] = [];
+  for (const [name, value] of Object.entries(typed)) {
+    if (value.trim() === "") continue;
+    if (isRecordName(name) && fromRecord[name] === value) {
+      cleared.push(name);
+      continue;
+    }
+    kept[name] = value;
+  }
+  return { kept, cleared };
 }

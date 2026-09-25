@@ -1,18 +1,21 @@
 "use client";
 
+import { useEffect, useId, useState, useTransition } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  closestCenter,
   DndContext,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
   type Announcements,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
@@ -20,15 +23,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
 import { CopyButton } from "@/app/admin/_components/copy-button";
 import { adminRoutes } from "@/lib/routes";
-import {
-  reorderStepsAction,
-  setStepArchivedAction,
-} from "../_actions/steps";
+import { reorderStepsAction, setStepArchivedAction } from "../_actions/steps";
 
 /**
  * The playbook, in order (PIPE-2).
@@ -71,7 +68,9 @@ export function StepList({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const titleOf = (id: string | number) =>
@@ -114,7 +113,11 @@ export function StepList({
         return;
       }
       setOrder(before);
-      setMessage(result.stale ? result.message : "The order didn't save. It's back how it was.");
+      setMessage(
+        result.stale
+          ? result.message
+          : "The order didn't save. It's back how it was.",
+      );
       if (result.stale) router.refresh();
     });
   }
@@ -123,7 +126,11 @@ export function StepList({
     setMessage("");
     startTransition(async () => {
       const result = await setStepArchivedAction(id, false);
-      setMessage(result.ok ? `${archived.find((s) => s.id === id)?.title ?? "Step"} is back, at the end.` : result.message);
+      setMessage(
+        result.ok
+          ? `${archived.find((s) => s.id === id)?.title ?? "Step"} is back, at the end.`
+          : result.message,
+      );
     });
   }
 
@@ -140,7 +147,10 @@ export function StepList({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={onDragEnd}
-          accessibility={{ announcements, screenReaderInstructions: INSTRUCTIONS }}
+          accessibility={{
+            announcements,
+            screenReaderInstructions: INSTRUCTIONS,
+          }}
         >
           <SortableContext
             items={order.map((step) => step.id)}

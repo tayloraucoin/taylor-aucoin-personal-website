@@ -3,8 +3,10 @@ import { Resend } from "resend";
 import { getDb } from "@/db/client";
 import {
   emailEvents,
+  engagementEmails,
   engagements,
   leadEmails,
+  pipelineSteps,
   type EngagementRow,
 } from "@/db/schema";
 import { BOOKING_URL } from "@/lib/config";
@@ -16,12 +18,21 @@ import {
 } from "@/lib/intake/constants";
 import { stepByNumber } from "@/lib/intake/tracks";
 import {
+  findLeftoverPlaceholders,
+  resolveTemplateValues,
+} from "@/lib/pipeline/template";
+import {
+  sendStepEmailInput,
+  type SendStepEmailInput,
+} from "@/lib/validators/pipeline";
+import {
   buildEntryUrlFor,
   buildIntakeStepUrl,
   decryptToken,
   getEngagementStatus,
   type Engagement,
 } from "./engagement";
+import { rememberPipelineValues, setStepDone } from "./pipeline";
 
 /**
  * The sweep reads whole rows, but the email helpers take the narrowed domain
@@ -562,6 +573,126 @@ export async function sendIntroEmail(input: {
         error instanceof Error
           ? `The email didn't send: ${error.message}`
           : "The email didn't send.",
+    };
+  }
+}
+
+/**
+ * A pipeline step's email to the client, as Taylor finished it (PIPE-4).
+ *
+ * Trusts nothing the form sent but the ids and the words:
+ *
+ * - **The address is the engagement's own**, read here. The form cannot
+ *   address a client's letter to anyone else.
+ * - **Nothing in double braces goes out** (M-PIPE-2). The dialog disables
+ *   Send while a name is empty; this is the guarantee behind that courtesy,
+ *   and it is stricter than the renderer — `{{ two words }}` is refused too.
+ * - **The row is written before the send** and keeps `resendId: null` when
+ *   the send fails, so a failure leaves evidence (M-PIPE-3, after M-CRM-3).
+ *
+ * On success the step is marked done and the typed values are remembered.
+ * Those two follow-ups are bookkeeping: if either fails, the email has still
+ * gone, and the result says so rather than reporting a failed send.
+ */
+export async function sendStepEmail(
+  raw: SendStepEmailInput,
+): Promise<
+  | { ok: true; to: string; note: string | null }
+  | { ok: false; message: string }
+> {
+  const input = sendStepEmailInput.parse(raw);
+  const db = getDb();
+
+  const [engagement] = await db
+    .select({
+      contactEmail: engagements.contactEmail,
+      contactName: engagements.contactName,
+      businessName: engagements.businessName,
+      answers: engagements.answers,
+    })
+    .from(engagements)
+    .where(eq(engagements.id, input.engagementId));
+  if (!engagement) {
+    return { ok: false, message: "That engagement no longer exists." };
+  }
+
+  const [step] = await db
+    .select({ emailSubject: pipelineSteps.emailSubject })
+    .from(pipelineSteps)
+    .where(eq(pipelineSteps.id, input.stepId));
+  if (!step || step.emailSubject === null) {
+    return { ok: false, message: "That step has no email to send." };
+  }
+
+  const leftover = findLeftoverPlaceholders(`${input.subject}\n${input.body}`);
+  if (leftover.length > 0) {
+    return {
+      ok: false,
+      message: `Fill or remove ${leftover.join(", ")} before sending.`,
+    };
+  }
+
+  const [row] = await db
+    .insert(engagementEmails)
+    .values({
+      engagementId: input.engagementId,
+      stepId: input.stepId,
+      toEmail: engagement.contactEmail,
+      subject: input.subject,
+      body: input.body,
+    })
+    .returning({ id: engagementEmails.id });
+
+  try {
+    const sent = await getResend().emails.send({
+      from: from(),
+      to: engagement.contactEmail,
+      subject: input.subject,
+      text: input.body,
+    });
+
+    if (sent.error) throw new Error(sent.error.message);
+
+    await db
+      .update(engagementEmails)
+      .set({ resendId: sent.data?.id ?? null })
+      .where(eq(engagementEmails.id, row!.id));
+  } catch (error) {
+    // The row stays, undelivered — the step's history shows the attempt.
+    console.error("[pipeline] step email failed", {
+      engagementId: input.engagementId,
+      stepId: input.stepId,
+    });
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? `The email didn't send: ${error.message}`
+          : "The email didn't send.",
+    };
+  }
+
+  try {
+    await setStepDone({
+      engagementId: input.engagementId,
+      stepId: input.stepId,
+      done: true,
+    });
+    await rememberPipelineValues(
+      input.engagementId,
+      input.values,
+      resolveTemplateValues(engagement, {}),
+    );
+    return { ok: true, to: engagement.contactEmail, note: null };
+  } catch {
+    console.error("[pipeline] post-send bookkeeping failed", {
+      engagementId: input.engagementId,
+      stepId: input.stepId,
+    });
+    return {
+      ok: true,
+      to: engagement.contactEmail,
+      note: "Sent — but the step wasn't marked done and the values weren't saved. Mark it done by hand.",
     };
   }
 }

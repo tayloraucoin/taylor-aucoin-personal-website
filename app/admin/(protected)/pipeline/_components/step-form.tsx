@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Markup } from "@/app/admin/_components/markup";
 import { RECORD_NAMES } from "@/lib/pipeline/template";
 import { adminRoutes } from "@/lib/routes";
@@ -59,7 +59,8 @@ function readDraft(id: string | null): StepFormValues | null {
     return {
       title: typeof parsed.title === "string" ? parsed.title : "",
       prompt: typeof parsed.prompt === "string" ? parsed.prompt : "",
-      emailSubject: typeof parsed.emailSubject === "string" ? parsed.emailSubject : "",
+      emailSubject:
+        typeof parsed.emailSubject === "string" ? parsed.emailSubject : "",
       emailBody: typeof parsed.emailBody === "string" ? parsed.emailBody : "",
     };
   } catch {
@@ -107,7 +108,10 @@ export function StepForm(props: StepFormProps) {
   const [preview, setPreview] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [status, setStatus] = useState("");
-  const [error, setError] = useState<{ message: string; field?: StepField } | null>(null);
+  const [error, setError] = useState<{
+    message: string;
+    field?: StepField;
+  } | null>(null);
   const [pending, startTransition] = useTransition();
 
   // A draft that differs from what is saved was left by a failed save or a
@@ -181,7 +185,9 @@ export function StepForm(props: StepFormProps) {
         setError(result);
         return;
       }
-      setStatus(archived ? "Archived." : "Unarchived. It's at the end of the list.");
+      setStatus(
+        archived ? "Archived." : "Unarchived. It's at the end of the list.",
+      );
       router.refresh();
     });
   }
@@ -243,7 +249,9 @@ export function StepForm(props: StepFormProps) {
           onChange={(event) => update("title", event.target.value)}
           maxLength={200}
           aria-invalid={fieldError("title") ? true : undefined}
-          aria-describedby={fieldError("title") ? "step-title-error" : undefined}
+          aria-describedby={
+            fieldError("title") ? "step-title-error" : undefined
+          }
           className={field}
         />
         {fieldError("title") ? (
@@ -296,7 +304,8 @@ export function StepForm(props: StepFormProps) {
       <fieldset className="flex flex-col gap-4 border-t border-(--color-line-soft) pt-6">
         <legend className="text-sm text-(--color-ink)">Client email</legend>
         <p className="max-w-[60ch] text-xs text-(--color-dim)">
-          Optional. Write <code className="font-(family-name:--font-mono)">{"{{name}}"}</code>{" "}
+          Optional. Write{" "}
+          <code className="font-(family-name:--font-mono)">{"{{name}}"}</code>{" "}
           where a value goes. These fill themselves from the engagement:{" "}
           {RECORD_NAMES.join(", ")}. Any other name is asked for when you send.
           Prompts can use them too.
@@ -310,7 +319,9 @@ export function StepForm(props: StepFormProps) {
             onChange={(event) => update("emailSubject", event.target.value)}
             maxLength={300}
             aria-invalid={fieldError("emailSubject") ? true : undefined}
-            aria-describedby={fieldError("emailSubject") ? "step-subject-error" : undefined}
+            aria-describedby={
+              fieldError("emailSubject") ? "step-subject-error" : undefined
+            }
             className={field}
           />
           {fieldError("emailSubject") ? (
@@ -327,7 +338,9 @@ export function StepForm(props: StepFormProps) {
             onChange={(event) => update("emailBody", event.target.value)}
             rows={14}
             aria-invalid={fieldError("emailBody") ? true : undefined}
-            aria-describedby={fieldError("emailBody") ? "step-body-error" : undefined}
+            aria-describedby={
+              fieldError("emailBody") ? "step-body-error" : undefined
+            }
             className={area}
           />
           {fieldError("emailBody") ? (
@@ -374,7 +387,8 @@ export function StepForm(props: StepFormProps) {
             {!props.used ? (
               confirmingDelete ? (
                 <span className="flex flex-wrap items-center gap-3 text-sm text-(--color-body)">
-                  Delete &ldquo;{props.initial.title}&rdquo;? This can&rsquo;t be undone.
+                  Delete &ldquo;{props.initial.title}&rdquo;? This can&rsquo;t
+                  be undone.
                   <button
                     type="button"
                     onClick={remove}
