@@ -49,3 +49,11 @@ Mason's record for the engagement-pipeline epic. One entry per real alternative 
 **Decision:** C. Drizzle does not emit deferrable constraints, so A means hand-edited migration SQL. B drifts toward precision problems and needs rebalancing anyway. With one admin and a list of tens, rewriting every row is trivially cheap and always leaves a clean sequence; the tiebreak makes a transient duplicate harmless.
 **Consequences:** The reorder action sends the whole order, and the service refuses a list that is not exactly the current step set (a stale tab cannot drop a step).
 **Revisit trigger:** Concurrent editors.
+
+## 2026-09-25 · PIPE-6 · M-PIPE-7 · A prompt step names where it runs, as an enum set iff the prompt is
+
+**Context:** Taylor runs some prompts in a regular Claude chat and some in a Claude Code session in a repo, and the playbook did not say which.
+**Options weighed:** A) A free-text "where" field. B) A boolean `is_claude_code`. C) A Postgres enum `pipeline_prompt_target ('claude', 'claude_code')`, nullable, with a check that it is set exactly when `prompt` is.
+**Decision:** C. A invites spelling drift the page would then have to interpret. B has no room for a third destination and reads backwards on an email-only step, where "false" would claim the prompt runs in Claude. C is one value per real place, extensible by one enum value, and the check keeps "no prompt" and "no target" one fact.
+**Consequences:** The value list lives once in `lib/types/pipeline.ts` and the schema reads it. The validator requires a target with a prompt and drops one without. `0021` backfills existing prompt steps to `'claude'` before adding the check, because a check added over rows that violate it fails the whole migration, which is the `0018` lesson. The backfill value is a labelled guess and Taylor reviews any step saved before `0021`.
+**Revisit trigger:** A third place prompts run.

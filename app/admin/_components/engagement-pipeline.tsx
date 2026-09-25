@@ -6,6 +6,7 @@ import { CopyButton } from "@/app/admin/_components/copy-button";
 import { StepEmailDialog } from "@/app/admin/_components/step-email-dialog";
 import { setStepDoneAction } from "@/app/admin/(protected)/engagements/_actions/pipeline";
 import { adminRoutes } from "@/lib/routes";
+import { PROMPT_TARGET_LABELS, type PromptTarget } from "@/lib/types/pipeline";
 
 /**
  * The playbook as one engagement's checklist (PIPE-3).
@@ -26,6 +27,7 @@ export type EngagementPipelineItem = {
   /** ISO string; null when not done. */
   completedAt: string | null;
   prompt: string | null;
+  promptTarget: PromptTarget | null;
   promptUnresolved: string[];
   email: { subject: string; body: string } | null;
   /** ISO times; `delivered` false for an attempt the provider refused. */
@@ -169,7 +171,11 @@ export function EngagementPipeline({
               {step.prompt ? (
                 <CopyButton
                   text={step.prompt}
-                  label="Copy prompt"
+                  label={
+                    step.promptTarget
+                      ? `Copy for ${PROMPT_TARGET_LABELS[step.promptTarget]}`
+                      : "Copy prompt"
+                  }
                   accessibleLabel={`Copy the prompt for ${step.title}`}
                   copiedMessage={
                     step.promptUnresolved.length > 0

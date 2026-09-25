@@ -13,7 +13,7 @@ import {
   resolveTemplateValues,
   valuesToRemember,
 } from "@/lib/pipeline/template";
-import type { PipelineValues } from "@/lib/types/pipeline";
+import type { PipelineValues, PromptTarget } from "@/lib/types/pipeline";
 import {
   pipelineEngagementId,
   pipelineStepId,
@@ -39,6 +39,7 @@ export type PipelineStep = Pick<
   | "id"
   | "title"
   | "prompt"
+  | "promptTarget"
   | "emailSubject"
   | "emailBody"
   | "position"
@@ -50,6 +51,7 @@ const STEP_COLUMNS = {
   id: pipelineSteps.id,
   title: pipelineSteps.title,
   prompt: pipelineSteps.prompt,
+  promptTarget: pipelineSteps.promptTarget,
   emailSubject: pipelineSteps.emailSubject,
   emailBody: pipelineSteps.emailBody,
   position: pipelineSteps.position,
@@ -280,6 +282,8 @@ export type EngagementPipelineStep = {
   prompt: string | null;
   /** Names the prompt uses that have no value yet. */
   promptUnresolved: string[];
+  /** Where the prompt runs (PIPE-6); null exactly when `prompt` is. */
+  promptTarget: PromptTarget | null;
   /** The email template, unrendered — the send dialog renders it live. */
   email: { subject: string; body: string } | null;
   /** Every send of this step to this client, oldest first (PIPE-4). */
@@ -375,6 +379,7 @@ export async function loadEngagementPipeline(
         completedAt: doneAt.get(step.id) ?? null,
         prompt: rendered?.text ?? null,
         promptUnresolved: rendered?.unresolved ?? [],
+        promptTarget: step.promptTarget,
         email:
           step.emailSubject !== null && step.emailBody !== null
             ? { subject: step.emailSubject, body: step.emailBody }

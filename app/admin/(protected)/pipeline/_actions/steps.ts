@@ -23,7 +23,8 @@ import {
  * no subject — and none should look like a crash.
  */
 
-export type StepField = "title" | "prompt" | "emailSubject" | "emailBody";
+export type StepField =
+  "title" | "prompt" | "promptTarget" | "emailSubject" | "emailBody";
 
 export type StepResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? object : { data: T }))
@@ -32,6 +33,7 @@ export type StepResult<T = undefined> =
 const FIELDS: readonly StepField[] = [
   "title",
   "prompt",
+  "promptTarget",
   "emailSubject",
   "emailBody",
 ];

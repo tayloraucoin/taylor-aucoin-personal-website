@@ -25,6 +25,7 @@ import { GripVertical } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { CopyButton } from "@/app/admin/_components/copy-button";
 import { adminRoutes } from "@/lib/routes";
+import { PROMPT_TARGET_LABELS, type PromptTarget } from "@/lib/types/pipeline";
 import { reorderStepsAction, setStepArchivedAction } from "../_actions/steps";
 
 /**
@@ -40,6 +41,7 @@ export type StepListItem = {
   id: string;
   title: string;
   prompt: string | null;
+  promptTarget: PromptTarget | null;
   hasEmail: boolean;
 };
 
@@ -269,7 +271,10 @@ function SortableRow({
           {step.title}
         </Link>
         <span className="text-xs text-(--color-dim)">
-          {[step.prompt ? "Prompt" : null, step.hasEmail ? "Email" : null]
+          {[
+            step.prompt ? promptLabel(step.promptTarget) : null,
+            step.hasEmail ? "Email" : null,
+          ]
             .filter(Boolean)
             .join(" · ") || "Empty"}
         </span>
@@ -278,10 +283,19 @@ function SortableRow({
       {step.prompt ? (
         <CopyButton
           text={step.prompt}
-          label="Copy prompt"
+          label={
+            step.promptTarget
+              ? `Copy for ${PROMPT_TARGET_LABELS[step.promptTarget]}`
+              : "Copy prompt"
+          }
           accessibleLabel={`Copy the prompt for ${step.title}`}
         />
       ) : null}
     </li>
   );
+}
+
+/** "Claude Code prompt", or plain "Prompt" if the target is somehow unset. */
+function promptLabel(target: PromptTarget | null): string {
+  return target ? `${PROMPT_TARGET_LABELS[target]} prompt` : "Prompt";
 }

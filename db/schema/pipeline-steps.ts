@@ -3,6 +3,7 @@ import {
   check,
   index,
   integer,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -10,8 +11,15 @@ import {
 } from "drizzle-orm/pg-core";
 // Relative, not the `@/` alias: drizzle-kit bundles this file outside Next's
 // resolver and does not read tsconfig paths.
+import { PROMPT_TARGETS } from "../../lib/types/pipeline";
 import { engagementEmails } from "./engagement-emails";
 import { engagementStepCompletions } from "./engagement-step-completions";
+
+/** Used by one table, so it lives beside it (drizzle conventions §3). */
+export const pipelinePromptTargetEnum = pgEnum(
+  "pipeline_prompt_target",
+  PROMPT_TARGETS,
+);
 
 /**
  * One step of the delivery playbook: a prompt Taylor copies into a Claude
@@ -51,6 +59,8 @@ export const pipelineSteps = pgTable(
     position: integer("position").notNull(),
     /** Markdown with `{{name}}` placeholders. Null on an email-only step. */
     prompt: text("prompt"),
+    /** Where the prompt runs (PIPE-6). Set iff `prompt` is. */
+    promptTarget: pipelinePromptTargetEnum("prompt_target"),
     title: text("title").notNull(),
   },
   (table) => [
@@ -60,6 +70,12 @@ export const pipelineSteps = pgTable(
     check(
       "pipeline_steps_email_pair_check",
       sql`(${table.emailSubject} is null) = (${table.emailBody} is null)`,
+    ),
+    // A prompt with nowhere to run, or a target with no prompt, is the same
+    // half-built step in a different shape (M-PIPE-7).
+    check(
+      "pipeline_steps_prompt_target_check",
+      sql`(${table.prompt} is null) = (${table.promptTarget} is null)`,
     ),
   ],
 );

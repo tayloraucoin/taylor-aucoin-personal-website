@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { BARE_NAME } from "@/lib/pipeline/template";
+import { PROMPT_TARGETS } from "@/lib/types/pipeline";
 
 /**
  * Validation for every engagement-pipeline write (PIPE), defined once and
@@ -29,6 +30,8 @@ export const pipelineStepInput = z
   .object({
     title: z.string().trim().min(1, "Give the step a title.").max(200),
     prompt: blankToNull(100_000),
+    /** Where the prompt runs (PIPE-6). Required with a prompt; dropped without one. */
+    promptTarget: z.enum(PROMPT_TARGETS).nullable(),
     // A subject is one line. Surrounding whitespace is never intended.
     emailSubject: blankToNull(300).transform((value) => value?.trim() ?? null),
     emailBody: blankToNull(20_000),
@@ -43,7 +46,21 @@ export const pipelineStepInput = z
         message: "An email needs both a subject and a body, or neither.",
       });
     }
-  });
+    // Mirrors `pipeline_steps_prompt_target_check` (M-PIPE-7).
+    if (value.prompt !== null && value.promptTarget === null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["promptTarget"],
+        message: "Choose where this prompt runs.",
+      });
+    }
+  })
+  // A target with no prompt means nothing; the database refuses it, so it is
+  // dropped here rather than turned into an error Taylor has to clear.
+  .transform((value) => ({
+    ...value,
+    promptTarget: value.prompt === null ? null : value.promptTarget,
+  }));
 
 export type PipelineStepInput = z.input<typeof pipelineStepInput>;
 

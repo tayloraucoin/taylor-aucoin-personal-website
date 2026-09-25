@@ -27,3 +27,5 @@ YYYY-MM-DD · <ticket-id> · <what changed> · <why>
 2026-09-25 · PIPE-4 · The commit carries Prettier formatting of the PIPE-1..3 files and docs · they were authored unformatted; formatting only, no semantic change.
 2026-09-25 · PIPE-4 · `yarn build:agent` not run · the disk had <500 MB free; closure is "code complete", not Complete, until it runs.
 2026-09-25 · PIPE-4 · Build run after Taylor freed disk space; clean · closes the earlier 'not run' line — PIPE-4 is Complete.
+2026-09-25 · PIPE-6 · `0021` carries one hand-added statement (the `prompt_target` backfill) between drizzle-kit's generated column and check · without it the check fails on any prompt step saved before the migration, the same silent failure `0018` hit on staging. The snapshot is unaffected (data, not schema); `yarn db:generate` reports no changes.
+2026-09-25 · PIPE-6 · The copy button's label names the destination ("Copy for Claude Code") instead of "Copy prompt" · the choice matters at the moment of copying. A step whose target is somehow unset still reads "Copy prompt".

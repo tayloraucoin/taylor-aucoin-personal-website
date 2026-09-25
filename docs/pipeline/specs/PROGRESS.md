@@ -4,12 +4,13 @@ The **only** authoritative answer to "is this Complete."
 
 **Gate policy:** inherits `docs/intake/specs/PROGRESS.md`'s (Taylor, 2026-08-18) — downstream work may start against an upstream that is _code complete_, except where a ticket names an applied migration as its gate (PIPE-2 renders against `0020`).
 
-| Ticket | Title                                                                 | Depends on                                           | Status                                                                                                                                  | Date       |
-| ------ | --------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values   | —                                                    | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database | 2026-09-25 |
-| PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database                                                                | 2026-09-25 |
-| PIPE-3 | The engagement checklist, filled-in prompts, done and undo            | PIPE-2 (code complete)                               | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database                                    | 2026-09-25 |
-| PIPE-4 | Compose and send a step's email                                       | PIPE-3 (code complete)                               | Complete — build, typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; staging send pass outstanding   | 2026-09-25 |
+| Ticket | Title                                                                 | Depends on                                           | Status                                                                                                                                              | Date       |
+| ------ | --------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| PIPE-1 | Schema: pipeline steps, completions, sent emails, remembered values   | —                                                    | Complete — build, typecheck, lint clean; migration `0020` and `07-pipeline-rls.sql` authored, not run; not exercised against a database             | 2026-09-25 |
+| PIPE-2 | `/admin/pipeline`: list, create, edit, reorder, archive, delete, copy | PIPE-1 (code complete; `0020` gate waived by Taylor) | Complete — build, typecheck, lint clean; not rendered against a database                                                                            | 2026-09-25 |
+| PIPE-3 | The engagement checklist, filled-in prompts, done and undo            | PIPE-2 (code complete)                               | Complete — build, typecheck, lint clean; `yarn verify:pipeline` 9/9; not rendered against a database                                                | 2026-09-25 |
+| PIPE-4 | Compose and send a step's email                                       | PIPE-3 (code complete)                               | Complete — build, typecheck, lint clean; renderer and send guard 13/13; jsonb merge run on Postgres 15; staging send pass outstanding               | 2026-09-25 |
+| PIPE-6 | Where a prompt runs: Claude or Claude Code                            | PIPE-2, PIPE-3                                       | Complete — build, typecheck, lint clean; `0021` applied over pre-existing rows on Postgres 15 (backfill and check verified); integration pass 21/21 | 2026-09-25 |
 
 ## Checklist
 
@@ -17,6 +18,7 @@ The **only** authoritative answer to "is this Complete."
 - [x] PIPE-2 · The playbook admin
 - [x] PIPE-3 · The engagement checklist
 - [x] PIPE-4 · Step email send
+- [x] PIPE-6 · Prompt target
 - [ ] PIPE-5 · Content (Taylor)
 
 ## What has been verified, and how

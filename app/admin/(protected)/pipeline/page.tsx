@@ -15,6 +15,7 @@ function toItem(step: PipelineStep): StepListItem {
     id: step.id,
     title: step.title,
     prompt: step.prompt,
+    promptTarget: step.promptTarget,
     hasEmail: step.emailSubject !== null,
   };
 }

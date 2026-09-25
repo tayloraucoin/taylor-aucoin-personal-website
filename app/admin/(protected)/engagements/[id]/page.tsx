@@ -127,6 +127,7 @@ export default async function EngagementDetailPage({
               archived: step.archived,
               completedAt: step.completedAt?.toISOString() ?? null,
               prompt: step.prompt,
+              promptTarget: step.promptTarget,
               promptUnresolved: step.promptUnresolved,
               email: step.email,
               sends: step.sends.map((send) => ({

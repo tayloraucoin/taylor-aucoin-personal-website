@@ -41,6 +41,7 @@ export default async function PipelineStepPage({
         initial={{
           title: step.title,
           prompt: step.prompt ?? "",
+          promptTarget: step.promptTarget ?? "",
           emailSubject: step.emailSubject ?? "",
           emailBody: step.emailBody ?? "",
         }}

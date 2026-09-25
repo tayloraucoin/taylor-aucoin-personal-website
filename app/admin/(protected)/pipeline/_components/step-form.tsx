@@ -6,6 +6,11 @@ import { Markup } from "@/app/admin/_components/markup";
 import { RECORD_NAMES } from "@/lib/pipeline/template";
 import { adminRoutes } from "@/lib/routes";
 import {
+  PROMPT_TARGET_LABELS,
+  PROMPT_TARGETS,
+  type PromptTarget,
+} from "@/lib/types/pipeline";
+import {
   createStepAction,
   deleteStepAction,
   setStepArchivedAction,
@@ -26,6 +31,8 @@ import {
 export type StepFormValues = {
   title: string;
   prompt: string;
+  /** Empty until chosen; required once the step has a prompt (PIPE-6). */
+  promptTarget: PromptTarget | "";
   emailSubject: string;
   emailBody: string;
 };
@@ -43,6 +50,7 @@ type StepFormProps =
 const EMPTY: StepFormValues = {
   title: "",
   prompt: "",
+  promptTarget: "",
   emailSubject: "",
   emailBody: "",
 };
@@ -59,6 +67,7 @@ function readDraft(id: string | null): StepFormValues | null {
     return {
       title: typeof parsed.title === "string" ? parsed.title : "",
       prompt: typeof parsed.prompt === "string" ? parsed.prompt : "",
+      promptTarget: PROMPT_TARGETS.find((t) => t === parsed.promptTarget) ?? "",
       emailSubject:
         typeof parsed.emailSubject === "string" ? parsed.emailSubject : "",
       emailBody: typeof parsed.emailBody === "string" ? parsed.emailBody : "",
@@ -88,6 +97,7 @@ function same(a: StepFormValues, b: StepFormValues) {
   return (
     a.title === b.title &&
     a.prompt === b.prompt &&
+    a.promptTarget === b.promptTarget &&
     a.emailSubject === b.emailSubject &&
     a.emailBody === b.emailBody
   );
@@ -126,7 +136,10 @@ export function StepForm(props: StepFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on mount
   }, []);
 
-  function update<K extends keyof StepFormValues>(key: K, value: string) {
+  function update<K extends keyof StepFormValues>(
+    key: K,
+    value: StepFormValues[K],
+  ) {
     const next = { ...values, [key]: value };
     setValues(next);
     writeDraft(id, next);
@@ -147,6 +160,7 @@ export function StepForm(props: StepFormProps) {
       const input = {
         title: values.title,
         prompt: values.prompt,
+        promptTarget: values.promptTarget === "" ? null : values.promptTarget,
         emailSubject: values.emailSubject,
         emailBody: values.emailBody,
       };
@@ -276,6 +290,39 @@ export function StepForm(props: StepFormProps) {
             {preview ? "Hide preview" : "Preview"}
           </button>
         </div>
+        <fieldset
+          aria-invalid={fieldError("promptTarget") ? true : undefined}
+          aria-describedby={
+            fieldError("promptTarget") ? "step-target-error" : undefined
+          }
+          className="flex flex-wrap items-center gap-x-5"
+        >
+          <legend className="sr-only">Where this prompt runs</legend>
+          <span aria-hidden className="text-xs text-(--color-dim)">
+            Runs in
+          </span>
+          {PROMPT_TARGETS.map((target) => (
+            <label
+              key={target}
+              className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm text-(--color-body)"
+            >
+              <input
+                type="radio"
+                name="step-prompt-target"
+                value={target}
+                checked={values.promptTarget === target}
+                onChange={() => update("promptTarget", target)}
+                className="h-4 w-4 accent-(--color-c2)"
+              />
+              {PROMPT_TARGET_LABELS[target]}
+            </label>
+          ))}
+          {fieldError("promptTarget") ? (
+            <span id="step-target-error" className="text-sm text-(--color-c2)">
+              {fieldError("promptTarget")}
+            </span>
+          ) : null}
+        </fieldset>
         <textarea
           id="step-prompt"
           value={values.prompt}
