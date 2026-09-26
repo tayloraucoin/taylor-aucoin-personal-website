@@ -5,6 +5,8 @@ export const invoiceEmailKindEnum = pgEnum("invoice_email_kind", [
   "deposit_paid",
   "invoice_due",
   "invoice_paid",
+  // An invoice link's purchase (FIN-8): the rows one extras session bought.
+  "extras_paid",
 ]);
 
 /**

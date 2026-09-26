@@ -1,13 +1,10 @@
 import { parseArgs } from "node:util";
-import Stripe from "stripe";
 import { eq } from "drizzle-orm";
+import Stripe from "stripe";
 import { getDb } from "@/db/client";
 import { products } from "@/db/schema";
 import { requireEnv } from "@/lib/env";
 import { applyTierEnv } from "./_env";
-
-applyTierEnv();
-
 /**
  * The Agora catalogue, as published in how_we_work.pdf and website_toolkit.pdf.
  *
@@ -30,6 +27,8 @@ import {
   STRIPE_PRODUCTS,
   type StripeProductName,
 } from "./seed-products";
+
+applyTierEnv();
 
 type PriceSpec = {
   nickname: string;
@@ -100,7 +99,9 @@ function buildCatalogue(): ProductSpec[] {
 
     specs.push({
       name,
-      previousName: product.previousName,
+      // A product minted under its current name has nothing to rename from.
+      previousName:
+        "previousName" in product ? product.previousName : undefined,
       description: product.description,
       taxCode: product.taxCode,
       prices,
@@ -152,121 +153,212 @@ async function main(): Promise<void> {
   // is not findable yet, so a second run would create it again. `list` is
   // immediately consistent, which is what makes this script safe to re-run.
   const allProducts: Stripe.Product[] = [];
-  for await (const product of stripe.products.list({ active: true, limit: 100 })) {
+  for await (const product of stripe.products.list({
+    active: true,
+    limit: 100,
+  })) {
     allProducts.push(product);
   }
 
+  const failures: string[] = [];
+
   for (const spec of CATALOGUE) {
-    // Matched by name: product ids do not carry across test and live mode.
-    let product = allProducts.find((p) => p.name === spec.name);
+    // One product failing must not take the rest of the run — or the db sync
+    // at the end — down with it. The failure is named and the exit code set.
+    try {
+      // Matched by name: product ids do not carry across test and live mode.
+      let product = allProducts.find((p) => p.name === spec.name);
 
-    // Not found under its current name? Try what it used to be called, and
-    // rename it in place. Renaming keeps the Product id, so every Price under
-    // it — and every payment already made on those Prices — stays attached.
-    if (!product && spec.previousName) {
-      const renamed = allProducts.find((p) => p.name === spec.previousName);
-      if (renamed) {
-        console.log(`~ product  ${spec.previousName}  ->  ${spec.name}`);
-        product = apply
-          ? await stripe.products.update(renamed.id, { name: spec.name })
-          : renamed;
-      }
-    }
-
-    if (!product) {
-      console.log(`+ product  ${spec.name}`);
-      if (apply) {
-        product = await stripe.products.create({
-          name: spec.name,
-          description: spec.description,
-          tax_code: spec.taxCode,
-        });
-        allProducts.push(product);
-      }
-    } else {
-      console.log(`= product  ${spec.name}  (${product.id})`);
-
-      // `tax_code` was only ever sent on create, so a product that already
-      // existed kept whatever code it was born with — and every reassignment in
-      // the table above would have been a silent no-op against a live account.
-      // Products, unlike Prices, are mutable, so this is a plain update.
-      const currentTaxCode =
-        typeof product.tax_code === "string"
-          ? product.tax_code
-          : (product.tax_code?.id ?? null);
-
-      if (currentTaxCode !== spec.taxCode) {
-        console.log(
-          `  ~ tax code  ${currentTaxCode ?? "unset"} -> ${spec.taxCode}`,
+      // Same name with a bullet (•) where the catalogue has a middot (·): the
+      // Dashboard drift noted in seed-products.ts. Renamed in place rather than
+      // matched as a stranger — an exact-name miss here used to mint a
+      // duplicate Product beside the one already charging clients.
+      if (!product) {
+        const drifted = allProducts.find(
+          (p) => p.name.replaceAll("•", "·") === spec.name,
         );
+        if (drifted) {
+          console.log(`~ product  ${drifted.name}  ->  ${spec.name}`);
+          product = apply
+            ? await stripe.products.update(drifted.id, { name: spec.name })
+            : drifted;
+        }
+      }
+
+      // Not found under its current name? Try what it used to be called, and
+      // rename it in place. Renaming keeps the Product id, so every Price under
+      // it — and every payment already made on those Prices — stays attached.
+      if (!product && spec.previousName) {
+        const renamed = allProducts.find((p) => p.name === spec.previousName);
+        if (renamed) {
+          console.log(`~ product  ${spec.previousName}  ->  ${spec.name}`);
+          product = apply
+            ? await stripe.products.update(renamed.id, { name: spec.name })
+            : renamed;
+        }
+      }
+
+      if (!product) {
+        console.log(`+ product  ${spec.name}`);
         if (apply) {
-          product = await stripe.products.update(product.id, {
+          product = await stripe.products.create({
+            name: spec.name,
+            description: spec.description,
             tax_code: spec.taxCode,
           });
+          allProducts.push(product);
         }
-      }
-    }
-
-    const current = product
-      ? await stripe.prices.list({ product: product.id, active: true, limit: 100 })
-      : { data: [] as Stripe.Price[] };
-
-    const claimed = new Set<string>();
-
-    for (const price of spec.prices) {
-      const match = current.data.find((p) => p.nickname === price.nickname);
-      if (match) claimed.add(match.id);
-
-      if (match && match.unit_amount === price.amountCents) {
-        console.log(`  = ${price.nickname}  $${(price.amountCents / 100).toFixed(2)}`);
-        envLines.push(`STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${match.id}`);
-        if (price.dbKey && product) {
-          dbSyncs.push({ key: price.dbKey, stripeProductId: product.id, stripePriceId: match.id, amountCents: price.amountCents });
-        }
-        continue;
-      }
-
-      if (match) {
-        // Prices cannot be edited. The old one is archived so it stops being
-        // offered, while staying attached to anything already paid on it.
-        console.log(
-          `  ~ ${price.nickname}  $${((match.unit_amount ?? 0) / 100).toFixed(2)} -> $${(price.amountCents / 100).toFixed(2)}  (archiving ${match.id})`,
-        );
-        if (apply) await stripe.prices.update(match.id, { active: false });
       } else {
-        console.log(`  + ${price.nickname}  $${(price.amountCents / 100).toFixed(2)}`);
-      }
+        console.log(`= product  ${spec.name}  (${product.id})`);
 
-      if (apply && product) {
-        const created = await stripe.prices.create({
-          product: product.id,
-          currency: "cad",
-          unit_amount: price.amountCents,
-          nickname: price.nickname,
-          // Every published price is quoted "+ GST", so tax is added on top
-          // rather than being carved out of the number the client agreed to.
-          tax_behavior: "exclusive",
-          ...(price.recurring ? { recurring: { interval: price.recurring } } : {}),
-        });
-        envLines.push(`STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${created.id}`);
-        if (price.dbKey) {
-          dbSyncs.push({ key: price.dbKey, stripeProductId: product.id, stripePriceId: created.id, amountCents: price.amountCents });
+        // `tax_code` was only ever sent on create, so a product that already
+        // existed kept whatever code it was born with — and every reassignment in
+        // the table above would have been a silent no-op against a live account.
+        // Products, unlike Prices, are mutable, so this is a plain update.
+        const currentTaxCode =
+          typeof product.tax_code === "string"
+            ? product.tax_code
+            : (product.tax_code?.id ?? null);
+
+        if (currentTaxCode !== spec.taxCode) {
+          console.log(
+            `  ~ tax code  ${currentTaxCode ?? "unset"} -> ${spec.taxCode}`,
+          );
+          if (apply) {
+            product = await stripe.products.update(product.id, {
+              tax_code: spec.taxCode,
+            });
+          }
         }
       }
-    }
 
-    // Anything still active on this product that the catalogue does not
-    // declare is a superseded price — an old amount, or one whose label
-    // changed. Retiring it is the point of treating the catalogue as the
-    // source of truth: otherwise a corrected price sits alongside the wrong
-    // one it was meant to replace, and both are offerable.
-    for (const stale of current.data) {
-      if (claimed.has(stale.id)) continue;
+      const current = product
+        ? await stripe.prices.list({
+            product: product.id,
+            active: true,
+            limit: 100,
+          })
+        : { data: [] as Stripe.Price[] };
 
-      console.log(
-        `  - retiring  ${stale.nickname ?? stale.id}  $${((stale.unit_amount ?? 0) / 100).toFixed(2)}  (${stale.id})`,
-      );
-      if (apply) await stripe.prices.update(stale.id, { active: false });
+      const claimed = new Set<string>();
+      // Prices this run keeps active on the product: unchanged matches and
+      // freshly created ones. A default price must point at one of these
+      // before the price it replaces can be archived.
+      const kept: string[] = [];
+      const toArchive: string[] = [];
+
+      for (const price of spec.prices) {
+        const match = current.data.find((p) => p.nickname === price.nickname);
+        if (match) claimed.add(match.id);
+
+        if (match && match.unit_amount === price.amountCents) {
+          console.log(
+            `  = ${price.nickname}  $${(price.amountCents / 100).toFixed(2)}`,
+          );
+          kept.push(match.id);
+          envLines.push(
+            `STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${match.id}`,
+          );
+          if (price.dbKey && product) {
+            dbSyncs.push({
+              key: price.dbKey,
+              stripeProductId: product.id,
+              stripePriceId: match.id,
+              amountCents: price.amountCents,
+            });
+          }
+          continue;
+        }
+
+        if (match) {
+          // Prices cannot be edited. The old one is archived so it stops being
+          // offered, while staying attached to anything already paid on it.
+          console.log(
+            `  ~ ${price.nickname}  $${((match.unit_amount ?? 0) / 100).toFixed(2)} -> $${(price.amountCents / 100).toFixed(2)}  (archiving ${match.id})`,
+          );
+          // Archived after the replacement exists (below), so the product's
+          // default price can be moved onto it first.
+          toArchive.push(match.id);
+        } else {
+          console.log(
+            `  + ${price.nickname}  $${(price.amountCents / 100).toFixed(2)}`,
+          );
+        }
+
+        if (apply && product) {
+          const created = await stripe.prices.create({
+            product: product.id,
+            currency: "cad",
+            unit_amount: price.amountCents,
+            nickname: price.nickname,
+            // Every published price is quoted "+ GST", so tax is added on top
+            // rather than being carved out of the number the client agreed to.
+            tax_behavior: "exclusive",
+            ...(price.recurring
+              ? { recurring: { interval: price.recurring } }
+              : {}),
+          });
+          kept.push(created.id);
+          envLines.push(
+            `STRIPE_${mode === "LIVE" ? "LIVE" : "STAGING"}_${price.env}=${created.id}`,
+          );
+          if (price.dbKey) {
+            dbSyncs.push({
+              key: price.dbKey,
+              stripeProductId: product.id,
+              stripePriceId: created.id,
+              amountCents: price.amountCents,
+            });
+          }
+        }
+      }
+
+      // Anything still active on this product that the catalogue does not
+      // declare is a superseded price — an old amount, or one whose label
+      // changed. Retiring it is the point of treating the catalogue as the
+      // source of truth: otherwise a corrected price sits alongside the wrong
+      // one it was meant to replace, and both are offerable.
+      for (const stale of current.data) {
+        if (claimed.has(stale.id)) continue;
+
+        console.log(
+          `  - retiring  ${stale.nickname ?? stale.id}  $${((stale.unit_amount ?? 0) / 100).toFixed(2)}  (${stale.id})`,
+        );
+        toArchive.push(stale.id);
+      }
+
+      if (apply && product && toArchive.length > 0) {
+        // Stripe refuses to archive a product's default price. Move the default
+        // onto a price this run keeps, then archive; with nothing to move it
+        // to, leave that one price active and say so rather than fail the run.
+        const defaultId =
+          typeof product.default_price === "string"
+            ? product.default_price
+            : (product.default_price?.id ?? null);
+
+        if (defaultId && toArchive.includes(defaultId)) {
+          const replacement = kept[0];
+          if (replacement) {
+            console.log(`  ~ default price  ${defaultId} -> ${replacement}`);
+            await stripe.products.update(product.id, {
+              default_price: replacement,
+            });
+          } else {
+            console.warn(
+              `  ! ${defaultId} is the default price and nothing replaces it — left active`,
+            );
+            toArchive.splice(toArchive.indexOf(defaultId), 1);
+          }
+        }
+
+        for (const id of toArchive) {
+          await stripe.prices.update(id, { active: false });
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`  ! ${spec.name} failed: ${message}`);
+      failures.push(spec.name);
     }
   }
 
@@ -299,6 +391,12 @@ async function main(): Promise<void> {
     for (const line of envLines) console.log(`  ${line}`);
   }
   console.log();
+
+  if (failures.length > 0) {
+    throw new Error(
+      `${failures.length} product(s) failed and were skipped: ${failures.join(", ")}. Everything else was applied; fix and re-run.`,
+    );
+  }
 }
 
 main().then(

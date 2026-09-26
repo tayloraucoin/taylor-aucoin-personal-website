@@ -64,9 +64,8 @@ export function EngagementState({ summary }: { summary: EngagementSummary }) {
           {summary.lastActivityAt &&
           summary.lastActivityAt > summary.completedAt ? (
             <p className="text-sm text-(--color-c2)">
-              Edited since — last change{" "}
-              {WHEN.format(summary.lastActivityAt)}. The emailed document is
-              older than these answers.
+              Edited since — last change {WHEN.format(summary.lastActivityAt)}.
+              The emailed document is older than these answers.
             </p>
           ) : null}
         </>
@@ -99,9 +98,11 @@ export function MoneyTable({
   return (
     <div className="flex flex-col gap-2">
       <ul className="flex flex-col gap-1">
-        {lines.map((line) => (
+        {/* Index in the key: a repeatable row (a round of changes) can
+            appear twice at the same price (FIN-8). */}
+        {lines.map((line, i) => (
           <li
-            key={`${line.name}-${line.amountCents}`}
+            key={`${line.name}-${line.amountCents}-${i}`}
             className="flex flex-wrap items-baseline gap-x-3 text-sm"
           >
             <span className="text-(--color-body)">

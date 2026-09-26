@@ -66,7 +66,7 @@ export default function Pricing({
   ownership?: Ownership | null;
 } = {}) {
   return (
-    <section className="mt-16">
+    <section id="pricing" className="mt-16 scroll-mt-8">
       <SectionLabel>What it costs</SectionLabel>
 
       <div
@@ -169,7 +169,9 @@ export default function Pricing({
         ) : null}
       </div>
 
-      <div className="mt-12">
+      {/* `#add-ons` is linked from outside the page (a client's final review,
+          for the admin panel). */}
+      <div id="add-ons" className="mt-12 scroll-mt-8">
         <p className="font-mono text-[10px] uppercase tracking-[.24em] text-(--color-dim)">
           Optional add-ons
         </p>

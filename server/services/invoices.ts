@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, or } from "drizzle-orm";
 import type Stripe from "stripe";
 import { getDb } from "@/db/client";
 import {
@@ -329,6 +329,54 @@ async function warnIfNoGstNumber(businessName: string): Promise<void> {
   ]);
 }
 
+/* ── Basket lines ─────────────────────────────────────────────────────── */
+
+/**
+ * One basket row as an invoice line: the unit price times the count.
+ *
+ * A basket row holds the unit price and the quantity separately
+ * (`createDepositCheckout`), so a line built from `amount_cents` alone
+ * printed three extra pages at the price of one while the total — Stripe's —
+ * said three. The count goes in the label so the line explains its own sum.
+ */
+function basketLine(row: {
+  name: string;
+  amountCents: number;
+  quantity: number;
+}): InvoiceLine {
+  return row.quantity > 1
+    ? {
+        label: `${row.name} × ${row.quantity}`,
+        amountCents: row.amountCents * row.quantity,
+      }
+    : { label: row.name, amountCents: row.amountCents };
+}
+
+/** The paid basket rows one Checkout session bought, in catalogue order. */
+async function paidRowsForSession(engagementId: string, sessionId: string) {
+  return getDb()
+    .select({
+      amountCents: engagementProducts.amountCents,
+      name: products.name,
+      quantity: engagementProducts.quantity,
+    })
+    .from(engagementProducts)
+    .innerJoin(products, eq(engagementProducts.productId, products.id))
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        isNotNull(engagementProducts.paidAt),
+        // Rows written before sessions were recorded carry null; they can
+        // only be the deposit's, which is the one caller that reaches them.
+        or(
+          isNull(engagementProducts.checkoutSessionId),
+          eq(engagementProducts.checkoutSessionId, sessionId),
+        ),
+      ),
+    )
+    .orderBy(products.sortOrder);
+}
+
 /* ── The deposit rail ─────────────────────────────────────────────────── */
 
 /**
@@ -348,27 +396,11 @@ export async function sendDepositInvoiceEmail(
   if (!claim) return "already_sent";
 
   try {
-    const basket = await getDb()
-      .select({
-        amountCents: engagementProducts.amountCents,
-        name: products.name,
-      })
-      .from(engagementProducts)
-      .innerJoin(products, eq(engagementProducts.productId, products.id))
-      .where(
-        and(
-          eq(engagementProducts.engagementId, engagement.id),
-          isNotNull(engagementProducts.paidAt),
-        ),
-      )
-      .orderBy(products.sortOrder);
+    const basket = await paidRowsForSession(engagement.id, session.id);
 
     const lines: InvoiceLine[] =
       basket.length > 0
-        ? basket.map((row) => ({
-            label: row.name,
-            amountCents: row.amountCents,
-          }))
+        ? basket.map(basketLine)
         : [
             {
               label: "Website build — deposit",
@@ -406,6 +438,79 @@ export async function sendDepositInvoiceEmail(
       subject: `Invoice — ${engagement.businessName} — paid`,
       doc,
       storagePath: `PDFs/${engagement.id}/${invoiceFilename(doc)}`,
+    });
+
+    return "sent";
+  } catch (error) {
+    await releaseInvoiceEmail(claim);
+    throw error;
+  }
+}
+
+/* ── The extras rail (FIN-8) ──────────────────────────────────────────── */
+
+/**
+ * The paid invoice for an add-ons page purchase: exactly the rows that one
+ * extras session bought, nothing bought before it, GST when Stripe Tax
+ * collected it (D-FIN-2).
+ *
+ * Same claim-before-send as the deposit's, keyed by the session, so a replay
+ * sends nothing and a failed send is retried by Stripe's redelivery.
+ */
+export async function sendExtrasInvoiceEmail(
+  engagement: Engagement,
+  session: Stripe.Checkout.Session,
+): Promise<"sent" | "already_sent" | "skipped"> {
+  const claim = await claimInvoiceEmail(session.id, "extras_paid");
+  if (!claim) return "already_sent";
+
+  try {
+    const basket = await paidRowsForSession(engagement.id, session.id);
+
+    const lines: InvoiceLine[] =
+      basket.length > 0
+        ? basket.map(basketLine)
+        : [
+            {
+              label: "Website services",
+              amountCents: session.amount_subtotal ?? session.amount_total ?? 0,
+            },
+          ];
+
+    const taxCents = session.total_details?.amount_tax || null;
+
+    const doc: InvoiceDocument = {
+      title: "Invoice",
+      reference:
+        typeof session.payment_intent === "string"
+          ? session.payment_intent
+          : (session.payment_intent?.id ?? session.id),
+      issuedAt: new Date(),
+      billToName: engagement.businessName,
+      billToContact: engagement.contactName,
+      lines,
+      taxCents,
+      totalCents:
+        session.amount_total ??
+        lines.reduce((sum, l) => sum + l.amountCents, 0) + (taxCents ?? 0),
+      currency: session.currency ?? engagement.currency,
+      paid: true,
+      // [COPY — draft] Taylor's to replace.
+      note: "Paid in full — this is your record of what you added. Taylor will be in touch about when the work starts.",
+      gstNumber: agoraGstNumber(),
+    };
+
+    await warnIfNoGstNumber(engagement.businessName);
+
+    await deliverInvoice({
+      claimId: claim,
+      to: engagement.contactEmail,
+      subject: `Invoice — ${engagement.businessName} — paid`,
+      doc,
+      // The session id in the path: two purchases on one day share a
+      // filename, and the archive upserts — the second must not replace
+      // the first.
+      storagePath: `PDFs/${engagement.id}/${session.id}-${invoiceFilename(doc)}`,
     });
 
     return "sent";

@@ -1,4 +1,12 @@
-import { and, eq, getTableColumns, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  eq,
+  getTableColumns,
+  inArray,
+  isNull,
+  or,
+  sql,
+} from "drizzle-orm";
 import type Stripe from "stripe";
 import { getDb } from "@/db/client";
 import {
@@ -161,7 +169,8 @@ async function fromCheckoutSession(
   settledAt: Date | undefined,
 ): Promise<IncomingOrder> {
   const metadataEngagementId = session.metadata?.engagement_id?.trim() || null;
-  const email = session.customer_details?.email ?? session.customer_email ?? null;
+  const email =
+    session.customer_details?.email ?? session.customer_email ?? null;
 
   const link = await resolveLink(metadataEngagementId, email);
   const status = checkoutStatus(session);
@@ -282,7 +291,9 @@ function stamp(date: Date): string {
   return date.toISOString();
 }
 
-function idOf(value: string | { id: string } | null | undefined): string | null {
+function idOf(
+  value: string | { id: string } | null | undefined,
+): string | null {
   if (!value) return null;
   return typeof value === "string" ? value : value.id;
 }
@@ -308,7 +319,8 @@ function invoicePaymentIntentId(invoice: Stripe.Invoice): string | null {
  * Which basket rows this order bought, matched by Stripe price id against the
  * catalogue and scoped to the order's engagement.
  *
- * Fills `order_id` where null and stamps `paid_at` where null. A row the
+ * Fills `order_id` where null and stamps `paid_at` where null. A row that
+ * records its Checkout session links only to that session's order. A row the
  * webhook already stamped keeps its timestamp and gains only the link — which
  * is exactly the shape a hand-set `paid_at` with an unstamped basket leaves
  * behind, and exactly what the backfill is for.
@@ -345,6 +357,14 @@ async function linkBasketRows(
           engagementProducts.productId,
           matched.map((product) => product.id),
         ),
+        // A row that names its session belongs to that payment only (FIN-8):
+        // with repeatable rows, the same product can sit on an engagement
+        // twice, paid by one session and pending on another. Rows written
+        // before sessions were recorded carry null and link as before.
+        or(
+          isNull(engagementProducts.checkoutSessionId),
+          eq(engagementProducts.checkoutSessionId, order.stripeObjectId),
+        ),
       ),
     );
 }
@@ -376,7 +396,10 @@ async function reconcileEngagement(
     .select({ id: products.id })
     .from(products)
     .where(
-      and(inArray(products.stripePriceId, priceIds), eq(products.kind, "build")),
+      and(
+        inArray(products.stripePriceId, priceIds),
+        eq(products.kind, "build"),
+      ),
     )
     .limit(1);
 

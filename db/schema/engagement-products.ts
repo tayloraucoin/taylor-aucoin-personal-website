@@ -1,8 +1,10 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgTable,
+  text,
   timestamp,
   uniqueIndex,
   uuid,
@@ -21,9 +23,17 @@ import { products } from "./products";
  * settlement path, never by the browser's return.
  *
  * A client who backs out and re-selects gets their unpaid rows replaced;
- * paid rows are history and are never rewritten. The unique index makes
+ * paid rows are history and are never rewritten. The once-only index makes
  * "bought the same add-on twice" a database impossibility rather than a
- * refund conversation.
+ * refund conversation — for every row that is not `repeatable` (FIN-8,
+ * M-FIN-6). A repeatable row (extra pages, a written post, a round of
+ * changes) may be bought again, one purchase per row; the pending index
+ * still allows only one unpaid row per product, so replacement stays the
+ * rule for an abandoned attempt.
+ *
+ * `checkout_session_id` names the Checkout session that created the row, so
+ * settlement stamps, the ledger links, and the invoice lists exactly that
+ * session's rows. Null on rows written before FIN-8.
  */
 export const engagementProducts = pgTable(
   "engagement_products",
@@ -34,6 +44,7 @@ export const engagementProducts = pgTable(
       .notNull(),
 
     amountCents: integer("amount_cents").notNull(),
+    checkoutSessionId: text("checkout_session_id"),
     engagementId: uuid("engagement_id")
       .notNull()
       .references(() => engagements.id, { onDelete: "cascade" }),
@@ -48,13 +59,20 @@ export const engagementProducts = pgTable(
       .notNull()
       .references(() => products.id),
     quantity: integer("quantity").notNull().default(1),
+    /** Copied from `products.repeatable` at insert; read by the indexes below. */
+    repeatable: boolean("repeatable").notNull().default(false),
   },
   (table) => [
-    uniqueIndex("engagement_products_once_idx").on(
-      table.engagementId,
-      table.productId,
-    ),
+    uniqueIndex("engagement_products_once_idx")
+      .on(table.engagementId, table.productId)
+      .where(sql`not repeatable`),
+    uniqueIndex("engagement_products_pending_idx")
+      .on(table.engagementId, table.productId)
+      .where(sql`paid_at is null`),
     index("engagement_products_order_id_idx").on(table.orderId),
+    index("engagement_products_checkout_session_id_idx").on(
+      table.checkoutSessionId,
+    ),
   ],
 );
 

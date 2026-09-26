@@ -81,6 +81,11 @@ migration, if any, has been run by Taylor — the builder authors SQL and stops.
       Size S · Reversible · Copy is Taylor's
       Depends on FIN-6.
 
+- [x] **FIN-8** — The add-ons page: static per-client URL with a
+      pre-selection, repeatable rows, coded rounds, `extras_paid` invoice,
+      admin link builder. **Code complete 2026-09-26 — awaiting `0022`.**
+      Supersedes FIN-6's entry point and FIN-7's email (M-FIN-7).
+
 ## Later — named, not cut
 
 - **`/admin/finances/revenue`** — monthly totals from `orders`. Small once the

@@ -155,6 +155,13 @@
       "when": 1790371970172,
       "tag": "0021_fantastic_maddog",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790462215191,
+      "tag": "0022_fin8_repeatable_extras",
+      "breakpoints": true
     }
   ]
 }

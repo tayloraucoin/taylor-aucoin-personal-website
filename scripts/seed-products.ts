@@ -239,6 +239,22 @@ export const STRIPE_PRODUCTS = {
       "A blog post written from your own brain dump and tuned for the keywords you're chasing. Priced per post.",
     taxCode: TAX_EDITING,
   },
+  "Coded · Business card": {
+    description:
+      "A double-sided business card designed from your brand kit, delivered as print-ready files.",
+    // Design delivered as files, like the logo. Printing is not included.
+    taxCode: TAX_ARTWORK,
+  },
+  // FIN-8. The coded track's rounds, sold from the add-ons page.
+  "Coded · Website changes — standard round": {
+    description: "New sections, layout changes, rewritten copy, or a new page.",
+    taxCode: TAX_WEBSITE,
+  },
+  "Coded · Website changes — small round": {
+    description:
+      "A few text edits, swapping photos, updating details. Batched into one round.",
+    taxCode: TAX_WEBSITE,
+  },
 } as const;
 
 export type StripeProductName = keyof typeof STRIPE_PRODUCTS;
@@ -291,6 +307,9 @@ const SEED_PRODUCT_IDS = {
   showcase_supabase_setup: "00000000-0000-4000-9000-000000000024",
   showcase_seo_blog: "00000000-0000-4000-9000-000000000025",
   showcase_seo_post: "00000000-0000-4000-9000-000000000026",
+  showcase_changes_standard: "00000000-0000-4000-9000-000000000027",
+  showcase_changes_small: "00000000-0000-4000-9000-000000000028",
+  showcase_business_card: "00000000-0000-4000-9000-000000000029",
 } as const;
 
 export type SeedProductKey = keyof typeof SEED_PRODUCT_IDS;
@@ -765,6 +784,8 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     description:
       "An additional page beyond the standard five. Priced per page.",
     priceCents: 15000,
+    // Bought again as often as it is needed (FIN-8, M-FIN-6).
+    repeatable: true,
     offeredAtCheckout: false,
     sortOrder: 20,
   },
@@ -780,6 +801,8 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     name: "Platform · Website changes — standard round",
     description: "New sections, layout changes, rewritten copy, or a new page.",
     priceCents: 50000,
+    // Bought again as often as it is needed (FIN-8, M-FIN-6).
+    repeatable: true,
     offeredAtCheckout: false,
     sortOrder: 30,
   },
@@ -795,6 +818,8 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     name: "Platform · Website changes — small round",
     description: "A few text edits, swapping photos, updating hours.",
     priceCents: 25000,
+    // Bought again as often as it is needed (FIN-8, M-FIN-6).
+    repeatable: true,
     offeredAtCheckout: false,
     sortOrder: 31,
   },
@@ -974,6 +999,27 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     sortOrder: 115,
   },
   {
+    // Added 2026-09-26. Designed on the same brand kit as the site, with QR
+    // codes that point at redirects on the client's own domain, so a printed
+    // card never goes out of date. Not on the pay screen (the published
+    // add-ons list does not carry it yet); sold from the add-ons page.
+    id: SEED_PRODUCT_IDS.showcase_business_card,
+    key: "showcase_business_card",
+    stripe: {
+      product: "Coded · Business card",
+      nickname: "Design",
+      env: "PRICE_SHOWCASE_BUSINESS_CARD",
+    },
+    kind: "addon",
+    track: "showcase",
+    name: "Business card",
+    description:
+      "A double-sided card designed on the same system as your site, delivered as print-ready files for any printer. Its QR codes point at your own domain, so they never go out of date.",
+    priceCents: 25000,
+    offeredAtCheckout: false,
+    sortOrder: 116,
+  },
+  {
     id: SEED_PRODUCT_IDS.showcase_booking,
     key: "showcase_booking",
     stripe: {
@@ -1008,6 +1054,8 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     description:
       "An additional page beyond the included five. Priced per page.",
     priceCents: 15000,
+    // Bought again as often as it is needed (FIN-8, M-FIN-6).
+    repeatable: true,
     offeredAtCheckout: false,
     sortOrder: 120,
   },
@@ -1088,8 +1136,50 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
     description:
       "You brain-dump what you know, I turn it into a polished post tuned for the keywords you're chasing. Priced per post.",
     priceCents: 50000,
+    // Bought again as often as it is needed (FIN-8, M-FIN-6).
+    repeatable: true,
     offeredAtCheckout: false,
     sortOrder: 121,
+  },
+  {
+    // Rounds of changes after the build (FIN-8), at the tiers published on
+    // /websites/coded#changes (`changeTiers`, shared with the platform page).
+    // Own products rather than prices under the platform's: an invoice line
+    // reading "Platform · Website changes" would describe the other build.
+    // Sold from the client's add-ons page (FIN-8, self-serve) — never a
+    // checkbox on the pay screen.
+    id: SEED_PRODUCT_IDS.showcase_changes_standard,
+    key: "showcase_changes_standard",
+    stripe: {
+      product: "Coded · Website changes — standard round",
+      nickname: "Standard round",
+      env: "PRICE_SHOWCASE_CHANGES_STANDARD",
+    },
+    kind: "round",
+    track: "showcase",
+    name: "Round of changes — standard",
+    description: "New sections, layout changes, rewritten copy, or a new page.",
+    priceCents: 50000,
+    repeatable: true,
+    offeredAtCheckout: false,
+    sortOrder: 125,
+  },
+  {
+    id: SEED_PRODUCT_IDS.showcase_changes_small,
+    key: "showcase_changes_small",
+    stripe: {
+      product: "Coded · Website changes — small round",
+      nickname: "Small round",
+      env: "PRICE_SHOWCASE_CHANGES_SMALL",
+    },
+    kind: "round",
+    track: "showcase",
+    name: "Round of changes — small",
+    description: "A few text edits, swapping photos, updating details.",
+    priceCents: 25000,
+    repeatable: true,
+    offeredAtCheckout: false,
+    sortOrder: 126,
   },
   {
     // Present but dark. Taylor's ruling: "don't charge for the maintenance
@@ -1145,6 +1235,7 @@ export async function seedProducts(): Promise<void> {
           name: row.name,
           offeredAtCheckout: row.offeredAtCheckout ?? false,
           priceCents: row.priceCents,
+          repeatable: row.repeatable ?? false,
           sortOrder: row.sortOrder ?? 0,
           track: row.track ?? "durable",
           // Stripe is the source of truth for ids; this map is only a
