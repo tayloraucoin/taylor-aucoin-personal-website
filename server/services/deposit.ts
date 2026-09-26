@@ -4,6 +4,7 @@ import { getDb } from "@/db/client";
 import { engagementProducts, engagements, products } from "@/db/schema";
 import {
   adminTestPaymentEnabled,
+  isDev,
   requireEnv,
   stripeTaxEnabled,
 } from "@/lib/env";
@@ -91,16 +92,29 @@ export function getStripe(): Stripe {
   if (!stripe) {
     const key = requireEnv("STRIPE_SECRET_KEY");
 
-    // A live key only ever belongs to production. The tier collapse gives
-    // local and staging the test key, so a live one here means a canonical
-    // `STRIPE_SECRET_KEY` was set by hand and slipped past it — and every
-    // Checkout this process opened would take real money for a test
-    // (2026-09-26). Refused here, the one place a Stripe client is made, so
-    // no path can open live Checkout from a laptop.
-    if (key.startsWith("sk_live_") && resolveAppTier() !== "production") {
-      throw new Error(
-        `A live Stripe key is loaded on the "${resolveAppTier()}" tier. Only production may use one; remove STRIPE_SECRET_KEY from .env.local and let the tier resolve STRIPE_STAGING_SECRET_KEY.`,
-      );
+    // Two ways a laptop reaches live Stripe, both refused here — the one
+    // place a Stripe client is made — so no path can open live Checkout from
+    // a dev server (2026-09-26, a local test opened a `cs_live_` session):
+    //
+    // - `APP_ENVIRONMENT=production` under `next dev`. The tier collapse then
+    //   hands out the live key and the production database, by design, for
+    //   scripts; a dev server clicking through pages is not what it is for.
+    //   Scripts run outside `next dev` (NODE_ENV unset) and are unaffected —
+    //   `charge:extra-pages` and `orders:backfill` legitimately use live.
+    // - A live key on a non-production tier: a canonical `STRIPE_SECRET_KEY`
+    //   set by hand, which slips past the tier collapse entirely.
+    if (key.startsWith("sk_live_")) {
+      const tier = resolveAppTier();
+      if (isDev()) {
+        throw new Error(
+          `Refusing live Stripe under \`next dev\` (APP_ENVIRONMENT=${tier}). Set APP_ENVIRONMENT=local in .env.local to test with the staging (test-mode) key; keep production for scripts.`,
+        );
+      }
+      if (tier !== "production") {
+        throw new Error(
+          `A live Stripe key is loaded on the "${tier}" tier. Only production may use one; remove STRIPE_SECRET_KEY from .env.local and let the tier resolve STRIPE_STAGING_SECRET_KEY.`,
+        );
+      }
     }
 
     stripe = new Stripe(key, { apiVersion: STRIPE_API_VERSION });
