@@ -11,6 +11,7 @@ import {
 } from "@/db/schema";
 import { readEnv } from "@/lib/env";
 import { groupReviewAnswers, scaleChange, tenths } from "@/lib/review/answers";
+import { adminRoutes } from "@/lib/routes";
 import type {
   ReviewAnswer,
   ReviewAnswers,
@@ -177,6 +178,8 @@ export async function resolveRoundFromRequest(
 export type ReviewRoundSummary = ReviewRound & {
   liveCommentCount: number;
   submissionCount: number;
+  /** How many of those came from the final review form (M-REV-7). */
+  finalSubmissionCount: number;
 };
 
 /**
@@ -196,18 +199,25 @@ export async function loadReviewRoundSummaries(): Promise<
       .where(isNull(reviewComments.deletedAt))
       .groupBy(reviewComments.roundId),
     db
-      .select({ roundId: reviewSubmissions.roundId, n: count() })
+      .select({
+        roundId: reviewSubmissions.roundId,
+        n: count(),
+        final: count(
+          sql`case when ${reviewSubmissions.payload}->>'stage' = 'final' then 1 end`,
+        ),
+      })
       .from(reviewSubmissions)
       .groupBy(reviewSubmissions.roundId),
   ]);
 
   const commentsBy = new Map(comments.map((c) => [c.roundId, c.n]));
-  const submissionsBy = new Map(submissions.map((c) => [c.roundId, c.n]));
+  const submissionsBy = new Map(submissions.map((c) => [c.roundId, c]));
 
   return rounds.map((row) => ({
     ...toReviewRound(row),
     liveCommentCount: commentsBy.get(row.id) ?? 0,
-    submissionCount: submissionsBy.get(row.id) ?? 0,
+    submissionCount: submissionsBy.get(row.id)?.n ?? 0,
+    finalSubmissionCount: submissionsBy.get(row.id)?.final ?? 0,
   }));
 }
 
@@ -397,27 +407,12 @@ export async function recordReviewSubmission(
 
   if (!round) return { created: true };
 
-  const sent = await notifyOps(`Review round submitted · ${round.clientName}`, [
-    `Round:            ${round.label}`,
-    `Client:           ${round.clientName}`,
-    `Round id:         ${round.id}`,
-    ``,
-    `Preferred kit:    ${input.preferredKit ?? "—"}`,
-    `Preferred layout: ${input.preferredLayout ?? "—"}`,
-    `Preferred mock:   ${input.preferredMock ?? "—"}`,
-    `Comments left:    ${input.commentCount}`,
-    ``,
-    `What made them flinch:`,
-    input.flinch?.trim() ? input.flinch : `(nothing written)`,
-    ``,
-    `What they'd fight for:`,
-    input.fightFor?.trim() ? input.fightFor : `(nothing written)`,
-    ``,
-    `Notes:`,
-    input.notes?.trim() ? input.notes : `(nothing written)`,
-    ``,
-    ...formatReviewAnswers(input.answers),
-  ]);
+  const sent = await notifyOps(
+    input.stage === "final"
+      ? `Final review submitted · ${round.clientName}`
+      : `Review round submitted · ${round.clientName}`,
+    formatSubmissionEmail(round, input),
+  );
 
   if (!sent) {
     // The row is filed either way; the email is a courtesy, not the record.
@@ -427,6 +422,63 @@ export async function recordReviewSubmission(
   }
 
   return { created: true };
+}
+
+/**
+ * The submission email's body (M-REV-4). A final review (M-REV-7) has no
+ * kit, layout or demo to prefer and asks its questions page by page, so it
+ * leads with the answers and keeps only the "anything else" box; a design
+ * round prints as it always has. Both end on the admin page, which holds
+ * the comments the email does not. Exported so the body can be checked
+ * without a send.
+ */
+export function formatSubmissionEmail(
+  round: Pick<ReviewRound, "id" | "label" | "clientName">,
+  input: ReviewSubmissionInput,
+): string[] {
+  const written = (text: string | null) =>
+    text?.trim() ? text : `(nothing written)`;
+  const origin = readEnv("NEXT_PUBLIC_SITE_URL")?.replace(/\/+$/, "") ?? "";
+  const adminLink = `${origin}${adminRoutes.designReview(round.id)}`;
+
+  if (input.stage === "final") {
+    return [
+      `Final review, the last included round of changes.`,
+      ``,
+      `Client:           ${round.clientName}`,
+      `Round id:         ${round.id}`,
+      `Comments left:    ${input.commentCount}`,
+      `In the admin:     ${adminLink}`,
+      ``,
+      ...formatReviewAnswers(input.answers),
+      ``,
+      `Anything else:`,
+      written(input.notes),
+    ];
+  }
+
+  return [
+    `Round:            ${round.label}`,
+    `Client:           ${round.clientName}`,
+    `Round id:         ${round.id}`,
+    `In the admin:     ${adminLink}`,
+    ``,
+    `Preferred kit:    ${input.preferredKit ?? "—"}`,
+    `Preferred layout: ${input.preferredLayout ?? "—"}`,
+    `Preferred mock:   ${input.preferredMock ?? "—"}`,
+    `Comments left:    ${input.commentCount}`,
+    ``,
+    `What made them flinch:`,
+    written(input.flinch),
+    ``,
+    `What they'd fight for:`,
+    written(input.fightFor),
+    ``,
+    `Notes:`,
+    written(input.notes),
+    ``,
+    ...formatReviewAnswers(input.answers),
+  ];
 }
 
 /**
@@ -476,6 +528,7 @@ function formatAnswerValue(answer: ReviewAnswer): string[] {
     case "choice":
       return [`  ${answer.value.label}`];
     case "text":
-      return [`  ${answer.value}`];
+      // A change list is one change per line; keep every line under its label.
+      return answer.value.split("\n").map((line) => `  ${line}`);
   }
 }

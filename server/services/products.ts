@@ -1,4 +1,4 @@
-import { and, asc, eq, isNotNull } from "drizzle-orm";
+import { and, asc, eq, gt, inArray, isNotNull } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { engagementProducts, products, type ProductRow } from "@/db/schema";
 import type { IntakeTrackKey } from "@/lib/types/intake";
@@ -16,7 +16,7 @@ import type { IntakeTrackKey } from "@/lib/types/intake";
 /** What a purchase surface needs to render and charge one product. */
 export type SellableProduct = Pick<
   ProductRow,
-  "id" | "key" | "name" | "description" | "priceCents" | "track"
+  "id" | "key" | "name" | "description" | "priceCents" | "repeatable" | "track"
 > & { stripePriceId: string };
 
 function toSellable(row: ProductRow): SellableProduct | null {
@@ -28,6 +28,7 @@ function toSellable(row: ProductRow): SellableProduct | null {
     name: row.name,
     description: row.description,
     priceCents: row.priceCents,
+    repeatable: row.repeatable,
     track: row.track,
     stripePriceId: row.stripePriceId,
   };
@@ -85,6 +86,62 @@ export async function findSellableProductByKey(
     .limit(1);
 
   return row ? toSellable(row) : null;
+}
+
+/**
+ * One row an invoice link may sell (FIN-8), sellable or not.
+ *
+ * `sellable` is false for a row with no Stripe price on this tier: it is
+ * listed so the admin can see why it cannot be offered, and never charged.
+ * `offeredAtCheckout` is carried because it decides what a client may add to
+ * a link for themselves (the pay screen's published set, M-PORT-38).
+ */
+export type InvoiceableProduct = Pick<
+  ProductRow,
+  | "id"
+  | "key"
+  | "name"
+  | "description"
+  | "kind"
+  | "offeredAtCheckout"
+  | "priceCents"
+  | "repeatable"
+> & { stripePriceId: string | null };
+
+/**
+ * Everything an invoice link can sell on one track, in display order: the
+ * add-ons (one-time and counted) and the rounds of changes. Never a build
+ * row (the deposit, the balance, a negotiated build), never a care plan,
+ * never an inactive row, and never a $0 row — a free line is a promo grant,
+ * and a grant a link could carry would be a pricing bug.
+ */
+export async function listInvoiceableProducts(
+  track: IntakeTrackKey,
+): Promise<InvoiceableProduct[]> {
+  const rows = await getDb()
+    .select()
+    .from(products)
+    .where(
+      and(
+        eq(products.isActive, true),
+        eq(products.track, track),
+        inArray(products.kind, ["addon", "round"]),
+        gt(products.priceCents, 0),
+      ),
+    )
+    .orderBy(asc(products.sortOrder));
+
+  return rows.map((row) => ({
+    id: row.id,
+    key: row.key,
+    name: row.name,
+    description: row.description,
+    kind: row.kind,
+    offeredAtCheckout: row.offeredAtCheckout,
+    priceCents: row.priceCents,
+    repeatable: row.repeatable,
+    stripePriceId: row.stripePriceId,
+  }));
 }
 
 /**

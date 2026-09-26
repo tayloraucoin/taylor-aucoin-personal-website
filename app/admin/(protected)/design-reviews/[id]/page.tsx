@@ -22,6 +22,9 @@ const WORDS = [
   { key: "notes", label: "Anything else / general impressions" },
 ] as const;
 
+/** A final review asks page by page; only its "anything else" box is free. */
+const FINAL_WORDS = [{ key: "notes", label: "Anything else" }] as const;
+
 /** Comments by the page they were left on, pages in first-comment order. */
 function byPath(comments: ReviewComment[]): [string, ReviewComment[]][] {
   const groups = new Map<string, ReviewComment[]>();
@@ -46,7 +49,8 @@ function siteHref(siteUrl: string | null, path: string): string | null {
 /**
  * One design-review round (REV-3): every form the client sent, with each
  * structured answer and note, and every live comment grouped by the page it
- * was pinned on. Read-only; answer labels come from the stored snapshot.
+ * was pinned on. A final review (M-REV-7) is marked and skips the design
+ * round's kit / layout / demo picks. Read-only; answer labels come from the stored snapshot.
  */
 export default async function DesignReviewPage({
   params,
@@ -122,9 +126,10 @@ export default async function DesignReviewPage({
             >
               <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h3 className="text-sm text-(--color-ink)">
+                  {payload.stage === "final" ? "Final review" : "Design round"}
                   {submissions.length > 1
-                    ? `Form ${i + 1} of ${submissions.length}`
-                    : "Form"}
+                    ? ` · form ${i + 1} of ${submissions.length}`
+                    : ""}
                 </h3>
                 <span className="text-xs text-(--color-dim)">
                   received {WHEN.format(receivedAt)} · {payload.commentCount}{" "}
@@ -132,25 +137,27 @@ export default async function DesignReviewPage({
                 </span>
               </header>
 
-              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-                <dt className="text-(--color-dim)">Kit</dt>
-                <dd className="text-(--color-body)">
-                  {payload.preferredKit ?? "—"}
-                </dd>
-                <dt className="text-(--color-dim)">Layout</dt>
-                <dd className="text-(--color-body)">
-                  {payload.preferredLayout ?? "—"}
-                </dd>
-                <dt className="text-(--color-dim)">Demo</dt>
-                <dd className="text-(--color-body)">
-                  {payload.preferredMock ?? "—"}
-                </dd>
-              </dl>
+              {payload.stage === "final" ? null : (
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                  <dt className="text-(--color-dim)">Kit</dt>
+                  <dd className="text-(--color-body)">
+                    {payload.preferredKit ?? "—"}
+                  </dd>
+                  <dt className="text-(--color-dim)">Layout</dt>
+                  <dd className="text-(--color-body)">
+                    {payload.preferredLayout ?? "—"}
+                  </dd>
+                  <dt className="text-(--color-dim)">Demo</dt>
+                  <dd className="text-(--color-body)">
+                    {payload.preferredMock ?? "—"}
+                  </dd>
+                </dl>
+              )}
 
               <ReviewAnswersView answers={payload.answers} />
 
               <div className="flex flex-col gap-3">
-                {WORDS.map((w) => (
+                {(payload.stage === "final" ? FINAL_WORDS : WORDS).map((w) => (
                   <div key={w.key} className="flex flex-col gap-1">
                     <h4 className="text-xs tracking-wide text-(--color-dim) uppercase">
                       {w.label}

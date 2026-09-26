@@ -86,6 +86,7 @@ type ReviewSubmission = {
   commentCount: number;            // integer; how many live comments the client site counted at submit time
   submittedAt: string;             // ISO 8601
   answers?: ReviewAnswers | null; // structured answers (§4a); absent or null before KR-6 / REV-2
+  stage?: "design" | "final" | null; // which form sent it (M-REV-7); absent or null reads as "design"
 };
 
 type ReviewAnswers = {
@@ -122,6 +123,7 @@ All the shapes are validated with zod on both sides. The zod schemas live at `li
 - **The scale is the intake's:** 0.0 to 7.0 in tenths, low end at 0. `baseline` is the intake answer to the same slider, or null.
 - **The backend checks shape, not identity.** Bounds, kinds and unique ids are validated; which questions a round asks is the client site's business.
 - **The old fields keep their meaning.** `flinch`, `fightFor` and `notes` are still the three free-text boxes and are not repeated in `items`. `preferredKit`, `preferredLayout` and `preferredMock` are filled from the reviewer's favourite combination.
+- **Stage (M-REV-7).** `stage: "final"` marks the final review of the built site (the client site's `/review/final`): the last included round of changes, asked page by page, with `preferredKit` / `preferredLayout` / `preferredMock` / `flinch` / `fightFor` null and only `notes` free. The backend emails it as "Final review submitted" without the design fields and marks it on the admin page. It joins the client's existing round; no new round, no migration.
 - **Versioning.** `schema` names the question set. A new client's round changes the set and the string; the wire shape stays.
 
 ## 5. Storage (taylor-aucoin)

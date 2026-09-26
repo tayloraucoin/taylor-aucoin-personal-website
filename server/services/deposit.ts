@@ -4,9 +4,11 @@ import { getDb } from "@/db/client";
 import { engagementProducts, engagements, products } from "@/db/schema";
 import {
   adminTestPaymentEnabled,
+  isDev,
   requireEnv,
   stripeTaxEnabled,
 } from "@/lib/env";
+import { resolveAppTier } from "@/lib/config/env/resolve-tier-env";
 import { withoutBundled } from "@/lib/intake/addon-bundles";
 import { resolvePromoCode } from "@/lib/intake/promo";
 import { TERMS_VERSION } from "@/lib/legal/version";
@@ -87,9 +89,36 @@ let stripe: Stripe | null = null;
  * secret — a second `new Stripe(...)` anywhere would be a second pin to drift.
  */
 export function getStripe(): Stripe {
-  stripe ??= new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
-    apiVersion: STRIPE_API_VERSION,
-  });
+  if (!stripe) {
+    const key = requireEnv("STRIPE_SECRET_KEY");
+
+    // Two ways a laptop reaches live Stripe, both refused here — the one
+    // place a Stripe client is made — so no path can open live Checkout from
+    // a dev server (2026-09-26, a local test opened a `cs_live_` session):
+    //
+    // - `APP_ENVIRONMENT=production` under `next dev`. The tier collapse then
+    //   hands out the live key and the production database, by design, for
+    //   scripts; a dev server clicking through pages is not what it is for.
+    //   Scripts run outside `next dev` (NODE_ENV unset) and are unaffected —
+    //   `charge:extra-pages` and `orders:backfill` legitimately use live.
+    // - A live key on a non-production tier: a canonical `STRIPE_SECRET_KEY`
+    //   set by hand, which slips past the tier collapse entirely.
+    if (key.startsWith("sk_live_")) {
+      const tier = resolveAppTier();
+      if (isDev()) {
+        throw new Error(
+          `Refusing live Stripe under \`next dev\` (APP_ENVIRONMENT=${tier}). Set APP_ENVIRONMENT=local in .env.local to test with the staging (test-mode) key; keep production for scripts.`,
+        );
+      }
+      if (tier !== "production") {
+        throw new Error(
+          `A live Stripe key is loaded on the "${tier}" tier. Only production may use one; remove STRIPE_SECRET_KEY from .env.local and let the tier resolve STRIPE_STAGING_SECRET_KEY.`,
+        );
+      }
+    }
+
+    stripe = new Stripe(key, { apiVersion: STRIPE_API_VERSION });
+  }
   return stripe;
 }
 
@@ -207,7 +236,9 @@ export async function resolvePromoEffect(
   // promised nothing would be charged, and a session that contradicts the
   // screen is the one thing this file must never create.
   if (grant.waivesDeposit) {
-    throw new Error("This code waives the deposit; nothing is charged with it.");
+    throw new Error(
+      "This code waives the deposit; nothing is charged with it.",
+    );
   }
 
   const overrideKey =
@@ -569,9 +600,11 @@ export async function createDepositCheckout(
       // an amount already multiplied would make the row disagree with itself
       // the first time anyone divided it back out.
       amountCents: line.product.priceCents,
+      checkoutSessionId: session.id,
       engagementId: engagement.id,
       productId: line.product.id,
       quantity: line.quantity,
+      repeatable: line.product.repeatable,
     })),
   );
 
@@ -667,9 +700,11 @@ export async function createExtraPageCheckout(
 
   await db.insert(engagementProducts).values({
     amountCents: product.priceCents,
+    checkoutSessionId: session.id,
     engagementId: engagement.id,
     productId: product.id,
     quantity: pages,
+    repeatable: product.repeatable,
   });
 
   return session.url;
@@ -779,12 +814,246 @@ export async function createAddonCheckout(
 
   await db.insert(engagementProducts).values({
     amountCents: product.priceCents,
+    checkoutSessionId: session.id,
     engagementId: engagement.id,
     productId: product.id,
     quantity: 1,
+    repeatable: product.repeatable,
   });
 
   return session.url;
+}
+
+/**
+ * Whether an engagement's build is settled: paid, or waived (FIN-8, D-FIN-4).
+ *
+ * The gate for selling anything after the build. An engagement that still
+ * owes its deposit has bought nothing yet, and nothing is sold on top of
+ * nothing. A waived build (the free code, or `--no-deposit`) is settled: the
+ * client is through the pay screen by the route Taylor gave them.
+ */
+export function isBuildSettled(
+  engagement: Pick<Engagement, "paidAt" | "depositRequired">,
+): boolean {
+  return engagement.paidAt !== null || !engagement.depositRequired;
+}
+
+/** One line of an extras session: a catalogue row and how many. */
+export type ExtrasLine = { product: SellableProduct; quantity: number };
+
+/**
+ * Clears the way for a new extras attempt on this engagement.
+ *
+ * An abandoned Checkout session stays payable for a day, and its basket rows
+ * are what settlement stamps. Replacing those rows while the old page could
+ * still take money would leave a payment with nothing to stamp, so every
+ * unpaid row's session is closed in Stripe first, and only a session that is
+ * truly closed has its rows removed.
+ *
+ * Refuses — returns `"in_flight"` — when an earlier session has already
+ * completed and is waiting on its webhook (or on a bank debit): that money is
+ * moving, and a second attempt now would charge twice. Scoped to rows that
+ * carry a session; a pre-FIN-8 unpaid row is replaced as before.
+ */
+async function clearUnpaidAttempts(
+  engagementId: string,
+): Promise<"clear" | "in_flight"> {
+  const db = getDb();
+
+  const unpaid = await db
+    .select({ sessionId: engagementProducts.checkoutSessionId })
+    .from(engagementProducts)
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        isNull(engagementProducts.paidAt),
+      ),
+    );
+
+  const sessionIds = [
+    ...new Set(
+      unpaid
+        .map((row) => row.sessionId)
+        .filter((id): id is string => id !== null),
+    ),
+  ];
+
+  for (const sessionId of sessionIds) {
+    const existing = await getStripe().checkout.sessions.retrieve(sessionId);
+    if (existing.status === "complete") return "in_flight";
+    if (existing.status === "open") {
+      await getStripe().checkout.sessions.expire(sessionId);
+    }
+  }
+
+  await db
+    .delete(engagementProducts)
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        isNull(engagementProducts.paidAt),
+      ),
+    );
+
+  return "clear";
+}
+
+/**
+ * Opens hosted Checkout for the add-ons page's cart (FIN-8).
+ *
+ * The cart arrives already decided — which rows, how many — by
+ * `server/services/extras.ts`, which owns the rules about what the page
+ * may sell. This function owns the money mechanics and nothing else: the
+ * settled-build gate (again, because it is the one that builds a Stripe
+ * line), the price check against Stripe, the session, and the basket rows.
+ *
+ * Settles through `settleExtrasSession` and **never** `fulfillDeposit`:
+ * `paid_at` on the engagement means the build was bought (M-PORT-4).
+ *
+ * No statement descriptor suffix. The ancillary paths above print
+ * "DEPOSIT", which is wrong for a round of changes three months after
+ * launch; the account's own descriptor names the business, and that is the
+ * honest line for a purchase that is not a deposit.
+ */
+export async function createExtrasCheckout(input: {
+  engagement: Engagement;
+  lines: readonly ExtrasLine[];
+  successUrl: string;
+  cancelUrl: string;
+}): Promise<
+  { status: "opened"; url: string; sessionId: string } | { status: "in_flight" }
+> {
+  const { engagement, lines } = input;
+
+  if (!isBuildSettled(engagement)) {
+    throw new Error("The build must be settled before anything is sold on it.");
+  }
+
+  if (lines.length === 0) throw new Error("Nothing to charge.");
+
+  for (const line of lines) {
+    const max = line.product.repeatable ? EXTRA_PAGES_MAX : 1;
+    if (
+      !Number.isInteger(line.quantity) ||
+      line.quantity < 1 ||
+      line.quantity > max
+    ) {
+      throw new Error(`Bad quantity for ${line.product.key}.`);
+    }
+  }
+
+  await assertPricesMatchStripe(lines.map((line) => line.product));
+
+  if ((await clearUnpaidAttempts(engagement.id)) === "in_flight") {
+    return { status: "in_flight" };
+  }
+
+  const session = await getStripe().checkout.sessions.create({
+    mode: "payment",
+    customer_email: engagement.contactEmail,
+    metadata: {
+      engagement_id: engagement.id,
+      // Read by the settlement handler, which must NOT mark the build paid.
+      charge_kind: "extras",
+      // An audit echo for the Dashboard. Settlement reads the basket rows
+      // this session created, never this string.
+      product_keys: lines.map((line) => line.product.key).join(","),
+    },
+    line_items: lines.map((line) => ({
+      price: line.product.stripePriceId,
+      quantity: line.quantity,
+    })),
+    ...(stripeTaxEnabled() ? { automatic_tax: { enabled: true } } : {}),
+    success_url: input.successUrl,
+    cancel_url: input.cancelUrl,
+  });
+
+  if (!session.url) throw new Error("Stripe returned a session with no URL.");
+
+  await getDb()
+    .insert(engagementProducts)
+    .values(
+      lines.map((line) => ({
+        // The unit price, never the line total (see createDepositCheckout).
+        amountCents: line.product.priceCents,
+        checkoutSessionId: session.id,
+        engagementId: engagement.id,
+        productId: line.product.id,
+        quantity: line.quantity,
+        repeatable: line.product.repeatable,
+      })),
+    );
+
+  return { status: "opened", url: session.url, sessionId: session.id };
+}
+
+/**
+ * Settles an extras session: stamps the basket rows *this session* created.
+ *
+ * Scoped by session id rather than by product, because a repeatable row can
+ * now exist more than once on an engagement and only this session's rows are
+ * this payment's. Idempotent by the UPDATE's own predicate.
+ *
+ * `"missing"` means the session settled with no rows to stamp — they were
+ * replaced by another path that did not close this session first (the
+ * mid-intake add-on or the extra-pages CLI). The money is real, so the
+ * caller records the order and tells Taylor rather than dropping it.
+ */
+export async function settleExtrasSession(
+  engagementId: string,
+  sessionId: string,
+): Promise<"settled" | "already_settled" | "missing"> {
+  const db = getDb();
+
+  const stamped = await db
+    .update(engagementProducts)
+    .set({ paidAt: new Date() })
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        eq(engagementProducts.checkoutSessionId, sessionId),
+        isNull(engagementProducts.paidAt),
+      ),
+    )
+    .returning({ id: engagementProducts.id });
+
+  if (stamped.length > 0) return "settled";
+
+  const [existing] = await db
+    .select({ id: engagementProducts.id })
+    .from(engagementProducts)
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        eq(engagementProducts.checkoutSessionId, sessionId),
+      ),
+    )
+    .limit(1);
+
+  return existing ? "already_settled" : "missing";
+}
+
+/**
+ * Drops the unpaid basket rows of a session whose payment failed.
+ *
+ * A delayed payment that bounces leaves its session `complete` in Stripe,
+ * which `clearUnpaidAttempts` reads as money in flight — so without this the
+ * client's next attempt would be refused for good. Scoped to the session and
+ * to unpaid rows: nothing bought is touched, and a replay deletes nothing.
+ */
+export async function releaseFailedSession(
+  engagementId: string,
+  sessionId: string,
+): Promise<void> {
+  await getDb()
+    .delete(engagementProducts)
+    .where(
+      and(
+        eq(engagementProducts.engagementId, engagementId),
+        eq(engagementProducts.checkoutSessionId, sessionId),
+        isNull(engagementProducts.paidAt),
+      ),
+    );
 }
 
 /**

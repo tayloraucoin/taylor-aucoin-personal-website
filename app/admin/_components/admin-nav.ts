@@ -10,6 +10,7 @@ import {
   ListOrdered,
   MessageSquareText,
   PhoneCall,
+  Receipt,
   RefreshCw,
   Trophy,
   type LucideIcon,
@@ -139,6 +140,13 @@ export const NAV_SECTIONS: AdminNavSection[] = [
     label: "Finances",
     icon: CreditCard,
     items: [
+      {
+        // The add-ons link builder for one engagement (FIN-8).
+        title: "Invoice links",
+        href: adminRoutes.invoiceLinks(),
+        icon: Receipt,
+        ready: true,
+      },
       {
         title: "Revenue",
         href: adminRoutes.revenue,

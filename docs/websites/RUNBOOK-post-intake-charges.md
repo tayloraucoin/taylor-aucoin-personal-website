@@ -78,6 +78,22 @@ Selling anything else this way is a decision, not a constant edit — see
 M-PORT-38 for why the charge law was restated to permit exactly this and
 nothing more.
 
+## 5. The add-ons page (FIN-8, 2026-09-26)
+
+Every client whose build is paid or waived has one self-serve page:
+`/websites/coded/intake/add-ons?engagement=<id>`, optionally with
+`&add=<key>,<key>:<count>` to pre-select rows. It never expires and can be
+used again and again. Build the URL in **Admin → Finances → Invoice links**
+(pick the engagement, tick, copy) and put it wherever they will see it — a
+final review page, an email — once.
+
+They tick what they want (add-ons, extra pages or posts by count, rounds of
+changes) and pay on hosted Checkout. They get Agora's paid PDF invoice; you
+get "Add-ons paid". Their deposit state is untouched. Extra pages and rounds
+can be bought as often as needed (M-FIN-6); one-time add-ons cannot be bought
+twice, by database constraint. The client still starts every charge
+themselves (M-PORT-38 as amended by D-FIN-1). Section 1's CLI still works.
+
 ## 4. What must never happen
 
 - **A charge the client did not agree to out loud first, or start themselves.** Every path in sections 1–3 starts with you running something; section 4's starts with the client pressing a priced button on hosted Checkout.

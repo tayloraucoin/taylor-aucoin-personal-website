@@ -162,6 +162,24 @@ export default async function EngagementDetailPage({
         <MoneyTable {...detail.money} />
       </section>
 
+      {/* Their add-ons page (FIN-8). Only once the build is settled —
+          before that the page would refuse them. */}
+      {summary.paidAt || !summary.depositRequired ? (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm text-(--color-ink)">Add-ons page</h2>
+          <p className="text-sm text-(--color-body)">
+            A static link where they can buy add-ons, extra pages and rounds of
+            changes any time.{" "}
+            <Link
+              href={adminRoutes.invoiceLinks(summary.id)}
+              className="text-(--color-dim) underline"
+            >
+              Build their link
+            </Link>
+          </p>
+        </section>
+      ) : null}
+
       <section className="flex flex-col gap-2">
         <h2 className="text-sm text-(--color-ink)">Reminders</h2>
         <ReminderSwitch

@@ -4,10 +4,14 @@ import {
   fulfillDeposit,
   getStripe,
   settleAncillaryPurchase,
+  settleExtrasSession,
 } from "@/server/services/deposit";
 import { notifyOps } from "@/server/services/emails";
 import { findEngagementById } from "@/server/services/engagement";
-import { sendDepositInvoiceEmail } from "@/server/services/invoices";
+import {
+  sendDepositInvoiceEmail,
+  sendExtrasInvoiceEmail,
+} from "@/server/services/invoices";
 import { recordOrder } from "@/server/services/orders";
 
 /**
@@ -56,6 +60,13 @@ export async function settleDepositSession(
   // alone.
   if (session.metadata?.charge_kind === "addon") {
     await settleAddon(event, session, engagementId);
+    return;
+  }
+
+  // A purchase from the add-ons page (FIN-8): its own basket rows, its own
+  // invoice, and — like every ancillary path — `paid_at` left alone.
+  if (session.metadata?.charge_kind === "extras") {
+    await settleExtras(event, session, engagementId);
     return;
   }
 
@@ -199,6 +210,70 @@ async function settleExtraPages(
     `Engagement: ${engagementId}`,
     ``,
     `Their deposit state is untouched by this.`,
+  ]);
+}
+
+/**
+ * Settles a purchase from the add-ons page (FIN-8).
+ *
+ * Louder than the mid-intake add-on, because nothing else tells the client
+ * it worked: they get Agora's paid invoice for exactly this session's rows
+ * (D-FIN-2), and Taylor gets the lines, because the work is now owed.
+ *
+ * Order matters the way it does for the deposit: stamp, then the ledger,
+ * then the invoice. The invoice claim makes the email
+ * exactly-once, and a failed send throws so Stripe redelivers — every step
+ * before it is a no-op on replay.
+ */
+async function settleExtras(
+  event: Stripe.Event,
+  session: Stripe.Checkout.Session,
+  engagementId: string,
+): Promise<void> {
+  const outcome = await settleExtrasSession(engagementId, session.id);
+  console.info(`[stripe] ${event.id}: ${engagementId} extras → ${outcome}`);
+
+  await recordSessionOrder(event, session);
+
+  const engagement = await findEngagementById(engagementId);
+  const invoiceOutcome = await sendExtrasInvoiceEmail(engagement, session);
+  console.info(`[stripe] ${event.id}: extras invoice email → ${invoiceOutcome}`);
+
+  const amount =
+    session.amount_total === null
+      ? "unknown amount"
+      : formatMoney(session.amount_total, session.currency ?? "cad");
+
+  if (outcome === "missing") {
+    // The money is real and the ledger has it; what is missing is the
+    // record of what it bought. Another path replaced this session's rows
+    // without closing it. Rare, and a human's to reconcile.
+    await notifyOps(`Add-ons paid, basket missing — ${amount}`, [
+      `A payment from the add-ons page settled, but its basket rows were`,
+      `replaced before it did, so nothing was stamped as bought.`,
+      ``,
+      `Amount:     ${amount}`,
+      `Session:    ${session.id}`,
+      `Lines:      ${session.metadata?.product_keys ?? "unknown"}`,
+      `Engagement: ${engagementId}`,
+      ``,
+      `The order is in the ledger. Check the engagement's basket by hand.`,
+    ]);
+    return;
+  }
+
+  // A replay has already been announced once.
+  if (outcome !== "settled") return;
+
+  await notifyOps(`Add-ons paid — ${amount}`, [
+    `${engagement.businessName} bought from their add-ons page.`,
+    ``,
+    `Amount:     ${amount}`,
+    `Lines:      ${session.metadata?.product_keys ?? "unknown"}`,
+    `Engagement: ${engagementId}`,
+    ``,
+    `Their paid invoice is on its way to them. Their deposit state is`,
+    `untouched by this.`,
   ]);
 }
 

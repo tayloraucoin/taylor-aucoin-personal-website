@@ -1,3 +1,4 @@
+import { serializeExtrasQuery, type ExtrasItem } from "@/lib/extras/cart";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 
 /**
@@ -108,6 +109,22 @@ export const showcaseIntakeRoutes = {
    * is not a step key on either track — so this cannot shadow a question.
    */
   review: (token: string) => `${SHOWCASE_INTAKE_PREFIX}/${token}/review`,
+  /**
+   * The add-ons page (FIN-8): one engagement's self-serve checkout, with an
+   * optional pre-selection. Static per client — the same URL works for as
+   * long as their build is settled — so it can sit in a client site's final
+   * review, an email, anywhere. `add` pre-ticks rows; it decides nothing.
+   *
+   * A static segment beside `[token]`, which Next resolves first, and no
+   * intake token is ever the word "add-ons". Inside the intake tree on
+   * purpose: it is the pay screen's grammar, and it inherits that tree's
+   * chrome-free, analytics-free layout and light/dark marker rather than
+   * carrying either to a new route (the light-mode law). Serves both tracks.
+   */
+  addOns: (engagementId: string, items: readonly ExtrasItem[] = []) =>
+    `${SHOWCASE_INTAKE_PREFIX}/add-ons?engagement=${engagementId}${
+      items.length > 0 ? `&add=${serializeExtrasQuery(items)}` : ""
+    }`,
 } as const;
 
 /**
@@ -159,6 +176,12 @@ export const adminRoutes = {
   engagements: `${ADMIN_PREFIX}/engagements`,
   engagement: (id: string) => `${ADMIN_PREFIX}/engagements/${id}`,
   /** Client design-review rounds (REV-3): what the client site's reviewer sent back. */
+  /**
+   * The add-ons link builder (FIN-8): pick an engagement and a pre-selection,
+   * copy the URL. Writes nothing.
+   */
+  invoiceLinks: (engagementId?: string) =>
+    `${ADMIN_PREFIX}/finances/invoice-links${engagementId ? `?engagement=${engagementId}` : ""}`,
   designReviews: `${ADMIN_PREFIX}/design-reviews`,
   designReview: (id: string) => `${ADMIN_PREFIX}/design-reviews/${id}`,
   /** The delivery playbook (PIPE-2): the ordered steps every engagement runs through. */

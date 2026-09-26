@@ -61,6 +61,15 @@ export const products = pgTable(
     name: text("name").notNull(),
     offeredAtCheckout: boolean("offered_at_checkout").notNull().default(false),
     priceCents: integer("price_cents").notNull(),
+    /**
+     * Whether one engagement may buy this more than once (FIN-8, M-FIN-6):
+     * extra pages, written blog posts, and rounds of changes. Everything
+     * else — the build rows, the one-time add-ons — is once per engagement,
+     * and `engagement_products` enforces that in the database for every row
+     * this is false on. Copied onto each basket row at insert, because a
+     * partial index can only read its own table.
+     */
+    repeatable: boolean("repeatable").notNull().default(false),
     sortOrder: integer("sort_order").notNull().default(0),
     stripePriceId: text("stripe_price_id"),
     stripeProductId: text("stripe_product_id"),

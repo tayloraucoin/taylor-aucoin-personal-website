@@ -1,5 +1,5 @@
 import SectionLabel from "@/components/ui/SectionLabel";
-import { changeRules, changeTiers, changesClosing } from "@/content/websites";
+import { changeRules, changesClosing, changeTiers } from "@/content/websites";
 
 /**
  * Its own section, not a subsection of pricing.
@@ -19,7 +19,9 @@ export default function Changes({
   closing = changesClosing,
 }: { closing?: string } = {}) {
   return (
-    <section className="mt-16">
+    // `#changes` is linked from outside the page: a client site's final
+    // review points here for what a round costs after the build.
+    <section id="changes" className="mt-16 scroll-mt-8">
       <SectionLabel>Changes after the build</SectionLabel>
 
       <p className="mt-6 max-w-[56ch] text-[15px] font-light leading-[1.7] text-(--color-body)">
