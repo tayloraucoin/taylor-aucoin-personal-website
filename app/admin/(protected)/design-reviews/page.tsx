@@ -66,6 +66,11 @@ export default async function DesignReviewsPage() {
                     {round.submissionCount}{" "}
                     {round.submissionCount === 1 ? "form" : "forms"}
                   </span>
+                  {round.finalSubmissionCount > 0 ? (
+                    <span className="text-xs text-(--color-ink)">
+                      final review in
+                    </span>
+                  ) : null}
                   <span className="text-xs text-(--color-c2)">
                     {round.submittedAt
                       ? `submitted ${WHEN.format(round.submittedAt)}`
