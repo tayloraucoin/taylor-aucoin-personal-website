@@ -1,5 +1,5 @@
 /**
- * The contract's replies (`docs/review/REVIEW-BACKEND-CONTRACT.md` §2), and
+ * The contract's replies (`docs/_legacy/review/REVIEW-BACKEND-CONTRACT.md` §2), and
  * the one body reader the ingest handlers share.
  *
  * Every error is one of four fixed bodies. A handler never composes its own,

@@ -49,7 +49,7 @@ function asEntries<T>(value: unknown): T[] {
 /**
  * Step 4 — The work.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 4,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 4,
  * verbatim, except the two PORT-19 retired: the reel question is gone (a
  * project's primary video and step 9's home block replace it) and the five are
  * ticked from the rows instead of typed into a box.

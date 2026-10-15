@@ -5,7 +5,7 @@
  * Every commercial sentence here — price, process, terms, timelines — is
  * adapted from Taylor's client-facing "How We Work Together" document. Nothing
  * about the relationship was invented. Re-cut for the page, not rewritten; the
- * read-aloud pass is still his (docs/websites/WEBSITES-PAGE-SPEC.md §8).
+ * read-aloud pass is still his (docs/_legacy/websites/WEBSITES-PAGE-SPEC.md §8).
  *
  * The register is his: first person, plain, blunt where bluntness is honest.
  * No exclamation marks, no marketing verbs, sentence case.

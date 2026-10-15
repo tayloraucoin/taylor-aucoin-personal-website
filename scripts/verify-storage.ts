@@ -97,7 +97,7 @@ async function main(): Promise<void> {
     console.error(
       "One or more expected buckets are missing or misconfigured. " +
         "Bucket creation and flags are Taylor's call — see intakeBucket()'s " +
-        "docblock in server/services/submission.ts and docs/websites/specs/PORT-H5-storage-buckets-by-tier.md.",
+        "docblock in server/services/submission.ts and docs/_legacy/websites/specs/PORT-H5-storage-buckets-by-tier.md.",
     );
     process.exitCode = 1;
     return;

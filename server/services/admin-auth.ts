@@ -21,7 +21,7 @@ import { adminRoutes } from "@/lib/routes";
  * invitation flow, per-capability grants, an audit trail of who changed what —
  * this moves to a `public.users` shadow table keyed to `auth.users(id)`. A JWT
  * claim is not a row and nothing can be joined to it. See
- * `docs/crm/TECH-SCOPE.md` §13.
+ * `docs/_legacy/crm/TECH-SCOPE.md` §13.
  *
  * **Every admin page and every admin server action calls this**, not just the
  * layout. A layout guard protects rendering; it does nothing for a POST fired

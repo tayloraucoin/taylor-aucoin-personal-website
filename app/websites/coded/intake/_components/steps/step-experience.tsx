@@ -163,7 +163,7 @@ function ExperienceEntries({
 /**
  * Step 3 — Experience and proof.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 3,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 3,
  * verbatim.
  *
  * This is the LinkedIn layer: positions, memberships, ongoing roles. The films

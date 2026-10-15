@@ -11,7 +11,7 @@ import type {
  * The review-ingest bodies, validated on the way in.
  *
  * These mirror `lib/validators/review.ts` in the client boilerplate field for
- * field — the contract (`docs/review/REVIEW-BACKEND-CONTRACT.md` §4) says the
+ * field — the contract (`docs/_legacy/review/REVIEW-BACKEND-CONTRACT.md` §4) says the
  * two must agree, and the `satisfies` clauses below hold this side to the
  * contract's TypeScript shapes so a drift here is a compile error, not a 400
  * the client site discovers in production.

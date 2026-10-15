@@ -1,7 +1,7 @@
 /**
  * The one renderer for both operator documents: the SOP dialog's in-code
  * string (`lib/crm/sop.ts`) and the call sheet on disk
- * (`docs/crm/CALL-SHEET.md`, D-CRM-28). No markdown dependency — the grammar
+ * (`content/crm/call-sheet.md`, D-CRM-28). No markdown dependency — the grammar
  * below is exactly what those two documents use and nothing more: `#`/`##`
  * headings, `---` rules, `-` lists, `>` blockquotes, pipe tables, inline
  * `**bold**` and `` `code` ``, and paragraphs. Anything else renders as

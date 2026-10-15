@@ -28,7 +28,7 @@ const STRIPE_API_VERSION = "2026-07-29.dahlia";
  * Website Design code instead, set by `yarn stripe:catalogue`.
  *
  * A candidate, not a legal determination — confirm with an accountant before
- * the first live invoice. See docs/AGORA-STRIPE.md.
+ * the first live invoice. See docs/_legacy/AGORA-STRIPE.md.
  */
 export const SERVICES_TAX_CODE = "txcd_20030000";
 

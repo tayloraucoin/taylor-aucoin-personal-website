@@ -1,7 +1,7 @@
 /**
  * Personalizing the call sheet, without touching how it renders.
  *
- * `{{placeholder}}` tokens in `docs/crm/CALL-SHEET.md` get swapped for the
+ * `{{placeholder}}` tokens in `content/crm/call-sheet.md` get swapped for the
  * selected lead's real facts before the string ever reaches `Markup`
  * (CRM-17) — the renderer stays a dumb markdown display with no idea a lead
  * exists, and this stays a pure string transform with no idea how markdown

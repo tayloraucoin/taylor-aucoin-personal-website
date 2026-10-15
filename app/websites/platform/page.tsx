@@ -22,7 +22,7 @@ import { socialCard } from "@/lib/metadata";
  * MOVED HERE FROM `/websites`, which is now the chooser between this track and
  * the coded track. The page's content did not change in the move and must not:
  * it is shipped, revised twice against Taylor's feedback, and scanned. See
- * docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-2.
+ * docs/_legacy/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-2.
  *
  * The slug names the deliverable rather than the buyer. Taylor's ruling: some
  * professions could plausibly buy either track, so what the door has to name is
@@ -45,7 +45,7 @@ import { socialCard } from "@/lib/metadata";
  * has to read as part of this site rather than a landing page bolted onto it;
  * that is the whole positioning.
  *
- * Full rationale: docs/websites/WEBSITES-PAGE-SPEC.md
+ * Full rationale: docs/_legacy/websites/WEBSITES-PAGE-SPEC.md
  */
 const description =
   "Websites for local businesses in Metro Vancouver. $1,200 flat, live in about a week, and you own the domain, the hosting, and the customer list.";

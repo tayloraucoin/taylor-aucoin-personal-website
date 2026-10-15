@@ -1,7 +1,7 @@
 /**
  * /services page content. Typed TS, no CMS — same pattern as content/work.
  *
- * Copy here follows the v3 sprint tickets (docs/tickets/v3-contract-sales/).
+ * Copy here follows the v3 sprint tickets (docs/_legacy/tickets/v3-contract-sales/).
  * It is decided direction, not final prose — Taylor gives it the read-aloud
  * pass in QA-06. Keep the register plain, specific, a little dry.
  */

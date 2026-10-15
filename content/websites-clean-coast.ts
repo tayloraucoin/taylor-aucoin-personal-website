@@ -15,7 +15,7 @@ import mobileServices from "@/public/websites/clean-coast/mobile-services.jpg";
  * the seam that makes that a copy rather than a refactor.
  *
  * TWO GATES, and they are separate booleans because they are separate facts.
- * See docs/websites/WEBSITES-PAGE-SPEC.md §8. Modelling them apart is what
+ * See docs/_legacy/websites/WEBSITES-PAGE-SPEC.md §8. Modelling them apart is what
  * makes the dangerous state — a live link to an unfixed site — unrepresentable,
  * since the link only renders inside the section.
  */

@@ -2,3 +2,24 @@
 docs/_legacy/
 content/crm/call-sheet.md
 docs/product/brand/repo-scan.md
+
+# migrate 4b: formatting owed by files the path edits touched; layer 3 part 10 removes these lines
+README.md
+app/admin/(protected)/intake/questions/_components/preview-engagement.ts
+app/admin/_components/call-sheet-column.tsx
+app/websites/coded/intake/_components/steps/step-experience.tsx
+app/websites/coded/intake/_components/steps/step-site.tsx
+app/websites/coded/intake/_components/steps/step-work.tsx
+app/websites/coded/page.tsx
+app/websites/page.tsx
+content/services.ts
+content/websites-clean-coast.ts
+content/websites.ts
+lib/crm/call-script.ts
+scripts/evals/business-primer/README.md
+scripts/seed/film-example-sites.ts
+scripts/verify-storage.ts
+server/services/admin-auth.ts
+server/services/deposit.ts
+app/admin/(protected)/queue/page.tsx
+next.config.ts

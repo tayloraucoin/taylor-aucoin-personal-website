@@ -22,7 +22,7 @@ import { VoiceRecorder, type VoiceNoteFile } from "../voice-recorder";
 /**
  * Step 6 — Your words.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 6,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 6,
  * verbatim — including the voice-note prompt, which is the most carefully
  * written paragraph in the document and the one most likely to be "improved"
  * by accident.

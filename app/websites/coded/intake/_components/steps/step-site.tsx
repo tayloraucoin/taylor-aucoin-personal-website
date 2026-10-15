@@ -77,7 +77,7 @@ const AVAILABILITY = [
 /**
  * Step 8 — The site itself.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 8,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 8,
  * verbatim.
  *
  * The pages note is the delicate part. It is **information, not a warning and

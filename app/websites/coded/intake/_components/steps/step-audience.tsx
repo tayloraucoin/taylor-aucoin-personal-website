@@ -14,7 +14,7 @@ import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
  * Step 2 — Who this site is for.
  *
  * Every label and help line is
- * `docs/websites/portfolio-intake-questions-v2.md` § Step 2, verbatim.
+ * `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 2, verbatim.
  *
  * The longest unrelieved run of long-text questions in the flow, so it is
  * grouped rather than listed: who is here, then what the site should do about
