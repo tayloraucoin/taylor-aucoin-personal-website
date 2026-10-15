@@ -3,20 +3,89 @@
   "criteria_sha256": "04357d84a0aa2f27a9250bc35c6f9ae7adef08c865b3e3337c50005e17a188e4",
   "criteria": {
     "C1": {
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": "check",
-      "run": null
+      "run": {
+        "command": "yarn build:agent",
+        "exit": 0,
+        "at": "2026-10-15T19:39:02Z",
+        "head": "aacccf45949609272f7c259d0f870833a191ccf3",
+        "evidence_path": "specs/_shared/epics/MIG-migration/tickets/MIG-002-ci-verify-workflow/evidence/C1.log",
+        "evidence_sha256": "4ca0c66c8b27cd4ddd6d63006d0d89c3f1c8a7aea29da845a4d5337ab32c56f4"
+      }
     },
     "C2": {
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": "check",
-      "run": null
+      "run": {
+        "command": "yarn typecheck",
+        "exit": 0,
+        "at": "2026-10-15T19:39:28Z",
+        "head": "aacccf45949609272f7c259d0f870833a191ccf3",
+        "evidence_path": "specs/_shared/epics/MIG-migration/tickets/MIG-002-ci-verify-workflow/evidence/C2.log",
+        "evidence_sha256": "c5fb980c7586e7f6d8cff10d151b82f28cb99d6d156fc963c96f3cb78d20d744"
+      }
     },
     "C3": {
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": "manual",
-      "run": null
+      "run": {
+        "command": "yarn contract:record MIG-2 C3 --evidence specs/_shared/epics/MIG-migration/tickets/MIG-002-ci-verify-workflow/as-built.md --verdict deferred",
+        "exit": 0,
+        "at": "2026-10-15T19:39:38Z",
+        "head": "aacccf45949609272f7c259d0f870833a191ccf3",
+        "evidence_path": "specs/_shared/epics/MIG-migration/tickets/MIG-002-ci-verify-workflow/as-built.md",
+        "evidence_sha256": "e673cc7239faf97b63e61f52678b7d82bb14709424bbbd94c3deb8a5140014dc",
+        "deferred": true
+      }
     }
   },
-  "updated_at": "2026-10-15T19:38:40Z"
+  "cost": {
+    "at": "2026-10-15T19:40:56Z",
+    "calls": 68,
+    "weighted": 1262535,
+    "tokens_input": 136,
+    "tokens_cache_read": 9301994,
+    "tokens_cache_write": 129212,
+    "tokens_output": 34137,
+    "by_category": {
+      "build": {
+        "calls": 39,
+        "weighted": 704162
+      },
+      "proofs": {
+        "calls": 15,
+        "weighted": 269755
+      },
+      "captures": {
+        "calls": 0,
+        "weighted": 0
+      },
+      "reviews": {
+        "calls": 0,
+        "weighted": 0
+      },
+      "status": {
+        "calls": 3,
+        "weighted": 63348
+      },
+      "git": {
+        "calls": 3,
+        "weighted": 52776
+      },
+      "re-reading": {
+        "calls": 0,
+        "weighted": 0
+      },
+      "other": {
+        "calls": 8,
+        "weighted": 172495
+      }
+    },
+    "context_last_call": 173867,
+    "threads": 1,
+    "headless_runs": 0,
+    "headless_weighted": 0
+  },
+  "updated_at": "2026-10-15T19:40:56Z"
 }
