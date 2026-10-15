@@ -84,13 +84,7 @@ export default function Pricing({
           <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span
               className="font-display text-[clamp(38px,6vw,50px)] font-medium leading-none tracking-[-.03em]"
-              style={{
-                background:
-                  "linear-gradient(102deg, var(--color-gold-500), var(--color-gradient-hot))",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
+              style={{ color: "var(--color-ink)" }}
             >
               {pricing.amount}
             </span>

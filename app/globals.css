@@ -1,149 +1,210 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
-   Palette D · Gilt
-   Every color in the site resolves here. Nothing hardcodes a hex.
-   To switch to palette E (Reliquary), replace the five values in
-   the "Ground" and "Accents" blocks. Nothing else changes.
+   The brand kit: Carbon, with Gold (A · Black tie) or Patina (B · Patina).
+   Source: docs/product/brand/kit_taylor-aucoin.md, §1 and §9. Every colour
+   in the site resolves here. Nothing hardcodes a hex.
+
+   Four modes, set on <html>:
+     A dark   — the ground state, no attribute needed
+     B dark   — [data-direction="b"]
+     A light  — .light (written by next-themes)
+     B light  — .light[data-direction="b"]
+
+   The semantic names below (ink, body, dim, c2, faint, card…) are the API
+   the whole site reads, kept from Palette D so ~2,000 call sites move with
+   the tokens. Their meaning now follows the kit:
+     ink = text · body = secondary text · dim = muted · faint = hairline
+     c2 = accent text · c3 = accent hover · card = raised surface
    ───────────────────────────────────────────────────────────── */
 
-@theme {
-  /* Ground */
-  --color-ground-a: #060b1e;
-  --color-ground-b: #151033;
+@theme static {
+  /* Carbon — the shared neutral, leaning warm. */
+  --color-carbon-50: #fbfaf7;
+  --color-carbon-100: #f4f1ed;
+  --color-carbon-200: #d1cdc7;
+  --color-carbon-300: #b4b1aa;
+  --color-carbon-400: #95928c;
+  --color-carbon-500: #74716c;
+  --color-carbon-600: #4f4d48;
+  --color-carbon-700: #302d2a;
+  --color-carbon-800: #1b1916;
+  --color-carbon-900: #100e0b;
 
-  /* Accents — c1 structure (violet), c2 gold, c3 light (warm white) */
-  --color-c1: #8b7be8;
+  /* Gold — Direction A, detail only (ring, rule, focus, marks). */
+  --color-gold-50: #fff6e6;
+  --color-gold-100: #fcebcc;
+  --color-gold-200: #f4d49d;
+  --color-gold-300: #e8b961;
+  --color-gold-400: #cc9c3b;
+  --color-gold-500: #ac8128;
+  --color-gold-600: #8c681c;
+  --color-gold-700: #6d5011;
+  --color-gold-800: #4f3909;
+  --color-gold-900: #332405;
+
+  /* Patina — Direction B, the action and link colour. */
+  --color-patina-50: #eefaf8;
+  --color-patina-100: #d8efec;
+  --color-patina-200: #b6e0da;
+  --color-patina-300: #92cdc4;
+  --color-patina-400: #71bbb1;
+  --color-patina-500: #529b92;
+  --color-patina-600: #3e7f77;
+  --color-patina-700: #2d635c;
+  --color-patina-800: #1e4843;
+  --color-patina-900: #0e2c29;
+
+  /* Lamplight — atmosphere only. Never behind body text. */
+  --color-lamplight: #e1ceb0;
+
+  /* ── Semantic tokens, A · Black tie, dark ── */
+  --color-ground-a: #100e0b;
+  --color-ground-b: #100e0b;
+  --color-section: #1b1916;
+  --color-ink: #fbfaf7;
+  --color-body: #d1cdc7;
+  --color-dim: #b4b1aa;
+  --color-faint: #302d2a; /* hairline, decorative */
+  --color-border-strong: #74716c; /* inputs, ghost button — 3:1 */
+  --color-card: #1b1916;
+  --color-card-hover: color-mix(in oklab, #1b1916 94%, #fbfaf7);
+  --color-glow: rgb(225 206 176 / 0.1);
+
+  /* Accent (per direction × theme) */
+  --color-c1: #e8b961;
   --color-c2: #e8b961;
-  --color-c3: #fff6e3;
+  --color-c3: #f4d49d;
+  --color-mark: #e8b961;
+  --color-rule: #e8b961;
+  --color-focus: #e8b961;
+  --color-fill: #fbfaf7;
+  --color-fill-hover: #f4f1ed;
+  --color-on-fill: #100e0b;
+  --color-ring-a: #e8b961;
+  --color-ring-b: #e1ceb0;
+  --color-ring-c: #fbfaf7;
 
-  /* Primary action fill (the admin CRM's solid buttons) — violet-600.
-     --color-c1 is STRUCTURE: traces, ring, gradient cold end. It must never
-     carry text. White on c1 is 3.44:1 and failed AA at all 13 admin button
-     call sites; white on violet-600 is 5.33:1 (D-CON-1 / CON-05). */
-  --color-action: #6d5cc0; /* = violet-600 */
+  /* Kept names, re-pointed. Each reads a role above, so the four mode
+     blocks below only restate what actually changes. */
+  --color-action: var(--color-fill);
+  --color-meta-label: var(--color-body);
+  --color-role-label: var(--color-dim);
+  --color-proof-label: var(--color-dim);
+  --color-spec-bg: var(--color-card);
+  --color-spec-border: var(--color-faint);
+  --color-gradient-hot: var(--color-mark);
+  --color-ghost-fill: transparent;
+  --color-ghost-fill-hover: color-mix(in oklab, var(--color-ink) 6%, transparent);
+  --color-ghost-line: var(--color-border-strong);
+  --color-ghost-line-hover: var(--color-ink);
+  --color-gold-line-soft: var(--color-border-strong);
+  --color-gold-line: var(--color-mark);
+  --color-gold-line-strong: var(--color-mark);
+  --color-line: var(--color-border-strong);
+  --color-line-strong: var(--color-border-strong);
+  --color-line-soft: var(--color-faint);
+  --color-well: color-mix(in oklab, var(--color-ground-a) 70%, transparent);
+  --color-tint: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  --color-tint-strong: color-mix(in oklab, var(--color-ink) 15%, transparent);
 
-  /* Text — recalibrated per D-CON-1 (contrast audit, 2026-08-26). Body and
-     dim each lifted one ramp step; hues unchanged. Half-step fallback if the
-     full step reads too bright in situ: body #a09dc0 · dim #9391b6. */
-  --color-ink: #f1effa;
-  --color-body: #b0adcd; /* = night-400 — was #9c99bc (6.67:1 on ground-b → 8.41:1) */
-  --color-dim: #9c99bc; /* = night-500 — was #7e7ca0 (4.57:1 → 6.67:1; 6.18:1 in the glow) */
-  --color-faint: rgb(200 190 240 / 0.11);
-  /* Mono footer lines (Core stack / Also built prefixes) — ink white, not full glare */
-  --color-meta-label: rgb(255 255 255 / 0.85);
-  /* Selected Work role line — quieter than the tags above it via size and
-     tracking, not alpha: the old 55% alpha landed at 2.2:1, under half the
-     legal floor. Solid, 4.6:1, still the quietest line on the page. */
-  --color-role-label: #7f7da1;
-  /* Proof / attribution labels in the mono register — the NON-INTERACTIVE twin
-     of --color-c2. Where a proof label has an href it renders in c2 with an
-     arrow; where it does not, it renders here. Same gold family, visibly
-     recessive, still legible: gold-600, 5.7–6.1:1 on the grounds. Was
-     rgb(232 185 97 / .55) hardcoded at three call sites — 3.82:1 at 9px, and
-     off-system besides (D-CON-1 / CON-06). */
-  --color-proof-label: #b48934; /* = gold-600 */
+  /* Type — three faces, three jobs (kit §3). `--font-mono` carries the
+     uppercase tracked labels, which the kit sets in Albert Sans; Fragment
+     Mono is code and technical data only, through `font-code`. */
+  --font-display: var(--font-instrument), system-ui, sans-serif;
+  --font-body: var(--font-albert), system-ui, sans-serif;
+  --font-mono: var(--font-albert), system-ui, sans-serif;
+  --font-code: var(--font-fragment), ui-monospace, monospace;
 
-  /* Surfaces */
-  --color-card: rgb(9 12 34 / 0.9);
-  --color-card-hover: rgb(14 17 44 / 0.94);
+  --text-label: 12px;
+  --text-meta: 13px;
+  --text-code: 14px;
+  --text-small: 15px;
+  --text-body: 17px;
+  --text-lede: 19px;
+  --text-h4: 20px;
+  --text-h3: 24px;
+  --text-h2: 30px;
+  --text-headline: 32px;
+  --text-stat: 44px;
+  --text-display: 76px;
+  --tracking-display: -0.03em;
+  --tracking-h2: -0.02em;
+  --tracking-h3: -0.015em;
+  --tracking-h4: -0.01em;
+  --tracking-label: 0.2em;
 
-  /* Specialties cards — deliberately flatter than --color-card. Static,
-     no ring, no hover. Quieter than the Capabilities cards above them. */
-  --color-spec-bg: rgba(9, 12, 34, 0.45);
-  --color-spec-border: rgba(255, 255, 255, 0.085);
+  /* Motion (kit §5) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 200ms;
+  --dur-base: 400ms;
+  --dur-slow: 600ms;
 
-  /* Type */
-  --font-display: var(--font-space-grotesk), sans-serif;
-  --font-body: var(--font-manrope), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
-
-  /* Motion */
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast: 300ms;
-  --dur-base: 450ms;
-  --dur-slow: 550ms;
-
-  /* Geometry — sharp, not rounded. Deliberate. */
+  /* Geometry — 3px everywhere. */
   --radius: 3px;
 }
 
-/* Night ramp — the violet-gray text spine, 100 (light) → 800 (dark).
-   Built in OKLCH, hue held; 500 is the ramp anchor (the pre-D-CON-1 body
-   color). Full tables + contrast annotations: DESIGN-SYSTEM.md §1.
-   `@theme static` is mandatory here: a plain @theme prunes variables with no
-   utility consumers, so these would never reach :root and any future
-   `text-(--color-night-300)` would silently render as inherited color —
-   the same invisible-no-op class of bug as the v3 `-[--` syntax trap. */
-@theme static {
-  --color-night-100: #eeedfa;
-  --color-night-200: #d9d7ec;
-  --color-night-300: #c4c2dd;
-  --color-night-400: #b0adcd;
-  --color-night-500: #9c99bc;
-  --color-night-600: #6f6c8b;
-  --color-night-700: #45425c;
-  --color-night-800: #1f1c2f;
+/* B · Patina, dark */
+html[data-direction="b"] {
+  --color-c1: var(--color-patina-400);
+  --color-c2: var(--color-patina-400);
+  --color-c3: var(--color-patina-300);
+  --color-mark: var(--color-patina-400);
+  --color-rule: var(--color-patina-400);
+  --color-focus: var(--color-patina-400);
+  --color-fill: var(--color-patina-400);
+  --color-fill-hover: var(--color-patina-300);
+  --color-on-fill: var(--color-carbon-900);
+  --color-ring-a: var(--color-patina-400);
+  --color-ring-b: var(--color-lamplight);
+  --color-ring-c: var(--color-carbon-50);
+}
 
-  /* Gold as a FILL. `--color-c2` is gold-500 in the dark theme but steps to
-     gold-700 in the admin light theme so gold *text* stays legal on paper
-     (DESIGN-SYSTEM §1, D-DOC-1). A fill with no text on it wants the real
-     gold in both themes, and this is the token that never moves. */
-  --color-gold-500: #e8b961;
+/* A · Black tie, light. Gold is never text on a light ground (kit law 1):
+   the accent-text slot falls to secondary text, and gold stays in the mark,
+   the rule, the focus ring and the moving ring. */
+html.light {
+  color-scheme: light;
+  --color-ground-a: var(--color-carbon-50);
+  --color-ground-b: var(--color-carbon-50);
+  --color-section: var(--color-carbon-100);
+  --color-ink: var(--color-carbon-900);
+  --color-body: var(--color-carbon-700);
+  --color-dim: var(--color-carbon-600);
+  --color-faint: var(--color-carbon-200);
+  --color-card: #ffffff;
+  --color-card-hover: var(--color-carbon-100);
+  --color-well: var(--color-carbon-100);
+  --color-glow: rgb(225 206 176 / 0.22);
 
-  /* CTA fills (D-ADM-13, feedback round). The house gradient and the ghost
-     button were written against `--color-c2` / `--color-c3` and two inline
-     rgb() values. In the admin light theme c2 steps to gold-700 for text and
-     c3 to gold-800 for hover text, so a fill reading them turned muddy on the
-     cold end and the ghost's `ground-a` at 55% became a grey slab on paper.
-     Fills read these instead; every dark value is exactly what shipped. */
-  --color-gradient-hot: #fff6e3; /* = c3 in the dark theme */
-  --color-ghost-fill: rgb(9 12 34 / 0.55);
-  --color-ghost-fill-hover: rgb(9 12 34 / 0.8);
-  --color-ghost-line: rgb(232 185 97 / 0.42);
-  --color-ghost-line-hover: rgb(232 185 97 / 0.72);
+  --color-c1: var(--color-gold-600);
+  --color-c2: var(--color-carbon-700);
+  --color-c3: var(--color-carbon-900);
+  --color-mark: var(--color-gold-600);
+  --color-rule: var(--color-gold-300);
+  --color-focus: var(--color-gold-600);
+  --color-fill: var(--color-carbon-900);
+  --color-fill-hover: var(--color-carbon-700);
+  --color-on-fill: var(--color-carbon-50);
+  --color-ring-a: var(--color-gold-600);
+  --color-ring-b: var(--color-gold-300);
+  --color-ring-c: var(--color-gold-200);
+}
 
-  /* Gold lines on the intake (D-ADM-13, intake amendment). The questionnaire
-     drew its hover, selected, focus, and invalid borders as gold-500 at three
-     alphas, written inline. Those are theme-fixed the same way the admin's
-     `white/N` classes were (M-ADM-9): gold-500 at 55% over paper is ~1.4:1,
-     so a ticked choice card lost its border the moment the intake could be
-     read in light. Three role tokens, each declared with the exact value its
-     call sites used, so the dark render is unchanged; the light block steps
-     them down the gold ramp. The drop zone's 42% hover was already
-     `--color-ghost-line` and reads that instead. */
-  --color-gold-line-soft: rgb(232 185 97 / 0.28); /* hover on a field or card */
-  --color-gold-line: rgb(232 185 97 / 0.55); /* selected, focused, strong hover */
-  --color-gold-line-strong: rgb(232 185 97 / 0.7); /* invalid — the one gold "alarm" this surface allows */
-
-  /* Admin surface tokens (D-ADM-13, M-ADM-9). The CRM was written with
-     `white/N` and `black/N` alpha classes standing in for "the foreground at
-     N%" and "the ground at N%". Those are theme-fixed: on a light ground a
-     white hairline is invisible. Each token carries the exact value its call
-     sites used, so the dark admin renders unchanged; the admin light block
-     re-declares them on ink. Named by role, not by strength, so a call site
-     says what the edge or fill is for. They live in this `static` block for
-     the reason stated above it: every consumer is a `bg-(--color-well)`-style
-     reference, which a plain @theme does not count, and a pruned token falls
-     back to currentColor on a border and to transparent on a fill — silently. */
-  --color-line: rgb(
-    255 255 255 / 0.15
-  ); /* field + chip borders (was border-white/15) */
-  --color-line-strong: rgb(
-    255 255 255 / 0.2
-  ); /* ghost-button borders (was border-white/20) */
-  --color-line-soft: rgb(
-    255 255 255 / 0.1
-  ); /* dividers and rules; also the quietest raised fill (was white/10) */
-  --color-well: rgb(
-    0 0 0 / 0.3
-  ); /* sunken fills: inputs, selects, code blocks (was bg-black/30) */
-  --color-tint: rgb(
-    255 255 255 / 0.05
-  ); /* selected-row and meter-track fill (was bg-white/5) */
-  --color-tint-strong: rgb(
-    255 255 255 / 0.15
-  ); /* the day-strip "fair" bar (was bg-white/15) */
+/* B · Patina, light */
+html.light[data-direction="b"] {
+  --color-c1: var(--color-patina-600);
+  --color-c2: var(--color-patina-700);
+  --color-c3: var(--color-patina-800);
+  --color-mark: var(--color-patina-600);
+  --color-rule: var(--color-patina-600);
+  --color-focus: var(--color-patina-600);
+  --color-fill: var(--color-patina-700);
+  --color-fill-hover: var(--color-patina-800);
+  --color-on-fill: var(--color-carbon-50);
+  --color-ring-a: var(--color-patina-600);
+  --color-ring-b: var(--color-patina-400);
+  --color-ring-c: var(--color-patina-200);
 }
 
 /* The animated ring writes --angle in JS. The conic gradient lives on a
@@ -253,75 +314,9 @@
   }
 }
 
+
 html {
   color-scheme: dark;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Light theme (D-ADM-13, M-ADM-8). /admin and the two intake trees only.
-
-   next-themes writes `.light` / `.dark` to <html>. The marketing site has no
-   light mode (repo CLAUDE.md) and never gets one from this block: every rule
-   is gated on `:has(.admin-theme, .intake-theme)` — markers rendered by
-   `app/admin/layout.tsx` and the intake layouts' `IntakeTheme` — so the
-   class alone does nothing. That gate is what stops a back-navigation from
-   a light admin or questionnaire into the public site carrying the theme
-   along, and putting the tokens on <html> rather than on the marker is what
-   lets Radix portals (the mobile sheet, dialogs — mounted on <body>) inherit
-   them. The intake was added to the gate on 2026-09-12 (Taylor: a client
-   filling a long form should be able to read it in daylight); it reuses
-   this block unchanged, because the admin preview had already rendered
-   every intake section on these values.
-
-   Values are Palette D on paper (DESIGN-SYSTEM D-DOC-1) plus the ramps, not
-   inventions: ink = ground-a; body, dim, and hairline are the paper
-   counterparts; gold is gold-700, the first gold legal as text on white. The
-   alpha tokens keep their dark alphas and swap white for ink. Two values had
-   no documented counterpart and are proposals: card-hover (ground-a at 7%,
-   one step past the tint at ~3%) and well (ground-a at 4%, the sunken twin
-   of the tint).
-   ───────────────────────────────────────────────────────────── */
-html.light:has(.admin-theme, .intake-theme) {
-  color-scheme: light;
-  --color-ground-a: #ffffff; /* paper — flyouts, dialogs, the sheet */
-  --color-ink: #060b1e;
-  --color-body: #3f3c5c; /* 10.4:1 on paper */
-  --color-dim: #5a5773; /* [PROPOSED] night-650 — the OKLCH midpoint of night-600 and night-700. D-DOC-1 dim (#6b6889) measured 4.9:1 on the tint and Taylor read it as faded; this holds the site floor of 6:1 (6.9 on paper, 6.4 on the tint) */
-  --color-faint: #e3e1ec;
-  --color-c2: #815d07; /* gold-700 — 6.0:1 as text on paper */
-  --color-c3: #4d3601; /* gold-800 — c3 is only ever hover text here; on paper a hover deepens instead of brightening */
-  --color-gradient-hot: #f6d293; /* gold-300 — the house gradient runs gold-500 → gold-300 on paper; its cream end read as white-on-white */
-  --color-ghost-fill: #ffffff;
-  --color-ghost-fill-hover: #f7f6fa;
-  --color-ghost-line: #b48934; /* gold-600 — 3.2:1, the UI-component floor */
-  --color-ghost-line-hover: #815d07;
-  --color-gold-line-soft: #b48934; /* [PROPOSED] gold-600 — a hover hint at the UI floor; on paper a hover deepens */
-  --color-gold-line: #815d07; /* [PROPOSED] gold-700 — selected and focused, 6.0:1 */
-  --color-gold-line-strong: #4d3601; /* [PROPOSED] gold-800 — invalid */
-  --color-card: #f7f6fa; /* the tint — rail and panels */
-  --color-card-hover: rgb(6 11 30 / 0.07);
-  --color-line: rgb(6 11 30 / 0.15);
-  --color-line-strong: rgb(6 11 30 / 0.2);
-  --color-line-soft: rgb(6 11 30 / 0.1);
-  --color-well: rgb(6 11 30 / 0.04);
-  --color-tint: rgb(6 11 30 / 0.05);
-  --color-tint-strong: rgb(6 11 30 / 0.15);
-}
-html.light:has(.admin-theme, .intake-theme) body {
-  background: var(--color-ground-a);
-}
-/* Grain is atmosphere for the dark ground; on paper it is dirt. */
-html.light:has(.admin-theme, .intake-theme) body::after {
-  display: none;
-}
-
-/* Specialties cards read too transparent on mobile — full-width cards sit
-   directly over the densest root-field trace areas. Darken the fill below
-   `md` only; desktop keeps --color-spec-bg at .45. */
-@media (max-width: 767px) {
-  :root {
-    --color-spec-bg: rgba(9, 12, 34, 0.62);
-  }
 }
 
 body {
@@ -330,46 +325,43 @@ body {
   color: var(--color-body);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* Carbon ground with one warm lamplight glow (kit §1). Atmosphere only:
+     it sits on the ground, never behind a card's text. */
   background:
     radial-gradient(
-      105% 55% at 84% 8%,
-      rgb(232 185 97 / 0.1) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      70% 40% at 4% 62%,
-      rgb(140 120 230 / 0.09) 0%,
+      90% 60% at 30% 18%,
+      var(--color-glow) 0%,
       transparent 60%
     ),
-    linear-gradient(
-      172deg,
-      var(--color-ground-a) 0%,
-      var(--color-ground-b) 100%
-    );
+    var(--color-ground-a);
   background-attachment: fixed;
 }
 
-/* Grain. Without it the gradients band. */
+/* Grain at 0.10, on the dark ground only. Without it the glow bands; on
+   paper it is dirt. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.12;
+  opacity: 0.1;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
 }
+html.light body::after {
+  display: none;
+}
 
+/* Focus: 2px solid, offset 2px, measured against the ground (kit law 4). */
 :focus-visible {
-  outline: 2px solid var(--color-c2);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--color-gold-500);
-  color: #0a0714;
+  background: var(--color-mark);
+  color: var(--color-on-fill);
 }
-
 
 /* ──────────────────────────────────────────────────────────────────────────
    The taste step's 1–7 scale (PORT-23).
@@ -449,12 +441,12 @@ body::after {
 
 .taste-scale:hover::-webkit-slider-thumb,
 .taste-scale:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-mark) 14%, transparent);
 }
 
 .taste-scale:hover::-moz-range-thumb,
 .taste-scale:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-mark) 14%, transparent);
 }
 
 /* The taste step's bipolar spectrum (D-PORT-29).
@@ -554,12 +546,12 @@ body::after {
 /* Suppressed while unset: a glow around an invisible thumb is a ghost. */
 .taste-spectrum:not([data-unset="true"]):hover::-webkit-slider-thumb,
 .taste-spectrum:not([data-unset="true"]):focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-mark) 14%, transparent);
 }
 
 .taste-spectrum:not([data-unset="true"]):hover::-moz-range-thumb,
 .taste-spectrum:not([data-unset="true"]):focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 6px rgb(232 185 97 / 0.12);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-mark) 14%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

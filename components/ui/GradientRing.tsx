@@ -15,6 +15,9 @@ import { FIELD } from "@/lib/config";
  * NOT by a CSS keyframe — because changing `animation-duration` on hover
  * RESTARTS the keyframe, and the ring visibly jumps. Speed is lerped instead.
  *
+ * The three stops are the kit's moving ring, cold → warm → light, per
+ * direction and theme (`--color-ring-a/b/c` in globals.css).
+ *
  * `@property --angle` MUST be declared `inherits: true` (see globals.css).
  * The gradient lives on ::before; with `inherits: false` the pseudo-element
  * never sees the value JS is writing and the ring silently freezes at 0deg.
@@ -71,21 +74,18 @@ export default function GradientRing({
       ref={ref}
       data-interactive
       className={`group relative rounded-(--radius) backdrop-blur-[10px] transition-[background,transform,box-shadow] duration-(--dur-base) ease-(--ease-out) ${className}`}
-      style={{
-        background:
-          "linear-gradient(158deg, rgb(255 255 255 / .05), rgb(255 255 255 / .01)), var(--color-card)",
-      }}
+      style={{ background: "var(--color-card)" }}
       onPointerEnter={(e) => {
         const el = e.currentTarget;
-        el.style.background =
-          "linear-gradient(158deg, rgb(232 185 97 / .11), rgb(139 123 232 / .05) 60%, rgb(255 255 255 / .015)), var(--color-card-hover)";
+        // Flat surface, one step lighter; the ring carries the colour.
+        el.style.background = "var(--color-card-hover)";
         el.style.transform = "translateY(-2px)";
-        el.style.boxShadow = "0 18px 46px -22px rgb(232 185 97 / .35)";
+        el.style.boxShadow =
+          "0 18px 46px -24px color-mix(in oklab, var(--color-ground-a) 70%, black)";
       }}
       onPointerLeave={(e) => {
         const el = e.currentTarget;
-        el.style.background =
-          "linear-gradient(158deg, rgb(255 255 255 / .05), rgb(255 255 255 / .01)), var(--color-card)";
+        el.style.background = "var(--color-card)";
         el.style.transform = "";
         el.style.boxShadow = "";
       }}
@@ -96,7 +96,7 @@ export default function GradientRing({
         style={{
           padding: "1.5px",
           background:
-            "conic-gradient(from var(--angle), transparent 0deg, var(--color-c1) 50deg, var(--color-c2) 100deg, var(--color-c3) 145deg, transparent 215deg, transparent 360deg)",
+            "conic-gradient(from var(--angle), transparent 0deg, var(--color-ring-a) 50deg, var(--color-ring-b) 100deg, var(--color-ring-c) 145deg, transparent 215deg, transparent 360deg)",
           WebkitMask:
             "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
           WebkitMaskComposite: "xor",

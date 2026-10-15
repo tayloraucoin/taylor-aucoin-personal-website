@@ -5,6 +5,13 @@
  * component code. Change them here; nothing else needs to know.
  */
 export const FIELD = {
+  /**
+   * The page field is retired by the brand kit (2026-10-15, kit §5): the
+   * ground is carbon with a lamplight glow. The code stays so Taylor can bring
+   * it back by flipping this. The banner export ignores it.
+   */
+  ENABLED: false,
+
   /** Vias / pads at the branch terminals. Set false to kill them. */
   SHOW_PADS: true,
 
@@ -132,7 +139,7 @@ export const SITE = {
  * `"/og.png"`, and every route picks it up; `twitter:card` upgrades from
  * `summary` to `summary_large_image` on its own. See `lib/metadata.ts`.
  */
-export const OG_IMAGE: string | null = null;
+export const OG_IMAGE: string | null = "/og.png";
 
 /** Stack page `<meta name="description">`. 140–160 characters. */
 export const STACK_META_DESCRIPTION =

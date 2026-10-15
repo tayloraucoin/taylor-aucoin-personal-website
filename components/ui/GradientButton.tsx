@@ -25,22 +25,19 @@ type CtaProps = {
     }
 );
 
+// Brand kit §3 and law 2: one solid fill, the same value in every state of a
+// theme, sentence case, 15px Albert Sans 500. No gradient — gradients live in
+// the ring and the atmosphere only. `normal-case` undoes the uppercase some
+// call sites still pass in through `className`.
 const GRADIENT_CLASS =
-  "inline-flex items-center gap-2 rounded-(--radius) px-6 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-[#0a0714] transition-[transform,box-shadow] duration-(--dur-fast) ease-(--ease-out) hover:-translate-y-px hover:shadow-[0_10px_32px_-12px_var(--color-c2)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none";
-
-const GRADIENT_STYLE = {
-  background:
-    "linear-gradient(102deg, var(--color-gold-500), var(--color-gradient-hot))",
-};
+  "inline-flex items-center gap-2 rounded-(--radius) bg-(--color-fill) px-6 py-3.5 font-body text-[15px] font-medium normal-case leading-none tracking-normal text-(--color-on-fill) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-fill-hover) disabled:cursor-not-allowed disabled:opacity-60";
 
 const GHOST_CLASS =
-  "inline-flex items-center rounded-(--radius) border border-(--color-ghost-line) bg-(--color-ghost-fill) px-[22px] py-3.5 font-mono text-[11px] font-medium uppercase tracking-[.10em] text-(--color-c2)/90 backdrop-blur-[6px] transition-all duration-(--dur-fast) hover:border-(--color-ghost-line-hover) hover:bg-(--color-ghost-fill-hover) hover:text-(--color-c3) disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center gap-2 rounded-(--radius) border border-(--color-ghost-line) bg-(--color-ghost-fill) px-[22px] py-3.5 font-body text-[15px] font-medium normal-case leading-none tracking-normal text-(--color-ink) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-ghost-line-hover) hover:bg-(--color-ghost-fill-hover) disabled:cursor-not-allowed disabled:opacity-60";
 
 /**
- * Primary CTA. Gold→white fill. Must always be the brightest thing on screen.
- * The fill reads `--color-gold-500` / `--color-gradient-hot`, not c2 / c3: in
- * the admin light theme those two step to text-legal golds (D-ADM-13) and a
- * fill must not follow them.
+ * Primary CTA. The name predates the rebrand; the fill is now the kit's solid
+ * primary (carbon in A, patina in B). Still the strongest thing on screen.
  */
 export function GradientButton({
   href,
@@ -56,7 +53,6 @@ export function GradientButton({
         href={href}
         {...externalProps(href)}
         className={classes}
-        style={GRADIENT_STYLE}
       >
         {children}
       </Link>
@@ -68,14 +64,13 @@ export function GradientButton({
       {...rest}
       type={rest.type ?? "button"}
       className={classes}
-      style={GRADIENT_STYLE}
     >
       {children}
     </button>
   );
 }
 
-/** Ghost CTA. Sits on a translucent card so the field never reads through the label. */
+/** Ghost CTA. A strong-border outline with text-coloured label. */
 export function GhostButton({ href, className, children, ...rest }: CtaProps) {
   const classes = className ? `${GHOST_CLASS} ${className}` : GHOST_CLASS;
 

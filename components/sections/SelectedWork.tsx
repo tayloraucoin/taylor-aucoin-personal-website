@@ -23,7 +23,7 @@ export default function SelectedWork() {
             className="pointer-events-none absolute inset-y-0 left-0 w-0 transition-[width] duration-(--dur-slow) ease-(--ease-out) group-hover:w-full"
             style={{
               background:
-                "linear-gradient(90deg, rgb(232 185 97 / .16), rgb(139 123 232 / .05) 55%, transparent)",
+                "linear-gradient(90deg, color-mix(in oklab, var(--color-mark) 12%, transparent), transparent)",
             }}
           />
 

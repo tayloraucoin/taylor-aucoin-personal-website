@@ -345,7 +345,7 @@ export function StepEmailDialog({
                   onClick={send}
                   disabled={pending}
                   autoFocus
-                  className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
+                  className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-(--color-on-fill) disabled:opacity-60"
                 >
                   {pending ? "Sending…" : lastSentAt ? "Send again" : "Send it"}
                 </button>
@@ -365,7 +365,7 @@ export function StepEmailDialog({
                 type="button"
                 onClick={() => setConfirming(true)}
                 disabled={!ready || pending}
-                className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white disabled:opacity-60"
+                className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-(--color-on-fill) disabled:opacity-60"
               >
                 Send
               </button>

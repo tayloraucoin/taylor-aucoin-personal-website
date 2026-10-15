@@ -56,7 +56,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-base font-medium text-white disabled:opacity-60"
+        className="min-h-[44px] rounded-(--radius) bg-(--color-action) px-4 text-base font-medium text-(--color-on-fill) disabled:opacity-60"
       >
         Sign in
       </button>

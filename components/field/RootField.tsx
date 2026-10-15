@@ -65,8 +65,10 @@ export default function RootField({
   const wrapRef = useRef<HTMLDivElement>(null);
   const w = size?.w;
   const h = size?.h;
+  const off = !FIELD.ENABLED && variant === "page";
 
   useEffect(() => {
+    if (off) return;
     const canvasEl = canvasRef.current;
     const wrapEl = wrapRef.current;
     if (!canvasEl || !wrapEl) return;
@@ -94,7 +96,9 @@ export default function RootField({
     // `intensity` seeds the initial value only; live changes go through
     // controlRef so they never re-seed the tree.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showPads, variant, w, h, dpr, interactive, controlRef]);
+  }, [off, showPads, variant, w, h, dpr, interactive, controlRef]);
+
+  if (off) return null;
 
   return (
     <div

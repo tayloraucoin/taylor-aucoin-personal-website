@@ -41,7 +41,7 @@ export function DayStrip({ nowHours }: { nowHours: number }) {
               {profile.best.map((range) => (
                 <span
                   key={`best-${range.from}`}
-                  className="absolute inset-y-0 rounded-(--radius) bg-(--color-gold-500)/70"
+                  className="absolute inset-y-0 rounded-(--radius) bg-(--color-mark)/70"
                   style={{
                     left: `${pct(range.from)}%`,
                     width: `${((range.to - range.from) / SPAN) * 100}%`,

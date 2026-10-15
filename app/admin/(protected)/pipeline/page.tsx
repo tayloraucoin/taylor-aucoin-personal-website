@@ -33,7 +33,7 @@ export default async function PipelinePage() {
         actions={
           <Link
             href={adminRoutes.pipelineNew}
-            className="flex min-h-[44px] items-center rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-white"
+            className="flex min-h-[44px] items-center rounded-(--radius) bg-(--color-action) px-4 text-sm font-medium text-(--color-on-fill)"
           >
             New step
           </Link>
