@@ -23,3 +23,22 @@ server/services/admin-auth.ts
 server/services/deposit.ts
 app/admin/(protected)/queue/page.tsx
 next.config.ts
+
+# migrate 4: the copied tooling imports with .ts extensions and keeps the toolkit's bytes.
+tooling/
+
+# From the toolkit's own .prettierignore (product-engineering-mastery): copied or generated bodies stay byte for byte.
+docs/roles/
+docs/design/canon.md
+docs/decisions/ledger.md
+docs/product/brief.template.md
+docs/product/package.template.md
+docs/product/cycle-charter.template.md
+docs/workflows/glossary.md
+docs/**/README.md
+.claude/agents/
+specs/_status.md
+specs/**/review-*.md
+specs/**/tickets/_preflight.md
+specs/**/evidence/
+specs/**/research/
