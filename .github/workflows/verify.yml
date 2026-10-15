@@ -1,0 +1,68 @@
+# The whole chain, the same one agents run locally: `yarn verify` (record 0001,
+# rulings 51). Taylor owns the secrets, the first run and branch protection.
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      # The tier variables `build:agent` reads through next.config.ts
+      # (lib/config/env/resolve-tier-env.ts). With APP_ENVIRONMENT unset the
+      # tier is `local`, which borrows the STAGING set. Every one is optional:
+      # an unset secret arrives as an empty string, the resolver skips it, and
+      # the build still passes (next.config.ts only warns about SUPABASE_URL).
+      # Set them as repository secrets for a CI build that matches a local one.
+      SUPABASE_STAGING_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+      SUPABASE_STAGING_PUBLIC_BUCKET: ${{ secrets.SUPABASE_STAGING_PUBLIC_BUCKET }}
+      SUPABASE_STAGING_INTAKE_BUCKET: ${{ secrets.SUPABASE_STAGING_INTAKE_BUCKET }}
+      SUPABASE_STAGING_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+      SUPABASE_STAGING_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
+      DATABASE_STAGING_URL: ${{ secrets.DATABASE_STAGING_URL }}
+      DIRECT_STAGING_DATABASE_URL: ${{ secrets.DIRECT_STAGING_DATABASE_URL }}
+      STRIPE_STAGING_PUBLISHABLE_KEY: ${{ secrets.STRIPE_STAGING_PUBLISHABLE_KEY }}
+      STRIPE_STAGING_SECRET_KEY: ${{ secrets.STRIPE_STAGING_SECRET_KEY }}
+      STRIPE_STAGING_PRICE_DEPOSIT: ${{ secrets.STRIPE_STAGING_PRICE_DEPOSIT }}
+      STRIPE_STAGING_PRICE_BALANCE: ${{ secrets.STRIPE_STAGING_PRICE_BALANCE }}
+      STRIPE_STAGING_PRICE_CHANGES_STANDARD: ${{ secrets.STRIPE_STAGING_PRICE_CHANGES_STANDARD }}
+      STRIPE_STAGING_PRICE_CHANGES_SMALL: ${{ secrets.STRIPE_STAGING_PRICE_CHANGES_SMALL }}
+      STRIPE_STAGING_PRICE_EXTRA_PAGE: ${{ secrets.STRIPE_STAGING_PRICE_EXTRA_PAGE }}
+      STRIPE_STAGING_PRICE_BOOKING_SETUP: ${{ secrets.STRIPE_STAGING_PRICE_BOOKING_SETUP }}
+      STRIPE_STAGING_PRICE_GBP_CLEAN: ${{ secrets.STRIPE_STAGING_PRICE_GBP_CLEAN }}
+      STRIPE_STAGING_PRICE_LOGO: ${{ secrets.STRIPE_STAGING_PRICE_LOGO }}
+      STRIPE_STAGING_PRICE_CARE_PLAN: ${{ secrets.STRIPE_STAGING_PRICE_CARE_PLAN }}
+    steps:
+      # Full history: check-specs and check-test-weakening compare with
+      # origin/main (tooling/lib/git.ts, getBaseRef).
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - run: corepack enable
+
+      - run: yarn install --immutable
+
+      # next-env.d.ts is gitignored and only Next writes it. Without it the
+      # image-import types are missing and `yarn typecheck` fails before the
+      # build that would have written it.
+      - run: yarn next typegen
+
+      - run: yarn verify

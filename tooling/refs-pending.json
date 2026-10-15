@@ -91,5 +91,6 @@
   "apps/web/app/page.tsx": "layer 3, part 11",
   "apps/web/": "layer 3, part 11",
   "apps/web/CLAUDE.md": "layer 3, part 11",
-  "tooling/cost.test.ts": "stays in the toolkit"
+  "tooling/cost.test.ts": "stays in the toolkit",
+  ".claude/settings.local.json": "machine-local, git-ignored"
 }

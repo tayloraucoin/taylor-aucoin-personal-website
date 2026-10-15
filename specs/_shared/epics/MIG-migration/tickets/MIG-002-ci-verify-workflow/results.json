@@ -1,0 +1,22 @@
+{
+  "id": "MIG-2",
+  "criteria_sha256": "04357d84a0aa2f27a9250bc35c6f9ae7adef08c865b3e3337c50005e17a188e4",
+  "criteria": {
+    "C1": {
+      "status": "FAIL",
+      "evidence": "check",
+      "run": null
+    },
+    "C2": {
+      "status": "FAIL",
+      "evidence": "check",
+      "run": null
+    },
+    "C3": {
+      "status": "FAIL",
+      "evidence": "manual",
+      "run": null
+    }
+  },
+  "updated_at": "2026-10-15T19:38:40Z"
+}
