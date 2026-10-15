@@ -47,7 +47,7 @@ export default function VideoFigure({
           aria-label="Play video"
           disabled={playing}
           onClick={() => videoRef.current?.play()}
-          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-(--color-faint) bg-[rgb(3_5_16/.72)] backdrop-blur-[2px] transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:pointer-events-none"
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-(--color-faint) bg-(--color-carbon-900)/72 backdrop-blur-[2px] transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-mark)/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:pointer-events-none"
         >
           <svg
             viewBox="0 0 24 24"

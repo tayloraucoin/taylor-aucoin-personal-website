@@ -530,7 +530,7 @@ function FileTile({
             type="button"
             ref={setActivatorNodeRef}
             aria-label={`Drag to reorder image ${index + 1}`}
-            className="absolute top-1 left-1 flex size-9 touch-none cursor-grab items-center justify-center rounded-full border border-white/25 bg-[rgb(6_11_30/.62)] text-white backdrop-blur-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) active:cursor-grabbing"
+            className="absolute top-1 left-1 flex size-9 touch-none cursor-grab items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-white backdrop-blur-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) active:cursor-grabbing"
             {...attributes}
             {...listeners}
           >

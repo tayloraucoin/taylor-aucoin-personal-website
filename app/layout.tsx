@@ -42,6 +42,15 @@ export const metadata: Metadata = {
     template: `%s — ${SITE.name}`,
   },
   description: SITE.metaDescription,
+  // The favicon lives in `public/` rather than as `app/favicon.ico` so its URL
+  // can carry a version: browsers cache favicons far past a redeploy, and the
+  // rebrand's TA would otherwise stay hidden behind the old mark. Bump `v`
+  // whenever the icon changes. 16 is TA alone, 32 is TA over the A rule
+  // (Paper, 13 · Favicon); the 180 Apple icon is the A master.
+  icons: {
+    icon: [{ url: "/favicon.ico?v=2", sizes: "16x16 32x32" }],
+    apple: [{ url: "/apple-icon.png?v=2", sizes: "180x180" }],
+  },
   // Routes that set their own `openGraph`/`twitter` replace these wholesale;
   // routes that don't (the home page) inherit them.
   ...socialCard({

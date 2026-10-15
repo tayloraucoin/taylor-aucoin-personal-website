@@ -200,7 +200,7 @@ function CaptureGallery({
 
           <p
             aria-live="polite"
-            className="absolute right-3 bottom-3 rounded-(--radius) border border-white/25 bg-[rgb(6_11_30/.62)] px-2 py-1 font-mono text-[10px] tracking-[.16em] text-white backdrop-blur-[2px]"
+            className="absolute right-3 bottom-3 rounded-(--radius) border border-white/25 bg-(--color-carbon-900)/62 px-2 py-1 font-mono text-[10px] tracking-[.16em] text-white backdrop-blur-[2px]"
           >
             {index + 1} / {site.captures.length}
           </p>
@@ -230,7 +230,7 @@ function PageArrow({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-[rgb(6_11_30/.62)] text-[18px] text-white backdrop-blur-[2px] transition-opacity duration-(--dur-fast) ease-(--ease-out) hover:bg-[rgb(6_11_30/.82)] disabled:pointer-events-none disabled:opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
+      className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-[18px] text-white backdrop-blur-[2px] transition-opacity duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-carbon-900)/82 disabled:pointer-events-none disabled:opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
     >
       <span aria-hidden>{children}</span>
     </button>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const className =
-  "sticky top-0 z-10 float-right m-4 rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.7)] px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink)";
+  "sticky top-0 z-10 float-right m-4 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors hover:border-(--color-mark)/55 hover:text-(--color-ink)";
 
 /**
  * Same Esc control as the intercepted overlay, for full-page routes (/work/*, /stack).

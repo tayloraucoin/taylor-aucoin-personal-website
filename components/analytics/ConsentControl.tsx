@@ -39,7 +39,7 @@ export default function ConsentControl() {
   };
 
   const action =
-    "rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.55)] px-4 py-2.5 font-mono text-[10px] font-medium uppercase tracking-[.16em] transition-colors duration-(--dur-fast) hover:border-[rgb(232_185_97/.55)] disabled:cursor-default disabled:opacity-40 disabled:hover:border-(--color-faint)";
+    "rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-2.5 font-mono text-[10px] font-medium uppercase tracking-[.16em] transition-colors duration-(--dur-fast) hover:border-(--color-mark)/55 disabled:cursor-default disabled:opacity-40 disabled:hover:border-(--color-faint)";
 
   return (
     <div className="mt-5 rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-5">

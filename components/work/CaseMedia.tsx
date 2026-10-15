@@ -76,7 +76,7 @@ function toRows(items: MediaItem[]): MediaItem[][] {
 export function RailVideoBadge() {
   return (
     <span
-      className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded-full border border-(--color-faint) bg-[rgb(3_5_16/.72)] backdrop-blur-[2px]"
+      className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded-full border border-(--color-faint) bg-(--color-carbon-900)/72 backdrop-blur-[2px]"
       aria-hidden
     >
       <svg
@@ -116,7 +116,7 @@ function Figure({
           : SIZES.full;
 
   const imageClasses =
-    "h-auto w-full rounded-(--radius) border border-(--color-faint) transition-colors duration-(--dur-fast) ease-(--ease-out) group-hover:border-[rgb(232_185_97/.55)]";
+    "h-auto w-full rounded-(--radius) border border-(--color-faint) transition-colors duration-(--dur-fast) ease-(--ease-out) group-hover:border-(--color-mark)/55";
 
   /**
    * A screen recording. `preload="none"` means nothing downloads until the
@@ -146,7 +146,7 @@ function Figure({
       <figure>
         {panelled ? (
           <div
-            className={`flex justify-center rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 ${
+            className={`flex justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-carbon-900)/92 px-6 ${
               effective === "narrow" ? "py-10" : "py-8"
             }`}
           >
@@ -194,7 +194,7 @@ function Figure({
     <figure>
       {panelled ? (
         <div
-          className={`flex justify-center rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 ${
+          className={`flex justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-carbon-900)/92 px-6 ${
             effective === "narrow" ? "py-10" : "py-8"
           }`}
         >
@@ -296,7 +296,7 @@ function MediaGroupBlock({
 
   if (g.frame === "panel") {
     return (
-      <div className="rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-6 py-8">
+      <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-carbon-900)/92 px-6 py-8">
         {body}
       </div>
     );

@@ -239,7 +239,7 @@ function DoneOverlay({
       role="dialog"
       aria-modal="true"
       aria-labelledby="ingest-done-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(6_11_30/.86)] px-[22px] backdrop-blur-[6px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-(--color-carbon-900)/86 px-[22px] backdrop-blur-[6px]"
     >
       <div className="w-full max-w-[420px] rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-6">
         <p
@@ -421,7 +421,7 @@ function RunningOverlay({ copy }: { copy: { title: string; body: string } }) {
       aria-labelledby="ingest-running-title"
       ref={dialog}
       tabIndex={-1}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(6_11_30/.86)] px-[22px] backdrop-blur-[6px] focus:outline-none"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-(--color-carbon-900)/86 px-[22px] backdrop-blur-[6px] focus:outline-none"
     >
       <div className="w-full max-w-[420px] rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-6">
         <p

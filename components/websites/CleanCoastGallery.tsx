@@ -40,7 +40,7 @@ export default function CleanCoastGallery() {
         </p>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] md:items-start">
-          <div className="flex justify-center gap-4 rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] px-5 py-7">
+          <div className="flex justify-center gap-4 rounded-(--radius) border border-(--color-faint) bg-(--color-carbon-900)/92 px-5 py-7">
             {phones.map((shot, i) => (
               <figure key={shot.caption} className="w-full max-w-[190px]">
                 <button
@@ -66,7 +66,7 @@ export default function CleanCoastGallery() {
             {desktops.map((shot, i) => (
               <figure
                 key={shot.caption}
-                className="rounded-(--radius) border border-(--color-faint) bg-[rgb(3_5_16/.92)] p-4"
+                className="rounded-(--radius) border border-(--color-faint) bg-(--color-carbon-900)/92 p-4"
               >
                 <button
                   type="button"

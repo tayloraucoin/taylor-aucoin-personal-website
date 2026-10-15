@@ -57,7 +57,7 @@ export default function CapabilityGrid() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Filter — payments, search, AI…"
           aria-label="Filter capabilities"
-          className="w-full max-w-[280px] rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.55)] px-3.5 py-2.5 text-[13px] font-light text-(--color-ink) outline-none backdrop-blur-[6px] transition-colors duration-(--dur-fast) placeholder:text-(--color-dim) focus:border-[rgb(232_185_97/.42)] [&::-webkit-search-cancel-button]:hidden"
+          className="w-full max-w-[280px] rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-2.5 text-[13px] font-light text-(--color-ink) outline-none backdrop-blur-[6px] transition-colors duration-(--dur-fast) placeholder:text-(--color-dim) focus:border-(--color-mark)/42 [&::-webkit-search-cancel-button]:hidden"
         />
       </div>
 
@@ -74,8 +74,8 @@ export default function CapabilityGrid() {
               onClick={() => setTag(active ? null : cat)}
               className={`rounded-(--radius) border px-3 py-1.5 font-mono text-[9px] uppercase tracking-[.2em] transition-colors duration-(--dur-fast) ${
                 active
-                  ? "border-[rgb(232_185_97/.55)] bg-[rgb(232_185_97/.08)] text-(--color-c2)"
-                  : "border-(--color-faint) text-(--color-dim) hover:border-[rgb(232_185_97/.3)] hover:text-(--color-body)"
+                  ? "border-(--color-mark)/55 bg-(--color-mark)/8 text-(--color-c2)"
+                  : "border-(--color-faint) text-(--color-dim) hover:border-(--color-mark)/30 hover:text-(--color-body)"
               }`}
             >
               {cat}
@@ -95,7 +95,7 @@ export default function CapabilityGrid() {
                 triggerRef.current = e.currentTarget;
                 setOpen(c);
               }}
-              className="group flex flex-col rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-5 text-left transition-colors duration-(--dur-base) ease-(--ease-out) hover:border-[rgb(232_185_97/.35)] hover:bg-(--color-card-hover)"
+              className="group flex flex-col rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-5 text-left transition-colors duration-(--dur-base) ease-(--ease-out) hover:border-(--color-mark)/35 hover:bg-(--color-card-hover)"
             >
               <span className="max-w-[40ch] font-display text-[15px] font-medium leading-[1.35] tracking-[-.012em] text-(--color-ink)">
                 {c.title}

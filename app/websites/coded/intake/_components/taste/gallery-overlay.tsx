@@ -175,7 +175,7 @@ export function GalleryOverlay({
   return createPortal(
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 overflow-y-auto bg-[rgb(6_11_30/.92)] px-4 py-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-(--color-carbon-900)/92 px-4 py-4"
     >
       <div
         ref={panel}

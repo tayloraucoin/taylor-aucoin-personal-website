@@ -49,7 +49,7 @@ export default function Overlay({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end bg-[rgb(3_5_16/.72)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end bg-(--color-carbon-900)/72 backdrop-blur-sm"
       onClick={close}
     >
       <div
@@ -59,7 +59,7 @@ export default function Overlay({
         aria-label={label}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className={`${variant === "full" ? "h-[94dvh]" : "max-h-[80dvh]"} w-full animate-[slideup_450ms_cubic-bezier(.2,.8,.2,1)] overflow-y-auto rounded-t-(--radius) border-t border-[rgb(232_185_97/.28)] outline-none`}
+        className={`${variant === "full" ? "h-[94dvh]" : "max-h-[80dvh]"} w-full animate-[slideup_450ms_cubic-bezier(.2,.8,.2,1)] overflow-y-auto rounded-t-(--radius) border-t border-(--color-mark)/28 outline-none`}
         style={{
           background:
             "linear-gradient(172deg, var(--color-ground-a) 0%, var(--color-ground-b) 100%)",
@@ -68,7 +68,7 @@ export default function Overlay({
         <button
           onClick={close}
           aria-label="Close"
-          className="sticky top-0 z-10 float-right m-4 rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.7)] px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink)"
+          className="sticky top-0 z-10 float-right m-4 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors hover:border-(--color-mark)/55 hover:text-(--color-ink)"
         >
           Esc
         </button>
