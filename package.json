@@ -60,7 +60,10 @@
     "lint:docs": "node tooling/lint-frontmatter.ts",
     "directory-map": "node tooling/directory-map.ts",
     "verify:fast": "node tooling/verify-fast.ts",
-    "check-types:tooling": "tsc -p tooling"
+    "check-types:tooling": "tsc -p tooling",
+    "cost": "node tooling/cost.ts",
+    "contract:built": "node tooling/contract.ts built",
+    "test:tooling": "node --test \"tooling/**/*.test.ts\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.121.0",

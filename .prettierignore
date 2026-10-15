@@ -42,3 +42,6 @@ specs/**/review-*.md
 specs/**/tickets/_preflight.md
 specs/**/evidence/
 specs/**/research/
+
+# migrate step 2: the assess report is filed byte for byte
+specs/_shared/epics/MIG-migration/assess.md

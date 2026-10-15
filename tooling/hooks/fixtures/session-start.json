@@ -93,7 +93,7 @@
         "cwd": "$ROOT"
       },
       "context": {
-        "root": "apps/web",
+        "root": "tooling/hooks/fixtures/spine-without-index",
         "spine": "2acf373 2026-10-02",
         "brief": "Active: none."
       },
