@@ -22,3 +22,7 @@ One line per log, moved whole with the host's docs to `docs/_legacy/` on 2026-10
 - pipeline: [`_legacy/pipeline/specs/TECHNICAL-DECISIONS.md`](../_legacy/pipeline/specs/TECHNICAL-DECISIONS.md), 7 entries.
 - review: [`_legacy/review/specs/TECHNICAL-DECISIONS.md`](../_legacy/review/specs/TECHNICAL-DECISIONS.md), 7 entries.
 - websites: [`_legacy/websites/specs/TECHNICAL-DECISIONS.md`](../_legacy/websites/specs/TECHNICAL-DECISIONS.md), 49 entries.
+
+## Rulings
+
+- 0001: tayloraucoin.com adopts the practice in place, legacy mode; every ruling of the migration, Taylor, 2026-10-14. [`records/0001-adopt-the-practice.md`](records/0001-adopt-the-practice.md)
