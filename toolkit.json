@@ -1,0 +1,159 @@
+{
+  "tier": "overlay",
+  "specsRoot": "specs",
+  "apps": {
+    "web": {
+      "path": ".",
+      "prefix": "WEB",
+      "designLayer": null
+    }
+  },
+  "toolkitPrefixes": [
+    "TAY"
+  ],
+  "verify": {
+    "full": "yarn verify",
+    "fast": "yarn verify:fast"
+  },
+  "migrationsDir": "db/migrations",
+  "branchPattern": "agent/{id}",
+  "protectedBranch": "main",
+  "reviewers": [
+    {
+      "glob": "**/migrations/**",
+      "role": "mason",
+      "why": "One-way door: an applied migration is immutable.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/schema/**",
+      "role": "mason",
+      "why": "One-way door: the data model's shape.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/*.sql",
+      "role": "mason",
+      "why": "One-way door: schema and data changes written as SQL.",
+      "status": "draft"
+    },
+    {
+      "glob": "app/api/**",
+      "role": "mason",
+      "why": "One-way door: public API shape.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/env.ts",
+      "role": "warden",
+      "why": "The environment seam, where secrets enter.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/schema/**",
+      "role": "warden",
+      "why": "Personal data: what is stored, and at what fidelity.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/webhooks/**",
+      "role": "warden",
+      "why": "Third-party callbacks that must be verified.",
+      "status": "draft"
+    },
+    {
+      "glob": ".claude/settings.json",
+      "role": "warden",
+      "why": "Agent permissions and the sandbox.",
+      "status": "draft"
+    },
+    {
+      "glob": "tooling/hooks/**",
+      "role": "warden",
+      "why": "The guards that enforce agent permissions.",
+      "status": "draft"
+    },
+    {
+      "glob": "{app,components}/**/*.tsx",
+      "role": "assay",
+      "why": "Rendered UI is scored against the canon rubric.",
+      "status": "draft"
+    },
+    {
+      "glob": "app/**/page.tsx",
+      "role": "threshold",
+      "why": "A surface: keyboard, focus and screen-reader paths.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/legal/**",
+      "role": "chancery",
+      "why": "Terms, privacy and consent text.",
+      "status": "draft"
+    },
+    {
+      "glob": "**/consent/**",
+      "role": "chancery",
+      "why": "Consent capture and its wording.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "stripe",
+        "@stripe/*"
+      ],
+      "role": "mason",
+      "why": "One-way door: billing, wherever the Stripe SDK is called.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "stripe",
+        "@stripe/*"
+      ],
+      "role": "warden",
+      "why": "Payment credentials stay with the processor, wherever the Stripe SDK is called.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "stripe",
+        "@stripe/*"
+      ],
+      "role": "chancery",
+      "why": "Billing copy and what it promises, wherever the Stripe SDK is called.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "@supabase/*",
+        "next-auth",
+        "@clerk/*",
+        "better-auth"
+      ],
+      "role": "mason",
+      "why": "One-way door: authorization topology, wherever an auth SDK is called.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "@supabase/*",
+        "next-auth",
+        "@clerk/*",
+        "better-auth"
+      ],
+      "role": "warden",
+      "why": "Sessions, identity and access, wherever an auth SDK is called.",
+      "status": "draft"
+    },
+    {
+      "imports": [
+        "resend"
+      ],
+      "role": "warden",
+      "why": "Personal data: who is emailed and what the message holds.",
+      "status": "draft"
+    }
+  ],
+  "stack": {}
+}
