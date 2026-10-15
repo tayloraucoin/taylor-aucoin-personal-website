@@ -14,24 +14,24 @@ npm run dev
 | File                    | What it is                                                                                                                                                        |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `CLAUDE.md`             | The contract. Stack, invariants, the one rule. Claude Code loads this automatically.                                                                              |
-| `docs/TASTE-PROFILE.md` | **Read this before touching anything visual.** Everything Taylor said, liked, and rejected, and why. The rejection history is as much the spec as the tokens are. |
-| `docs/DESIGN-SYSTEM.md` | Tokens, type, motion, the two signature components.                                                                                                               |
-| `docs/SITE-SPEC.md`     | Routes, sections, states, a11y and perf floors.                                                                                                                   |
-| `docs/TICKETS.md`       | Ordered work. One at a time.                                                                                                                                      |
+| `docs/_legacy/TASTE-PROFILE.md` | **Read this before touching anything visual.** Everything Taylor said, liked, and rejected, and why. The rejection history is as much the spec as the tokens are. |
+| `docs/_legacy/DESIGN-SYSTEM.md` | Tokens, type, motion, the two signature components.                                                                                                               |
+| `docs/_legacy/SITE-SPEC.md`     | Routes, sections, states, a11y and perf floors.                                                                                                                   |
+| `docs/_legacy/TICKETS.md`       | Ordered work. One at a time.                                                                                                                                      |
 
 ## How to drive Claude Code through this
 
 Open Claude Code in the repo root. `CLAUDE.md` loads automatically. Then work **one ticket at a time**:
 
 ```
-Implement WORK-03 from docs/TICKETS.md.
+Implement WORK-03 from docs/_legacy/TICKETS.md.
 ```
 
 Not _"build me a website."_ The tickets exist because the failure mode of an agent on a design-heavy build is silent drift — it hits an unspecified state, reaches for a Tailwind default, and thirty files later the site looks like every other site.
 
 **The rule that prevents that** is in `CLAUDE.md`:
 
-> If a design decision is not specified in `docs/DESIGN-SYSTEM.md` or `docs/SITE-SPEC.md`, stop and ask. Do not invent.
+> If a design decision is not specified in `docs/_legacy/DESIGN-SYSTEM.md` or `docs/_legacy/SITE-SPEC.md`, stop and ask. Do not invent.
 
 Tickets marked `[SCAFFOLDED]` already have working code. Verify and wire them — do not rewrite them. `RootField.tsx` and `GradientRing.tsx` encode decisions that took many iterations and at least one invisible bug to get right.
 
@@ -44,7 +44,7 @@ Tickets marked `[SCAFFOLDED]` already have working code. Verify and wire them �
 
 ## Switching the palette
 
-Palette **D · Gilt** is live. The runner-up, **E · Reliquary** (gold + purple on Night Owl navy), is documented in `docs/DESIGN-SYSTEM.md`.
+Palette **D · Gilt** is live. The runner-up, **E · Reliquary** (gold + purple on Night Owl navy), is documented in `docs/_legacy/DESIGN-SYSTEM.md`.
 
 Every color in the site resolves to a token in the `@theme` block of `app/globals.css`. Switching palettes is **five values in one file**. Nothing else changes. That was the point.
 

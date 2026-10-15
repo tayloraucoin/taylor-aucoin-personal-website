@@ -177,7 +177,7 @@ export function requirePriceId(key: StripePriceKey): string {
  * Deliberately opt-in via `STRIPE_TAX_CHECKOUT=true`: with no head-office
  * address or active registration, `automatic_tax` silently collects zero
  * while looking normal, and past charges cannot be corrected retroactively
- * (docs/AGORA-STRIPE.md). Flip it only after `taxReadiness()` reports ready
+ * (docs/_legacy/AGORA-STRIPE.md). Flip it only after `taxReadiness()` reports ready
  * and a test charge shows GST actually collected.
  */
 export function stripeTaxEnabled(): boolean {

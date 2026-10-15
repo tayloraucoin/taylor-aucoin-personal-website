@@ -25,7 +25,7 @@ import { hostingTerms, ownership } from "@/content/websites-coded";
  * not his promise to make. Free is Vercel's tier, on Vercel's terms, in the
  * client's own account. The page says so and links to the source. Anyone
  * tempted to shorten this to "hosting is free" should read
- * docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-7 first.
+ * docs/_legacy/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-7 first.
  */
 export default function Ownership() {
   return (

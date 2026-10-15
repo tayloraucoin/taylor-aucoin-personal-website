@@ -73,7 +73,7 @@ import { socialCard } from "@/lib/metadata";
  * at a call instead, while the intake did not yet exist — see
  * `content/websites-coded.ts`'s `startHref`/`ctaLabel` comment for that history.
  *
- * Full rationale: docs/websites/CODED-PAGE-SPEC.md
+ * Full rationale: docs/_legacy/websites/CODED-PAGE-SPEC.md
  */
 const description =
   "Portfolio sites for creative work, built in code you own. $2,000 flat, first look in three days, and hosting that costs nothing to run.";

@@ -9,7 +9,7 @@ import type { Choice } from "./choice-group";
  * Extracted rather than repeated in eight files: the tag, the hint, and the
  * option list are the same three shapes everywhere, and eight copies of a
  * `font-mono text-[10px]` string is how a register drifts. The visual law is
- * `docs/admin/ADMIN-UX-SPEC.md` §6.1, which is where these values are decided.
+ * `docs/_legacy/admin/ADMIN-UX-SPEC.md` §6.1, which is where these values are decided.
  *
  * **Nothing here holds a question's words.** Every string these render is
  * passed in by the component that already owned it, which is what keeps

@@ -100,7 +100,7 @@ function titleLine(roles: string[], leadRole: string): string {
  * Step 1 — About you, or about the thing.
  *
  * Every string here comes from the copy pack or from
- * `docs/websites/portfolio-intake-questions-v2.md` § Step 1 — none is a literal
+ * `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 1 — none is a literal
  * in this file, so Taylor's human-hand pass reaches all of them in one place.
  *
  * **The kind decides what this step asks.** A filmmaker sees exactly the step

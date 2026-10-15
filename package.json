@@ -36,7 +36,36 @@
     "orders:backfill": "node --env-file-if-exists=.env.local --import tsx scripts/backfill-orders.ts",
     "admin:grant": "node --env-file-if-exists=.env.local --import tsx scripts/grant-admin.ts",
     "eval:extract": "node --env-file-if-exists=.env.local --import tsx scripts/eval-extract.ts",
-    "transcribe:voice-note": "node --env-file-if-exists=.env.local --import tsx scripts/transcribe-voice-note.ts"
+    "transcribe:voice-note": "node --env-file-if-exists=.env.local --import tsx scripts/transcribe-voice-note.ts",
+    "contract:init": "node tooling/contract.ts init",
+    "contract:run": "node tooling/contract.ts run",
+    "contract:record": "node tooling/contract.ts record",
+    "contract:add": "node tooling/contract.ts add",
+    "contract:qa": "node tooling/contract.ts qa",
+    "review:run": "node tooling/review-run.ts",
+    "status": "node tooling/status.ts",
+    "spec:init": "node tooling/spec-init.ts",
+    "specs:archive": "node tooling/specs-archive.ts",
+    "truth:promote": "node tooling/truth-promote.ts",
+    "check-settings": "node tooling/check-settings.ts",
+    "check-reviewers": "node tooling/check-reviewers.ts",
+    "check-specs": "node tooling/check-specs.ts",
+    "check-refs": "node tooling/check-refs.ts",
+    "check-test-weakening": "node tooling/check-test-weakening.ts",
+    "test:hooks": "node tooling/test-hooks.ts",
+    "budget": "node tooling/budget.ts",
+    "gen:agents": "node tooling/gen-agents.ts",
+    "doctor": "node tooling/doctor.ts",
+    "hooks:install": "node tooling/hooks-install.ts",
+    "lint:docs": "node tooling/lint-frontmatter.ts",
+    "directory-map": "node tooling/directory-map.ts",
+    "verify:fast": "node tooling/verify-fast.ts",
+    "check-types:tooling": "tsc -p tooling",
+    "cost": "node tooling/cost.ts",
+    "contract:built": "node tooling/contract.ts built",
+    "test:tooling": "node --test \"tooling/**/*.test.ts\"",
+    "test": "node --test tests/smoke.test.ts",
+    "verify": "yarn lint && yarn typecheck && yarn test && yarn build:agent && yarn check-settings && yarn test:hooks && yarn check-specs && yarn check-test-weakening && yarn check-reviewers && yarn check-refs && yarn budget && yarn gen:agents --check && yarn check-types:tooling"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.121.0",
@@ -78,6 +107,7 @@
     "prettier": "^3.7.0",
     "tailwindcss": "^4.0.0",
     "tsx": "4.23.12",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "yaml": "2.8.1"
   }
 }

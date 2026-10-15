@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 async function loadCallSheet(): Promise<string> {
   try {
     return await readFile(
-      path.join(process.cwd(), "docs/crm/CALL-SHEET.md"),
+      path.join(process.cwd(), "content/crm/call-sheet.md"),
       "utf8",
     );
   } catch {

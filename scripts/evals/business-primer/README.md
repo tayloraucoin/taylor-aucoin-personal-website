@@ -9,7 +9,7 @@ to flatter an output that does not exist yet.
 Every business, person, address, domain, and number in `documents/` is
 invented. Domains use the reserved `.example` TLD or resolve to nothing. This
 is house law rather than tidiness — fabricated or real client material is a
-legal posture on this project (`docs/intake/ADMIN-HANDOFF.md` § Cautions), and
+legal posture on this project (`docs/_legacy/intake/ADMIN-HANDOFF.md` § Cautions), and
 a plausible-looking fake is the worse of the two failures. If you add a case,
 invent it; never paste a real client's document, and never paste your own.
 

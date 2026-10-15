@@ -55,7 +55,7 @@ const STEP_GROUP = "questionnaire-steps";
  *
  * Every prop is empty. There is no engagement behind a preview, so `token` is
  * the empty string, answers are `{}`, files are empty lists, and prefill is
- * blank strings — never a sample business, which `docs/intake/ADMIN-HANDOFF.md`
+ * blank strings — never a sample business, which `docs/_legacy/intake/ADMIN-HANDOFF.md`
  * treats as a legal posture rather than a style note.
  */
 export function QuestionStack({

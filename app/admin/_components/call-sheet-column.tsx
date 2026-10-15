@@ -72,7 +72,7 @@ export function CallSheetColumn({
         ) : (
           <p className="text-sm text-(--color-dim)">
             The call sheet couldn&rsquo;t be loaded. It lives at
-            docs/crm/CALL-SHEET.md — logging works regardless.
+            content/crm/call-sheet.md — logging works regardless.
           </p>
         )}
       </div>

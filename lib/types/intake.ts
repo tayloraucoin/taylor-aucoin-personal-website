@@ -1,8 +1,8 @@
 /**
  * Domain types for the client intake system.
  *
- * See `docs/intake/TECH-SCOPE.md` §4 for the data model and
- * `docs/intake/specs/` for the tickets that fill each piece in.
+ * See `docs/_legacy/intake/TECH-SCOPE.md` §4 for the data model and
+ * `docs/_legacy/intake/specs/` for the tickets that fill each piece in.
  */
 
 /**
@@ -96,7 +96,7 @@ export type IntakeStep<K extends AnyIntakeStepKey = AnyIntakeStepKey> = {
  * One step's answers as stored.
  *
  * Deliberately open at this layer: the per-step field shapes are specified in
- * `docs/intake/intake-form-build-spec.md` §4 and land with the form tickets
+ * `docs/_legacy/intake/intake-form-build-spec.md` §4 and land with the form tickets
  * (INT-5 for steps 1-4, INT-6 for 5-9), which narrow them with Zod at the
  * action boundary and export a per-step interface here. Declaring nine empty
  * interfaces now would be a type that lies about what INT-1 knows.

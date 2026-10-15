@@ -36,7 +36,7 @@ const LOGO_STATUS = [
 /**
  * Step 7 — Media.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 7,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 7,
  * verbatim.
  *
  * Nothing here is ever rejected for its format — size is the only refusal, and

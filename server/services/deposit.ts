@@ -566,7 +566,7 @@ export async function createDepositCheckout(
       quantity: line.quantity,
     })),
     // GST via Stripe Tax, gated by env: enabling automatic_tax without an
-    // active registration silently collects zero tax (docs/AGORA-STRIPE.md),
+    // active registration silently collects zero tax (docs/_legacy/AGORA-STRIPE.md),
     // so the flag is flipped deliberately, never defaulted.
     ...(stripeTaxEnabled() ? { automatic_tax: { enabled: true } } : {}),
     payment_intent_data: {

@@ -10,7 +10,7 @@ import { requireEnv } from "@/lib/env";
  * keeps the migration serial, which is what the migrator expects.
  *
  * Taylor runs migrations. An agent authors the SQL and the journal entry and
- * stops there — see `docs/intake/specs/README.md`.
+ * stops there — see `docs/_legacy/intake/specs/README.md`.
  */
 export function createMigrateClient() {
   const sql = postgres(requireEnv("DIRECT_DATABASE_URL"), {

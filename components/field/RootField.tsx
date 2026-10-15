@@ -16,7 +16,7 @@ export type { FieldControl } from "./types";
  * branch angles snap toward 45° multiples and segments switch from organic
  * quadratic curves to chamfered PCB routing with vias at the terminals.
  *
- * Roots become circuits. That is the whole idea. Read docs/TASTE-PROFILE.md.
+ * Roots become circuits. That is the whole idea. Read docs/_legacy/TASTE-PROFILE.md.
  *
  * Rules encoded across this directory, each learned by breaking it:
  *  - 45°, never 90°. Right angles read as janky.

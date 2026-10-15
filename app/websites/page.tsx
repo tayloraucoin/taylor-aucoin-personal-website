@@ -19,7 +19,7 @@ import { AGORA } from "@/lib/config";
  * Everything about this page is spent making that click free. Two doors, no
  * scroll on a phone, no cleverness, and no gradient. The doors name the
  * DELIVERABLE rather than the buyer, because a profession can genuinely sit in
- * both tracks. See docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-1.
+ * both tracks. See docs/_legacy/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-1.
  *
  * The intake questionnaire did NOT move with the platform page. It stays at
  * `/websites/intake` so no live resume link breaks and no cookie scope shifts

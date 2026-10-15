@@ -18,11 +18,11 @@
  *
  * ## Where these words come from
  *
- * Strings marked *(v2)* below are `docs/websites/portfolio-intake-questions-v2.md`,
+ * Strings marked *(v2)* below are `docs/_legacy/websites/portfolio-intake-questions-v2.md`,
  * **approved and verbatim**. They do not get improved, shortened, or
  * re-punctuated, and a paraphrase of one is a defect.
  *
- * Everything else is `docs/websites/CODED-INTAKE-KINDS-UX-SCOPE.md` §6 and is a
+ * Everything else is `docs/_legacy/websites/CODED-INTAKE-KINDS-UX-SCOPE.md` §6 and is a
  * **draft pending Taylor's human-hand pass**, marked `[COPY — pending Taylor]`
  * at its definition so the pass has a grep target. That pass edits this one
  * file; it is why every kind-varying string in the track lives here rather than

@@ -4,7 +4,7 @@
  *
  * **The tags are the research's, not invented.** Every `group`, axis, style,
  * and `build` below traces to a line in
- * `docs/websites/…` batch one or two: the axes come from each entry's own
+ * `docs/_legacy/websites/…` batch one or two: the axes come from each entry's own
  * "Axes: dark · alive · medium" line, `build` from its achievability rating,
  * and the group from the archetype clusters both libraries converged on. Where
  * a library said "medium" this says `balanced`, which is the same value in the

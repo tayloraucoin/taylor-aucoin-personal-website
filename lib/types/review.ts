@@ -1,6 +1,6 @@
 /**
  * The review-ingest wire shapes, as the contract states them
- * (`docs/review/REVIEW-BACKEND-CONTRACT.md` §4).
+ * (`docs/_legacy/review/REVIEW-BACKEND-CONTRACT.md` §4).
  *
  * These are the shapes the client site sends and the shapes it reads back.
  * They are hand-written here rather than inferred from the validators so the

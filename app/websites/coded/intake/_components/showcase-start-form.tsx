@@ -31,7 +31,7 @@ async function action(
  * The public start form for the showcase track.
  *
  * Every label, placeholder, help line, and validation string below is
- * `docs/websites/portfolio-intake-questions-v2.md` verbatim. It is approved
+ * `docs/_legacy/websites/portfolio-intake-questions-v2.md` verbatim. It is approved
  * copy and it does not get improved in passing.
  *
  * No autosave, because there is no engagement to save against yet — this

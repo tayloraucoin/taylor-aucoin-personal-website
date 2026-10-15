@@ -15,7 +15,7 @@ export type { ShowcaseFlavour } from "./showcase-copy";
  * intro come from the pack like step 4's do, and every count downstream is
  * `stepCountFor`, never a literal.
  *
- * Every string here is `docs/websites/portfolio-intake-questions-v2.md`,
+ * Every string here is `docs/_legacy/websites/portfolio-intake-questions-v2.md`,
  * verbatim. It is approved client-facing copy and it does not get improved,
  * shortened, or re-punctuated in passing.
  *

@@ -10,7 +10,7 @@ import type { IntakeTrackKey } from "@/lib/types/intake";
  * values — name, business, project summary, currency, track, paid state. There
  * is no engagement behind a preview, so this supplies the shape and nothing
  * else: empty strings rather than a sample client, per
- * `docs/intake/ADMIN-HANDOFF.md`, which treats invented client data as a legal
+ * `docs/_legacy/intake/ADMIN-HANDOFF.md`, which treats invented client data as a legal
  * posture and not a style note.
  *
  * **Prices do not come from here.** They come from the real product catalogue,

@@ -14,7 +14,7 @@ import { showcaseIntakeRoutes } from "@/lib/routes";
  *
  * COMMERCIAL FACTS ARE RATIFIED, NOT INVENTED. Price, split, page count,
  * timeline, add-on prices, and change tiers all come from Taylor's rulings
- * recorded in docs/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md §2. Two
+ * recorded in docs/_legacy/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md §2. Two
  * add-ons are deliberately absent; see the note above `addOns`.
  *
  * This draft is the armature Taylor cuts from. His read-aloud pass is still his.

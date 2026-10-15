@@ -71,7 +71,7 @@ function asAccounts(value: unknown): Account[] {
 /**
  * Step 9 — Accounts and access.
  *
- * Every string is `docs/websites/portfolio-intake-questions-v2.md` § Step 9,
+ * Every string is `docs/_legacy/websites/portfolio-intake-questions-v2.md` § Step 9,
  * verbatim.
  *
  * **There is no password field here and there never will be one.** Access is
