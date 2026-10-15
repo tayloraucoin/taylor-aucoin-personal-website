@@ -1,7 +1,5 @@
 {
   "docs/decisions/records/0001-adopt-the-practice.md": "step 8",
-  "yarn verify": "step 6",
-  "yarn test": "step 6",
   "apps/": "layer 3, part 11",
   "packages/": "layer 3, part 11",
   "docs/references/README.md": "stays in the toolkit",
