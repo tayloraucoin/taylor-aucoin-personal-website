@@ -27,6 +27,7 @@ export type ServerEnvVar =
   | "INTAKE_NOTIFY_EMAIL"
   | "NEXT_PUBLIC_SITE_URL"
   | "OPENAI_API_KEY"
+  | "PIPELINE_BCC_EMAIL"
   | "RESEND_API_KEY"
   | "REVIEW_INGEST_KEY"
   | "STRIPE_PUBLISHABLE_KEY"
@@ -64,6 +65,8 @@ function rawValue(name: ServerEnvVar): string | undefined {
       return process.env.NEXT_PUBLIC_SITE_URL;
     case "OPENAI_API_KEY":
       return process.env.OPENAI_API_KEY;
+    case "PIPELINE_BCC_EMAIL":
+      return process.env.PIPELINE_BCC_EMAIL;
     case "RESEND_API_KEY":
       return process.env.RESEND_API_KEY;
     case "REVIEW_INGEST_KEY":

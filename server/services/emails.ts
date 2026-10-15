@@ -10,7 +10,7 @@ import {
   type EngagementRow,
 } from "@/db/schema";
 import { BOOKING_URL } from "@/lib/config";
-import { requireEnv } from "@/lib/env";
+import { readEnv, requireEnv } from "@/lib/env";
 import {
   REMINDER_1_AFTER_HOURS,
   REMINDER_2_AFTER_IDLE_HOURS,
@@ -105,6 +105,11 @@ function getResend(): Resend {
 function from(): string {
   // Resend requires a verified domain; the site's own is the honest sender.
   return `Taylor Aucoin <hello@${new URL(requireEnv("NEXT_PUBLIC_SITE_URL")).hostname.replace(/^www\./, "")}>`;
+}
+
+/** BCC address for client-facing pipeline emails, so a copy lands in Taylor's own sent mail. Unset means no BCC. */
+function pipelineBcc(): string | undefined {
+  return readEnv("PIPELINE_BCC_EMAIL") ?? undefined;
 }
 
 /**
@@ -647,6 +652,7 @@ export async function sendStepEmail(
     const sent = await getResend().emails.send({
       from: from(),
       to: engagement.contactEmail,
+      bcc: pipelineBcc(),
       subject: input.subject,
       text: input.body,
     });
