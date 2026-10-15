@@ -1,0 +1,4 @@
+# migrate 4a: history and runtime content stay byte for byte
+docs/_legacy/
+content/crm/call-sheet.md
+docs/product/brand/repo-scan.md

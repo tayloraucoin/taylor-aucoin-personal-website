@@ -131,7 +131,7 @@ const nextConfig: NextConfig = {
     // (D-CRM-28). Same reasoning as the fonts above: nothing imports it, so
     // the tracer cannot infer it, and call mode would render an empty script
     // column in production while working perfectly in dev.
-    "/admin/queue": ["./docs/crm/CALL-SHEET.md"],
+    "/admin/queue": ["./content/crm/call-sheet.md"],
   },
 };
 
