@@ -1,15 +1,13 @@
 import type { ReactNode } from "react";
-import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 /**
  * Light / Dark / System for the questionnaire — the intake amendment to
  * D-ADM-13 (Taylor, 2026-09-12).
  *
- * The same mechanism as the admin's, mounted the same way: the provider, and
- * beside it the marker `globals.css` gates every light rule on. The two trees
- * key their choice separately (`ta-intake-theme`) because the person choosing
- * is different — this is the client's setting on the client's device.
+ * The provider is the root layout's, shared with the whole site since the
+ * rebrand (2026-10-15); this renders only the control, because the intake
+ * hides the site header that carries it everywhere else.
  *
  * The control sits at the top of the column, right-aligned, above whatever
  * the route renders. The intake has no header or nav to put it in, and that
@@ -23,13 +21,11 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
  */
 export function IntakeTheme({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider storageKey="ta-intake-theme">
-      <div className="intake-theme contents">
-        <div className="mb-6 flex justify-end">
-          <ThemeToggle size="touch" />
-        </div>
-        {children}
+    <>
+      <div className="mb-6 flex justify-end">
+        <ThemeToggle size="touch" />
       </div>
-    </ThemeProvider>
+      {children}
+    </>
   );
 }

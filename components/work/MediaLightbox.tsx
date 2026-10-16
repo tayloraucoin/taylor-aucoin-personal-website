@@ -58,7 +58,7 @@ function LightboxVideo({
           aria-label="Play video"
           disabled={playing}
           onClick={() => videoRef.current?.play()}
-          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-(--color-faint) bg-[rgb(3_5_16/.72)] backdrop-blur-[2px] transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:pointer-events-none"
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-(--color-faint) bg-(--color-carbon-900)/72 backdrop-blur-[2px] transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-mark)/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:pointer-events-none"
         >
           <svg
             viewBox="0 0 24 24"
@@ -268,7 +268,7 @@ export default function MediaLightbox({
       : null;
 
   const chip =
-    "rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.7)] px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-[rgb(232_185_97/.55)] hover:text-(--color-ink) disabled:opacity-40";
+    "rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3 py-2 font-mono text-[10px] uppercase tracking-[.16em] text-(--color-body) backdrop-blur transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-mark)/55 hover:text-(--color-ink) disabled:opacity-40";
 
   const stepList = (delta: number) =>
     setOpen((current) => {
@@ -292,7 +292,7 @@ export default function MediaLightbox({
         createPortal(
           <div
             ref={scrimRef}
-            className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-[rgb(3_5_16/.94)] px-4 py-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-(--color-carbon-900)/94 px-4 py-4 backdrop-blur-sm"
             onClick={() => setOpen(null)}
           >
             <div

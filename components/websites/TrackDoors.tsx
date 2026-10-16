@@ -36,7 +36,7 @@ export default function TrackDoors() {
         <Link
           key={door.href}
           href={door.href}
-          className="group flex flex-col rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-5 transition-[transform,border-color,background-color] duration-(--dur-fast) ease-(--ease-out) hover:-translate-y-px hover:border-[rgb(232_185_97/.34)] motion-reduce:hover:translate-y-0 md:p-6"
+          className="group flex flex-col rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) p-5 transition-[transform,border-color,background-color] duration-(--dur-fast) ease-(--ease-out) hover:-translate-y-px hover:border-(--color-mark)/34 motion-reduce:hover:translate-y-0 md:p-6"
         >
           <h2 className="font-display text-[19px] font-medium leading-[1.25] tracking-[-.02em] text-(--color-ink) md:text-[21px]">
             {door.name}

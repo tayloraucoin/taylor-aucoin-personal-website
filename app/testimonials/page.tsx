@@ -33,11 +33,7 @@ export default function TestimonialsPage() {
         <span>{SITE.location} · Working with me</span>
         <span
           aria-hidden
-          className="h-px max-w-[220px] flex-1"
-          style={{
-            background:
-              "linear-gradient(90deg, rgb(232 185 97 / .30), transparent)",
-          }}
+          className="order-first h-px w-6 shrink-0 bg-(--color-rule)"
         />
       </div>
 

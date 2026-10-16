@@ -118,7 +118,7 @@ export function ThemeToggle({
         role="group"
         aria-label="Theme"
         onKeyDown={onKeyDown}
-        className={`inline-flex rounded-md border border-(--color-faint) ${
+        className={`inline-flex rounded-(--radius) border border-(--color-faint) ${
           collapsed
             ? "flex-col divide-y divide-(--color-faint)"
             : "divide-x divide-(--color-faint)"
@@ -142,8 +142,8 @@ export function ThemeToggle({
                 size === "touch" ? "size-12" : "size-7"
               } ${
                 collapsed
-                  ? "first:rounded-t-md last:rounded-b-md"
-                  : "first:rounded-l-md last:rounded-r-md"
+                  ? "first:rounded-t-(--radius) last:rounded-b-(--radius)"
+                  : "first:rounded-l-(--radius) last:rounded-r-(--radius)"
               } ${
                 selected
                   ? "bg-(--color-tint) text-(--color-ink)"

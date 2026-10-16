@@ -72,7 +72,7 @@ export function DownloadMarkdown({
         <button
           type="button"
           onClick={download}
-          className="flex min-h-9 items-center rounded-(--radius) border border-(--color-faint) px-3 text-sm text-(--color-body) transition-colors hover:border-[rgb(232_185_97/.42)] hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="flex min-h-9 items-center rounded-(--radius) border border-(--color-faint) px-3 text-sm text-(--color-body) transition-colors hover:border-(--color-mark)/42 hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
         >
           Download Markdown
         </button>

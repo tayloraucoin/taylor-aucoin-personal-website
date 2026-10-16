@@ -43,7 +43,7 @@ export default function MediaRail({ media }: { media: MediaGroup[] }) {
               src={item.src}
               alt={item.alt}
               sizes="96px"
-              className="h-14 w-24 rounded-(--radius) border border-(--color-faint) object-cover object-top opacity-75 transition-[opacity,border-color] duration-(--dur-fast) ease-(--ease-out) group-hover:border-[rgb(232_185_97/.55)] group-hover:opacity-100"
+              className="h-14 w-24 rounded-(--radius) border border-(--color-faint) object-cover object-top opacity-75 transition-[opacity,border-color] duration-(--dur-fast) ease-(--ease-out) group-hover:border-(--color-mark)/55 group-hover:opacity-100"
             />
             {item.video && <RailVideoBadge />}
           </span>

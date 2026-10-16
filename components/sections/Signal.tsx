@@ -16,7 +16,7 @@ export default function Signal() {
           <div
             key={s.k}
             data-interactive
-            className="bg-[rgb(9_12_34/.62)] px-5 py-6 backdrop-blur-[8px] transition-colors duration-(--dur-base) hover:bg-[rgb(16_19_48/.84)]"
+            className="bg-(--color-card) px-5 py-6 backdrop-blur-[8px] transition-colors duration-(--dur-base) hover:bg-(--color-card-hover)"
           >
             <div className="font-display text-3xl font-medium tracking-[-.02em] text-(--color-c2)">
               {s.v}

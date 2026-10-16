@@ -29,7 +29,7 @@ function Avatar({ name, src }: { name: string; src?: string }) {
   return (
     <span
       aria-hidden
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-[rgb(9_12_34/.62)] font-mono text-[10px] tracking-[.08em] text-(--color-dim)"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-card) font-mono text-[10px] tracking-[.08em] text-(--color-dim)"
     >
       {initials}
     </span>

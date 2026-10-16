@@ -62,7 +62,7 @@ export default function TrackPicker() {
   // is exactly the bug that got this row rewritten in the first place. This
   // form is verified against the computed style.
   return (
-    <details className="group mt-4 rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) transition-colors duration-(--dur-fast) [&:has(>summary:hover)]:border-[rgb(232_185_97/.34)] md:mt-5">
+    <details className="group mt-4 rounded-(--radius) border border-(--color-spec-border) bg-(--color-spec-bg) transition-colors duration-(--dur-fast) [&:has(>summary:hover)]:border-(--color-mark)/34 md:mt-5">
       <summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden md:p-6">
         <span>
           <span className="block font-display text-[17px] font-medium leading-[1.25] tracking-[-.02em] text-(--color-ink) md:text-[19px]">
