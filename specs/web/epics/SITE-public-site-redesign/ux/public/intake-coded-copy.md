@@ -1,6 +1,6 @@
 ---
 target: specs/web/ux/public/intake-coded-copy.md
-status: draft
+status: approved
 promoted:
 ---
 
@@ -54,3 +54,9 @@ Every mono caps string becomes sentence case at meta size (token rules): the sta
 ## Labels invented on the canvas
 
 None. The taste card's "Example site capture · 1512 × 982" is a placeholder, not copy.
+
+## 7. Added in the handoff pass (D-SITE-221)
+
+| Where | Line (today) | Issue |
+| --- | --- | --- |
+| `intake/_components/payment-confirming.tsx:55` (shared), after 40s | "This is taking longer than it should. Your payment went through — nothing is lost." | States a payment the webhook has not confirmed (`?paid=1` is a hint, never a fact); an em dash. Taylor's to write |

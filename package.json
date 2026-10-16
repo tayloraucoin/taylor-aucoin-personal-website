@@ -65,6 +65,8 @@
     "contract:built": "node tooling/contract.ts built",
     "test:tooling": "node --test \"tooling/**/*.test.ts\"",
     "test": "node --test tests/smoke.test.ts",
+    "test:e2e": "playwright test",
+    "capture": "node --import tsx scripts/capture-states.ts",
     "verify": "yarn lint && yarn typecheck && yarn test && yarn build:agent && yarn check-settings && yarn test:hooks && yarn check-specs && yarn check-test-weakening && yarn check-reviewers && yarn check-refs && yarn budget && yarn gen:agents --check && yarn check-types:tooling"
   },
   "dependencies": {

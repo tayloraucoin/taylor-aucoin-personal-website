@@ -11,6 +11,10 @@ load_when:
 
 # Changelog
 
+## 2026-10-16 — SITE: the metric definitions file lives at the template's path
+
+- `docs/measurement/metrics/definitions.md` is filled in place, as `definitions.template.md` names for a product repo: an exception to `.claude/rules/docs.md`'s "never inside `docs/`", because `specs/` has no folder for a definition that outlives its epic. SITE-3 writes SITE-M1 v1 there. Taylor, SITE Tickets gate.
+
 ## 2026-10-15 — TAY: the rebrand's brand layer (Carbon, Gold, Patina)
 
 - `.claude/rules/house-design.md` amended (plan mode, Taylor approved): the brand kit in `docs/product/brand/` (the seven brand-thread files, filed byte for byte) replaces Palette D as the design source; light mode is lifted to the whole site; gradients are rationed to the ring and the atmosphere; the root field is retired behind `FIELD.ENABLED`. Both colour directions run until Taylor chooses on the real site.
