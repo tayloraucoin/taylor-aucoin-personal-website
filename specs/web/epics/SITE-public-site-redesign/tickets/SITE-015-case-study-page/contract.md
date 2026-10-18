@@ -49,7 +49,7 @@ planned_paths:
   - "tests/**"
 depends_on: [ SITE-5, SITE-6, SITE-7 ]
 out_of_scope:
-  - "What I built's four media formats, its tiles and lightbox, and the format-* and no-testimonial captures (C-SITE-case-study-8, 9): the case-study formats ticket, cut first in the next authoring thread; here What I built renders its intro and surfaces as text, as no-artifacts draws it"
+  - "What I built's four media formats, its tiles and lightbox, and the format-* and no-testimonial captures (C-SITE-case-study-8, 9): SITE-16 (case-study-formats); here What I built renders its intro and surfaces as text, as no-artifacts draws it"
   - "Not found and its 404 (C-SITE-case-study-7): SITE-2; the header and its call (the header's part of C-SITE-case-study-6): SITE-4"
   - "Calculate's and the family office's new media (D-SITE-232); Taylor's closing lines and AI lists: content edits by Taylor"
 criteria:
@@ -87,12 +87,12 @@ criteria:
 
 ## Build notes
 
-Wave 3, after SITE-5 (`#main` on this page), SITE-6 (`PageClose`) and SITE-7 (the fields). The case-study formats ticket follows and replaces What I built's body.
+Wave 3, after SITE-5 (`#main` on this page), SITE-6 (`PageClose`) and SITE-7 (the fields). SITE-16 (case-study-formats) follows and replaces What I built's body.
 
 - **Approach:** rewrite `app/work/[slug]/page.tsx` to render the blocks in order from `_components/` (opening with `FactsLedger` and `LeadArtifact`, `AtAGlance`, `Brief`, `WhatIBuilt` (text surfaces for now), `ProcessRows`, `DecisionRows`, `WhatBroke`, `Outcome`, `WhereAiSat`, then `CaseStudyTestimonial` and `PageClose`). Each optional block renders null when empty, so nothing wraps it. Delete `CaseBody.tsx`, `PageDismiss.tsx` and `Section.tsx` where nothing else imports them.
 - **Decisions that apply:** D-SITE-79 and 96 (the order above, At a glance after the opening). D-SITE-84: "the full card without its project link … a short span at Quote 20px (18px at 390)." D-SITE-94: Yogesh's and Bruno's spans as written there. D-SITE-85: Where AI sat reuses home's three-list look, In the product · In the build · What I checked. D-SITE-174: the close's fallback is Send a note to `/contact`. D-SITE-195, 233 as non-negotiables.
 - **Words:** case-study-words.md; the meta line's type label from home's filter names; the close line is `closingLine` from `content/about.ts`; the privacy artifact caption ships `[draft]`.
 - **Interfaces:** the components above; `caseStudySpan` per testimonial in `content/testimonials.ts`; `no-ai`, `bare`, `no-artifacts`, `no-gallery` and `no-testimonial` in the page's States list, each stripping blocks from the current study through `_fixtures.ts`.
 - **Per path:** the page, its blocks and fixtures; the card; the spans; the deletions; `tests/e2e/case-study.spec.ts`.
-- **Gotchas:** Where AI sat copies the look of SITE-12's home-only `HowIWork` lists rather than sharing a component (judgment: one consumer each). `RootField` stays only if the captures draw the field (D-SITE-143 pattern); say which at the operator's look. `generateStaticParams` stays: on production `readPageState` never reads `searchParams`, so pages prerender. The case-study captures still show Everbook's AI block; D-SITE-233 wins. `no-testimonial`'s full-page capture waits on its re-export (D-SITE-196) and on the formats, so the next ticket captures it. Map the kit's token names through `.claude/rules/house-design.md`. Capture: `yarn capture --route /work/everbook --keys default,no-ai,bare,no-artifacts,no-gallery --out <evidence dir>`.
+- **Gotchas:** Where AI sat copies the look of SITE-12's home-only `HowIWork` lists rather than sharing a component (judgment: one consumer each). `RootField` stays only if the captures draw the field (D-SITE-143 pattern); say which at the operator's look. `generateStaticParams` stays: on production `readPageState` never reads `searchParams`, so pages prerender. The case-study captures still show Everbook's AI block; D-SITE-233 wins. `no-testimonial`'s full-page capture waits on its re-export (D-SITE-196) and on the formats, so SITE-16 captures it. Map the kit's token names through `.claude/rules/house-design.md`. Capture: `yarn capture --route /work/everbook --keys default,no-ai,bare,no-artifacts,no-gallery --out <evidence dir>`.
 - **Model:** Sonnet 5.5 at medium, minimum and recommended. Choosing down risks a block wrapped in an empty section.
