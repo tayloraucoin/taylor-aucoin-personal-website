@@ -81,7 +81,7 @@ criteria:
     evidence: capture
     path: "specs/web/epics/SITE-public-site-redesign/tickets/SITE-010-home-pillars-and-capabilities/evidence/pillar-open/"
   - id: C8
-    statement: "/capabilities matches its own capture from main before this change, at 390 and 1440, dark and light"
+    statement: "/capabilities matches its own capture taken at the branch head just before this change, at 390 and 1440, dark and light"
     evidence: capture
     path: "specs/web/epics/SITE-public-site-redesign/tickets/SITE-010-home-pillars-and-capabilities/evidence/capabilities-unchanged/"
 ---

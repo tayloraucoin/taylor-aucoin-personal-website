@@ -90,7 +90,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/contact.spec.ts"
   - id: C9
-    statement: "With consent granted, a sent note sends one contact_note_sent collect with surface services and from contact only; with sentinel name, email and message, no Google request and no URL on this origin holds a sentinel; with consent declined or GPC set no request reaches a Google host (C-SITE-services-22, 23)"
+    statement: "With consent granted, a sent note sends one contact_note_sent collect with surface services and from contact only; Prefer a call? sends one book_call_click, surface services, placement contact_sent; with sentinel name, email and message, no Google request and no URL on this origin holds a sentinel; with consent declined or GPC set no request reaches a Google host (C-SITE-services-22, 23)"
     evidence: test
     command: "yarn test:e2e tests/e2e/contact.spec.ts"
   - id: C10
@@ -118,5 +118,5 @@ Wave 3, after SITE-4 and SITE-5, not home (`pillar-open` gates home only). SITE-
 - **Interfaces:** `noteSchema` in `lib/validators/note.ts` (data-contract.md's Note); `sendNote(note, transport?)` in `server/services/notes.ts`, its own Resend call (as `notifyOps`, plus `replyTo`), returning success or failure; `NoteForm({ from, sentVariant, prefill?, screening? })`; `contact-default`, `contact-submit`, `contact-sent` in `/contact`'s States list, seeded from `app/contact/_fixtures.ts` with a synthetic `@example.test` sender.
 - **Per path:** `content/contact.ts`: the strings. `tests/unit/note*.test.ts`, `tests/e2e/contact.spec.ts`.
 - **Words:** services-words.md, `/contact`, as written; `[draft]` marks stay; tests match labels with or without them.
-- **Gotchas:** the transport is picked once from `resolveAppTier()`: `local` takes an in-memory recorder that sends nothing, staging and production Resend; never decide by `NODE_ENV` (`start:agent` runs production mode). Env goes through `lib/env.ts`' `requireEnv`; `env.ts` itself is untouched. A server action fails offline by throwing in the client: catch it in the leaf and set error, keeping the answers (SITE-13's gotcha). Count `Next-Action` POSTs. The event fires in the leaf when state turns sent, never on click; read real collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /contact --keys contact-default,contact-submit,contact-sent --out <C11's path>`.
-- **Model:** Opus 5.5 at medium, minimum and recommended. Choosing down risks a recipient taken from the form or a send logged with its address.
+- **Gotchas:** the transport is picked once from `resolveAppTier()`: `local` takes an in-memory recorder that sends nothing, staging and production Resend; never decide by `NODE_ENV` (`start:agent` runs production mode). Env goes through `lib/env.ts`' `requireEnv`; `env.ts` itself is untouched. An action fails offline by throwing in the client: catch it and set error, keeping the answers (SITE-13). Count `Next-Action` POSTs. The event fires when state turns sent, never on click; read collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /contact --keys contact-default,contact-submit,contact-sent --out <C11's path>`.
+- **Model:** Opus 5.5 at medium, minimum and recommended. Choosing down risks a recipient taken from the form.

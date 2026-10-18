@@ -54,11 +54,11 @@ out_of_scope:
   - "Calculate's and the family office's new media (D-SITE-232); Taylor's closing lines and AI lists: content edits by Taylor"
 criteria:
   - id: C1
-    statement: "Every published study holds, in order, its blocks present among: All work to /work, the meta line, one h1, the tagline, four facts with the last linking its live URL, the lead artifact, then h2s At a glance, The brief, What I built, Process, Decisions, What broke, Outcome, Where AI sat, Testimonial (an h2, when present), then the close; Conscious Connections has no Testimonial h2; no heading level is skipped (C-SITE-case-study-1, 10)"
+    statement: "Every published study holds, in order, its blocks present among: All work to /work, the meta line, one h1, the tagline, four facts with the last linking its live URL where the study has one, the lead artifact, then h2s At a glance, The brief, What I built, Process, Decisions, What broke, Outcome, Where AI sat, Testimonial (an h2, when present), then the close; Conscious Connections has no Testimonial h2; no heading level is skipped (C-SITE-case-study-1, 10)"
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study.spec.ts"
   - id: C2
-    statement: "/work/everbook shows a Testimonial with Dawson's D-SITE-84 span and no link, and no Where AI sat; /work/calculate-qxmd shows no lead artifact, testimonial or Where AI sat, and no empty section, heading or rule where they would be (C-SITE-case-study-3, 13)"
+    statement: "/work/everbook shows a Testimonial with Dawson's D-SITE-84 span, differing from home's and /about's, and no link, and no Where AI sat; /work/calculate-qxmd shows no lead artifact, testimonial or Where AI sat, and no empty section, heading or rule where they would be (C-SITE-case-study-3, 13)"
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study.spec.ts"
   - id: C3

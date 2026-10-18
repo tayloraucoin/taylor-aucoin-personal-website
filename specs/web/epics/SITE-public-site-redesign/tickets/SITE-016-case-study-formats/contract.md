@@ -5,7 +5,7 @@ objective: "a hirer reading What I built sees each study's screens in the format
 slice_type: "four render paths over one typed field plus a shared gallery and an existing lightbox; risks a study drawn in the wrong format, a tile with no name, an All n images count that disagrees with the lightbox, and focus lost on close"
 non_negotiables:
   - "builtFormat decides the render, never the media count at runtime (D-SITE-91, 193): Everbook and Agora gallery, Conscious Connections band, Roomvy rows-after, the family office rows-paired, Calculate rows with no screens"
-  - "The gallery is SITE-11's StoryGallery from components/work/, reused with a size for the case study's 207x130 thumbs (D-SITE-92); never a second gallery and never a carousel (D-SITE-39)"
+  - "The gallery is one StoryGallery in components/work/, shared with SITE-11, with a size for the case study's 207x130 thumbs (D-SITE-92); never a second gallery and never a carousel (D-SITE-39)"
   - "Every tile, thumb and All n images opens the existing MediaLightbox, unchanged in behaviour (D-SITE-82, 182)"
   - "Each tile and thumb is a button named by its visible caption; n in All n images is the number of items the lightbox steps through"
   - "The recording never autoplays; with reduced motion, hover transitions are 0ms"
@@ -37,7 +37,7 @@ planned_paths:
   - "components/work/VideoFigure.tsx"
   - "components/work/Section.tsx"
   - "tests/**"
-depends_on: [ SITE-11, SITE-15 ]
+depends_on: [ SITE-15 ]
 out_of_scope:
   - "The rest of the case study, its order, absent blocks, close, Escape outside the lightbox and the other States keys (C-SITE-case-study-1 to 7, 10, 12 to 15): SITE-15"
   - "MediaLightbox's own behaviour and its home use: SITE-11; the family office's further artifacts and Calculate's captures (D-SITE-232): content edits by Taylor"
@@ -56,7 +56,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study-formats.spec.ts"
   - id: C4
-    statement: "At 390 the gallery's thumbs sit two per row, What I built causes no horizontal scroll and All n images is at least 44px tall; with reduced motion no video plays without a press; axe reports no serious or critical violation on each format (C-SITE-case-study-11)"
+    statement: "At 390 the gallery's thumbs sit two per row, What I built causes no horizontal scroll and All n images is at least 44px tall; with reduced motion on and off no video plays without a press; axe reports no serious or critical violation on each format (C-SITE-case-study-11)"
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study-formats.spec.ts"
   - id: C5
@@ -69,7 +69,7 @@ criteria:
 
 ## Build notes
 
-Wave 3, after SITE-15 (the page and its text-only `WhatIBuilt`) and SITE-11 (`StoryGallery`).
+Wave 3, after SITE-15 (the page and its text-only `WhatIBuilt`). Whichever of SITE-11 and SITE-16 builds first creates `StoryGallery`, the other reuses it; never both at once, so this ticket does not wait on home's `pillar-open` gate.
 
 - **Pre-build:** D-SITE-196, the eight `no-testimonial` files re-exported from Paper with At a glance. Until they land, C5's full-page half cannot be recorded; start the build, record C5 last.
 - **Approach:** `WhatIBuilt` switches on `study.builtFormat` and renders one of four leaves: `BuiltGallery` (StoryGallery, then the surface list), `BuiltBand` (tiles on `--surface`, two per row at 390, the recording as a poster with the square play mark), `BuiltRowsAfter` (ledger rows, then the screens in two framed panels and a meta credit), `BuiltRowsPaired` (a card's `screen` on a surface panel under its row). Rows with no media draw no panel. One `MediaLightbox` per page, fed the study's media in order, opened at an index.

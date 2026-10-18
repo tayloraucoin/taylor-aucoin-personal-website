@@ -51,7 +51,7 @@ out_of_scope:
   - "New media: the family office's further artifacts and Calculate's captures join when Taylor has them (D-SITE-232); kit boards not on disk ship as an empty gallery"
 criteria:
   - id: C1
-    statement: "Every study in content/work has type, listRole, sortDate matching YYYY-MM, builtFormat, and exactly four facts each with a value and a meta line, only the fourth with an href; the types are as the non-negotiables list"
+    statement: "Every study in content/work has type, listRole, sortDate matching YYYY-MM, builtFormat, and exactly four facts each with a value and a meta line, only the fourth may have an href, and only with a live URL; the types are as the non-negotiables list"
     evidence: test
     command: "yarn test"
   - id: C2

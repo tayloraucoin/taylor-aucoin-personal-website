@@ -10,7 +10,7 @@ non_negotiables:
   - "No marks, counts, row numbers, row hover or arrows (D-SITE-8, 102); filtering swaps rows instantly (A-14)"
   - "A row with an empty gallery shows no opener and no empty frame"
   - "The family office stays unnamed; canvas strings win on /work only, listRole and the en dash at render (D-SITE-189)"
-  - "Looks from SITE-11's tabVariants and chipVariants; behaviour is this page's own"
+  - "Looks from tabVariants and chipVariants in components/ui/Button.tsx, shared with SITE-11; behaviour is this page's own"
 devs_call: "Row and group component names, the fixture row's content, and test file names"
 waiver: "One surface, the work index, split for the token cap: work-index.md holds the states, work-index-build.md layout, access and criteria, work-index-words.md every string; decisions-14.md holds D-SITE-238, which amends its Websites state"
 cites:
@@ -45,8 +45,9 @@ planned_paths:
   - "app/work/page.tsx"
   - "app/work/_components/**"
   - "app/work/_fixtures.ts"
+  - "components/ui/Button.tsx"
   - "tests/**"
-depends_on: [ SITE-8, SITE-11 ]
+depends_on: [ SITE-8 ]
 out_of_scope:
   - "The derivation rules behind C-SITE-work-index-4 and 9 (fallbacks, empty chips and tabs): proven by SITE-8's C1 and C4, cited, never re-proven"
   - "The header's call button on /work (C-SITE-work-index-14): proven by SITE-4"
@@ -81,18 +82,22 @@ criteria:
     statement: "/work, ?tab=websites, ?tab=branding and ?type=contract match captures/work-index/ at 390 and 1440, dark and light, first visit dark, except that Websites holds Kryshan Randel alone and empty galleries show no opener (C-SITE-work-index-1, 5, 8, 10, 17)"
     evidence: capture
     path: "specs/web/epics/SITE-public-site-redesign/tickets/SITE-014-work-index/evidence/states/"
+  - id: C8
+    statement: "On a VERCEL_ENV=production build, /work and each tab, fetched per request, hold no bracketed value or [draft] tag"
+    evidence: manual
+    reason: "/work renders per request, so check:build-output never sees it; passes only once Taylor writes the bracketed lines; recorded --verdict deferred and run at launch"
 ---
 
 # Contract — SITE-14 work-index
 
 ## Build notes
 
-Wave 3, after SITE-8 (derivations) and SITE-11 (`tabVariants`, `chipVariants`, home's Selected work). Runs beside the other page tickets.
+Wave 3, after SITE-8 (derivations). Whichever of SITE-11 and SITE-14 builds first adds `tabVariants` and `chipVariants`, the other reuses them; never both at once. Runs beside the other page tickets.
 
 - **Approach:** a server `app/work/page.tsx` that awaits `searchParams` (the page renders per request, `verdict.md`), parses with `parseTab` and `parseType`, and renders `visibleTabs`, `chipsForTab` and `groupByType(entriesForTab(…))` as plain links built by `workHref`, with `scroll={false}` so focus and position hold. Rows are server components; the gallery opener is the one client leaf (a button opening `MediaLightbox`, unchanged).
 - **Decisions that apply:** D-SITE-190: tabs and chips are links writing `?tab=` and `?type=`, each set a `nav`, `aria-current` on the selected one. D-SITE-100: groups Full-time, Contract, Business, Passion projects, Client, Own brand, no counts. D-SITE-189: "Canvas row strings win on `/work` only." D-SITE-238: "The Websites tab, on home and `/work`, shows Kryshan Randel as the one website; Holistica … unpublished until it ships; Clean Coast stays hidden."
 - **Words:** work-index-words.md as written; the bracketed lines ship bracketed; "All n images" and "All n boards" from the gallery's count.
 - **Interfaces:** `WorkTabsNav`, `TypeChipsNav`, `TypeGroup`, `WorkRow`, `GalleryOpener` in `app/work/_components/`; the `gallery` key in `/work`'s States list, read by `readPageState`, seeding one synthetic row from `app/work/_fixtures.ts`.
 - **Per path:** `page.tsx`: the route, its metadata and the capabilities line; `_components/`: the pieces above; `_fixtures.ts`: the synthetic row with two images already under `public/`; `tests/e2e/work-index.spec.ts`.
-- **Gotchas:** no row on real content has a gallery this cycle, so C4's opener runs on the fixture; the opener renders only when `gallery.length > 0`. A chip change must not scroll: `Link` with `scroll={false}`, and focus stays on the link because the element persists across the render (same key). Selected-chip group label: visually hidden h2, never removed (D-SITE-191). C6 reads the family office's names from `docs/pending/cho-ventures-naming/` into the test, never anywhere else. Capture by URL: `yarn capture --route '/work?tab=websites' --keys default --out <evidence dir>`, one per view. Map the kit's token names through `.claude/rules/house-design.md`.
+- **Gotchas:** no row on real content has a gallery this cycle, so C4's opener runs on the fixture; the opener renders only when `gallery.length > 0`. A chip change must not scroll: `Link` with `scroll={false}`, and focus stays on the link because the element persists across the render (same key). Selected-chip group label: visually hidden h2, never removed (D-SITE-191). C6 reads the family office's names from `docs/_legacy/pending/cho-ventures-naming/` into the test, never anywhere else. Capture by URL: `yarn capture --route '/work?tab=websites' --keys default --out <evidence dir>`, one per view. Map the kit's token names through `.claude/rules/house-design.md`.
 - **Model:** Sonnet 5.5 at medium, minimum and recommended: rendering over proven logic. Choosing down risks a soft navigation that drops focus.

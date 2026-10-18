@@ -52,7 +52,7 @@ planned_paths:
 depends_on: [ SITE-8, SITE-9 ]
 out_of_scope:
   - "/work's own tabs, chips and rows (links with aria-current, D-SITE-190): the /work ticket, which shares only the looks"
-  - "The case study's gallery format: the case-study ticket, reusing StoryGallery"
+  - "The case study's gallery format: SITE-16; whichever builds first creates StoryGallery"
   - "Clean Coast and Holistica on the Websites tab: hidden and unpublished (D-SITE-238); the kit boards and the Kryshan Randel and Holistica images: Taylor's, not on disk, so those galleries ship empty"
 criteria:
   - id: C1

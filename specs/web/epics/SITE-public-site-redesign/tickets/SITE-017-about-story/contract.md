@@ -54,7 +54,7 @@ criteria:
     evidence: test
     command: "yarn test"
   - id: C4
-    statement: "The text of /about's main contains no DJ, music or festival words and no family office client name, and no import of RootField or SectionLabel remains in app/about (C-SITE-about-15)"
+    statement: "The text of /about's main contains no DJ, music or festival words and no family office client name (from `docs/_legacy/pending/cho-ventures-naming/`), and no import of RootField or SectionLabel remains in app/about (C-SITE-about-15)"
     evidence: test
     command: "yarn test:e2e tests/e2e/about-story.spec.ts"
   - id: C5
