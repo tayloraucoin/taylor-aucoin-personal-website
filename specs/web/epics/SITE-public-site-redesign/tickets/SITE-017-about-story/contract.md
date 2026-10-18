@@ -58,7 +58,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/about-story.spec.ts"
   - id: C5
-    statement: "At 390 the page has no horizontal scroll, every Experience and Education date sits on its own line below its role, and every Read the decision story and Teaching link is at least 44px tall (C-SITE-about-12)"
+    statement: "At 390 the page has no horizontal scroll, every Experience and Education date sits on its own line below its role, and every Read the decision story and Teaching link is at least 44px tall; main has id main and the skip link moves focus into it (C-SITE-about-12)"
     evidence: test
     command: "yarn test:e2e tests/e2e/about-story.spec.ts"
   - id: C6

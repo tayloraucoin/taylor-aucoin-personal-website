@@ -71,7 +71,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/work-index.spec.ts"
   - id: C5
-    statement: "At 390 there is no horizontal scroll and every tab, chip and row link has a hit area at least 44px tall; meta reads role · period on one line, with an en dash between years; with reduced motion every transition computes to 0ms; axe reports no serious or critical violation on each tab and on ?type=contract (C-SITE-work-index-10, 12, 13, 15)"
+    statement: "At 390 there is no horizontal scroll and every tab, chip and row link has a hit area at least 44px tall; meta reads role · period on one line, with an en dash between years; with reduced motion every transition computes to 0ms; axe reports no serious or critical violation on each tab and on ?type=contract; main has id main and the skip link moves focus into it (C-SITE-work-index-10, 12, 13, 15)"
     evidence: test
     command: "yarn test:e2e tests/e2e/work-index.spec.ts"
   - id: C6

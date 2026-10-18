@@ -74,7 +74,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study.spec.ts"
   - id: C6
-    statement: "At 390 every published study has no horizontal scroll and every link and button at least 44px tall; axe reports no serious or critical violation on each (C-SITE-case-study-10, 11)"
+    statement: "At 390 every published study has no horizontal scroll and every link and button at least 44px tall; axe reports no serious or critical violation on each; main has id main and the skip link moves focus into it (C-SITE-case-study-10, 11)"
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study.spec.ts"
   - id: C7

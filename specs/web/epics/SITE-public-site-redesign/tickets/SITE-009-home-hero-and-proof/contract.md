@@ -49,7 +49,7 @@ out_of_scope:
   - "The header's call and the dark default (C-SITE-home-2, 4, the header part of 20): proven by SITE-4 and SITE-5; cite, never re-prove"
 criteria:
   - id: C1
-    statement: "At 1440 the hero holds, in DOM order, the label Product engineer, one h1 Taylor Aucoin, the headline, the lede, then a Book a 30-minute call link to /book as the hero's only primary-styled control and a See the work ghost link, with the 176px headshot to the right; at 390 the headshot comes before the h1 and both buttons span the column; no serious or critical axe violation (C-SITE-home-3)"
+    statement: "At 1440 the hero holds, in DOM order, the label Product engineer, one h1 Taylor Aucoin, the headline, the lede, then a Book a 30-minute call link to /book as the hero's only primary-styled control and a See the work ghost link, with the 176px headshot to the right; at 390 the headshot comes before the h1 and both buttons span the column; no serious or critical axe violation (C-SITE-home-3); main has id main and the skip link moves focus into it"
     evidence: test
     command: "yarn test:e2e tests/e2e/home-hero.spec.ts"
   - id: C2

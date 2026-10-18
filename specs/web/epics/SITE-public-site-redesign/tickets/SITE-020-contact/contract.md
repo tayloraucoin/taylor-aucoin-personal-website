@@ -94,7 +94,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/contact.spec.ts"
   - id: C10
-    statement: "At 390 the button is at least 44px and the inline links at least 24px tall, with no horizontal scroll; axe reports no serious or critical violation in default, invalid, error and sent (C-SITE-services-21)"
+    statement: "At 390 the button is at least 44px and the inline links at least 24px tall, with no horizontal scroll; axe reports no serious or critical violation in default, invalid, error and sent; main has id main and the skip link moves focus into it (C-SITE-services-21)"
     evidence: test
     command: "yarn test:e2e tests/e2e/contact.spec.ts"
   - id: C11
@@ -111,12 +111,12 @@ criteria:
 
 ## Build notes
 
-Wave 3, after SITE-4 and SITE-5, not home (`pillar-open` gates home only). SITE-21 to 23 follow and reuse what this adds.
+Wave 3, after SITE-4 and SITE-5; `pillar-open` gates home only. SITE-21 to 23 follow and reuse what this adds.
 
-- **Approach:** `app/contact/page.tsx` (server) renders the H1 and a client `NoteForm` (`components/contact/`) on `useActionState`, posting to `send-note.ts` (`"use server"`): parse with the shared validator, apply the bot rules, then `sendNote(note)`. `NoteForm` owns the intro, hairline and form, so sent can replace the intro; it takes `from` and a sent variant (with or without the call offer) for /book's not-a-fit. The forms kit gains the textarea field, focus-first-invalid, and the honeypot and render-time fields, Whichever of SITE-13 and SITE-20 builds first creates `components/forms/`, the other reuses it; never both at once.
+- **Approach:** `app/contact/page.tsx` (server) renders the H1 and a client `NoteForm` (`components/contact/`) on `useActionState`, posting to `send-note.ts` (`"use server"`): parse, apply the bot rules, then `sendNote(note)`. `NoteForm` owns the intro, hairline and form, so sent can replace the intro; it takes `from` and a sent variant (with or without the call offer) for not-a-fit. The forms kit gains the textarea field, focus-first-invalid, and the honeypot and render-time fields, Whichever of SITE-13 and SITE-20 builds first creates `components/forms/`, the other reuses it; never both at once.
 - **Decisions that apply:** D-SITE-224: notes emailed through Resend, reply-to the sender, not stored; honeypot, minimum fill time, field caps. D-SITE-202, 169 and 170: as the non-negotiables. D-SITE-201: Name optional. D-SITE-226: `contact_note_sent` {surface, from}. D-SITE-227: Q3 with Warden.
-- **Interfaces:** `noteSchema` in `lib/validators/note.ts` (data-contract.md's Note); `sendNote(note, transport?)` in `server/services/notes.ts`, its own Resend call (as `notifyOps`, plus `replyTo`), returning success or failure; `NoteForm({ from, sentVariant, prefill?, screening? })`; `contact-default`, `contact-submit`, `contact-sent` in `/contact`'s States list, seeded from `app/contact/_fixtures.ts` with a synthetic `@example.test` sender.
+- **Interfaces:** `noteSchema` in `lib/validators/note.ts` (data-contract.md's Note); `sendNote(note, transport?)` in `server/services/notes.ts`, its own Resend call (as `notifyOps`, plus `replyTo`), returning ok or failed; `NoteForm({ from, sentVariant, prefill?, screening? })`; `contact-default`, `contact-submit`, `contact-sent` in `/contact`'s States list, seeded from `app/contact/_fixtures.ts` with a synthetic `@example.test` sender.
 - **Per path:** `content/contact.ts`: the strings. `tests/unit/note*.test.ts`, `tests/e2e/contact.spec.ts`.
-- **Words:** services-words.md, `/contact`, as written; `[draft]` marks stay; tests match labels with or without them.
-- **Gotchas:** the transport is picked once from `resolveAppTier()`: `local` takes an in-memory recorder that sends nothing, staging and production Resend; never decide by `NODE_ENV` (`start:agent` runs production mode). Env goes through `lib/env.ts`' `requireEnv`; `env.ts` itself is untouched. An action fails offline by throwing in the client: catch it and set error, keeping the answers (SITE-13). Count `Next-Action` POSTs. The event fires when state turns sent, never on click; read collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /contact --keys contact-default,contact-submit,contact-sent --out <C11's path>`.
-- **Model:** Opus 5.5 at medium, minimum and recommended. Choosing down risks a recipient taken from the form.
+- **Words:** services-words.md, `/contact`, as written; `[draft]` marks stay; tests match with or without them.
+- **Gotchas:** the transport is picked once from `resolveAppTier()`: `local` takes an in-memory recorder that sends nothing, staging and production Resend, never by `NODE_ENV` (`start:agent` runs production mode). Env goes through `lib/env.ts`' `requireEnv`; `env.ts` itself is untouched. An action fails offline by throwing in the client: catch it and set error, keeping the answers (SITE-13). Count `Next-Action` POSTs. The event fires when state turns sent, never on click; read collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /contact --keys contact-default,contact-submit,contact-sent --out <C11's path>`.
+- **Model:** Opus 5.5 at medium, minimum and recommended; choosing down risks a recipient taken from the form.

@@ -96,7 +96,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/book-screening.spec.ts"
   - id: C9
-    statement: "At 390 buttons are at least 44px, chips 36px and inline links 24px tall, with no horizontal scroll; axe reports no serious or critical violation in form, invalid, error, fit and not-a-fit (C-SITE-services-21)"
+    statement: "At 390 buttons are at least 44px, chips 36px and inline links 24px tall, with no horizontal scroll; axe reports no serious or critical violation in form, invalid, error, fit and not-a-fit; main has id main and the skip link moves focus into it (C-SITE-services-21)"
     evidence: test
     command: "yarn test:e2e tests/e2e/book-screening.spec.ts"
   - id: C10
@@ -113,12 +113,12 @@ criteria:
 
 ## Build notes
 
-Wave 3, after SITE-20 (the kit's textarea, focus-first-invalid and bot fields; `/contact` for the fit view's link). SITE-22 book-handoff and SITE-23 book-not-a-fit follow.
+Wave 3, after SITE-20 (the kit's textarea, focus-first-invalid and bot fields; `/contact` for the fit view's link). SITE-22 and SITE-23 follow.
 
 - **Approach:** `app/book/page.tsx` (server) renders a client `ScreeningForm` on `useActionState`, posting to `_actions/screen.ts` (`"use server"`): parse, bot rules, then `fit()`, returning the outcome and the answers. The leaf swaps views on the result, moves focus to the view's H1, sets `document.title` and fires `screening_outcome`. The fit view renders a POST form to `siteRoutes.bookHandoff` with the answers in hidden fields; not-a-fit and website render the "Let's talk first" H1 and intro, and SITE-23 adds the note beneath.
 - **Decisions that apply:** D-SITE-166: the rule above. D-SITE-167 to 170: as the non-negotiables. D-SITE-201: Name optional; the greeting uses its first word. D-SITE-176, 226: `screening_outcome` {outcome}. D-SITE-227: Q3 with Warden.
 - **Interfaces:** `bookSchema`, `BookInput`, `Outcome` in `lib/validators/book.ts`; `fit(input): Outcome` in `app/book/_lib/fit.ts`, pure; `siteRoutes.bookHandoff` (`/book/handoff`) in `lib/routes.ts`; `screening-form`, `screening-submit`, `screening-fit` in `/book`'s States list from `app/book/_fixtures.ts`, synthetic (`@example.test`, never the canvas's Sam).
 - **Per path:** `content/book.ts`: the strings. `tests/unit/fit.test.ts` (the table), `tests/unit/book*.test.ts`, `tests/e2e/book-screening.spec.ts`.
-- **Words:** services-words.md, `/book`, as written; `[draft]` marks stay, and tests match with or without them. The start, role and building error lines are Taylor's to write: render a bracketed `[Taylor's line]` in their place.
-- **Gotchas:** write C1's table from D-SITE-166's sentence, never from `fit.ts`. `fit.ts` starts with `import "server-only"`, so a client import fails the build. The fit button posts to a route SITE-22 builds: assert the form's method and action, not the landing. A server action fails offline by throwing in the client (SITE-13). Read real collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /book --keys screening-form,screening-submit,screening-fit --out <C10's path>`.
+- **Words:** services-words.md, `/book`, as written; `[draft]` marks stay; tests match with or without them. The start, role and building error lines are Taylor's to write: render a bracketed `[Taylor's line]` in their place.
+- **Gotchas:** write C1's table from D-SITE-166's sentence, never from `fit.ts`. `fit.ts` starts with `import "server-only"`, so a client import fails the build. The fit button posts to SITE-22's route: assert the form's method and action, not the landing. A server action fails offline by throwing in the client (SITE-13). Read real collect requests with the fake-ID build and SITE-1's opt-in, as SITE-4. Capture: `yarn capture --route /book --keys screening-form,screening-submit,screening-fit --out <C10's path>`.
 - **Model:** Opus 5.5 at medium, minimum and recommended. Choosing down risks a rule copied into the client or a table written from the code it tests.

@@ -68,7 +68,7 @@ criteria:
     evidence: test
     command: "yarn test:e2e tests/e2e/work-with-me.spec.ts"
   - id: C5
-    statement: "Every FAQ answer is visible with no button, details or aria-expanded; at 390 the hero buttons are full width and at least 44px, the inline links at least 24px tall, and the page has no horizontal scroll; axe reports no serious or critical violation at 390 and 1440, dark and light (C-SITE-services-7, 21)"
+    statement: "Every FAQ answer is visible with no button, details or aria-expanded; at 390 the hero buttons are full width and at least 44px, the inline links at least 24px tall, and the page has no horizontal scroll; axe reports no serious or critical violation at 390 and 1440, dark and light; main has id main and the skip link moves focus into it (C-SITE-services-7, 21)"
     evidence: test
     command: "yarn test:e2e tests/e2e/work-with-me.spec.ts"
   - id: C6
