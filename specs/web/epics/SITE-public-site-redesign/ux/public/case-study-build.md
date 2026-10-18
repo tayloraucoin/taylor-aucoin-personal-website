@@ -31,7 +31,7 @@ Retire: `CaseOverlay.tsx` and the `@modal` slot (D-SITE-3); `PageDismiss` (D-SIT
 
 ## Access
 
-- **Landmarks:** header `banner` with a `nav` named "Primary"; one `main`; footer `contentinfo` with its own named `nav`. A skip link to `main` first in the tab order [ASSUMPTION: none exists today; verified `SiteChrome.tsx`].
+- **Landmarks:** header `banner` with a `nav` named "Main" (D-SITE-236); one `main`; footer `contentinfo` with its own named `nav`. A skip link to `main` first in the tab order [ASSUMPTION: none exists today; verified `SiteChrome.tsx`].
 - **Headings:** h1 the title; h2 each section head; h3 brief groups, surface names, process steps, decision statements, What broke titles. Decision and beat labels are text; the close line is a paragraph. Not found: its line is the h1.
 - **Focus order:** DOM order: skip link, header, "All work", ledger link, At a glance links, What I built tiles then "All n images", any in-body artifact, Outcome link, close (call, Résumé, "Send a note"), footer.
 - **Names:** each tile and thumb is a button named by its visible caption; "All n images" by its text; lightbox controls keep their names (Previous image, Next image, Close, Play video; dialog named by the item's alt; verified `MediaLightbox.tsx`). [ASSUMPTION: live links open in the same tab.]

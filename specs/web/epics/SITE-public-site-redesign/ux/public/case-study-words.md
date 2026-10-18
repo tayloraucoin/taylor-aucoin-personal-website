@@ -48,4 +48,4 @@ Part of `case-study.md`. Gloss, handoff pass. Every string is Taylor's; none is 
 | Lightbox names     | "Previous image", "Next image", "Close", "Play video"; dialog named by the item's `alt`              | existing: `components/work/MediaLightbox.tsx`, `<slug>` `media`       |
 | Tile names         | the tile's visible caption                                                                         | existing: `<slug>` `media`                                            |
 | Lightbox-only alt  | each media item's `alt`; Agora's generation labels                                                 | existing: `<slug>` (copy doc only, D-SITE-96)                         |
-| Skip link          | Taylor's to write                                                                                  | Taylor's to write                                                     |
+| Skip link          | "Skip to content"                                                                                  | Taylor, Tickets gate (D-SITE-235)                                     |

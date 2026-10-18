@@ -30,7 +30,7 @@ One primary action: the close's "Book a 30-minute call" (`--fill` on `--on-fill`
 
 ## Access
 
-- **Landmarks:** `header` (nav "Main"), `main`, `footer` (nav "Footer"). One h1 "About"; h2 per section; h3 for group heads, testimonial subheads and Teaching's four programme titles. Each testimonial is a `figure`: `blockquote`, then a `figcaption` with the who column.
+- **Landmarks:** `header` (nav "Main"), `main`, `footer` (nav "Site", D-SITE-237). One h1 "About"; h2 per section; h3 for group heads, testimonial subheads and Teaching's four programme titles. Each testimonial is a `figure`: `blockquote`, then a `figcaption` with the who column.
 - **Keyboard path:** header (wordmark, Work, About, Work with me, Contact, call button, toggle) → Experience's six "Read the decision story" links, "Teaching" → Tools' résumé link → three project links (Vaughn's FYBR line is text) → close: button, résumé, "Send a note" → footer.
 - **Accessible names:** each of the six "Read the decision story" links adds its row's name, visually hidden. Résumé links name "(PDF)". Theme toggle keeps its name. Headshot alt "Taylor Aucoin" (`SITE.name`); the eyebrow rule and middots are `aria-hidden`.
 - **Anchors:** `#tools`, `#testimonials`, `#teaching` sit on the section and get `scroll-margin-top` so the h2 is not under the header; landing, focus moves to the h2 (`tabindex="-1"`) [ASSUMPTION: method left to build, D-SITE-73].
