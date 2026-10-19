@@ -1,45 +1,94 @@
 import type { Metadata } from "next";
-import CapabilityGrid from "@/components/capabilities/CapabilityGrid";
-import RootField from "@/components/field/RootField";
-import ClosingCta from "@/components/services/ClosingCta";
-import { SITE } from "@/lib/config";
+import { PageClose } from "@/components/site/PageClose";
+import { capabilities } from "@/content/capabilities";
+import { availability, closing } from "@/content/services";
 import { socialCard } from "@/lib/metadata";
-
-const description =
-  "Problems I comfortably take on — payments, AI features, design, data pipelines, realtime voice, consolidation — with the approach and the work behind each.";
+import { readPageState, type PageSearchParams } from "@/lib/page-state";
+import { CapabilityTabs } from "./_components/CapabilityTabs";
+import { parseTab, type TabbedChipItem } from "./_components/tabs";
+import { capabilitiesPage as words } from "./_components/words";
 
 export const metadata: Metadata = {
-  title: "Capabilities",
-  description,
-  ...socialCard({
-    title: `Capabilities — ${SITE.name}`,
-    description,
-  }),
+  title: words.title,
+  description: words.description,
+  ...socialCard({ title: words.socialTitle, description: words.description }),
 };
 
-export default function CapabilitiesPage() {
+/** capabilities.md's States, on real content, outside production only. */
+const STATES = ["tab", "card-open", "card-open-four-proofs"] as const;
+
+/**
+ * The chips in Taylor's comfort order, stripped to plain props here on the
+ * server so no rating reaches the client (D-SITE-65). A capability with no
+ * chip name or no proof never shows (D-SITE-15, 142).
+ */
+function chipItems(): TabbedChipItem[] {
+  return capabilities
+    .filter((c) => c.chip && c.comfort !== undefined && c.proof?.length)
+    .sort((a, b) => b.comfort! - a.comfort!)
+    .map((c) => ({
+      slug: c.slug,
+      name: c.chip!,
+      title: c.title,
+      tech: c.tech,
+      approach: c.approach,
+      tabs: c.tabs,
+      proof: c.proof!.map(({ label, href, external }) => ({
+        label,
+        ...(href ? { href } : {}),
+        ...(external ? { external } : {}),
+      })),
+    }));
+}
+
+/**
+ * `/capabilities` (SITE-26): every problem Taylor takes on as chips under
+ * five discipline tabs, each opening in place on its proof, then the call.
+ * `?tab=` is read per request; an unknown one is All.
+ */
+export default async function CapabilitiesPage({
+  searchParams,
+}: {
+  searchParams?: PageSearchParams;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const state = await readPageState(searchParams, STATES);
+
+  const tab = state === "tab" ? "ai-data" : parseTab(params.tab);
+  const open =
+    state === "card-open"
+      ? "search-discovery"
+      : state === "card-open-four-proofs"
+        ? "interface-design"
+        : null;
+
   return (
-    <main
-      id="main"
-      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
-    >
-      {/* The field runs the full page height, same as home. */}
-      <RootField />
-
-      <div className="mb-6 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
-        <span>{SITE.location} · What I take on</span>
-        <span
-          aria-hidden
-          className="order-first h-px w-6 shrink-0 bg-(--color-rule)"
-        />
-      </div>
-
-      <h1 className="mb-8 font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">
-        Capabilities
-      </h1>
-
-      <CapabilityGrid />
-      <ClosingCta />
-    </main>
+    <>
+      <main
+        id="main"
+        className="relative mx-auto w-full max-w-[1192px] px-[22px] pt-16 pb-16 md:px-14 md:pt-28 md:pb-24"
+      >
+        <h1 className="font-display text-[length:clamp(48px,8vw,var(--text-display))] leading-[1.02] font-semibold tracking-(--tracking-display) text-(--color-ink)">
+          {words.h1}
+        </h1>
+        <p className="mt-6 max-w-[620px] text-(length:--text-body) leading-[1.7] text-(--color-body)">
+          {words.framing}
+        </p>
+        <div className="mt-10 md:mt-14">
+          <CapabilityTabs
+            key={`${tab}-${open}`}
+            items={chipItems()}
+            initialTab={tab}
+            initialOpen={open}
+          />
+        </div>
+      </main>
+      <PageClose
+        line={closing}
+        availability={availability}
+        surface="capabilities"
+        lineSize="h3"
+      />
+    </>
   );
 }

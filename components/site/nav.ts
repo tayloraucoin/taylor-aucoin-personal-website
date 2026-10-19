@@ -29,6 +29,8 @@ function within(pathname: string, prefix: string) {
 /** The header item marked current, or null (home, /book, anything else). */
 export function currentNavItem(pathname: string): NavItem | null {
   if (within(pathname, siteRoutes.work)) return "work";
+  // /capabilities sits under Work (D-SITE-140).
+  if (pathname === siteRoutes.capabilities) return "work";
   if (pathname === siteRoutes.about) return "about";
   if (pathname === siteRoutes.workWithMe || pathname === SERVICES_TODAY)
     return "work-with-me";

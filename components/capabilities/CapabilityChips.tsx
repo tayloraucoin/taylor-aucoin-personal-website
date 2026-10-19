@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react";
 import { LayoutGroup, motion, MotionConfig } from "motion/react";
@@ -14,6 +14,9 @@ const SHOWN = 8;
 /**
  * The capability chips (D-SITE-46, 142, 147, 149): the first 8 in the order
  * given, Show all expands in place, the /capabilities link always shows.
+ * Without `labels` (the /capabilities page, D-SITE-140) every item shows and
+ * neither control renders. An open card whose chip leaves `items` closes
+ * (D-SITE-205).
  * A pressed chip becomes its card in place, one open at a time, as a
  * transform-based layout move (never an animated height): 200ms open, 160ms
  * close, instant when opened by keyboard or under reduced motion. Esc closes
@@ -25,12 +28,18 @@ export function CapabilityChips({
   labels,
   initialOpen = null,
   initialAll = false,
+  titleAs,
+  externalNote,
 }: {
   items: CapabilityChipItem[];
   doneAt: string;
-  labels: { showAll: string; showFewer: string; search: string };
+  labels?: { showAll: string; showFewer: string; search: string };
   initialOpen?: string | null;
   initialAll?: boolean;
+  /** The open card's title element; h3 under home's h2. */
+  titleAs?: "h2" | "h3";
+  /** Read after an external proof's name, for screen readers only. */
+  externalNote?: string;
 }) {
   const id = useId();
   const [open, setOpen] = useState<string | null>(initialOpen);
@@ -38,7 +47,11 @@ export function CapabilityChips({
   const instant = useRef(false);
   const [closing, setClosing] = useState(false);
 
-  const shown = all ? items : items.slice(0, SHOWN);
+  const shown = all || !labels ? items : items.slice(0, SHOWN);
+
+  useEffect(() => {
+    if (open && !items.some((i) => i.slug === open)) setOpen(null);
+  }, [items, open]);
 
   const toggle = (slug: string, byKeyboard: boolean) => {
     instant.current = byKeyboard;
@@ -94,38 +107,51 @@ export function CapabilityChips({
                   )}
                 </button>
                 <div id={panel} hidden={!isOpen}>
-                  {isOpen && <CapabilityCard item={item} doneAt={doneAt} />}
+                  {isOpen && (
+                    <CapabilityCard
+                      item={item}
+                      doneAt={doneAt}
+                      titleAs={titleAs}
+                      externalNote={externalNote}
+                    />
+                  )}
                 </div>
               </motion.li>
             );
           })}
         </ul>
       </LayoutGroup>
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-        <button
-          type="button"
-          aria-expanded={all}
-          onClick={() => {
-            if (all && open && items.findIndex((i) => i.slug === open) >= SHOWN)
-              setOpen(null);
-            setAll(!all);
-          }}
-          className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-(length:--text-small) text-(--color-ink) transition-colors duration-(--dur-fast) hover:text-(--color-body)"
-        >
-          {all ? labels.showFewer : labels.showAll}
-          {all ? (
-            <ChevronUp aria-hidden size={16} strokeWidth={1.5} />
-          ) : (
-            <ChevronDown aria-hidden size={16} strokeWidth={1.5} />
-          )}
-        </button>
-        <Link
-          href={siteRoutes.capabilities}
-          className="inline-flex min-h-11 items-center text-(length:--text-small) text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body)"
-        >
-          {labels.search}
-        </Link>
-      </div>
+      {labels && (
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <button
+            type="button"
+            aria-expanded={all}
+            onClick={() => {
+              if (
+                all &&
+                open &&
+                items.findIndex((i) => i.slug === open) >= SHOWN
+              )
+                setOpen(null);
+              setAll(!all);
+            }}
+            className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-(length:--text-small) text-(--color-ink) transition-colors duration-(--dur-fast) hover:text-(--color-body)"
+          >
+            {all ? labels.showFewer : labels.showAll}
+            {all ? (
+              <ChevronUp aria-hidden size={16} strokeWidth={1.5} />
+            ) : (
+              <ChevronDown aria-hidden size={16} strokeWidth={1.5} />
+            )}
+          </button>
+          <Link
+            href={siteRoutes.capabilities}
+            className="inline-flex min-h-11 items-center text-(length:--text-small) text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body)"
+          >
+            {labels.search}
+          </Link>
+        </div>
+      )}
     </MotionConfig>
   );
 }

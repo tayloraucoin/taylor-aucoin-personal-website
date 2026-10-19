@@ -33,10 +33,30 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number];
 
+/**
+ * The discipline tabs on /capabilities, in build order (D-SITE-146). "All"
+ * is the page's own default, never stored. A capability may sit in two.
+ */
+export const CAPABILITY_TABS = [
+  "product-design",
+  "engineering",
+  "ai-data",
+  "leading-delivery",
+] as const;
+
+export type CapabilityTab = (typeof CAPABILITY_TABS)[number];
+
 export type Capability = {
   slug: string;
   /** Toggle-tag filter groups (see CATEGORIES). */
   tags: Category[];
+  /**
+   * The /capabilities tabs it shows under. First filled from `tags`
+   * (D-SITE-234): Design → product-design; Commerce, Quality → engineering;
+   * AI, Data → ai-data; Delivery, Process → leading-delivery. Taylor
+   * reassigns them by hand.
+   */
+  tabs: CapabilityTab[];
   title: string;
   /** Mono tech subtitle, items separated by " · ". */
   tech: string;
@@ -70,6 +90,7 @@ export const capabilities: Capability[] = [
     chip: "0→1 builds",
     comfort: 9.8,
     tags: ["Delivery"],
+    tabs: ["leading-delivery"],
     title: "Turn a spec into a shipped product, solo",
     tech: "0→1 delivery",
     approach:
@@ -97,6 +118,7 @@ export const capabilities: Capability[] = [
     chip: "AI features",
     comfort: 9.5,
     tags: ["AI"],
+    tabs: ["ai-data"],
     title: "Ship AI features that don't rot your codebase",
     tech: "LLM orchestration · evals · structured output",
     approach:
@@ -127,6 +149,7 @@ export const capabilities: Capability[] = [
     chip: "Payments and tax",
     comfort: 8.0,
     tags: ["Commerce"],
+    tabs: ["engineering"],
     title: "Payments, tax, and refunds that survive real orders",
     tech: "Stripe · subscriptions · webhooks",
     approach:
@@ -159,12 +182,16 @@ export const capabilities: Capability[] = [
     chip: "Data and state architecture",
     comfort: 9.2,
     tags: ["Data"],
+    tabs: ["ai-data"],
     title: "Data and state architecture that survives feature growth",
     tech: "typed end-to-end · schema design · RLS",
     approach:
       "Full database ERDs designed before the first migration: the family office platform's 200+ models with row-level security across 150+ tables, and deny-by-default RLS on every Conscious Connections table, declared through per-table policy factories. Typed contracts from Postgres to the pixel.",
     proof: [
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       { label: "Everbook", href: "/work/everbook" },
     ],
@@ -191,12 +218,16 @@ export const capabilities: Capability[] = [
     chip: "System consolidation",
     comfort: 6.8,
     tags: ["Data"],
+    tabs: ["ai-data"],
     title: "Consolidate several half-built systems into one",
     tech: "monorepo · shared schema · migrations",
     approach:
       "Ten legacy databases across five business entities became one monorepo, one database, one login. Migration and reconciliation came first, visible features second, and the legacy code kept running while the ground moved under it.",
     proof: [
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
     ],
     offer: "Fractional CTO",
     keywords: [
@@ -216,13 +247,17 @@ export const capabilities: Capability[] = [
     chip: "AI engineering process",
     comfort: 7.7,
     tags: ["AI", "Process"],
+    tabs: ["ai-data", "leading-delivery"],
     title: "Turn AI coding agents into a disciplined engineering team",
     tech: "Cursor · Claude Code · convention systems · role prompts",
     approach:
       "My daily workflow, systematized: Cursor and Claude Code held to layered convention files, locked architecture contracts, and a cast of thirty-plus written roles (staff engineer, QA, security, behavioral scientist), each injected into the thread that needs it. Specs are executable tickets with kickoff and completion protocols; decisions and deviations land in append-only logs. An unwritten convention doesn't exist.",
     proof: [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
     ],
     offer: "Fractional CTO",
     keywords: [
@@ -246,13 +281,17 @@ export const capabilities: Capability[] = [
     chip: "Booking and inventory",
     comfort: 6.5,
     tags: ["Commerce"],
+    tabs: ["engineering"],
     title: "Booking, inventory, and accommodation flows",
     tech: "allocation · availability · edge cases",
     approach:
       "Roomvy's event-scoped group booking (allocated hotel inventory, hold blocks, multi-room checkout) and the retreat booking engine on the family office platform. Zero issues reported against the Roomvy client.",
     proof: [
       { label: "Roomvy", href: "/work/roomvy" },
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
     ],
     offer: "Contract",
     keywords: [
@@ -276,6 +315,7 @@ export const capabilities: Capability[] = [
     chip: "Search and discovery",
     comfort: 8.3,
     tags: ["Data", "AI"],
+    tabs: ["ai-data"],
     title: "Search and discovery that actually finds things",
     tech: "Elasticsearch · ranking · recommendations",
     approach:
@@ -299,6 +339,7 @@ export const capabilities: Capability[] = [
     chip: "AI with a duty of care",
     comfort: 5.0,
     tags: ["AI", "Quality"],
+    tabs: ["engineering", "ai-data"],
     title: "Build AI products that carry a duty of care",
     tech: "safety classifiers · tiered response · fail-open design",
     approach:
@@ -325,6 +366,7 @@ export const capabilities: Capability[] = [
     chip: "Realtime sync",
     comfort: 6.2,
     tags: ["Data"],
+    tabs: ["ai-data"],
     title: "Realtime sync that survives bad networks",
     tech: "Supabase Realtime · presence · offline outbox",
     approach:
@@ -350,6 +392,7 @@ export const capabilities: Capability[] = [
     chip: "Rendering performance",
     comfort: 7.1,
     tags: ["Quality"],
+    tabs: ["engineering"],
     title: "Make a slow app fast",
     tech: "rendering performance · caching · Lighthouse",
     approach:
@@ -374,6 +417,7 @@ export const capabilities: Capability[] = [
     chip: "Realtime voice",
     comfort: 4.7,
     tags: ["AI"],
+    tabs: ["ai-data"],
     title: "Realtime voice and audio interfaces",
     tech: "streaming AI · latency budgets",
     approach:
@@ -397,6 +441,7 @@ export const capabilities: Capability[] = [
     chip: "Senior velocity",
     comfort: 4.4,
     tags: ["Delivery"],
+    tabs: ["leading-delivery"],
     title: "Add senior velocity to an existing codebase",
     tech: "your stack · your conventions",
     approach:
@@ -419,6 +464,7 @@ export const capabilities: Capability[] = [
     chip: "Correctness",
     comfort: 7.4,
     tags: ["Quality"],
+    tabs: ["engineering"],
     title: "Correctness under pressure",
     tech: "defect prevention · clinical-grade care",
     approach:
@@ -445,12 +491,16 @@ export const capabilities: Capability[] = [
     chip: "Specification",
     comfort: 8.9,
     tags: ["Process"],
+    tabs: ["leading-delivery"],
     title: "Write the spec everyone else can build from",
     tech: "specification · decision records",
     approach:
       "Tutorial-grade tickets that map every layer of a feature before it's built — writing a spec that precise is coding the feature through another person, or an AI agent. The family office handoff shipped with role-scoped SOPs and contributor guides an AI-assisted team still builds from; Conscious Connections runs on slice specs with kickoff and completion protocols.",
     proof: [
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
     ],
     offer: "Fractional CTO",
@@ -471,6 +521,7 @@ export const capabilities: Capability[] = [
     chip: "Interface design",
     comfort: 8.6,
     tags: ["Design"],
+    tabs: ["product-design"],
     title: "Design the interface, not just build it",
     tech: "product design · UX · UI",
     approach:
@@ -478,7 +529,10 @@ export const capabilities: Capability[] = [
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
       { label: "Agora", href: "/work/agora" },
     ],
     offer: "Fixed-scope 0→1 build",
@@ -498,13 +552,17 @@ export const capabilities: Capability[] = [
     chip: "Loose briefs, finished product",
     comfort: 4.1,
     tags: ["Delivery"],
+    tabs: ["leading-delivery"],
     title: "Run with loose guidelines, deliver a finished product",
     tech: "minimal direction · full ownership",
     approach:
       "Everbook started as light Notion notes and a market reference; the family office asked for one platform where ten systems stood. Both times the input was a direction rather than a spec, and the output was a shipped product.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
     ],
     offer: "Fixed-scope 0→1 build",
     keywords: [
@@ -523,6 +581,7 @@ export const capabilities: Capability[] = [
     chip: "Leading junior teams",
     comfort: 3.2,
     tags: ["Process"],
+    tabs: ["leading-delivery"],
     title: "Lead and level up a junior team",
     tech: "mentorship · code review · standards",
     approach:
@@ -546,6 +605,7 @@ export const capabilities: Capability[] = [
     chip: "Metadata enrichment",
     comfort: 3.8,
     tags: ["Data", "AI"],
+    tabs: ["ai-data"],
     title: "Turn a raw catalog into structured, trustworthy metadata",
     tech: "LLM pipelines · ML classification · data quality",
     approach:
@@ -569,6 +629,7 @@ export const capabilities: Capability[] = [
     chip: "Testing",
     comfort: 5.9,
     tags: ["Quality"],
+    tabs: ["engineering"],
     title: "Tests that earn deploy confidence",
     tech: "unit · integration · CI",
     approach:
@@ -594,16 +655,16 @@ export const capabilities: Capability[] = [
     chip: "Animation and interaction",
     comfort: 3.5,
     tags: ["Design"],
+    tabs: ["product-design"],
     title: "Animation and interaction craft",
     tech: "Motion · CSS · canvas",
     approach:
       "The moving gradient borders, the cursor-aware background field, and the overlay choreography on this site are mine, as is the gradient work on the Conscious Connections marketing site. Ambient motion lives in CSS, orchestration in JS, and everything honors prefers-reduced-motion.",
     proof: [
-      { label: "This site" },
+      { label: "This site", href: "/work?tab=branding" },
       {
         label: "consciousconnections.app",
-        href: "https://consciousconnections.app/",
-        external: true,
+        href: "/work/conscious-connections",
       },
     ],
     offer: "Contract",
@@ -624,12 +685,16 @@ export const capabilities: Capability[] = [
     chip: "Component kits",
     comfort: 5.6,
     tags: ["Design"],
+    tabs: ["product-design"],
     title: "Build the component kit your team ships from",
     tech: "Storybook · design systems · shared UI",
     approach:
       "Component libraries in Storybook across the family office platform, Everbook, and Agora: shared UI that keeps five apps looking like one product, so the next engineer composes instead of reinventing.",
     proof: [
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
       { label: "Everbook", href: "/work/everbook" },
       { label: "Agora", href: "/work/agora" },
     ],
@@ -646,6 +711,7 @@ export const capabilities: Capability[] = [
   {
     slug: "ab-testing",
     tags: ["Data", "Process"],
+    tabs: ["ai-data", "leading-delivery"],
     title: "A/B testing and conversion analytics",
     tech: "experiments · funnels · event instrumentation",
     approach:
@@ -666,6 +732,7 @@ export const capabilities: Capability[] = [
   {
     slug: "read-replicas",
     tags: ["Data"],
+    tabs: ["ai-data"],
     title: "Cut global response times with read replicas",
     tech: "Postgres replicas · edge routing · cache strategy",
     approach:
@@ -685,6 +752,7 @@ export const capabilities: Capability[] = [
   {
     slug: "react-native-monorepo",
     tags: ["Delivery"],
+    tabs: ["leading-delivery"],
     title: "A React Native app that shares its logic with the web",
     tech: "React Native · Expo · monorepo",
     approach:
@@ -706,6 +774,7 @@ export const capabilities: Capability[] = [
     chip: "Branding",
     comfort: 2.9,
     tags: ["Design"],
+    tabs: ["product-design"],
     title: "Take a company through a formal branding process",
     tech: "brand pillars · identity · brand guide",
     approach:
@@ -729,6 +798,7 @@ export const capabilities: Capability[] = [
     chip: "Data pipelines",
     comfort: 2.6,
     tags: ["Data"],
+    tabs: ["ai-data"],
     title: "Data scraping and lead pipelines",
     tech: "scraping · processing · human-in-the-loop",
     approach:
@@ -752,12 +822,16 @@ export const capabilities: Capability[] = [
     chip: "Scoping and roadmaps",
     comfort: 5.3,
     tags: ["Process"],
+    tabs: ["leading-delivery"],
     title: "Scope the build and sequence the roadmap",
     tech: "scoping · sequencing · build plans",
     approach:
       "Deciding what gets built, and in what order: the family office engagement was sequenced data-first even though it meant weeks without visible features. Specs come after; this is the layer above them.",
     proof: [
-      { label: "Family Office Platform", href: "/work/family-office-platform" },
+      {
+        label: "the family office platform",
+        href: "/work/family-office-platform",
+      },
       { label: "Everbook", href: "/work/everbook" },
       { label: "Agora", href: "/work/agora" },
     ],

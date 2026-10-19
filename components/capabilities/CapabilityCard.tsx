@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 
 export type CapabilityChipProof = {
@@ -25,17 +26,22 @@ export type CapabilityChipItem = {
 export function CapabilityCard({
   item,
   doneAt,
+  titleAs: Title = "h3",
+  externalNote,
 }: {
   item: CapabilityChipItem;
   /** The line with `{proof}` where the names go. */
   doneAt: string;
+  titleAs?: "h2" | "h3";
+  /** Read after an external proof's name, for screen readers only. */
+  externalNote?: string;
 }) {
   const [before, after] = doneAt.split("{proof}");
   return (
     <>
-      <h3 className="font-display text-(length:--text-h4) leading-[1.25] font-semibold tracking-(--tracking-h4) text-(--color-ink) md:pr-56">
+      <Title className="font-display text-(length:--text-h4) leading-[1.25] font-semibold tracking-(--tracking-h4) text-(--color-ink) md:pr-56">
         {item.title}
-      </h3>
+      </Title>
       <p className="mt-2 font-code text-(length:--text-code) text-(--color-dim)">
         {item.tech}
       </p>
@@ -45,10 +51,14 @@ export function CapabilityCard({
       <p className="mt-6 border-t border-(--color-line-soft) pt-5 text-(length:--text-small) leading-[1.6] text-(--color-body)">
         {before}
         {item.proof.map((p, i) => (
-          <span key={p.label} className="whitespace-nowrap">
-            <ProofName proof={p} />
-            {i < item.proof.length - 1 ? ", " : ""}
-          </span>
+          <Fragment key={p.label}>
+            <span className="whitespace-nowrap">
+              <ProofName proof={p} externalNote={externalNote} />
+              {i < item.proof.length - 1 ? "," : ""}
+            </span>
+            {/* Outside the span, so the line may break between names. */}
+            {i < item.proof.length - 1 ? " " : ""}
+          </Fragment>
         ))}
         {after}
       </p>
@@ -59,7 +69,13 @@ export function CapabilityCard({
 const NAME =
   "font-medium text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4";
 
-function ProofName({ proof }: { proof: CapabilityChipProof }) {
+function ProofName({
+  proof,
+  externalNote,
+}: {
+  proof: CapabilityChipProof;
+  externalNote?: string;
+}) {
   if (!proof.href) return <span className={NAME}>{proof.label}</span>;
   const cls = `${NAME} transition-colors duration-(--dur-fast) hover:text-(--color-body)`;
   if (proof.external)
@@ -71,6 +87,7 @@ function ProofName({ proof }: { proof: CapabilityChipProof }) {
         className={cls}
       >
         {proof.label}
+        {externalNote && <span className="sr-only"> {externalNote}</span>}
       </a>
     );
   return (
