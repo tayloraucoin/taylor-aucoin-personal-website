@@ -25,3 +25,42 @@ export const proofBar: readonly { fact: string; meta: string }[] = [
     meta: "founder · founding engineer · product designer · fractional CTO",
   },
 ];
+
+/**
+ * The pillars (D-SITE-44): a title, the line shown closed, and the row that
+ * opens in place. Pillar 2's founder line lives in its open row (D-SITE-53);
+ * the other open rows are Taylor's to write.
+ */
+export const pillars: readonly { title: string; line: string; open: string }[] =
+  [
+    {
+      title: "Systems, end to end",
+      line: "Turborepo monorepos, typed contracts from Postgres to the pixel, and infrastructure a team of one can actually operate.",
+      open: "[Taylor's to write]",
+    },
+    {
+      title: "Judgment, not tickets",
+      line: "A feature starts as a UX problem and has to end as a business outcome.",
+      open: "I've been the founder and the first engineer, so I build like both.",
+    },
+    {
+      title: "Conventions that compound",
+      line: "I learn your codebase's conventions down pat, or level them up with an AI build system your team keeps using. [draft]",
+      open: "[Taylor's to write]",
+    },
+    {
+      title: "Fast and precise",
+      line: "Founders, leads and clients keep saying the same thing: fast, and it holds up in production. [draft]",
+      open: "[Taylor's to write]",
+    },
+  ];
+
+/** Problems I take on (home-words.md). */
+export const problems = {
+  heading: "Problems I take on",
+  line: "Open one for the approach and where it was done. [draft]",
+  doneAt: "Done at {proof}, usually on contract. [draft]",
+  showAll: "Show all 25",
+  showFewer: "Show fewer",
+  search: "Search every capability [draft]",
+} as const;

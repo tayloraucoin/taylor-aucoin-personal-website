@@ -1,17 +1,32 @@
 import { HomeHero } from "@/app/_components/HomeHero";
+import { Pillars } from "@/app/_components/Pillars";
+import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
 import RootField from "@/components/field/RootField";
-import Capabilities from "@/components/sections/Capabilities";
 import SelectedWork from "@/components/sections/SelectedWork";
-import Specialties from "@/components/sections/Specialties";
 import Testimonials from "@/components/sections/Testimonials";
+import { pillars } from "@/content/home";
+import { readPageState, type PageSearchParams } from "@/lib/page-state";
+
+/** Home's States (home.md): real content, seeded outside production. */
+const STATES = [
+  "capabilities-open",
+  "capabilities-all",
+  "pillar-open",
+] as const;
 
 /**
- * Home in D-SITE-50's frame: hero, proof bar, then today's sections in the
- * slots their replacements take (pillars, Problems I take on, Selected work,
- * Testimonials). Each later home ticket swaps one in place.
+ * Home in D-SITE-50's frame: hero, proof bar, pillars, Problems I take on,
+ * then today's sections in the slots their replacements take (Selected
+ * work, Testimonials). Each later home ticket swaps one in place.
  */
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: PageSearchParams;
+}) {
+  const state = await readPageState(searchParams, STATES);
+
   return (
     <main
       id="main"
@@ -21,8 +36,14 @@ export default function Home() {
       <RootField />
       <HomeHero />
       <ProofBar />
-      <Capabilities />
-      <Specialties />
+      <Pillars
+        items={pillars}
+        initialOpen={state === "pillar-open" ? 1 : null}
+      />
+      <ProblemsITakeOn
+        initialOpen={state === "capabilities-open" ? "search-discovery" : null}
+        initialAll={state === "capabilities-all"}
+      />
       <SelectedWork />
       {/* Renders nothing when visibleTestimonials() is empty. */}
       <Testimonials />
