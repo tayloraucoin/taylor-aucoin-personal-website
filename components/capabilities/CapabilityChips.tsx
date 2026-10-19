@@ -49,8 +49,19 @@ export function CapabilityChips({
 
   const shown = all || !labels ? items : items.slice(0, SHOWN);
 
+  // A list changed by its owner (a filter, a tab) moves at 0ms (A-14, A-15).
+  const listKey = items.map((i) => i.slug).join(" ");
+  const lastListKey = useRef(listKey);
+  const listChanged = lastListKey.current !== listKey;
   useEffect(() => {
-    if (open && !items.some((i) => i.slug === open)) setOpen(null);
+    lastListKey.current = listKey;
+  }, [listKey]);
+
+  useEffect(() => {
+    if (open && !items.some((i) => i.slug === open)) {
+      instant.current = true;
+      setOpen(null);
+    }
   }, [items, open]);
 
   const toggle = (slug: string, byKeyboard: boolean) => {
@@ -71,7 +82,8 @@ export function CapabilityChips({
                 key={item.slug}
                 layout="position"
                 transition={{
-                  duration: instant.current ? 0 : closing ? 0.16 : 0.2,
+                  duration:
+                    instant.current || listChanged ? 0 : closing ? 0.16 : 0.2,
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 className={

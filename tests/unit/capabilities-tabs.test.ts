@@ -5,7 +5,7 @@ import { test } from "node:test";
 import {
   itemsForTab,
   parseTab,
-  searchWithTab,
+  searchWithState,
   TAB_KEYS,
 } from "@/app/capabilities/_components/tabs";
 import { currentNavItem } from "@/components/site/nav";
@@ -55,14 +55,17 @@ test("C2 parseTab falls back to All for missing, blank or unknown", () => {
   assert.equal(parseTab(["ai-data", "x"]), "ai-data");
 });
 
-test("C3 searchWithTab sets tab, removes it for All, keeps the rest", () => {
-  assert.equal(searchWithTab("", "ai-data"), "?tab=ai-data");
-  assert.equal(searchWithTab("?tab=ai-data", "all"), "");
+test("C3 searchWithState writes tab and q, dropping All and a blank q", () => {
+  const w = (search: string, tab: Parameters<typeof parseTab>[0], q = "") =>
+    searchWithState(search, { tab: parseTab(tab), q });
+  assert.equal(w("", "ai-data"), "?tab=ai-data");
+  assert.equal(w("?tab=ai-data", "all"), "");
   assert.equal(
-    searchWithTab("?q=pay&tab=engineering", "product-design"),
+    w("?q=pay&tab=engineering", "product-design", "pay"),
     "?q=pay&tab=product-design",
   );
-  assert.equal(searchWithTab("?q=pay&tab=engineering", "all"), "?q=pay");
+  assert.equal(w("?q=pay&tab=engineering", "all", "pay"), "?q=pay");
+  assert.equal(w("?q=pay&state=x", "all", "  "), "?state=x");
 });
 
 test("Work is current on /capabilities (D-SITE-140)", () => {

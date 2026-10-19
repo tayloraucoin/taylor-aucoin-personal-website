@@ -10,37 +10,69 @@ import {
 } from "react";
 import { CapabilityChips } from "@/components/capabilities/CapabilityChips";
 import { tabVariants } from "@/components/ui/Button";
+import { CapabilityFilter } from "./CapabilityFilter";
+import { NoMatch } from "./NoMatch";
 import {
+  filterItems,
   itemsForTab,
-  searchWithTab,
+  searchWithState,
   TAB_KEYS,
   type TabbedChipItem,
   type TabKey,
 } from "./tabs";
 import { capabilitiesPage as words } from "./words";
 
+/** The status region speaks once typing has rested this long. */
+const SETTLE_MS = 500;
+
 /**
- * The discipline tabs over the chips (D-SITE-146): an ARIA tablist with one
- * tab stop, arrows and Home/End moving focus and selection together. The
- * selected tab is written to `?tab=` by `replaceState`, so no history entry
- * and no server render; All removes it. At 390 the strip scrolls sideways
- * and keeps the selected tab in view. A tab change that drops an open card's
- * chip closes the card; focus stays on the tab (D-SITE-205).
+ * The filter over the discipline tabs over the chips (D-SITE-146, 148). One
+ * leaf owns the query and the tab together: a tab change re-filters, typing
+ * never moves the tab. Both live in the URL by one `replaceState`, so no
+ * history entry and no server render; the open card never does.
+ *
+ * The tablist has one tab stop, arrows and Home/End moving focus and
+ * selection. At 390 the strip scrolls sideways and keeps the selected tab in
+ * view. A change that drops an open card's chip closes it and leaves focus
+ * where it was (D-SITE-205).
+ *
+ * Motion (D-SITE-147, 178): typing and keyboard changes are instant; a
+ * pointer tab change cross-fades the list in 120ms with scroll held; under
+ * reduced motion every transition in this tree is 0s.
  */
 export function CapabilityTabs({
   items,
   initialTab,
+  initialQuery = "",
   initialOpen = null,
 }: {
   items: TabbedChipItem[];
   initialTab: TabKey;
+  initialQuery?: string;
   initialOpen?: string | null;
 }) {
   const id = useId();
   const [tab, setTab] = useState<TabKey>(initialTab);
+  const [query, setQuery] = useState(initialQuery);
+  const [status, setStatus] = useState("");
+  const [fade, setFade] = useState<"idle" | "out" | "in">("idle");
   const strip = useRef<HTMLDivElement>(null);
+  const field = useRef<HTMLInputElement>(null);
   const tabs = useRef<Partial<Record<TabKey, HTMLButtonElement | null>>>({});
-  const shown = useMemo(() => itemsForTab(items, tab), [items, tab]);
+  const settle = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const shown = useMemo(
+    () => filterItems(itemsForTab(items, tab), query),
+    [items, tab, query],
+  );
+
+  const announce = (count: number) =>
+    setStatus(count === 0 ? words.noMatch : words.count(count));
+
+  const countFor = (t: TabKey, q: string) =>
+    filterItems(itemsForTab(items, t), q).length;
+
+  useEffect(() => () => clearTimeout(settle.current ?? undefined), []);
 
   // Keep the selected tab inside the strip's visible width.
   useEffect(() => {
@@ -54,16 +86,47 @@ export function CapabilityTabs({
       box.scrollLeft = right - box.clientWidth;
   }, [tab]);
 
-  const select = (next: TabKey, focus: boolean) => {
-    if (focus) tabs.current[next]?.focus();
-    if (next === tab) return;
-    setTab(next);
+  // The pointer cross-fade: out at 0ms, then in over 120ms on the next frame.
+  useEffect(() => {
+    if (fade !== "out") return;
+    const frame = requestAnimationFrame(() => setFade("in"));
+    return () => cancelAnimationFrame(frame);
+  }, [fade]);
+
+  const writeUrl = (next: { tab: TabKey; q: string }) => {
     const { pathname, search, hash } = window.location;
     window.history.replaceState(
       null,
       "",
-      `${pathname}${searchWithTab(search, next)}${hash}`,
+      `${pathname}${searchWithState(search, next)}${hash}`,
     );
+  };
+
+  const select = (next: TabKey, by: "pointer" | "keyboard") => {
+    if (by === "keyboard") tabs.current[next]?.focus();
+    if (next === tab) return;
+    if (by === "pointer") {
+      const y = window.scrollY;
+      setFade("out");
+      requestAnimationFrame(() => window.scrollTo({ top: y }));
+    } else setFade("idle");
+    setTab(next);
+    writeUrl({ tab: next, q: query });
+    clearTimeout(settle.current ?? undefined);
+    announce(countFor(next, query));
+  };
+
+  const type = (q: string) => {
+    setFade("idle");
+    setQuery(q);
+    writeUrl({ tab, q });
+    clearTimeout(settle.current ?? undefined);
+    settle.current = setTimeout(() => announce(countFor(tab, q)), SETTLE_MS);
+  };
+
+  const clear = () => {
+    type("");
+    field.current?.focus();
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -85,17 +148,23 @@ export function CapabilityTabs({
               : null;
     if (to === null) return;
     e.preventDefault();
-    select(TAB_KEYS[to], true);
+    select(TAB_KEYS[to], "keyboard");
   };
 
   const tabId = (key: TabKey) => `${id}-tab-${key}`;
   const panel = `${id}-panel`;
 
   return (
-    <>
+    <div className="motion-reduce:**:[animation-duration:0s]! motion-reduce:**:[transition-duration:0s]!">
+      <CapabilityFilter
+        ref={field}
+        value={query}
+        onChange={type}
+        onClear={clear}
+      />
       <div
         ref={strip}
-        className="-mx-1 overflow-x-auto px-1 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-1 mt-6 overflow-x-auto px-1 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div
           role="tablist"
@@ -117,7 +186,9 @@ export function CapabilityTabs({
                 aria-selected={selected}
                 aria-controls={panel}
                 tabIndex={selected ? 0 : -1}
-                onClick={() => select(key, false)}
+                onClick={(e) =>
+                  select(key, e.detail === 0 ? "keyboard" : "pointer")
+                }
                 className={`${tabVariants({ selected })} shrink-0 font-medium whitespace-nowrap`}
               >
                 {words.tabs[key]}
@@ -130,16 +201,33 @@ export function CapabilityTabs({
         role="tabpanel"
         id={panel}
         aria-labelledby={tabId(tab)}
-        className="md:mt-8"
+        data-fade={fade}
+        className={`md:mt-8 ${
+          fade === "out"
+            ? "opacity-0"
+            : fade === "in"
+              ? "opacity-100 transition-opacity duration-[120ms] ease-(--ease-out)"
+              : ""
+        }`}
+        onTransitionEnd={(e) => {
+          if (e.target === e.currentTarget) setFade("idle");
+        }}
       >
-        <CapabilityChips
-          items={shown}
-          doneAt={words.doneAt}
-          initialOpen={initialOpen}
-          titleAs="h2"
-          externalNote={words.externalNote}
-        />
+        {shown.length > 0 ? (
+          <CapabilityChips
+            items={shown}
+            doneAt={words.doneAt}
+            initialOpen={initialOpen}
+            titleAs="h2"
+            externalNote={words.externalNote}
+          />
+        ) : (
+          <NoMatch onClear={clear} />
+        )}
       </div>
-    </>
+      <p role="status" aria-live="polite" className="sr-only">
+        {status}
+      </p>
+    </div>
   );
 }

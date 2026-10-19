@@ -15,7 +15,13 @@ export const metadata: Metadata = {
 };
 
 /** capabilities.md's States, on real content, outside production only. */
-const STATES = ["tab", "card-open", "card-open-four-proofs"] as const;
+const STATES = [
+  "tab",
+  "filtered",
+  "filter-empty",
+  "card-open",
+  "card-open-four-proofs",
+] as const;
 
 /**
  * The chips in Taylor's comfort order, stripped to plain props here on the
@@ -33,6 +39,8 @@ function chipItems(): TabbedChipItem[] {
       tech: c.tech,
       approach: c.approach,
       tabs: c.tabs,
+      offer: c.offer,
+      keywords: c.keywords,
       proof: c.proof!.map(({ label, href, external }) => ({
         label,
         ...(href ? { href } : {}),
@@ -43,8 +51,9 @@ function chipItems(): TabbedChipItem[] {
 
 /**
  * `/capabilities` (SITE-26): every problem Taylor takes on as chips under
- * five discipline tabs, each opening in place on its proof, then the call.
- * `?tab=` is read per request; an unknown one is All.
+ * five discipline tabs under a filter, each opening in place on its proof,
+ * then the call. `?tab=` and `?q=` are read per request; an unknown tab is
+ * All, a blank query is none.
  */
 export default async function CapabilitiesPage({
   searchParams,
@@ -55,6 +64,13 @@ export default async function CapabilitiesPage({
   const state = await readPageState(searchParams, STATES);
 
   const tab = state === "tab" ? "ai-data" : parseTab(params.tab);
+  const rawQ = Array.isArray(params.q) ? params.q[0] : params.q;
+  const q =
+    state === "filtered"
+      ? "realtime"
+      : state === "filter-empty"
+        ? "kubernetes"
+        : (rawQ ?? "");
   const open =
     state === "card-open"
       ? "search-discovery"
@@ -76,9 +92,10 @@ export default async function CapabilitiesPage({
         </p>
         <div className="mt-10 md:mt-14">
           <CapabilityTabs
-            key={`${tab}-${open}`}
+            key={`${tab}-${q}-${open}`}
             items={chipItems()}
             initialTab={tab}
+            initialQuery={q}
             initialOpen={open}
           />
         </div>

@@ -14,6 +14,13 @@ export const capabilitiesPage = {
   h1: "Problems I take on",
   framing:
     "[Taylor writes: your specialities, and that you take on any part of a product, end to end]",
+  filterLabel: "Filter by problem or tool [draft]",
+  filterPlaceholder: "Filter — payments, search, AI…",
+  clear: "Clear the filter [draft]",
+  noMatch: "Nothing by that name.",
+  sendNote: "Send a note",
+  /** The status region's count, Taylor's words to come beside the number. */
+  count: (n: number) => `[Taylor writes: result count] ${n}`,
   tabsName: "[Taylor writes: tabs name]",
   tabs: {
     all: "All",
