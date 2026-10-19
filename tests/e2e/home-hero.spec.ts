@@ -15,11 +15,11 @@ const CONSENT_KEY = "ta:analytics-consent";
 const CALL = "Book a 30-minute call";
 const BAR = [
   ["Since 2016", "building software"],
-  ["[12] products", "zero to one, and counting"],
+  ["13 products", "zero to one, and counting"],
   ["22 cohorts taught", "BCIT ISSP · VFS · FLUI · SFU co-op · virtual intern"],
   [
-    "Four seats [draft]",
-    "founder · founding engineer · product designer · fractional CTO",
+    "Five roles",
+    "product engineer · product designer · systems consultant · fractional CTO · 0→1 build",
   ],
 ];
 

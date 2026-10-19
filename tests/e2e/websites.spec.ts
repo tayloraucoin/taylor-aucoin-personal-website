@@ -20,7 +20,7 @@ const CONSENT_KEY = "ta:analytics-consent";
 const H2S = [
   "What you actually own",
   "What it costs",
-  "Sites I've built [draft]",
+  "Sites I've built",
   "Changes after the build",
   "What you get",
   "How it goes",

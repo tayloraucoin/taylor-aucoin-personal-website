@@ -95,7 +95,7 @@ test.describe("at 1440", () => {
     expect(new Set(lefts).size).toBe(2);
     await expect(
       testimonials(page).getByRole("link", {
-        name: "Read them in full [draft]",
+        name: "Read them in full",
       }),
     ).toHaveAttribute("href", "/about#testimonials");
 

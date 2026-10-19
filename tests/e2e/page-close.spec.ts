@@ -104,11 +104,11 @@ test.describe("C1 and C2 at 1440", () => {
 
     const note = fixture(page, "note");
     expect(await links(note)).toEqual([
-      ["Send a note [draft]", "/contact"],
+      ["Send a note", "/contact"],
       ["Book a 30-minute call", "/book"],
     ]);
     await expect(note).toContainText("Prefer a call?");
-    expect(await filled(note)).toEqual(["Send a note [draft]"]);
+    expect(await filled(note)).toEqual(["Send a note"]);
     await expect(note.getByRole("link", { name: "Résumé" })).toHaveCount(0);
     await expect(note.locator("a[href^=mailto]")).toHaveCount(0);
   });

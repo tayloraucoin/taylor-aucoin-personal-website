@@ -56,7 +56,7 @@ test.describe("at 1440", () => {
       "Conscious Connections",
     ]);
     await expect(
-      page.getByRole("link", { name: "Search every capability [draft]" }),
+      page.getByRole("link", { name: "Search every capability" }),
     ).toHaveAttribute("href", "/capabilities");
 
     await page.goto("/work?tab=branding");

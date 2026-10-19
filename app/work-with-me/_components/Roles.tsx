@@ -5,7 +5,7 @@ import { H2 } from "./shared";
 export function Roles() {
   return (
     <section aria-labelledby="roles-heading" className="mt-16 md:mt-24">
-      <H2 id="roles-heading">Roles [draft]</H2>
+      <H2 id="roles-heading">Roles</H2>
       <ul>
         {roles.map((r) => (
           <li

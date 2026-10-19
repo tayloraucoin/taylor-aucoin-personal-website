@@ -13,7 +13,7 @@ test.use({ realGoogle: true });
 
 const CONSENT_KEY = "ta:analytics-consent";
 const CALL = "Book a 30-minute call";
-const NOTE = "Send a note [draft]";
+const NOTE = "Send a note";
 
 async function stubGoogle(context: BrowserContext) {
   const google: string[] = [];

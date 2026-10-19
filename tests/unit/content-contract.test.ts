@@ -85,7 +85,7 @@ test("C3 aiSat is on Conscious Connections only, copied from atAGlance", () => {
 
 test("C4 Conscious Connections' facts", () => {
   assert.deepEqual(bySlugAll("conscious-connections").facts, [
-    { value: "Solo build [draft]", meta: "founder · engineer · designer" },
+    { value: "Solo build", meta: "founder · engineer · designer" },
     { value: "2026 to present", meta: "first commit May 2026" },
     { value: "Beta", meta: "marketing site live · toolkit ahead of launch" },
     {

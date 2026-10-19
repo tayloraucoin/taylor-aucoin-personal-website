@@ -3,31 +3,27 @@ import type { Budget, Role, Start } from "@/lib/validators/book";
 import { replyLine } from "./services";
 
 /**
- * `/book`'s strings, as `services-words.md` gives them (and the locked
- * captures place their `[draft]` marks). Taylor's copy: the marks stay until
- * he clears them, and nothing here is reworded. The start, role and building
- * error lines are his to write; their slot shows `[Taylor's line]`.
+ * `/book`'s strings, as `services-words.md` gives them. Taylor cleared the
+ * draft marks on 2026-10-19 (D-SITE-185); the building, start and role error
+ * lines were written in that pass, after the budget line's pattern.
  */
-const TAYLORS_LINE = "[Taylor's line]";
-
 /** `, {first name}` when there is one, nothing when Name was blank. */
 function greeting(firstName: string | undefined): string {
   return firstName ? `Thanks, ${firstName}.` : "Thanks.";
 }
 
 export const book = {
-  title: "Before we book [draft]",
-  h1: "Before we book [draft]",
-  intro:
-    "[draft] Four quick questions, so the 30 minutes are useful to both of us.",
+  title: "Before we book",
+  h1: "Before we book",
+  intro: "Four quick questions, so the 30 minutes are useful to both of us.",
   fields: {
     building: {
-      label: "What are you building? [draft]",
-      hint: "A sentence or two is plenty. [draft]",
+      label: "What are you building?",
+      hint: "A sentence or two is plenty.",
     },
-    budget: { label: "Budget [draft]" },
-    start: { label: "When do you want to start? [draft]" },
-    role: { label: "The role you need [draft]" },
+    budget: { label: "Budget" },
+    start: { label: "When do you want to start?" },
+    role: { label: "The role you need" },
     name: { label: "Name" },
     email: { label: "Email", hint: "you@company.com" },
   },
@@ -53,41 +49,41 @@ export const book = {
     "website-or-brand": "A website or brand",
     "not-sure": "Not sure yet",
   } satisfies Record<Role, string>,
-  button: "Continue [draft]",
+  button: "Continue",
   sending: "Sending…",
   replyLine,
   errors: {
-    building: TAYLORS_LINE,
-    budget: 'Pick the closest band, or "No budget yet". [draft]',
-    start: TAYLORS_LINE,
-    role: TAYLORS_LINE,
+    building: "Add a sentence about what you're building.",
+    budget: 'Pick the closest band, or "No budget yet".',
+    start: 'Pick a rough start, or "Just exploring".',
+    role: 'Pick the closest role, or "Not sure yet".',
     email: "That doesn't look like an email address — check for a typo.",
   },
   sendError: {
     before:
       "That didn't send — your answers are still here. Try again, or email",
-    after: "[draft]",
+    after: "directly.",
   },
   address: SITE.email,
   fit: {
-    h1: "Let's book it [draft]",
+    h1: "Let's book it",
     intro: (firstName?: string) =>
-      `[draft] ${greeting(firstName)} That sounds like a good fit. Pick a time on my calendar.`,
+      `${greeting(firstName)} That sounds like a good fit. Pick a time on my calendar.`,
     call: "Book a 30-minute call",
     ratherWrite: "Rather write first?",
-    sendNote: "Send a note [draft]",
+    sendNote: "Send a note",
   },
   notAFit: {
-    h1: "Let's talk first [draft]",
+    h1: "Let's talk first",
     intro: (firstName?: string) =>
-      `[draft] ${greeting(firstName)} From what you've shared, a short exchange by email will tell us more than a call. Add anything you like and send it.`,
-    messageLabel: "Your note [draft]",
+      `${greeting(firstName)} From what you've shared, a short exchange by email will tell us more than a call. Add anything you like and send it.`,
+    messageLabel: "Your note",
     /** [ASSUMPTION] the words file names no sent title; the H1 stays. */
-    sentTitle: `Sent — Let's talk first [draft] — ${SITE.name}`,
+    sentTitle: `Sent — Let's talk first — ${SITE.name}`,
   },
   websiteLine: {
     lead: "Need a website or a brand?",
-    link: "See how a coded site works [draft]",
+    link: "See how a coded site works",
   },
 } as const;
 

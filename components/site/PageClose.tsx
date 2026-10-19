@@ -48,7 +48,7 @@ export function PageClose({
   /** Headline, or Heading 3 for /capabilities. */
   lineSize?: "headline" | "h3";
   lineAs?: "p" | "h2" | "h3";
-  /** The note-led button's label, which carries Work with me's [draft] mark. */
+  /** The note-led button's label, Work with me's own. */
   noteLabel?: string;
 }) {
   return (

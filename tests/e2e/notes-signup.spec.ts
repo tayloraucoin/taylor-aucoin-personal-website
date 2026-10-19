@@ -75,11 +75,11 @@ test.describe("at 1440", () => {
     release();
 
     const done = block(page).getByText(
-      `[Draft] Signed up. Notes will go to ${address}.`,
+      `Signed up. Notes will go to ${address}.`,
     );
     await expect(done).toBeFocused();
     await expect(live(page)).toHaveText(
-      `[Draft] Signed up. Notes will go to ${address}.`,
+      `Signed up. Notes will go to ${address}.`,
     );
     await expect(field(page)).toHaveCount(0);
     expectNoLeak(requests, address);
@@ -95,7 +95,7 @@ test.describe("at 1440", () => {
     await context.setOffline(true);
     await button(page).click();
     const error =
-      "[Draft] It didn't send. Check your connection and try again; your address is still here.";
+      "It didn't send. Check your connection and try again; your address is still here.";
     await expect(button(page)).toHaveText("Try again");
     await expect(field(page)).toHaveValue(address);
     const describedBy = await field(page).getAttribute("aria-describedby");
@@ -108,7 +108,7 @@ test.describe("at 1440", () => {
     await context.setOffline(false);
     await button(page).click();
     await expect(
-      block(page).getByText(`[Draft] Signed up. Notes will go to ${address}.`),
+      block(page).getByText(`Signed up. Notes will go to ${address}.`),
     ).toBeFocused();
   });
 
@@ -125,7 +125,7 @@ test.describe("at 1440", () => {
     await expect(field(page)).toHaveAttribute("aria-invalid", "true");
     const describedBy = await field(page).getAttribute("aria-describedby");
     await expect(page.locator(`[id="${describedBy}"]`)).toHaveText(
-      "[Draft] That address needs an ending, like .com or .ca. Nothing was sent.",
+      "That address needs an ending, like .com or .ca. Nothing was sent.",
     );
     await page.waitForTimeout(500);
     expect(posts).toEqual([]);
@@ -144,7 +144,7 @@ test.describe("at 1440", () => {
     await page.goto("/");
     await fillAndWait(page, address);
     await button(page).click();
-    const doneText = `[Draft] Signed up. Notes will go to ${address}.`;
+    const doneText = `Signed up. Notes will go to ${address}.`;
     await expect(block(page).getByText(doneText)).toBeFocused();
     const first = bodies.at(-1)!;
 

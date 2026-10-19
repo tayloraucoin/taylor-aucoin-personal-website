@@ -20,8 +20,8 @@ export const familyOfficePlatform = {
   facts: [
     { value: "Fractional CTO", meta: "Fractional CTO" },
     { value: "2026", meta: "contract · platform · crm" },
-    { value: "[Taylor writes: fact]", meta: "[draft]" },
-    { value: "[Taylor writes: fact]", meta: "[draft]" },
+    { value: "Five apps", meta: "in six weeks · one database, one login" },
+    { value: "200+ models", meta: "row-level security on 150+ tables" },
   ],
   builtFormat: "rows-paired",
   beats: {
@@ -29,7 +29,7 @@ export const familyOfficePlatform = {
     decided:
       "Unify the data first, and let the technical debt stand. Two of six weeks went to migration and reconciliation before any visible feature shipped.",
     happened:
-      "[Draft] Ten legacy systems now run as one platform, and the team maintains and extends it without dedicated engineering staff.",
+      "Ten legacy systems now run as one platform, and the team maintains and extends it without dedicated engineering staff.",
   },
   engagementType: "Fractional CTO engagement",
   mediaPreview: true,

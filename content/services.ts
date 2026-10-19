@@ -160,12 +160,11 @@ export const closing =
 
 /** SVC-09 — two-line bio beside the photo. Taylor owns the final wording. */
 export const bio =
-  "Senior product engineer and technical founder: twelve products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+  "Senior product engineer and technical founder: thirteen products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
 
 /**
  * /work-with-me roles (D-SITE-57): seats of one job, never a menu (D-SITE-125).
  * Terms are home's; best-for and includes come from `offers` where drawn.
- * Brackets are Taylor's slots and stay as written.
  */
 export type Role = {
   name: string;
@@ -184,14 +183,22 @@ export const roles: Role[] = [
   {
     name: "Product designer",
     terms: "Full-time · contract · fractional",
-    bestFor: "[Taylor's line]",
-    includes: ["[Taylor's copy: what the seat covers]"],
+    bestFor: "Teams that want the screens designed by the person who'll build them.",
+    includes: [
+      "Flows and interfaces, designed and then built",
+      "A component kit the next engineer composes from",
+      "Design calls made knowing what they cost to build",
+    ],
   },
   {
     name: "Systems consultant",
     terms: "Scoped engagement",
-    bestFor: "System design, before the build. [draft]",
-    includes: ["[Taylor's copy: what the engagement delivers]"],
+    bestFor: "System design, before the build.",
+    includes: [
+      "An architecture and data model, written down before any code",
+      "A build order: what ships first, and why",
+      "A review of the system you have, with what I'd change",
+    ],
   },
   {
     name: "Fractional CTO",
@@ -226,20 +233,20 @@ export const building: BuildingRow[] = [
   {
     name: "Branding",
     price: "$750",
-    line: "[Taylor's line]",
+    line: "A brand built in order, from pillars to logo, with a guide so you can apply it yourself.",
     proof: { label: "Branding & UI", href: "/work?tab=branding" },
   },
   {
-    name: "Conventions install [draft]",
+    name: "Conventions install",
     price: "Contact for a quote",
-    line: "[Taylor's line]",
+    line: "Your codebase's conventions, written as files your team and its AI tools build from.",
   },
 ];
 
 export const workWithMeWords = {
   eyebrowSuffix: "Contract & fractional",
-  sub: "[Taylor's copy: the seat scales with the team. Senior implementer or staff on a large team, head of product or CTO on a small one, fractional where it fits.]",
-  note: "Send a note [draft]",
+  sub: "Same work, sized to your team. On a big team I'm a senior or staff engineer. On a small one I'm head of product or CTO, part-time if full-time is more than you need.",
+  note: "Send a note",
   close:
-    "[Taylor's copy: a closing line that leads with a note, then the call]",
+    "Tell me what you're building in a note. If a call makes sense after that, we'll book one.",
 };

@@ -120,14 +120,14 @@ export const SITE = {
   linkedin: "https://www.linkedin.com/in/taylor-aucoin/",
   resume: "/taylor-aucoin-resume.pdf",
   tagline:
-    "Twelve products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
+    "Thirteen products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
   /**
    * Home page `<meta name="description">`. Written to survive truncation at
    * ~160 characters in a Slack or Gmail link preview — which is why it is not
    * composed from `role` + `tagline`. Keep it 140–160 characters.
    */
   metaDescription:
-    "Senior/staff product engineer in Vancouver. Twelve products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
+    "Senior/staff product engineer in Vancouver. Thirteen products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
 } as const;
 
 /**

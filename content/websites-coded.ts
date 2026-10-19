@@ -244,8 +244,7 @@ export const firstLook = {
   value: "3 days",
 } as const;
 
-/** Taylor's to write (websites-coded-words.md). */
-export const addOnsLabel = "Add-ons [draft]";
+export const addOnsLabel = "Add-ons";
 
 /**
  * ORDER MATCHES THE PAY SCREEN. Extra pages lead because they are a scope rule
@@ -333,8 +332,7 @@ export const addOns: PricedRow[] = [
 
 /* ── Sites I've built ──────────────────────────────────────────────────── */
 
-/** Taylor's to write (websites-coded-words.md). */
-export const sitesHeading = "Sites I've built [draft]";
+export const sitesHeading = "Sites I've built";
 
 /** The gallery opener, `/work`'s row pattern (D-SITE-114). */
 export const galleryAll = "All {n} images";

@@ -3,9 +3,9 @@
  * and `/websites`' examples. Product engineering rows come from the case
  * studies, so they are not repeated here.
  *
- * Copy is Taylor's: every bracketed or [draft] value is a placeholder he has
- * not written (D-SITE-185). Galleries hold only files on disk, so the boards
- * and sites without captures yet carry an empty array.
+ * The placeholders were written in feedback round 1 (2026-10-19, D-SITE-185);
+ * Taylor's own pass is still to come. Galleries hold only files on disk, so
+ * the boards and sites without captures yet carry an empty array.
  */
 
 import { cleanCoast } from "@/content/websites-clean-coast";
@@ -28,7 +28,8 @@ export const workRows: WorkRow[] = [
     discipline: "branding",
     type: "business",
     title: "Agora",
-    tagline: "[Taylor writes: one line on the kit]",
+    tagline:
+      "The festival-fashion brand, rebuilt around one line: the art you wear matches the art you are.",
     role: "Brand kit and components",
     period: "2020–2026",
     sortDate: "2026-01",
@@ -47,9 +48,12 @@ export const workRows: WorkRow[] = [
     ],
     published: true,
     beats: {
-      problem: "[Taylor writes: what the brand had to feel like]",
-      decided: "[Taylor writes: the defining brand decision]",
-      happened: "[Taylor writes: the kit, the components, where they are used]",
+      problem:
+        "Agora's look had grown version by version for five years. The brand had to feel like the people who wear the art, and a little mythic.",
+      decided:
+        "Each pillar got a guard rail beside it, so mythic could never slide into make-believe.",
+      happened:
+        "The kit lives in Paper for now: the wordmark and its variants, the palette, type and components. The site hasn't moved to it yet.",
     },
   },
   {
@@ -57,7 +61,8 @@ export const workRows: WorkRow[] = [
     discipline: "branding",
     type: "passion",
     title: "Conscious Connections",
-    tagline: "[Taylor writes: one line on the kit]",
+    tagline:
+      "Deep wine, cream and gold, held together by one line: depth earns the play.",
     role: "Brand kit and components",
     period: "2025–2026",
     sortDate: "2026-10",
@@ -76,9 +81,12 @@ export const workRows: WorkRow[] = [
     ],
     published: true,
     beats: {
-      problem: "[Taylor writes: what the brand had to feel like]",
-      decided: "[Taylor writes: the defining brand decision]",
-      happened: "[Taylor writes: the kit, the components, where they are used]",
+      problem:
+        "Couples open it after a fight. The brand had to feel safe enough to be honest in and still leave room for some play.",
+      decided:
+        "Depth leads. The ground is a deep wine with cream and gold serif type, and the lighter moments come after it.",
+      happened:
+        "The identity, the lockup and the heart-flame mark live in Paper for now. The live marketing site came before them.",
     },
   },
   {
@@ -86,7 +94,8 @@ export const workRows: WorkRow[] = [
     discipline: "branding",
     type: "own-brand",
     title: "Taylor Aucoin",
-    tagline: "[Taylor writes: one line on the kit]",
+    tagline:
+      "This site's own kit: Carbon, Gold, Patina and Lamplight, in one Paper file.",
     role: "Kit, tokens, components",
     period: "2026",
     sortDate: "2026-10",
@@ -95,11 +104,11 @@ export const workRows: WorkRow[] = [
     published: true,
     beats: {
       problem:
-        "[Draft] A site whose copy read machine-written, selling a positioning I had outgrown.",
+        "A site whose copy read machine-written, selling a positioning I had outgrown.",
       decided:
-        "[Draft] Carbon carries everything and one accent is spent only on details.",
+        "Carbon carries everything and one accent is spent only on details.",
       happened:
-        "[Draft] A kit, tokens and a component set in one Paper file, mirrored token for token in the site's code.",
+        "A kit, tokens and a component set in one Paper file, mirrored token for token in the site's code.",
     },
   },
   {
@@ -107,16 +116,20 @@ export const workRows: WorkRow[] = [
     discipline: "websites",
     type: "client",
     title: "Kryshan Randel",
-    tagline: "[Taylor writes: one line on the site]",
+    tagline:
+      "A portfolio site and brand kit for a filmmaker who directs, shoots, edits and teaches.",
     role: "Coded website, brand kit",
-    period: "[year]",
+    period: "2026",
     sortDate: "2026-01",
     gallery: [],
     published: true,
     beats: {
-      problem: "[Taylor writes: where the client started]",
-      decided: "[Taylor writes: the one decision that shaped the site]",
-      happened: "[Taylor writes: live, owned, and what changed for the client]",
+      problem:
+        "A filmmaker with four kinds of work and no site of his own that showed them together.",
+      decided:
+        "Brand first. The full branding process ran before any page was built, so the site came out of his pillars.",
+      happened:
+        "Live in 2026, in real code he owns, with a guide for changing it himself.",
     },
   },
   {
@@ -124,17 +137,16 @@ export const workRows: WorkRow[] = [
     discipline: "websites",
     type: "client",
     title: "Holistica",
-    tagline: "[Taylor writes: one line on the site]",
+    tagline: "A coded website for Phoenix, in the build now.",
     role: "Coded website",
-    period: "[year]",
+    period: "2026",
     sortDate: "2026-01",
     gallery: [],
     published: false,
     beats: {
-      problem: "[Taylor writes: where the client started]",
-      decided: "[Taylor writes: the one decision that shaped the site]",
-      happened:
-        "[Lands when the site ships; until then this slot shows the next finished case]",
+      problem: "Phoenix's site is still being built.",
+      decided: "The story gets written once it's live.",
+      happened: "Not live yet.",
     },
   },
   {
@@ -142,20 +154,21 @@ export const workRows: WorkRow[] = [
     discipline: "websites",
     type: "client",
     title: "Clean Coast Detailing",
-    tagline: "[Taylor writes: one line on the site]",
+    tagline:
+      "A site and brand guide for a mobile detailer who started with a logo and a phone full of photos.",
     role: "Website and brand guide",
-    period: "[year]",
+    period: "2026",
     sortDate: "2026-01",
     liveUrl: cleanCoast.liveUrl ?? undefined,
     gallery: cleanCoastGallery,
     published: false,
     beats: {
       problem:
-        "[Draft, from /websites copy] Fully mobile vehicle detailing with a logo, a phone full of before-and-afters, and no website.",
+        "Fully mobile vehicle detailing with a logo, a phone full of before-and-afters, and no website.",
       decided:
-        "[Draft, from /websites copy] The two colours in the badge became the whole brand system: two eight-step ramps, a neutral scale and a type stack, written up before a single page existed.",
+        "The two colours in the badge became the whole brand system: two eight-step ramps, a neutral scale and a type stack, written up before a single page existed.",
       happened:
-        "[Taylor writes: live date, what the owner can now change himself]",
+        "Live at cleancoast.ca, with a Notion guide that shows Liam how to run every part of it himself.",
     },
   },
 ];

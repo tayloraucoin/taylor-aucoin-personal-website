@@ -34,7 +34,10 @@ export const agora = {
       value: "2021 to 2026",
       meta: "business · recommender · enrichment · search",
     },
-    { value: "[Taylor writes: fact]", meta: "[draft]" },
+    {
+      value: "Three versions",
+      meta: "three fresh codebases · a team of up to 12",
+    },
     { value: "agora.art", meta: "live site", href: "https://agora.art" },
   ],
   builtFormat: "gallery",

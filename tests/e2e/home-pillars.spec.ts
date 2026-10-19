@@ -75,7 +75,7 @@ test.describe("at 1440", () => {
     await expect(chips(page)).toHaveCount(8);
     expect(await chips(page).allTextContents()).toEqual(FIRST_EIGHT);
     const link = problems(page).getByRole("link", {
-      name: "Search every capability [draft]",
+      name: "Search every capability",
     });
     await expect(link).toHaveAttribute("href", "/capabilities");
 
@@ -97,7 +97,7 @@ test.describe("at 1440", () => {
     await expect(search).toHaveAttribute("aria-expanded", "true");
     const card = page.locator(`#${await search.getAttribute("aria-controls")}`);
     await expect(card).toContainText("Elasticsearch");
-    await expect(card).toContainText(/Done at .*usually on contract/);
+    await expect(card).toContainText(/Done at Agora\./);
     await expect(card.getByRole("link", { name: "Agora" })).toHaveAttribute(
       "href",
       "/work/agora",
