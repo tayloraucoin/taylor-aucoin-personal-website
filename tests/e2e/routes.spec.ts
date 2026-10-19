@@ -6,6 +6,8 @@ const REDIRECTS: [string, string][] = [
   ["/testimonials", "/about#testimonials"],
   ["/stack?x=1", "/about?x=1#tools"],
   ["/testimonials?x=1", "/about?x=1#testimonials"],
+  // SITE-24: the coded page moved to /websites (D-SITE-111, 215).
+  ["/websites/coded", "/websites"],
 ];
 
 for (const [from, to] of REDIRECTS) {
@@ -16,12 +18,7 @@ for (const [from, to] of REDIRECTS) {
   });
 }
 
-for (const path of [
-  "/services",
-  "/websites",
-  "/websites/coded",
-  "/websites/coded/intake",
-]) {
+for (const path of ["/services", "/websites", "/websites/coded/intake"]) {
   test(`C2 ${path} answers 200 with no Location`, async ({ request }) => {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status()).toBe(200);

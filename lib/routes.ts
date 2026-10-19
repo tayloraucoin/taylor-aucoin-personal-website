@@ -92,36 +92,31 @@ export function hidesCallButton(pathname: string): boolean {
 /**
  * The website-service marketing pages.
  *
- * `/websites` is a chooser between two builds. The slugs name the DELIVERABLE
- * rather than the buyer: some professions could plausibly buy either track, so
- * "who it's for" cannot carry the distinction on its own, while "a platform you
- * run yourself" versus "code you own" always can. Naming by buyer was the
- * earlier plan and Taylor overruled it.
+ * `/websites` serves the coded build (D-SITE-111); `/websites/coded` answers
+ * 308 there from `next.config.ts` (D-SITE-215). The platform page is legacy,
+ * reached by direct URL only (D-SITE-112).
  *
  * Note `showcase` is the internal key for the coded track everywhere in the
  * data model (`M-PORT-1`), because "portfolio" already means tayloraucoin.com
  * itself in this codebase. Public slug and internal key differ on purpose.
- *
- * The coded track's intake nests under `coded`, immediately below.
  */
 export const websiteRoutes = {
-  chooser: "/websites",
   platform: "/websites/platform",
-  coded: "/websites/coded",
+  coded: "/websites",
 } as const;
 
 /**
- * The showcase track's intake, nested under the sales page that explains it.
+ * The showcase track's intake.
  *
- * Composed from `websiteRoutes.coded` rather than restating the slug, which is
- * still `[PROPOSED — Taylor ratifies]` (marketing scope §3) and therefore has
- * to have exactly one place to rename. Nesting is the trim-back law: someone
- * who cuts this URL back lands on the page describing what they are filling
- * in, never a 404 (WEBSITES-PAGE-SPEC §7, M-PORT-7).
+ * Written as a literal, NOT composed from `websiteRoutes.coded`: the page moved
+ * to `/websites` but the intake stays at `/websites/coded/intake` (D-SITE-160),
+ * so no live resume link, emailed link, admin link or cookie scope moves under
+ * a client mid-form. The redirect matches `/websites/coded` exactly, so nothing
+ * under this prefix is redirected.
  *
  * The durable tree does not move and does not change (that scope's R-3).
  */
-const SHOWCASE_INTAKE_PREFIX = `${websiteRoutes.coded}/intake`;
+const SHOWCASE_INTAKE_PREFIX = "/websites/coded/intake";
 
 export const showcaseIntakeRoutes = {
   start: SHOWCASE_INTAKE_PREFIX,

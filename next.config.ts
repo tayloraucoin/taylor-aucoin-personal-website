@@ -131,6 +131,9 @@ const nextConfig: NextConfig = {
         destination: "/about#testimonials",
         permanent: true,
       },
+      // The coded page moved to `/websites` (D-SITE-111). Exact path only, no
+      // `:path*`: the intake under `/websites/coded/intake` stays (D-SITE-160, 215).
+      { source: "/websites/coded", destination: "/websites", permanent: true },
     ];
   },
 
