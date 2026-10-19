@@ -19,8 +19,8 @@ import {
   Outcome,
   ProcessRows,
   WhatBroke,
-  WhatIBuilt,
 } from "./_components/Sections";
+import { WhatIBuilt } from "./_components/WhatIBuilt";
 import { WhereAiSat } from "./_components/WhereAiSat";
 import { applyCaseState, CASE_STATES } from "./_fixtures";
 
@@ -81,7 +81,7 @@ export default async function CaseStudyPage({
         <Opening c={c} />
         <AtAGlance c={c} />
         <Brief brief={c.brief} />
-        <WhatIBuilt built={c.built} />
+        <WhatIBuilt c={c} />
         <ProcessRows process={c.process} />
         <DecisionRows decisions={c.decisions} />
         <WhatBroke broke={c.broke} />

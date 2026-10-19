@@ -11,6 +11,10 @@ export const CASE_STATES = [
   "no-artifacts",
   "no-gallery",
   "no-testimonial",
+  "format-band",
+  "format-rows",
+  "format-gallery",
+  "format-paired",
 ] as const;
 
 export type CaseState = (typeof CASE_STATES)[number];
@@ -33,6 +37,15 @@ export function applyCaseState(
         study: { ...c, media: [], aiSat: undefined },
         testimonial: false,
       };
+    // A format key draws the current study's What I built in that format.
+    case "format-band":
+      return { study: { ...c, builtFormat: "band" }, testimonial: true };
+    case "format-rows":
+      return { study: { ...c, builtFormat: "rows-after" }, testimonial: true };
+    case "format-gallery":
+      return { study: { ...c, builtFormat: "gallery" }, testimonial: true };
+    case "format-paired":
+      return { study: { ...c, builtFormat: "rows-paired" }, testimonial: true };
     default:
       return { study: c, testimonial: true };
   }

@@ -8,6 +8,7 @@ import {
   Prose,
   RowText,
   RowTitle,
+  sentence,
   TEXT_LINK,
 } from "./blocks";
 
@@ -44,42 +45,6 @@ export function Brief({ brief }: { brief: CaseStudy["brief"] }) {
           </div>
         ))}
       </div>
-    </Block>
-  );
-}
-
-/**
- * What I built as text surfaces. SITE-16 gives it the study's media format;
- * until then it reads as `no-artifacts` draws it: the intro and the surface
- * rows, no screens, no gallery.
- */
-export function WhatIBuilt({ built }: { built: CaseStudy["built"] }) {
-  if (Array.isArray(built)) {
-    return (
-      <Block title="What I built">
-        {built.map((p, i) => (
-          <Prose key={i} tone="ink">
-            {p}
-          </Prose>
-        ))}
-      </Block>
-    );
-  }
-  return (
-    <Block title="What I built">
-      <Prose tone="ink">{built.intro}</Prose>
-      <LedgerRows>
-        {built.cards.map((card) => (
-          <LedgerRow key={card.label} label={<RowTitle>{card.label}</RowTitle>}>
-            <RowText>{card.body}</RowText>
-            {card.link && (
-              <a href={card.link.href} className={TEXT_LINK}>
-                {card.link.label}
-              </a>
-            )}
-          </LedgerRow>
-        ))}
-      </LedgerRows>
     </Block>
   );
 }
@@ -157,7 +122,10 @@ export function WhatBroke({ broke }: { broke: CaseStudy["broke"] }) {
       <Prose tone="ink">{broke.intro}</Prose>
       <LedgerRows>
         {broke.categories.map((cat) => (
-          <LedgerRow key={cat.chip} label={<RowTitle>{cat.chip}</RowTitle>}>
+          <LedgerRow
+            key={cat.chip}
+            label={<RowTitle>{sentence(cat.chip)}</RowTitle>}
+          >
             <RowText>{cat.body}</RowText>
           </LedgerRow>
         ))}
