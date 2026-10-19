@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { SeeTheWorkLink } from "@/app/_components/WorkTabs";
 import { BookCallLink } from "@/components/site/BookCallLink";
 import { buttonVariants } from "@/components/ui/Button";
 import { homeHero } from "@/content/home";
@@ -48,9 +49,9 @@ export function HomeHero() {
         </p>
         <div className="mt-10 flex flex-col gap-3 md:mt-12 md:flex-row">
           <BookCallLink surface="home" placement="hero" />
-          <a href="#work" className={buttonVariants({ variant: "ghost" })}>
+          <SeeTheWorkLink className={buttonVariants({ variant: "ghost" })}>
             {homeHero.ghost}
-          </a>
+          </SeeTheWorkLink>
         </div>
       </div>
     </section>

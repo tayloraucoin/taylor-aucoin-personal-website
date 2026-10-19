@@ -31,3 +31,28 @@ export function buttonVariants({
 } = {}): string {
   return `${BASE} ${VARIANTS[variant]} ${SIZES[size]}`;
 }
+
+/**
+ * A discipline tab (D-SITE-51): body text, the selected one in ink over a 2px
+ * rule-coloured line that sits on the row's hairline. Looks only: home's
+ * tablist and `/work`'s links each bring their own behaviour.
+ */
+export function tabVariants({ selected }: { selected: boolean }): string {
+  return `-mb-px inline-flex min-h-11 cursor-pointer items-center border-b-2 font-body text-(length:--text-body) transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) ${
+    selected
+      ? "border-(--color-rule) text-(--color-ink)"
+      : "border-transparent text-(--color-dim) hover:text-(--color-ink)"
+  }`;
+}
+
+/**
+ * A type filter chip (D-SITE-54): hairline-bordered; selected takes the raised
+ * surface, the strong border and a mark-coloured check (drawn by the caller).
+ */
+export function chipVariants({ selected }: { selected: boolean }): string {
+  return `inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-(--radius) border px-4 font-body text-(length:--text-small) transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) md:min-h-10 ${
+    selected
+      ? "border-(--color-line-strong) bg-(--color-card) text-(--color-ink)"
+      : "border-(--color-line-soft) text-(--color-body) hover:border-(--color-line-strong) hover:text-(--color-ink)"
+  }`;
+}

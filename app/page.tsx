@@ -2,8 +2,8 @@ import { HomeHero } from "@/app/_components/HomeHero";
 import { Pillars } from "@/app/_components/Pillars";
 import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
+import { SelectedWork } from "@/app/_components/SelectedWork";
 import RootField from "@/components/field/RootField";
-import SelectedWork from "@/components/sections/SelectedWork";
 import Testimonials from "@/components/sections/Testimonials";
 import { pillars } from "@/content/home";
 import { readPageState, type PageSearchParams } from "@/lib/page-state";
@@ -13,12 +13,15 @@ const STATES = [
   "capabilities-open",
   "capabilities-all",
   "pillar-open",
+  "selected-work-websites",
+  "selected-work-branding",
+  "selected-work-filtered",
 ] as const;
 
 /**
  * Home in D-SITE-50's frame: hero, proof bar, pillars, Problems I take on,
- * then today's sections in the slots their replacements take (Selected
- * work, Testimonials). Each later home ticket swaps one in place.
+ * Selected work, then today's Testimonials in the slot its replacement
+ * takes. Each later home ticket swaps one in place.
  */
 export default async function Home({
   searchParams,
@@ -44,7 +47,18 @@ export default async function Home({
         initialOpen={state === "capabilities-open" ? "search-discovery" : null}
         initialAll={state === "capabilities-all"}
       />
-      <SelectedWork />
+      <SelectedWork
+        initialTab={
+          state === "selected-work-websites"
+            ? "websites"
+            : state === "selected-work-branding"
+              ? "branding"
+              : undefined
+        }
+        initialChip={
+          state === "selected-work-filtered" ? "full-time" : undefined
+        }
+      />
       {/* Renders nothing when visibleTestimonials() is empty. */}
       <Testimonials />
     </main>

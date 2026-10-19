@@ -64,3 +64,49 @@ export const problems = {
   showFewer: "Show fewer",
   search: "Search every capability [draft]",
 } as const;
+
+/**
+ * Selected work (home-words.md): the curated Featured set per tab, by work
+ * entry id (D-SITE-51, 238), and each tab's footer links.
+ */
+export const selectedWork = {
+  heading: "Selected work",
+  tabs: {
+    product: "Product engineering",
+    websites: "Websites",
+    branding: "Branding & UI",
+  },
+  featured: {
+    product: ["conscious-connections", "everbook", "family-office-platform"],
+    websites: ["kryshan-randel"],
+    branding: ["taylor-aucoin-kit", "conscious-connections-kit", "agora-kit"],
+  },
+  chips: {
+    featured: "Featured",
+    "full-time": "Full-time",
+    contract: "Contract",
+    business: "Business",
+    passion: "Passion projects",
+    client: "Client",
+    "own-brand": "Own brand",
+  },
+  /** The type on a story's meta line. */
+  typeLabels: {
+    "full-time": "Full-time",
+    contract: "Contract",
+    business: "Business",
+    passion: "Passion project",
+    client: "Client",
+    "own-brand": "Own brand",
+  },
+  beats: { problem: "Problem", decided: "Decided", happened: "Happened" },
+  beatMissing: "[Taylor's to write]",
+  readStory: "Read the decision story",
+  seeAll: "See all work",
+  seeAllFullTime: "See all full-time work [draft]",
+  websitesLink: "[Draft] How a coded website works",
+  brandingLink: "[Draft] Branding, on Work with me",
+  galleryAll: { images: "All {n} images", boards: "All {n} boards" },
+  /** The filter's live count; the wording is Taylor's to write. */
+  liveCount: "[Taylor's to write] {n}",
+} as const;
