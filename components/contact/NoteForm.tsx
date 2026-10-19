@@ -10,6 +10,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import { ELAPSED_NAME } from "@/components/forms/bot-check";
 import { Honeypot, useFillTimer } from "@/components/forms/BotFields";
 import { ErrorLine } from "@/components/forms/ErrorLine";
 import { TextAreaField, TextField } from "@/components/forms/Field";
@@ -25,6 +26,7 @@ import {
   noteFieldErrors,
   noteSchema,
   type NoteFrom,
+  type NoteScreening,
 } from "@/lib/validators/note";
 import type { NoteState } from "./note-action";
 import { sendNoteAction } from "./send-note";
@@ -52,7 +54,11 @@ const CALL_AS_TEXT =
  *
  * `sentVariant` "with_call" offers "Prefer a call?" under the sent line
  * (`/contact`); "alone" shows the sent line only (`/book`'s not-a-fit,
- * D-SITE-202). `screening` rides in hidden fields, unseen.
+ * D-SITE-202). `screening` rides in hidden fields, unseen. `startedAt` is
+ * when the visitor began (the screening form's mount on `/book`), so the
+ * fill-time rule counts from there and a note sent at once still goes.
+ * `besideButton` replaces the "Or email" line; `messageLabel` and
+ * `sentTitle` default to `/contact`'s.
  */
 export function NoteForm({
   from,
@@ -61,13 +67,21 @@ export function NoteForm({
   prefill,
   screening,
   seed,
+  startedAt,
+  messageLabel = contact.fields.message.label,
+  besideButton,
+  sentTitle = contact.sentTitle,
 }: {
   from: NoteFrom;
   sentVariant: "with_call" | "alone";
   intro: ReactNode;
   prefill?: Partial<NoteValues>;
-  screening?: { budget: string; start: string; role: string };
+  screening?: NoteScreening;
   seed?: NoteSeed;
+  startedAt?: number;
+  messageLabel?: string;
+  besideButton?: ReactNode;
+  sentTitle?: string;
 }) {
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
@@ -108,10 +122,10 @@ export function NoteForm({
         focusFirstInvalid(formRef.current, NOTE_FIELDS, actionState.fields);
     }
     if (actionState.status !== "sent" || !fromAction.current) return;
-    document.title = contact.sentTitle;
+    document.title = sentTitle;
     sentRef.current?.focus();
     track("contact_note_sent", { surface: "services", from });
-  }, [actionState, from]);
+  }, [actionState, from, sentTitle]);
 
   function update(field: keyof NoteValues) {
     return (event: { target: { value: string } }) =>
@@ -133,7 +147,8 @@ export function NoteForm({
 
     setClientErrors(null);
     const formData = new FormData(form);
-    stampElapsed(formData);
+    if (startedAt === undefined) stampElapsed(formData);
+    else formData.set(ELAPSED_NAME, String(Date.now() - startedAt));
     inFlight.current = true;
     fromAction.current = true;
     startTransition(() => dispatch(formData));
@@ -201,7 +216,7 @@ export function NoteForm({
         <TextAreaField
           id={fieldId("message")}
           name="message"
-          label={contact.fields.message.label}
+          label={messageLabel}
           hint={contact.fields.message.hint}
           error={invalid.message ? contact.errors.message : undefined}
           value={values.message}
@@ -239,9 +254,11 @@ export function NoteForm({
             busyLabel={contact.sending}
             busy={pending}
           />
-          <a href={`mailto:${SITE.email}`} className={LINK}>
-            {contact.orEmail}
-          </a>
+          {besideButton ?? (
+            <a href={`mailto:${SITE.email}`} className={LINK}>
+              {contact.orEmail}
+            </a>
+          )}
         </div>
 
         {state.status === "error" ? (

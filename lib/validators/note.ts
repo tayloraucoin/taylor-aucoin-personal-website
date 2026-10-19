@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BUDGETS, ROLES, STARTS } from "./book";
 
 /**
  * A note from `/contact` or `/book`'s not-a-fit view (data-contract.md's
@@ -15,10 +16,15 @@ export const NOTE_FROM = ["contact", "not_a_fit"] as const;
 export type NoteFrom = (typeof NOTE_FROM)[number];
 
 /**
- * The screening answers a not-a-fit note carries unseen. Bounded strings for
- * now: SITE-23 owns `/book`'s closed sets and tightens these to them.
+ * The screening answers a not-a-fit note carries unseen: `/book`'s own keys,
+ * so a forged answer is refused rather than mailed.
  */
-const screeningAnswer = z.string().trim().min(1).max(40);
+const screeningSchema = z.object({
+  budget: z.enum(BUDGETS),
+  start: z.enum(STARTS),
+  role: z.enum(ROLES),
+});
+export type NoteScreening = z.output<typeof screeningSchema>;
 
 export const noteSchema = z.object({
   message: z.string().trim().min(1).max(NOTE_LIMITS.message),
@@ -30,13 +36,7 @@ export const noteSchema = z.object({
     .transform((name) => name || undefined),
   email: z.string().trim().max(NOTE_LIMITS.email).pipe(z.email()),
   from: z.enum(NOTE_FROM),
-  screening: z
-    .object({
-      budget: screeningAnswer,
-      start: screeningAnswer,
-      role: screeningAnswer,
-    })
-    .optional(),
+  screening: screeningSchema.optional(),
 });
 
 export type Note = z.output<typeof noteSchema>;
