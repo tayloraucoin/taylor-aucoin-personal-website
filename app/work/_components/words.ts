@@ -2,16 +2,18 @@ import type { WorkType } from "@/content/work";
 import type { Tab, TypeFilter } from "@/lib/work/rows";
 
 /**
- * Every string on `/work` (work-index-words.md). Bracketed values are
- * Taylor's to write and ship bracketed (D-SITE-185); nothing here is improved.
+ * Every string on `/work` (work-index-words.md). The placeholders were
+ * written in feedback round 1 (2026-10-19, D-SITE-185).
  */
 export const workIndex = {
   h1: "Work",
-  intro: "[Taylor writes: one line on what this page holds]",
-  title: "[Taylor writes: page title]",
-  description: "[Taylor writes: page meta description]",
-  tabsNav: "[Taylor writes: tabs name]",
-  chipsNav: "[Taylor writes: chips name]",
+  intro:
+    "Everything I've shipped that I can show, sorted by the kind of work and how I was hired.",
+  title: "Work",
+  description:
+    "Products, websites and brands I've built, each with the decision that shaped it. Clinical calculators, a five-app platform, realtime voice AI and more.",
+  tabsNav: "Kind of work",
+  chipsNav: "How I was hired",
   tabs: {
     product: "Product engineering",
     websites: "Websites",
@@ -36,7 +38,9 @@ export const workIndex = {
   } satisfies Record<WorkType, string>,
   readStory: "Read the decision story",
   galleryAll: { images: "All {n} images", boards: "All {n} boards" },
-  capabilities: "Search every capability [draft]",
+  capabilities: "Search every capability",
+  /** The quiet closing line under the capabilities link. */
+  linkedin: "More on LinkedIn",
 } as const;
 
 /**

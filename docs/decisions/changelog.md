@@ -11,6 +11,10 @@ load_when:
 
 # Changelog
 
+## 2026-10-19 — SITE: D-SITE-185's marks cleared
+
+- Taylor cleared D-SITE-185's marks on 2026-10-19: every `[draft]` mark and bracketed placeholder in `content/`, `app/` and `components/` is gone, filled by feedback round 1's copy lane. The strings are listed in `specs/web/epics/SITE-public-site-redesign/feedback/2026-10-19/copy-review.md`. Taylor's own pass on the words is still to come.
+
 ## 2026-10-16 — SITE: the metric definitions file lives at the template's path
 
 - `docs/measurement/metrics/definitions.md` is filled in place, as `definitions.template.md` names for a product repo: an exception to `.claude/rules/docs.md`'s "never inside `docs/`", because `specs/` has no folder for a definition that outlives its epic. SITE-3 writes SITE-M1 v1 there. Taylor, SITE Tickets gate.

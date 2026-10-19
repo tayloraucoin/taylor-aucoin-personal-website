@@ -8,7 +8,7 @@ export function Building() {
   return (
     <section aria-labelledby="building-heading" className="mt-16 md:mt-20">
       <H2 id="building-heading" small>
-        Building, for clients [draft]
+        Building, for clients
       </H2>
       <ul>
         {building.map((b) => (
@@ -30,7 +30,7 @@ export function Building() {
                 </Link>
               )}
               <Link href={siteRoutes.contact} className={LINK}>
-                Send a note [draft]
+                Send a note
               </Link>
             </div>
           </li>

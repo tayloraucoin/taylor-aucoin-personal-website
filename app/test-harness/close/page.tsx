@@ -34,7 +34,7 @@ export default function CloseHarness() {
           availability="fixture availability"
           surface="services"
           form="note"
-          noteLabel="Send a note [draft]"
+          noteLabel="Send a note"
         />
       </div>
     </main>

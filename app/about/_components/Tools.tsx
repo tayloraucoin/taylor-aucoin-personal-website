@@ -15,7 +15,7 @@ export function Tools() {
         tabIndex={-1}
         aside={
           <a href={SITE.resume} className={ROW_LINK}>
-            The full list is in my résumé [draft]
+            The full list is in my résumé
             <span className="sr-only"> (PDF)</span>
           </a>
         }

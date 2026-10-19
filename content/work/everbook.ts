@@ -28,7 +28,7 @@ export const everbook = {
       value: "2024 to 2025",
       meta: "full-time · realtime voice ai · print engine",
     },
-    { value: "[Taylor writes: fact]", meta: "[draft]" },
+    { value: "MVP in six months", meta: "first commit to production" },
     {
       value: "everbook.com",
       meta: "live site",

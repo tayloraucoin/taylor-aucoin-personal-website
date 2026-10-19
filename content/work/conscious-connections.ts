@@ -29,7 +29,7 @@ export const consciousConnections = {
   listRole: "Founder, engineer, designer",
   sortDate: "2026-10",
   facts: [
-    { value: "Solo build [draft]", meta: "founder · engineer · designer" },
+    { value: "Solo build", meta: "founder · engineer · designer" },
     { value: "2026 to present", meta: "first commit May 2026" },
     { value: "Beta", meta: "marketing site live · toolkit ahead of launch" },
     {
@@ -54,7 +54,10 @@ export const consciousConnections = {
     build: [
       "Solo, with a roster of thirty-plus role-prompted AI agents held to specs and append-only decision logs",
     ],
-    checked: ["[draft] Taylor's list"],
+    checked: [
+      "Every migration, read by hand: ninety-one so far",
+      "The safety evals' recall, across three runs before anything ships",
+    ],
   },
   engagementType: "Maps to · 0→1 Build",
   mediaPreview: true,

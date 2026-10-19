@@ -7,8 +7,8 @@ import { expect, test } from "./fixtures";
  * C6 reads every gtag() call from `dataLayer`, so nothing leaves the machine.
  */
 
-const LABEL = "Filter by problem or tool [draft]";
-const CLEAR = "Clear the filter [draft]";
+const LABEL = "Filter by problem or tool";
+const CLEAR = "Clear the filter";
 const NO_MATCH = "Nothing by that name.";
 const CONSENT_KEY = "ta:analytics-consent";
 

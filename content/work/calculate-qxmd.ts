@@ -17,8 +17,12 @@ export const calculateQxmd = {
   facts: [
     { value: "Frontend Software Engineer", meta: "Frontend software engineer" },
     { value: "2019 to 2021", meta: "full-time · healthtech · clinical tools" },
-    { value: "[Taylor writes: fact]", meta: "[draft]" },
-    { value: "qxmd.com/calculate [verify]", meta: "live site" },
+    { value: "Zero bugs", meta: "reported through Medscape or production" },
+    {
+      value: "qxmd.com/calculate",
+      meta: "live site",
+      href: "https://qxmd.com/calculate",
+    },
   ],
   builtFormat: "rows-after",
   engagementType: "Maps to · Contract",

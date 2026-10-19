@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE } from "@/lib/config";
 import { readPageState, type PageSearchParams } from "@/lib/page-state";
 import { siteRoutes } from "@/lib/routes";
 import {
@@ -85,6 +86,14 @@ export default async function WorkPage({
         >
           {workIndex.capabilities}
         </Link>
+      </p>
+      <p className="mt-2">
+        <a
+          href={SITE.linkedin}
+          className="inline-flex min-h-11 items-center text-(length:--text-meta) text-(--color-dim) underline decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
+        >
+          {workIndex.linkedin}
+        </a>
       </p>
     </main>
   );
