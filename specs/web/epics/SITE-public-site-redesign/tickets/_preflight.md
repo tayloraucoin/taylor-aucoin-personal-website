@@ -2,21 +2,21 @@
 
 > Written by `yarn review:run vigil SITE` (the Tickets gate). Never edit it: `contract:init` starts a ticket only on its PASS line, and only while the contract's hash still matches.
 
-- head: 466ce10082f44a81ac953e693c79e0efb2d8d42b
+- head: c1e81e91e811428ad300f87d3bdc3ef275dcdfad
 - runner: claude 2.1.295 (Claude Code) (agent vigil; tools Read,Grep,Glob)
 - model: claude-opus-5-5
-- at: 2026-10-18T19:30:17Z
-- tokens_input: 48
-- tokens_cache_read: 2905389
-- tokens_cache_write: 165183
-- tokens_output: 19323
-- seconds: 222.7
+- at: 2026-10-19T01:52:22Z
+- tokens_input: 38
+- tokens_cache_read: 2119927
+- tokens_cache_write: 187466
+- tokens_output: 16183
+- seconds: 181
 
 ## Verdicts
 
 - SITE-1: PASS (contract a8cb9ee492c6)
 - SITE-2: PASS (contract ed3120dc0c6c)
-- SITE-3: PASS (contract a162d62739c7)
+- SITE-3: PASS (contract 2a503f53b255)
 - SITE-4: PASS (contract 03f78bfa0a18)
 - SITE-5: PASS (contract 4f87289ea4da)
 - SITE-6: PASS (contract b4de9d945800)
@@ -39,7 +39,10 @@
 - SITE-23: PASS (contract 67b063128027)
 - SITE-24: PASS (contract f1c0480e040e)
 - SITE-25: PASS (contract daff4eedf723)
-- SITE-26: FAIL (contract 866b7f6de626)
+- SITE-26: PASS (contract 866b7f6de626)
+- SITE-27: PASS (contract e5220468e62c)
+- SITE-28: PASS (contract de3799826f65)
+- SITE-29: FAIL (contract f200df013ac4)
 
 ## Prompt
 
@@ -74,6 +77,9 @@ Read the brief (specs/web/epics/SITE-public-site-redesign/brief.md), the approve
 - SITE-24: specs/web/epics/SITE-public-site-redesign/tickets/SITE-024-websites-route/contract.md
 - SITE-25: specs/web/epics/SITE-public-site-redesign/tickets/SITE-025-websites-page/contract.md
 - SITE-26: specs/web/epics/SITE-public-site-redesign/tickets/SITE-026-capabilities-page/contract.md
+- SITE-27: specs/web/epics/SITE-public-site-redesign/tickets/SITE-027-capabilities-filter/contract.md
+- SITE-28: specs/web/epics/SITE-public-site-redesign/tickets/SITE-028-intake-shared/contract.md
+- SITE-29: specs/web/epics/SITE-public-site-redesign/tickets/SITE-029-intake-coded-flow/contract.md
 
 For each contract, check: every criterion is testable and names the right evidence type; it cites one surface and the criterion IDs it builds; every state and unhappy path of that surface is covered by this or another ticket; planned paths and depends_on are plausible; nothing is out of the epic's appetite.
 
@@ -104,6 +110,9 @@ SITE-23: PASS or FAIL, with the reason
 SITE-24: PASS or FAIL, with the reason
 SITE-25: PASS or FAIL, with the reason
 SITE-26: PASS or FAIL, with the reason
+SITE-27: PASS or FAIL, with the reason
+SITE-28: PASS or FAIL, with the reason
+SITE-29: PASS or FAIL, with the reason
 
 Your last line must be exactly one of:
 VERDICT: PASS
@@ -111,82 +120,81 @@ VERDICT: FAIL
 
 ## Review
 
-SITE-1: PASS: each proof is built to fail when it should: a runner that finds no tests, an axe helper that never fails, a build-output scan over an empty folder. Browser tests stay on :4310, and C6 proves the `@/` alias and the `server-only` stub.
-SITE-2: PASS: the two 308s are tested with and without a query, unknown paths and slugs answer 404 with one h1, and `resolveStudy` is tested on injected data. The waiver gives its reason, and the `/services` and `/websites/coded` lines are handed to SITE-19 and SITE-24, which both exist.
-SITE-3: PASS: Q3 with Warden. The tests read the real collect requests for `q` in `dl` and `dr`, cover the ask, declined, GPC and withdrawn states, keep the test route out of production and check the SITE-M1 definition. Its deferred `?q=` check depends on SITE-27, which isn't cut (Consider 3).
-SITE-4: PASS: the current-item and call-surface rules are unit-tested. The browser tests cover the 1440 and 390 layouts, the hidden call button on `/websites` and `/book`, the event's closed fields and the dark default. It proves the header part of other pages' criteria once.
-SITE-5: PASS: one footer outside one `main#main` on ten pages, a skip link that moves focus, hidden chrome on intake, legal and admin pages, and an import guard. The golden-file handoff to SITE-24 is stated.
-SITE-6: PASS: all three close forms are tested on a route that answers 404 in production: the event, no email address or mailto, the 390 rows and targets, and one primary per form.
-SITE-7: PASS: unit tests cover each new field's shape, the six rows and their slug guard, aiSat on Conscious Connections only (D-SITE-233), the formats (D-SITE-91, 193, 232) and newest-first order, plus a typecheck.
-SITE-8: PASS: a pure module over injected data that owns work-index-4 and 9. It tests the fallbacks, chips, group order, empty tabs and chips, and `workHref`. C2's wording has small faults (Consider 4).
-SITE-9: PASS: tests cover one hero primary with its event, the proof bar as a ledger, the banner at 390x844 via the real regime table, 44px targets and the skip-link target. The `pillar-open` gate and the headshot are named as pre-build items.
-SITE-10: PASS: pillars and chips open in place with focus kept or returned on Esc, no rating reaches the HTML, reduced motion is tested, and the three states plus an unchanged `/capabilities` are captured.
-SITE-11: PASS: the tabs follow the ARIA pattern with arrow keys, the chips use `aria-pressed`, See all work carries the filter, story links show only for published slugs, empty galleries render no frame, and See the work moves focus. SITE-8's logic is cited, not re-proven.
-SITE-12: PASS: covers the three lower sections, the whole-page order, the name scan read from the legacy naming folder, the keyboard walk, the full capture, and the launch bracket check deferred to launch.
-SITE-13: PASS: Q3 with Warden and Mason. All five `notes-*` states, the bot rules, a listed address answered byte for byte like a new one, a migration that creates only its own table, a database test that fails rather than skips, and no address in a URL or a Google request.
-SITE-14: PASS: every `/work` view, chips as links holding focus and scroll, reload stability, described repeated links, the fixture-backed gallery opener, the name scan and the launch check (deferred, since `/work` renders per request).
-SITE-15: PASS: block order, absent blocks leaving no trace, one primary with its event, Escape, meta descriptions, the 390 rules and the skip-link target, on every published study.
-SITE-16: PASS, with Should-fix 1: the four What I built formats chosen by `builtFormat`, the lightbox focus trap and return, an honest All n images count, no autoplay, and the captures. It contradicts itself on when the D-SITE-196 re-export must land.
-SITE-17: PASS: section order, Experience read from `content/about.ts` (D-SITE-197), link names unique by row, dates on their own line at 390, the forbidden-content scan, and the headshot as a manual pre-build check.
-SITE-18: PASS: Tools from core items only, four full testimonials with no tabs, the pending card kept out of production, one primary, no Cal.com link, the event, the anchor landing (manual, as about-6 asks) and both captures.
-SITE-19: PASS: the 308 that keeps the query, five role rows and three building rows, the price line once, note and call links, both events, the open FAQ, the skip-link target, and the prices as a deferred launch check (D-SITE-203).
-SITE-20: PASS: Q3 with Warden. A recording transport proves the ops address is the only recipient and the sender is reply-to. Tests cover the caps, the bot rules, sending, offline, sent, the mailto in every form state, sentinel checks on the wire, and both events.
-SITE-21: PASS: Q3 with Warden. All 140 combinations are checked against a table written from D-SITE-166's text, not from the code. Tests also cover the native-radio chips, focus on the first invalid field, no call button or current item on `/book`, the URL staying `/book`, and sentinel checks.
-SITE-22: PASS: Q3 with Warden. POST only, re-validates and re-runs the fit, takes the target from `BOOKING_URL`, answers 303 to `/book` on tampered input and 405 to GET, and runs the sentinel checks against a stubbed Cal.com host.
-SITE-23: PASS: Q3 with Warden. The prefill and hidden screening answers, the `/websites` line whatever the budget and start, no call anywhere including after sending, sent staying on `/book`, the carried render time, and the three captures.
-SITE-24: PASS: an exact-path 308 that keeps the query, the intake start and resume routes pinned to what `main` builds, the chooser deleted, a golden file taken from `main` with the footer removed and proven to catch a one-word change. Last run's Should-fix (C4 tripping on comments) is fixed: comments are now excluded.
-SITE-25: PASS: last run's Blocking is fixed. C1 now scans only `app/websites/page.tsx`, `_components/**` and the five shared components, string literals and JSX text only, and the description moves into content. I checked `components/websites/`: every `$` amount there sits in a comment. Tests cover one label per destination, the published-row rule, the FAQ, the event and the golden file after each change.
-SITE-26: FAIL: the surface's `filtered` and `filter-empty` states and C-SITE-capabilities-3, 4, 6, 11, 12, 13, 15, 16 and 17 are handed to SITE-27, and SITE-27 has no contract. Its filter field, no-match path, status region and `?q=` analytics boundary are covered by no ticket that exists.
+SITE-1: PASS. Every proof is set up to fail when it should: a runner that finds no tests, an axe helper tested against a seeded violation, and a build-output check that fails on an empty folder. Browser tests stay on :4310, and C6 proves the `@/` alias and the `server-only` stub.
+SITE-2: PASS. The two 308s are tested with and without a query, and the four `/websites` and `/services` answers are pinned at 200. Unknown paths and slugs answer 404 with one h1. `resolveStudy` is tested on injected data. The waiver gives its reason, and the lines it hands to SITE-19 and SITE-24 go to tickets that exist.
+SITE-3: PASS. Q3 with Warden. The tests read the real collect requests for `q` in `dl` and `dr`, and cover the ask, declined, GPC and withdrawn states. The test route is kept out of production, and the SITE-M1 definition is checked. Its deferred `?q=sentinel` check is now tied to SITE-27, which exists (last run's Consider 3 is fixed).
+SITE-4: PASS. The current-item and call-surface rules are unit-tested. Browser tests cover 1440 and 390, the hidden call button on `/websites` and `/book`, the event's closed fields and the dark default. It proves the header part of other pages' criteria once.
+SITE-5: PASS. One footer outside one `main#main` on ten pages, a skip link that really moves focus, no chrome on intake, legal and admin pages, and an import guard. The golden-file handoff to SITE-24 is stated.
+SITE-6: PASS. All three close forms are tested on a route that answers 404 in production: the event, no email address or mailto, the 390 rows and targets, and one primary per form.
+SITE-7: PASS. Unit tests cover each new field's shape, the six rows and their slug guard, aiSat on Conscious Connections only (D-SITE-233), the formats and newest-first order, plus a typecheck.
+SITE-8: PASS. A pure module over injected data, which proves work-index-4 and 9. It tests the fallbacks, chips, group order, empty tabs and chips, and `workHref`. C2's wording still has small faults (Consider 4).
+SITE-9: PASS. One hero primary with its event, the proof bar as a ledger, the banner at 390x844 through the real regime table, 44px targets and the skip-link target. The `pillar-open` gate and the headshot are named as pre-build items.
+SITE-10: PASS. Pillars and chips open in place, and focus is kept or returned on Esc. No rating reaches the HTML, reduced motion is tested, and the three states plus an unchanged `/capabilities` are captured.
+SITE-11: PASS. The tabs follow the ARIA pattern with arrow keys, and the chips use `aria-pressed`. See all work carries the filter, story links show only for published slugs, empty galleries render no frame, and See the work moves focus. SITE-8's logic is cited, not proven again.
+SITE-12: PASS. Covers the three lower sections, the whole-page order, the name scan (names read from the legacy folder), the keyboard walk and the full capture. The launch check for leftover brackets is deferred to launch.
+SITE-13: PASS. Q3 with Warden and Mason. All five `notes-*` states, the bot rules, and a listed address answered byte for byte like a new one. The migration creates only its own table, the database test fails rather than skips, and no address reaches a URL or a Google request.
+SITE-14: PASS. Every `/work` view, chips as links that keep focus and scroll, the same view after reload, repeated links described by their row, a gallery opener tested on a fixture, the name scan, and the launch check (deferred, because `/work` renders per request).
+SITE-15: PASS. Block order, absent blocks leaving no trace, one primary with its event, Escape, meta descriptions, the 390 rules and the skip-link target, on every published study.
+SITE-16: PASS, with Should-fix 1 still open. The four What I built formats are chosen by `builtFormat`, the lightbox traps focus and returns it, the All n images count is honest, nothing autoplays, and the captures are listed. It still contradicts itself on when the D-SITE-196 re-export must land.
+SITE-17: PASS. Section order, Experience read from `content/about.ts` (D-SITE-197), link names unique by row, dates on their own line at 390, the forbidden-content scan, and the headshot as a manual pre-build check.
+SITE-18: PASS. Tools from core items only, four full testimonials with no tabs, the pending card kept out of production, one primary, no Cal.com link, the event, the anchor landing (manual, as about-6 asks) and both captures.
+SITE-19: PASS. The 308 keeps the query. It covers five role rows and three building rows, the price line once, the note and call links, both events, the open FAQ, the skip-link target, and the prices as a deferred launch check (D-SITE-203).
+SITE-20: PASS. Q3 with Warden. A recording transport proves Taylor's ops address is the only recipient and the sender is reply-to. Tests cover the caps, the bot rules, sending, offline, sent, the mailto in every form state, sentinel values checked on the wire, and both events.
+SITE-21: PASS. Q3 with Warden. All 140 combinations are checked against a table written from D-SITE-166's text, not from the code. Also covered: native-radio chips, focus on the first invalid field, no call button or current item on `/book`, the URL staying `/book`, and sentinel checks.
+SITE-22: PASS. Q3 with Warden. POST only. It re-validates and re-runs the fit, takes the target from `BOOKING_URL`, answers 303 to `/book` on tampered input and 405 to GET, and runs the sentinel checks against a stubbed Cal.com host.
+SITE-23: PASS. Q3 with Warden. Covers the prefill and hidden screening answers, the `/websites` line whatever the budget and start, no call anywhere (including after sending), sent staying on `/book`, the carried render time, and the three captures.
+SITE-24: PASS. An exact-path 308 that keeps the query. The intake start and resume routes are pinned to what `main` builds, the chooser is deleted, and the golden file is taken from `main` with the footer removed and proven to catch a one-word change.
+SITE-25: PASS. The dollar scan is limited to string literals and JSX text in the page, its components and the five shared ones. Tests cover one label per destination, the published-row rule, the FAQ, the event, and the golden file re-checked after each change to a shared component.
+SITE-26: PASS. Last run's FAIL is fixed: SITE-27 now exists and claims the filter, `?q=`, no match, the status region, the motion and C-SITE-capabilities-3, 4, 6, 11–13, 15–17. The tablist pattern, `replaceState`, tab fallback, proof hrefs, the `tabs` fill and the close are all tested. C-SITE-capabilities-7 and 8 are never proven on this page (Consider 6).
+SITE-27: PASS. The filter is tested by typing. The query lives in the URL with no history entry, survives tab changes, and the status region is updated once after typing settles. Clearing returns focus to the field, reduced motion is 0s, the `q`/sentinel check reads real collect requests, and the 44px targets and captures are listed. The motion timing is manual, as C-SITE-capabilities-11 asks.
+SITE-28: PASS. A token scan with a fixture self-test, a boundary matcher over `server/`, `_actions/`, `lib/intake/` and `lib/extras/`, and the save line announced once. Also covered: the resume list's `aria-current`, one main and one h1 per screen, no chrome or Google request, reduced motion, and a harness that answers 404 in production (D-SITE-241). Fixture placement matches `placement.md`.
+SITE-29: FAIL. It gives the rest of the coded intake to SITE-30, which has no contract. The `taste`, `import` and `import-mark` states, C-SITE-intake-coded-8 (focus trapped in the import dialog), and the token rules over about 185 idiom lines are claimed by no ticket that exists. C-SITE-intake-coded-2 ("both intake trees") cannot pass while those files are unclaimed.
 
 ## Findings
 
-I read the brief, `decisions-14.md`, the build files' criteria tables for every surface, the states tables for home, Work with me and capabilities, the events table in `technical/data-contract.md`, and all 26 contracts. There is no single `technical.md`; the `technical/` folder stands in for it. I also checked the repo for the SITE-25 dollar scan and for the tier SITE-20's mail transport resolves to.
+I read the brief, the overview, `decisions-14.md`, the `technical/` folder's verdict and placement, the capabilities and intake-coded surface and build files, all 29 contracts, and last run's `_preflight.md`. There is no single `technical.md`; the `technical/` folder stands in for it. I checked the repo for: which files import `eyebrow.tsx` (all coded-tree importers are in SITE-29's own list, so deleting it strands nothing), where `previewEngagement` lives, and whether the `capabilities/` and `intake-coded/` capture sets exist (they do, including `taste`, `import` and `import-mark`).
 
-Every criterion in the home, about, case-study, Work with me, work-index, websites and websites-coded tables is claimed by at least one drafted ticket, with header and redirect criteria proven once in SITE-2 and SITE-4 and cited elsewhere. The capabilities and intake-coded tables are not fully claimed.
+SITE-1 to 25 match what last run passed. The three home and capabilities Considers carried from last run are still open but do not block.
 
 ### Blocking
 
-**1. Wave 4 is only partly cut: SITE-27 to SITE-31 have no contracts.**
-- D-SITE-222 says "Every ticket is cut now". D-SITE-239 adds "D-SITE-222 is met when SITE-31 is cut". The brief says "All tickets are cut before any build".
-- With no ticket:
-  - SITE-27: the `/capabilities` filter, `?q=`, no match, status region, cross-fade and reduced motion. That is C-SITE-capabilities-3, 4, 6, 11, 12, 13, 15, 16 and 17, and the `filtered` and `filter-empty` states.
-  - SITE-28 to 30: the intake restyle. C-SITE-intake-coded-1 to 4 and 6 to 13 have no ticket; only 5 is claimed (SITE-24).
-  - SITE-31: the legal restyle.
-- This is why SITE-26 fails, and it is why SITE-3's deferred check has nothing to test yet.
-- **Fix:** cut SITE-27 to 31. The other route is for Taylor to amend D-SITE-222 and 239 on the record so the build can start before the last cut.
-- **Owner:** Taylor and the next cutting thread.
-- This is the same Blocking as last run's, still open.
+**1. Wave 4 is still only partly cut: SITE-30 and SITE-31 have no contracts.**
+- D-SITE-239 says "D-SITE-222 is met when SITE-31 is cut". D-SITE-222 says "Every ticket is cut now", and the brief says "All tickets are cut before any build".
+- Nothing has a ticket for:
+  - **SITE-30:** the taste gallery, credits import, machine-filled mark, voice recorder and extraction. That means the `taste`, `import` and `import-mark` states, C-SITE-intake-coded-8, and a full-tree pass of C-SITE-intake-coded-2.
+  - **SITE-31:** the restyle of `/privacy`, `/websites/privacy` and `/websites/terms`, which the brief puts in scope as "Restyled only".
+- This is why SITE-29 fails. Last run's Blocking has narrowed from SITE-27–31 to SITE-30–31. It is not closed.
+- **Fix:** cut SITE-30 and SITE-31, then re-run the gate. The only other route is for Taylor to amend D-SITE-222 and 239 on the record so the build can start before the last cut.
+- **Owner:** Taylor, and the next thread that cuts tickets.
 
 ### Should-fix
 
-**1. SITE-16 gives two different times for the D-SITE-196 re-export.**
-- Its out-of-scope line says the re-export lands "before this build starts". Its Pre-build note says "start the build, record C5 last". D-SITE-196 says "before the case-study build ticket".
-- **Fix:** pick one, or ask Taylor on the record to loosen D-SITE-196 to "before C5 is recorded".
+**1. SITE-16 still gives two times for the D-SITE-196 re-export.**
+- Its out-of-scope line says "before this build starts". Its Pre-build note says "start the build, record C5 last". D-SITE-196 says "before the case-study build ticket".
+- **Fix:** pick one, or have Taylor loosen D-SITE-196 on the record to "before C5 is recorded".
 - **Owner:** SITE-16.
 
 ### Consider
 
-1. **Evidence types and traceability on home.**
-   - SITE-9 proves C-SITE-home-25 with a test, where home-build.md asks for a capture. The `consent-*` captures exist but no ticket compares against them.
-   - SITE-4 C6 tests the dark default, but no ticket cites C-SITE-home-2.
-   - Both are fixed by adding the IDs, plus one capture line in SITE-9.
-2. **SITE-14 reaches its views by URL only.** The `websites`, `branding` and `filtered` keys from work-index.md are not `?state=` keys. Either register them or say in the contract why URL reach satisfies C-P08.
-3. **SITE-3's deferred `?q=sentinel` check** says it is recorded "once `/capabilities` exists". `q` only enters the URL when SITE-27 lands, so tie the check to SITE-27.
-4. **SITE-8 C2** needs a separator between its two `chipsForTab` lists, and it calls `chipsForTab(product)` while the interface takes `entries`.
-5. **SITE-23's carried render time** makes the note's two-second bot check count from the screening form's render. A scripted client clears it after one slow screening. This is within D-SITE-224's "no rate limiter until abuse shows"; Warden should note it at review.
+1. **Home evidence types (carried).** SITE-9 proves C-SITE-home-25 with a test where `home-build.md` asks for a capture, and no ticket compares against the `consent-*` captures. No ticket cites C-SITE-home-2, though SITE-4 C6 tests it.
+2. **SITE-14's views are reached by URL only (carried).** The `websites`, `branding` and `filtered` views are not `?state=` keys. Either register them or say why reaching them by URL satisfies C-P08.
+3. **SITE-8 C2 (carried).** It needs a separator between its two `chipsForTab` lists, and it calls `chipsForTab(product)` while the interface takes `entries`.
+4. **SITE-23's carried render time (carried).** The two-second bot check counts from when the screening form rendered, so a scripted client clears it after one slow screening. This is within D-SITE-224; Warden should note it at review.
+5. **SITE-28 C2 and SITE-29 C2 match on commit subjects.** A commit with the wrong prefix, or a squash, makes them pass on nothing. A diff against `main` limited to the ticket's planned paths would hold even with a stray subject.
+6. **C-SITE-capabilities-7 and 8 are never proven on `/capabilities`.** SITE-26 and SITE-27 say SITE-10's component owns them, but SITE-10 C3 proves them only on home, and `/capabilities` drives the chips with tabs and no Show all. One line in SITE-26 C3 or C7 (press a chip, Esc returns focus) would close it.
 
 ### Checks a person makes
 
 1. **Before the build:**
-   - Draw the `pillar-open` crop and decide its line (D-SITE-184). `home.md` still holds it `[NEEDS DECISION — BLOCKING]`, so `contract:init` refuses every home ticket until then.
-   - Put the graded headshot on file (D-SITE-172).
-   - Re-export the `no-testimonial` captures (D-SITE-196).
-   - Taylor approves the `note_signups` migration on the database the local tier borrows from staging. SITE-13 C3 writes and deletes its own rows there.
+   - The `pillar-open` crop and its line (D-SITE-184).
+   - The graded headshot (D-SITE-172).
+   - The `no-testimonial` re-export (D-SITE-196).
+   - Approval of the `note_signups` migration on the database the local tier borrows from staging.
 2. **Before SITE-22's tests:** check Cal.com's prefill parameter names against its docs.
 3. **At launch:**
    - `check:build-output` passes on a `VERCEL_ENV=production` build.
-   - No bracketed or `[draft]` text remains on home, `/work`, `/work-with-me` or `/websites`, and both building prices show.
+   - No bracketed or `[draft]` text remains, and both building prices show.
    - The two `/privacy` statements are in place (D-SITE-229).
-   - The `/about#tools` and `/about#testimonials` landings work (SITE-18 C5).
+   - The `/about#tools` and `/about#testimonials` landings work.
 
 VERDICT: FAIL
