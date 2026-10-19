@@ -1,18 +1,18 @@
-import type { CaseStudy } from "./types";
 import { workMediaUrl } from "@/lib/work-media";
 import homeDesktop from "@/public/work/agora/home/home-desktop.png";
 import homeMobile from "@/public/work/agora/home/home-mobile.png";
 import mobileNav from "@/public/work/agora/nav/mobile-nav.png";
-import swipeProduct from "@/public/work/agora/swipe/swipe-product.png";
-import swipeViewProduct from "@/public/work/agora/swipe/swipe-view-product.png";
 import openAiPipelineDiagram from "@/public/work/agora/openai-enrichment/open-ai-pipeline-system-diagram.png";
 import openAiEnrichmentDashboard from "@/public/work/agora/openai-enrichment/openai-enrichment-admin-dashboard.png";
+import swipeProduct from "@/public/work/agora/swipe/swipe-product.png";
+import swipeViewProduct from "@/public/work/agora/swipe/swipe-view-product.png";
+import v1HomeMobile from "@/public/work/agora/v1/agora-v1-home-mobile.png";
+import v1Home from "@/public/work/agora/v1/agora-v1-home.png";
 import v2HomeDesktop from "@/public/work/agora/v2/agora-v2-home-desktop.png";
 import v2HomeMobile from "@/public/work/agora/v2/agora-v2-home-mobile.png";
 import v2InApp from "@/public/work/agora/v2/agora-v2-in-app-experience.png";
 import v2WhatToExpect from "@/public/work/agora/v2/agora-v2-what-to-expect-app-preview.png";
-import v1Home from "@/public/work/agora/v1/agora-v1-home.png";
-import v1HomeMobile from "@/public/work/agora/v1/agora-v1-home-mobile.png";
+import type { CaseStudy } from "./types";
 
 export const agora = {
   slug: "agora",
@@ -25,6 +25,19 @@ export const agora = {
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer",
   period: "2021 — 2026",
+  type: "business",
+  listRole: "Founder, engineer",
+  sortDate: "2026-01",
+  facts: [
+    { value: "Founder, Engineer", meta: "Founder, engineer" },
+    {
+      value: "2021 to 2026",
+      meta: "business · recommender · enrichment · search",
+    },
+    { value: "[Taylor writes: fact]", meta: "[draft]" },
+    { value: "agora.art", meta: "live site", href: "https://agora.art" },
+  ],
+  builtFormat: "gallery",
   engagementType: "Maps to · 0→1 Build",
   mediaPreview: true,
   stack: [
@@ -42,7 +55,8 @@ export const agora = {
   atAGlance: [
     {
       label: "Engagement",
-      value: "Technical founder: five years, three versions, three fresh codebases",
+      value:
+        "Technical founder: five years, three versions, three fresh codebases",
     },
     {
       label: "Starting point",
@@ -72,7 +86,7 @@ export const agora = {
   ],
   brief: {
     intro:
-      "Agora set out to centralize festival fashion, a market of independent artists scattered across platforms, and became three products under one name over five years — each version a fresh answer to what the business should be. The hard part was that both halves of \"personalized discovery\" were starved.",
+      'Agora set out to centralize festival fashion, a market of independent artists scattered across platforms, and became three products under one name over five years — each version a fresh answer to what the business should be. The hard part was that both halves of "personalized discovery" were starved.',
     groups: [
       {
         header: "EXISTING CONDITIONS",
@@ -100,7 +114,8 @@ export const agora = {
     sections: [
       {
         header: "Version 1 · Marketplace (2021–2023)",
-        intro: "The full-commerce version: own the transaction, split the money, ship the goods.",
+        intro:
+          "The full-commerce version: own the transaction, split the money, ship the goods.",
         bullets: [
           "Wrote ~95% of the codebase while directing a cross-functional team of up to twelve, with conventions, Agile sprints, and reviews as the operating system",
           "Multi-vendor checkout splitting one cart across sellers: Stripe Connect transfers per shop, live carrier rates, tax snapshots persisted for audit",
@@ -111,7 +126,8 @@ export const agora = {
       },
       {
         header: "Version 2 · Artist directory (2023–2024)",
-        intro: "Strip the transaction, sell the map: a freemium directory of curated artists, personalized by a style-guide quiz.",
+        intro:
+          "Strip the transaction, sell the map: a freemium directory of curated artists, personalized by a style-guide quiz.",
         bullets: [
           "A three-step style quiz with guest persistence and merge-on-signup; the directory re-sorts itself around your profile",
           "A claim-your-profile flow seeding artist pages before artists signed up, fed by scheduled Instagram sync",
@@ -156,7 +172,8 @@ export const agora = {
       },
       {
         header: "Version 3 · Recommender & feeds",
-        intro: "A custom Keras hybrid model at the core, and three product surfaces serving it.",
+        intro:
+          "A custom Keras hybrid model at the core, and three product surfaces serving it.",
         bullets: [
           "Learned user and product embeddings concatenated with engineered interaction features; negative sampling to manufacture training signal; a styleguide preference vector weighted heavily for cold start",
           "Hourly incremental retrains with embedding weight transfer, served from FastAPI with micro-batched inference and hot-reloading artifacts",
@@ -330,9 +347,7 @@ export const agora = {
           alt: "Agora swipe — opening a product from the deck",
           size: "narrow",
           video: {
-            src: workMediaUrl(
-              "work/agora/swipe/agora-swipe-see-product.mp4",
-            ),
+            src: workMediaUrl("work/agora/swipe/agora-swipe-see-product.mp4"),
           },
         },
         {
@@ -358,9 +373,7 @@ export const agora = {
           alt: "Agora swipe — filter walkthrough",
           size: "narrow",
           video: {
-            src: workMediaUrl(
-              "work/agora/swipe/agora-filter-walkthrough.mp4",
-            ),
+            src: workMediaUrl("work/agora/swipe/agora-filter-walkthrough.mp4"),
           },
         },
         {
@@ -376,9 +389,7 @@ export const agora = {
           alt: "Agora swipe — full app demo",
           size: "narrow",
           video: {
-            src: workMediaUrl(
-              "work/agora/swipe/agora-swipe-app-demo-full.mp4",
-            ),
+            src: workMediaUrl("work/agora/swipe/agora-swipe-app-demo-full.mp4"),
           },
         },
       ],
@@ -451,7 +462,11 @@ export const agora = {
   ],
   links: [
     { label: "V3", href: "https://agora.art", status: "live" },
-    { label: "V2 site", href: "https://v2-website.agora.art/", status: "archived" },
+    {
+      label: "V2 site",
+      href: "https://v2-website.agora.art/",
+      status: "archived",
+    },
     {
       label: "V2 app",
       href: "https://app.agora.art/",
