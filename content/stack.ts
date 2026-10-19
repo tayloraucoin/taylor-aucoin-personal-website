@@ -151,3 +151,72 @@ export const stack: readonly StackCategory[] = [
     ],
   },
 ] as const;
+
+/**
+ * /about's Tools (D-SITE-72, 198): the core items only, in five groups, under
+ * the canvas's short labels. `name` is the item's name above, so every shown
+ * tool is provably one flagged core; `label` is the short form drawn.
+ */
+export type ToolGroup = {
+  label: string;
+  items: ReadonlyArray<{ name: string; label?: string }>;
+};
+
+export const toolGroups: readonly ToolGroup[] = [
+  {
+    label: "Languages and frameworks",
+    items: [
+      { name: "TypeScript" },
+      { name: "React" },
+      { name: "Next.js" },
+      { name: "Node.js" },
+      { name: "tRPC" },
+      { name: "TanStack / React Query", label: "TanStack Query" },
+      { name: "Zustand" },
+      { name: "Zod" },
+      { name: "TailwindCSS", label: "Tailwind CSS" },
+      { name: "shadcn/ui (Radix)", label: "shadcn/ui" },
+    ],
+  },
+  {
+    label: "Data and content",
+    items: [
+      { name: "PostgreSQL" },
+      { name: "Supabase" },
+      { name: "Drizzle ORM" },
+      {
+        name: "Prisma/Drizzle schema design",
+        label: "Prisma and Drizzle schema design",
+      },
+      {
+        name: "Sanity (GROQ, Portable Text, custom Studio schemas)",
+        label: "Sanity",
+      },
+    ],
+  },
+  {
+    label: "Infrastructure and tooling",
+    items: [
+      { name: "Vercel" },
+      { name: "Turborepo" },
+      { name: "Git" },
+      { name: "Linear (project management)", label: "Linear" },
+      { name: "Cursor" },
+      { name: "Claude Code" },
+    ],
+  },
+  {
+    label: "Commerce and messaging",
+    items: [{ name: "Stripe" }, { name: "Resend" }],
+  },
+  {
+    label: "AI",
+    items: [
+      { name: "Claude API" },
+      { name: "OpenAI API" },
+      { name: "OpenAI Realtime API" },
+      { name: "multi-agent workflows" },
+      { name: "AI-assisted development governance" },
+    ],
+  },
+];
