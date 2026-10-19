@@ -277,7 +277,9 @@ export function ScreeningForm({ seed }: { seed?: ScreeningSeed }) {
 /**
  * The fit's call: a POST to the hand-off (SITE-22) with the answers in
  * hidden fields, so nothing typed enters a URL on this origin; beside it,
- * the note for those who would rather write first.
+ * the note for those who would rather write first. The press sends
+ * `book_call_click` and never waits on it: gtag queues the hit and sends it
+ * when the page turns hidden, which leaving normally does.
  */
 function FitActions({ answers }: { answers: BookInput }) {
   return (
@@ -292,6 +294,12 @@ function FitActions({ answers }: { answers: BookInput }) {
         <button
           type="submit"
           className={`${buttonVariants()} w-full md:w-auto`}
+          onClick={() =>
+            track("book_call_click", {
+              surface: "services",
+              placement: "screening_fit",
+            })
+          }
         >
           {book.fit.call}
         </button>
