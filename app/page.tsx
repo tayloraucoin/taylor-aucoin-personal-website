@@ -1,30 +1,31 @@
+import { HomeHero } from "@/app/_components/HomeHero";
+import { ProofBar } from "@/app/_components/ProofBar";
 import RootField from "@/components/field/RootField";
-import BioRow from "@/components/sections/BioRow";
 import Capabilities from "@/components/sections/Capabilities";
-import Hero from "@/components/sections/Hero";
 import SelectedWork from "@/components/sections/SelectedWork";
-import Signal from "@/components/sections/Signal";
 import Specialties from "@/components/sections/Specialties";
 import Testimonials from "@/components/sections/Testimonials";
-import { PHOTO } from "@/lib/config";
 
+/**
+ * Home in D-SITE-50's frame: hero, proof bar, then today's sections in the
+ * slots their replacements take (pillars, Problems I take on, Selected work,
+ * Testimonials). Each later home ticket swaps one in place.
+ */
 export default function Home() {
   return (
     <main
       id="main"
-      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-16"
+      className="relative mx-auto w-full max-w-[1192px] px-[22px] pt-16 pb-16 md:px-14 md:pt-28 md:pb-24"
     >
       {/* The field runs the full page height, not just the hero. */}
       <RootField />
-      <Hero />
+      <HomeHero />
+      <ProofBar />
       <Capabilities />
       <Specialties />
+      <SelectedWork />
       {/* Renders nothing when visibleTestimonials() is empty. */}
       <Testimonials />
-      <SelectedWork />
-      <Signal />
-      {/* HOME-04 — the bio row joins once the photo exists (PRE-04). */}
-      {PHOTO && <BioRow />}
     </main>
   );
 }
