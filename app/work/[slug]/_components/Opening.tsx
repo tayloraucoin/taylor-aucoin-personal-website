@@ -3,16 +3,17 @@ import Link from "next/link";
 import { selectedWork } from "@/content/home";
 import type { CaseStudy, MediaItem } from "@/content/work";
 import { siteRoutes } from "@/lib/routes";
-import { TEXT_LINK } from "./blocks";
+import { sentence, TEXT_LINK } from "./blocks";
 
-/** The label in sentence case: "MARKETING SITE" reads "Marketing site". */
-const sentence = (text: string) =>
-  text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-
-/** The first image of the first group, or none (D-SITE-86). */
+/**
+ * The first image of the first group, or none (D-SITE-86). Only the band
+ * draws it here: the other formats show every screen in What I built, so a
+ * second copy up top would repeat one.
+ */
 export function leadArtifact(
   c: CaseStudy,
 ): { item: MediaItem; caption?: string } | null {
+  if (c.builtFormat !== "band") return null;
   for (const group of c.media) {
     const item = group.items.find((i) => !i.video && typeof i.src !== "string");
     if (item) {

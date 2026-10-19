@@ -104,3 +104,30 @@ export const TEXT_LINK =
   "inline-flex min-h-11 items-center text-(length:--text-body) text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)";
 
 export const host = (url: string) => new URL(url).host.replace(/^www\./, "");
+
+/** Words that keep their capitals in a sentence-cased label. */
+const KEEP: Record<string, string> = {
+  AI: "AI",
+  API: "API",
+  CRM: "CRM",
+  UI: "UI",
+  QXMD: "QxMD",
+  READ: "Read",
+};
+
+/**
+ * A surface or row label in sentence case: "THE READ BLUEPRINT" reads "The
+ * Read blueprint". Acronyms and product names keep their capitals; a label
+ * already in mixed case is left as written.
+ */
+export function sentence(text: string): string {
+  if (text !== text.toUpperCase()) return text;
+  return text
+    .split(" ")
+    .map((word, i) => {
+      if (KEEP[word]) return KEEP[word];
+      const lower = word.toLowerCase();
+      return i === 0 ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
+    })
+    .join(" ");
+}
