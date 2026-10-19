@@ -163,7 +163,7 @@ export const teachingLedger: Array<{ name: string; line: string }> = [
   },
   {
     name: "SFU co-op and virtual intern",
-    line: "Co-op student 2025 · virtual intern 2026 · 2 cohorts",
+    line: "Co-op student · virtual intern · 2 cohorts",
   },
 ];
 

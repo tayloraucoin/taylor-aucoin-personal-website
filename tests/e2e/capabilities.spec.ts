@@ -209,7 +209,7 @@ test.describe("at 1440", () => {
     expect(hrefs.get("consciousconnections.app")).toBe(
       "/work/conscious-connections",
     );
-    expect(hrefs.get("the family office platform")).toBe(
+    expect(hrefs.get("the Future of Cities platform")).toBe(
       "/work/family-office-platform",
     );
 
@@ -224,7 +224,7 @@ test.describe("at 1440", () => {
     await expect(names).toHaveText([
       "Everbook",
       "Conscious Connections",
-      "the family office platform",
+      "the Future of Cities platform",
       "Agora",
     ]);
     const styles = await names.evaluateAll((els) =>

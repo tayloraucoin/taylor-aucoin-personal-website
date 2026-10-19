@@ -27,7 +27,7 @@ function forbiddenNames(): string[] {
       (name) =>
         !name.includes(":") &&
         name.split(" ").length <= 4 &&
-        name !== "Future of Cities",
+        !["Future of Cities", "Bruno Vitale"].includes(name),
     );
   expect(bold.length).toBeGreaterThan(0);
   return [...new Set([...bold, "Durable", "Viewpoint"])];
