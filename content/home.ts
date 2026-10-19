@@ -1,3 +1,5 @@
+import { offers } from "@/content/services";
+
 /**
  * Home's copy (home-words.md), as Taylor wrote it on the canvas. Bracketed
  * values and `[draft]` marks are his placeholders: they stay through the
@@ -133,3 +135,90 @@ export const notes = {
  * `notes.hint` changes.
  */
 export const NOTES_CONSENT_VERSION = "2026-10-19";
+
+/** How I work (home-words.md): the steps as drawn, and the AI block (D-SITE-58). */
+export const howIWork = {
+  heading: "How I work",
+  steps: ["Scope", "Build", "Ship", "Measure", "Iterate"],
+  /** Taylor's lists; synthetic placeholders until then. */
+  ai: [
+    {
+      label: "What I give it",
+      items: [
+        "[Taylor's list. Synthetic placeholder: a written spec, the codebase's conventions, a role for each job.]",
+      ],
+    },
+    {
+      label: "What I let AI do",
+      items: [
+        "[Taylor's list. Synthetic placeholder: first drafts of a component, test scaffolds.]",
+      ],
+    },
+    {
+      label: "What I check",
+      items: [
+        "[Taylor's list. Synthetic placeholder: the data model, every money path.]",
+      ],
+    },
+  ],
+} as const;
+
+/**
+ * Home's testimonials (D-SITE-56): all four, in order. Dawson's and Bruno's
+ * cards use other contiguous spans of their recommendations than their
+ * stories do, as drawn; the others use their lead quote.
+ */
+export const homeTestimonials = {
+  heading: "Testimonials",
+  readAll: "Read them in full [draft]",
+  cards: [
+    {
+      slug: "dawson-whitfield",
+      span: "He owned the project scope, technical architecture, and development through to launch.",
+    },
+    {
+      slug: "bruno",
+      span: "Beyond technical execution, Taylor provided vital strategic clarity to our internal team.",
+    },
+    { slug: "vaughn-richards" },
+    { slug: "yogesh-verma" },
+  ],
+} as const;
+
+/**
+ * Work with me's role rows (D-SITE-57): a role, how it is engaged, who it
+ * suits. The best-for lines come from `content/services.ts` where present.
+ */
+export const workWithMe = {
+  heading: "Work with me",
+  link: "Work with me",
+  websitesLine: "[Draft] Need a website you own?",
+  websitesLink: "Websites",
+  rows: [
+    {
+      role: "Product engineer",
+      terms: "Full-time · contract · fractional",
+      bestFor: offers[0].bestFor,
+    },
+    {
+      role: "Product designer",
+      terms: "Full-time · contract · fractional",
+      bestFor: "[Taylor's to write]",
+    },
+    {
+      role: "Systems consultant",
+      terms: "Scoped engagement",
+      bestFor: "System design, before the build. [draft]",
+    },
+    {
+      role: "Fractional CTO",
+      terms: "Retainer, 1–2 days a week",
+      bestFor: offers[2].bestFor,
+    },
+    {
+      role: "0→1 build",
+      terms: "Fixed scope, 8–16 weeks",
+      bestFor: offers[1].bestFor,
+    },
+  ],
+} as const;

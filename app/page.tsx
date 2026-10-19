@@ -1,12 +1,13 @@
 import { HomeHero } from "@/app/_components/HomeHero";
+import { HomeTestimonials } from "@/app/_components/HomeTestimonials";
+import { HowIWork } from "@/app/_components/HowIWork";
 import { NotesSignup } from "@/app/_components/NotesSignup";
 import { Pillars } from "@/app/_components/Pillars";
 import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
 import { SelectedWork } from "@/app/_components/SelectedWork";
+import { WorkWithMe } from "@/app/_components/WorkWithMe";
 import { NOTES_STATES, notesFixtures } from "@/app/_fixtures";
-import RootField from "@/components/field/RootField";
-import Testimonials from "@/components/sections/Testimonials";
 import { pillars } from "@/content/home";
 import { readPageState, type PageSearchParams } from "@/lib/page-state";
 
@@ -22,9 +23,9 @@ const STATES = [
 ] as const;
 
 /**
- * Home in D-SITE-50's frame: hero, proof bar, pillars, Problems I take on,
- * Selected work, then today's Testimonials in the slot its replacement
- * takes. Each later home ticket swaps one in place.
+ * Home in D-SITE-50's order: hero, proof bar, pillars, Problems I take on,
+ * Selected work, How I work, Testimonials, Work with me, Notes; the header
+ * and footer come from the layout. No root field: the ground's glow only.
  */
 export default async function Home({
   searchParams,
@@ -38,8 +39,6 @@ export default async function Home({
       id="main"
       className="relative mx-auto w-full max-w-[1192px] px-[22px] pt-16 pb-16 md:px-14 md:pt-28 md:pb-24"
     >
-      {/* The field runs the full page height, not just the hero. */}
-      <RootField />
       <HomeHero />
       <ProofBar />
       <Pillars
@@ -62,8 +61,9 @@ export default async function Home({
           state === "selected-work-filtered" ? "full-time" : undefined
         }
       />
-      {/* Renders nothing when visibleTestimonials() is empty. */}
-      <Testimonials />
+      <HowIWork />
+      <HomeTestimonials />
+      <WorkWithMe />
       <NotesSignup
         seed={
           (NOTES_STATES as readonly string[]).includes(state)
