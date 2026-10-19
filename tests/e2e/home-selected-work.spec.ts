@@ -42,7 +42,7 @@ test.describe("at 1440", () => {
     expect(await titles(page)).toEqual([
       "Conscious Connections",
       "Everbook",
-      "Multi-Entity Family Office Platform",
+      "Future of Cities",
     ]);
 
     await tab(page, "Product engineering").focus();

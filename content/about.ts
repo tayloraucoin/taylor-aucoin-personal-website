@@ -97,7 +97,7 @@ export const experience: ExperienceEntry[] = [
   },
   {
     group: "Contract and fractional",
-    name: "Multi-entity family office platform",
+    name: "Future of Cities",
     role: "Fractional CTO",
     years: "2026",
     slug: "family-office-platform",

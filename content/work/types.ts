@@ -252,6 +252,8 @@ export type CaseStudy = {
   metaDescription: string;
   /** Short role label under the tags on the Selected Work row. Title case — rendered uppercase. */
   roleLabel: string;
+  /** The client's own mark, shown where a study or row names the client. */
+  clientMark?: { src: StaticImageData | string; alt: string };
   /** Listed on home but not clickable — case page may still exist for direct URLs. */
   inactive?: boolean;
   role: string;

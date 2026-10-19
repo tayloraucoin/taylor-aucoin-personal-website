@@ -61,9 +61,7 @@ test("C3 groups follow D-SITE-100's order and sort newest first", () => {
     "Roomvy",
     "Calculate by QxMD",
   ]);
-  assert.deepEqual(titles(groups[1].entries), [
-    "Multi-Entity Family Office Platform",
-  ]);
+  assert.deepEqual(titles(groups[1].entries), ["Future of Cities"]);
   assert.deepEqual(titles(groups[2].entries), ["Agora"]);
   assert.deepEqual(titles(groups[3].entries), ["Conscious Connections"]);
 

@@ -10,12 +10,9 @@ const NOTE = readFileSync(
   "docs/_legacy/pending/cho-ventures-naming/NOTE.md",
   "utf8",
 );
-const FAMILY_OFFICE_NAMES = [
-  "Cho Ventures",
-  "Tony Cho",
-  "ChoZen",
-  "Future of Cities",
-].filter((name) => NOTE.includes(name));
+const FAMILY_OFFICE_NAMES = ["Cho Ventures", "Tony Cho", "ChoZen"].filter(
+  (name) => NOTE.includes(name),
+);
 
 const tabsNav = (page: Page) => page.locator("main nav").nth(0);
 const chipsNav = (page: Page) => page.locator("main nav").nth(1);
@@ -54,7 +51,7 @@ test.describe("at 1440", () => {
       "Everbook",
       "Roomvy",
       "Calculate by QxMD",
-      "Multi-entity family office platform",
+      "Future of Cities",
       "Agora",
       "Conscious Connections",
     ]);

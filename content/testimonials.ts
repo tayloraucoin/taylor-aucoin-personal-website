@@ -67,10 +67,10 @@ export const testimonials: Testimonial[] = [
   },
   {
     slug: "bruno",
-    name: "Bruno",
-    title: "Creative Director, Family Office",
+    name: "Bruno Vitale",
+    title: "Creative Director, Future of Cities",
     relationship: "worked-for",
-    relationshipLine: "Creative Director · family office engagement · 2026",
+    relationshipLine: "Creative Director · Future of Cities engagement · 2026",
     quote:
       "He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
     full: [
@@ -81,7 +81,7 @@ export const testimonials: Testimonial[] = [
       "I highly recommend Taylor to any organization seeking a true strategic technical partner.",
     ],
     project: {
-      label: "Family Office Platform",
+      label: "Future of Cities",
       href: "/work/family-office-platform",
     },
     caseStudySpan:

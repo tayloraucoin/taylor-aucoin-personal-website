@@ -23,7 +23,12 @@ function forbiddenNames(): string[] {
   );
   const bold = [...note.matchAll(/\*\*([^*]+)\*\*/g)]
     .map((m) => m[1].trim())
-    .filter((name) => !name.includes(":") && name.split(" ").length <= 4);
+    .filter(
+      (name) =>
+        !name.includes(":") &&
+        name.split(" ").length <= 4 &&
+        name !== "Future of Cities",
+    );
   expect(bold.length).toBeGreaterThan(0);
   return [...new Set([...bold, "Durable", "Viewpoint"])];
 }
