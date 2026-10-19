@@ -33,10 +33,6 @@ export const howIThink: Array<{ lead: string; body: string }> = [
     lead: "Builder's output",
     body: "The feedback I've gotten more than once: I perform much higher than I test. I'm a builder — hyperfocus, plus enough shipped products to know what matters and how to get it done.",
   },
-  {
-    lead: "Mentorship",
-    body: "Five years and fourteen cohorts at BCIT — it started as a way to get velocity behind a project and became something I loved: a young team of scrappy engineers shipping real systems. AI has changed what juniors need, but the experience sharpened how I manage, and the relationships stay.",
-  },
 ];
 
 /** "Off the clock" — two short paragraphs, replacing the old single-block
@@ -49,3 +45,121 @@ export const offTheClock: string[] = [
 /** The sentence to remember. Near-verbatim from Taylor. */
 export const closingLine =
   "I'm a systems designer, and I emotionally invest in the company's success. If I dedicate my energy to you, you get what my mind has to offer.";
+
+/** Teaching's paragraph: the old Mentorship row's body, moved (D-SITE-67). */
+export const teachingParagraph =
+  "Five years and fourteen cohorts at BCIT — it started as a way to get velocity behind a project and became something I loved: a young team of scrappy engineers shipping real systems. AI has changed what juniors need, but the experience sharpened how I manage, and the relationships stay.";
+
+export type ExperienceGroup =
+  "Full-time" | "Contract and fractional" | "My own products" | "Programmes";
+
+/**
+ * The Experience rows (D-SITE-197): about-only roles and years, never read
+ * from `content/work`. Years take an en dash. Brackets are Taylor's to fill.
+ * `slug` links the row to its case study; `anchor` links to a section here.
+ */
+export type ExperienceEntry = {
+  group: ExperienceGroup;
+  name: string;
+  role: string;
+  years: string;
+  slug?: string;
+  anchor?: "teaching";
+};
+
+export const experience: ExperienceEntry[] = [
+  {
+    group: "Full-time",
+    name: "Everbook",
+    role: "Founding engineer, at Pine Studio",
+    years: "2024 – 2025",
+    slug: "everbook",
+  },
+  {
+    group: "Full-time",
+    name: "Roomvy",
+    role: "Senior frontend engineer, at Pathfinder Studios",
+    years: "2023",
+    slug: "roomvy",
+  },
+  {
+    group: "Full-time",
+    name: "Calculate by QxMD",
+    role: "Frontend software engineer, a WebMD/Medscape company",
+    years: "2019 – 2021",
+    slug: "calculate-qxmd",
+  },
+  {
+    group: "Full-time",
+    name: "FYBR Inc. [Taylor confirms]",
+    role: "Developer, first development job",
+    years: "2017",
+  },
+  {
+    group: "Contract and fractional",
+    name: "Multi-entity family office platform",
+    role: "Fractional CTO",
+    years: "2026",
+    slug: "family-office-platform",
+  },
+  {
+    group: "My own products",
+    name: "Conscious Connections",
+    role: "Founder, engineer, designer",
+    years: "2026 – present",
+    slug: "conscious-connections",
+  },
+  {
+    group: "My own products",
+    name: "Agora",
+    role: "Founder, engineer",
+    years: "2021 – 2026",
+    slug: "agora",
+  },
+  {
+    group: "Programmes",
+    name: "BCIT ISSP",
+    role: "Technical client and senior engineer, Agora's teams",
+    years: "[years]",
+    anchor: "teaching",
+  },
+  {
+    group: "Programmes",
+    name: "FLUI design hackathon",
+    role: "[role, Taylor confirms]",
+    years: "[year]",
+  },
+  {
+    group: "Programmes",
+    name: "League of Innovators",
+    role: "[role, Taylor confirms]",
+    years: "[year]",
+  },
+];
+
+/** The teaching ledger, by programme. Counts are Taylor's to confirm. */
+export const teachingCount = "[23] cohorts [Taylor confirms]";
+export const teachingLedger: Array<{ name: string; line: string }> = [
+  {
+    name: "BCIT ISSP",
+    line: "Industry Sponsored Student Projects · [n] cohorts",
+  },
+  { name: "VFS", line: "Vancouver Film School · [n] cohorts" },
+  { name: "A design cohort", line: "[programme name] · [n] cohort" },
+  { name: "Virtual interns", line: "[programme name] · [n] cohorts" },
+];
+
+export const education: Array<{ name: string; role: string; years: string }> = [
+  {
+    name: "Lighthouse Labs",
+    role: "Web development [programme, Taylor confirms]",
+    years: "2016",
+  },
+  { name: "[School]", role: "UX design", years: "[year]" },
+  { name: "[School]", role: "Digital marketing", years: "[year]" },
+  {
+    name: "[University]",
+    role: "Bio-medical degree, a semester off and then software",
+    years: "[years]",
+  },
+];

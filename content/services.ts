@@ -161,3 +161,85 @@ export const closing =
 /** SVC-09 — two-line bio beside the photo. Taylor owns the final wording. */
 export const bio =
   "Senior product engineer and technical founder: twelve products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+
+/**
+ * /work-with-me roles (D-SITE-57): seats of one job, never a menu (D-SITE-125).
+ * Terms are home's; best-for and includes come from `offers` where drawn.
+ * Brackets are Taylor's slots and stay as written.
+ */
+export type Role = {
+  name: string;
+  terms: string;
+  bestFor: string;
+  includes: string[];
+};
+
+export const roles: Role[] = [
+  {
+    name: "Product engineer",
+    terms: "Full-time · contract · fractional",
+    bestFor: offers[0].bestFor,
+    includes: offers[0].includes,
+  },
+  {
+    name: "Product designer",
+    terms: "Full-time · contract · fractional",
+    bestFor: "[Taylor's line]",
+    includes: ["[Taylor's copy: what the seat covers]"],
+  },
+  {
+    name: "Systems consultant",
+    terms: "Scoped engagement",
+    bestFor: "System design, before the build. [draft]",
+    includes: ["[Taylor's copy: what the engagement delivers]"],
+  },
+  {
+    name: "Fractional CTO",
+    terms: "Retainer, 1–2 days a week",
+    bestFor: offers[2].bestFor,
+    includes: offers[2].includes,
+  },
+  {
+    name: "0→1 build",
+    terms: "Fixed scope, 8–16 weeks",
+    bestFor: offers[1].bestFor,
+    includes: offers[1].includes,
+  },
+];
+
+/** The smaller group below the roles (D-SITE-128). Prices: Taylor's (D-SITE-203). */
+export type BuildingRow = {
+  name: string;
+  price: string;
+  line: string;
+  /** The proof link, over "Send a note". The conventions install has none. */
+  proof?: { label: string; href: string };
+};
+
+export const building: BuildingRow[] = [
+  {
+    name: "Coded website",
+    price: "$2,000 CAD + GST",
+    line: "Websites for creative work. 3 days to your first look.",
+    proof: { label: "Websites", href: "/websites" },
+  },
+  {
+    name: "Branding",
+    price: "[NEEDS DECISION: price]",
+    line: "[Taylor's line]",
+    proof: { label: "Branding & UI", href: "/work?tab=branding" },
+  },
+  {
+    name: "Conventions install [draft]",
+    price: "[NEEDS DECISION: price]",
+    line: "[Taylor's line]",
+  },
+];
+
+export const workWithMeWords = {
+  eyebrowSuffix: "Contract & fractional",
+  sub: "[Taylor's copy: the seat scales with the team. Senior implementer or staff on a large team, head of product or CTO on a small one, fractional where it fits.]",
+  note: "Send a note [draft]",
+  close:
+    "[Taylor's copy: a closing line that leads with a note, then the call]",
+};
