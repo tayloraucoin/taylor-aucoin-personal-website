@@ -225,13 +225,13 @@ export const building: BuildingRow[] = [
   },
   {
     name: "Branding",
-    price: "[NEEDS DECISION: price]",
+    price: "$750",
     line: "[Taylor's line]",
     proof: { label: "Branding & UI", href: "/work?tab=branding" },
   },
   {
     name: "Conventions install [draft]",
-    price: "[NEEDS DECISION: price]",
+    price: "Contact for a quote",
     line: "[Taylor's line]",
   },
 ];
