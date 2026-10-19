@@ -44,7 +44,7 @@ export function SectionHeading({
   tabIndex?: -1;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-6 border-b border-(--color-line-soft) pb-6">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-(--color-line-soft) pb-6">
       <h2
         id={id}
         tabIndex={tabIndex}
