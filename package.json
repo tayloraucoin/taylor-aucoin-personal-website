@@ -64,9 +64,10 @@
     "cost": "node tooling/cost.ts",
     "contract:built": "node tooling/contract.ts built",
     "test:tooling": "node --test \"tooling/**/*.test.ts\"",
-    "test": "node --test tests/smoke.test.ts",
+    "test": "node --import ./tests/loader.mjs --test \"tests/unit/**/*.test.ts\" tests/smoke.test.ts",
     "test:e2e": "playwright test",
     "capture": "node --import tsx scripts/capture-states.ts",
+    "check:build-output": "node --import tsx scripts/check-build-output.ts",
     "verify": "yarn lint && yarn typecheck && yarn test && yarn build:agent && yarn check-settings && yarn test:hooks && yarn check-specs && yarn check-test-weakening && yarn check-reviewers && yarn check-refs && yarn budget && yarn gen:agents --check && yarn check-types:tooling"
   },
   "dependencies": {
@@ -97,7 +98,9 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",

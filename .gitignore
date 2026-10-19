@@ -51,3 +51,8 @@ next-env.d.ts
 
 # Claude Code: the operator's own settings (migrate step 5)
 .claude/settings.local.json
+
+# Playwright: captures from `yarn capture`, and the runner's own output.
+/tests/.captures/
+/test-results/
+/playwright-report/
