@@ -120,6 +120,21 @@ const nextConfig: NextConfig = {
   env: tierEnv,
 
   /**
+   * Retired pages land at their section of `/about` (D-SITE-3, 22). Permanent,
+   * which Next answers 308; the query string is carried by default.
+   */
+  async redirects() {
+    return [
+      { source: "/stack", destination: "/about#tools", permanent: true },
+      {
+        source: "/testimonials",
+        destination: "/about#testimonials",
+        permanent: true,
+      },
+    ];
+  },
+
+  /**
    * The vendored PDF fonts are read from disk at runtime by
    * `server/services/invoice-pdf.tsx`. Nothing imports them, so Vercel's
    * file tracer cannot see them and would ship a function that throws on the

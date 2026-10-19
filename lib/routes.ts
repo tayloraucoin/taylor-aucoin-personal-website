@@ -61,6 +61,33 @@ export const intakeRoutes = {
 } as const;
 
 /**
+ * The public site's pages (D-SITE-164, 165). Every link to one of them is
+ * built here; `websiteRoutes` below still owns the `/websites` tree.
+ */
+export const siteRoutes = {
+  home: "/",
+  work: "/work",
+  caseStudy: (slug: string) => `/work/${slug}`,
+  about: "/about",
+  workWithMe: "/work-with-me",
+  book: "/book",
+  contact: "/contact",
+  capabilities: "/capabilities",
+  websites: "/websites",
+} as const;
+
+/**
+ * True where the header drops its call button: `/book`, where the visitor is
+ * already booking, and every page under `/websites`, which sells a different
+ * service (D-SITE-23, 167).
+ */
+export function hidesCallButton(pathname: string): boolean {
+  return [siteRoutes.book, siteRoutes.websites].some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+/**
  * The website-service marketing pages.
  *
  * `/websites` is a chooser between two builds. The slugs name the DELIVERABLE

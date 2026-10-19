@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import RootField from "@/components/field/RootField";
 import PageDismiss from "@/components/ui/PageDismiss";
 import CaseBody from "@/components/work/CaseBody";
-import { bySlug, publishedWork } from "@/content/work";
+import { publishedWork } from "@/content/work";
 import { socialCard } from "@/lib/metadata";
+import { resolveStudy } from "@/lib/work/resolve";
 
 export function generateStaticParams() {
   return publishedWork.map((w) => ({ slug: w.slug }));
@@ -16,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const c = bySlug(slug);
+  const c = resolveStudy(slug);
   if (!c) return {};
   return {
     title: c.title,
@@ -35,7 +36,7 @@ export default async function WorkPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const c = bySlug(slug);
+  const c = resolveStudy(slug);
   if (!c) notFound();
   return (
     <main className="relative">
