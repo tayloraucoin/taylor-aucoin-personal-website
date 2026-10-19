@@ -3,7 +3,7 @@ import type { PricedRow, ProcessStep } from "@/content/websites";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 
 /**
- * `/websites/coded` page content. Typed TS, no CMS — same pattern as
+ * `/websites` page content (the coded build; D-SITE-111). Typed TS, no CMS — same pattern as
  * content/websites.ts, whose idioms this file follows deliberately. The two
  * pages have to read as siblings.
  *
@@ -39,26 +39,14 @@ export const ctaLabel = "Start your site →";
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 
 export const hero = {
-  eyebrow: "Built in code · Agora Network Technologies",
   title: "Websites for creative work",
   sub: "Your work is the reason anyone hires you. Most professional websites use templates that were designed for somebody else's work. I build one shaped around what you actually do, in code that you get to keep.",
 } as const;
 
-/**
- * Three questions answered before the first scroll: what does it cost, how fast
- * do I see something, what does it cost me to keep.
- *
- * The third cell is the surprise, same mechanism as the platform page's `$0`.
- * Its label does the work that matters: the free tier is Vercel's arrangement
- * and the label says so, because Taylor will not personally underwrite free
- * hosting forever and no cell on this page may read as though he has. The
- * pricing section carries the link to Vercel's own terms.
+/*
+ * No eyebrow and no stats strip in the hero (D-SITE-208). The time row lives
+ * in the price ledger as `firstLook` below.
  */
-export const heroStats: Array<{ value: string; label: string }> = [
-  { value: "$2,000", label: "CAD + GST" },
-  { value: "3 days", label: "To your first look" },
-  { value: "$0/mo", label: "Hosting, on Vercel's free tier" },
-];
 
 /**
  * The line under the buttons, and it is load-bearing rather than a disclaimer.
@@ -67,12 +55,16 @@ export const heroStats: Array<{ value: string; label: string }> = [
  * button safe to press.
  *
  * Mirrors the platform page's note exactly in shape: a few details, then
- * payment, nothing charged before that. The shared `WebsitesHero` component
- * appends "Rather talk it through first?" plus the phone number after
- * whatever runs here, so this sentence does not need to invite the call itself.
+ * payment, nothing charged before that. It stands alone: the call line and
+ * phone number the old shared hero appended are gone (D-SITE-208); the call
+ * is offered once, in the close.
  */
 export const heroNote =
   "A few quick details first, then you choose how to pay. Nothing is charged until then.";
+
+/** The page's meta description and social card description (D-SITE-214). */
+export const description =
+  "Portfolio sites for creative work, built in code you own. $2,000 flat, first look in three days, and hosting that costs nothing to run.";
 
 /* ── What you get ─────────────────────────────────────────────────────── */
 
@@ -246,6 +238,15 @@ export const pricing = {
   ] as PricingRow[],
 } as const;
 
+/** The price ledger's time row. */
+export const firstLook = {
+  label: "To your first look",
+  value: "3 days",
+} as const;
+
+/** Taylor's to write (websites-coded-words.md). */
+export const addOnsLabel = "Add-ons [draft]";
+
 /**
  * ORDER MATCHES THE PAY SCREEN. Extra pages lead because they are a scope rule
  * rather than an upsell (they are what the five-page line means in practice);
@@ -330,6 +331,14 @@ export const addOns: PricedRow[] = [
   },
 ];
 
+/* ── Sites I've built ──────────────────────────────────────────────────── */
+
+/** Taylor's to write (websites-coded-words.md). */
+export const sitesHeading = "Sites I've built [draft]";
+
+/** The gallery opener, `/work`'s row pattern (D-SITE-114). */
+export const galleryAll = "All {n} images";
+
 /* ── Changes ──────────────────────────────────────────────────────────── */
 
 /**
@@ -337,6 +346,12 @@ export const addOns: PricedRow[] = [
  * are imported by the page rather than restated here. Only the closing line
  * differs, because it names this track's price and this track's anchor.
  */
+/** Today's words from `components/websites/Changes.tsx`, which the platform page keeps. */
+export const changesIntro =
+  "Your build includes one finished website, built properly from your questionnaire answers. It does not include unlimited tinkering. This is the part most people get wrong, so here it is straight.";
+
+export const changeRulesHeading = "Three rules that keep this fair both ways";
+
 export const changesClosing =
   "None of this is me being difficult. It's how the price stays where it is. I can charge $2,000 instead of $5,000 because I know exactly how much work I'm signing up for.";
 
