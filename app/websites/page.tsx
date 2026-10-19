@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
 import TrackDoors from "@/components/websites/TrackDoors";
 import TrackPicker from "@/components/websites/TrackPicker";
 import { chooser, chooserFallback } from "@/content/websites-chooser";
@@ -55,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function WebsitesChooserPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main id="main" className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
       <RootField />
 
       {/* A signpost, not a hero. The h1 runs smaller than either sales page's
@@ -100,7 +99,6 @@ export default function WebsitesChooserPage() {
         </a>
       </p>
 
-      <Footer />
     </main>
   );
 }

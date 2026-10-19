@@ -9,7 +9,6 @@ import ProofStrip from "@/components/services/ProofStrip";
 import ServicesHero from "@/components/services/ServicesHero";
 import Faq from "@/components/ui/Faq";
 import SectionLabel from "@/components/ui/SectionLabel";
-import Footer from "@/components/sections/Footer";
 import { faq } from "@/content/services";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -28,7 +27,10 @@ export const metadata: Metadata = {
 
 export default function ServicesPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main
+      id="main"
+      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
+    >
       {/* The field runs the full page height, same as home. */}
       <RootField />
       <ServicesHero />
@@ -42,7 +44,6 @@ export default function ServicesPage() {
         <Faq items={faq} />
       </section>
       <ClosingCta />
-      <Footer />
     </main>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import ConsentControl from "@/components/analytics/ConsentControl";
 import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
 
@@ -44,7 +43,10 @@ function Row({
  */
 export default function PrivacyPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main
+      id="main"
+      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
+    >
       <RootField />
 
       <div className="mb-6 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
@@ -116,8 +118,6 @@ export default function PrivacyPage() {
           {SITE.email}
         </a>
       </Row>
-
-      <Footer />
     </main>
   );
 }

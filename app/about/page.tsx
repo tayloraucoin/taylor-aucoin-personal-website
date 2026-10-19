@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
 import { GradientButton } from "@/components/ui/GradientButton";
 import SectionLabel from "@/components/ui/SectionLabel";
 import {
@@ -34,7 +33,10 @@ export const metadata: Metadata = {
  */
 export default function AboutPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main
+      id="main"
+      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
+    >
       <RootField />
 
       <div className="mb-6 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
@@ -129,8 +131,6 @@ export default function AboutPage() {
           </a>
         </p>
       </section>
-
-      <Footer />
     </main>
   );
 }

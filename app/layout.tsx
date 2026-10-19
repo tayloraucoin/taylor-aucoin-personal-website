@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Albert_Sans, Fragment_Mono, Instrument_Sans } from "next/font/google";
 import Analytics from "@/components/analytics/Analytics";
+import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SkipLink } from "@/components/site/SkipLink";
 import SiteChrome from "@/components/ui/SiteChrome";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SITE } from "@/lib/config";
@@ -76,9 +78,13 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <SiteChrome>
+            <SkipLink />
             <SiteHeader />
           </SiteChrome>
           {children}
+          <SiteChrome>
+            <SiteFooter />
+          </SiteChrome>
           <Analytics />
         </ThemeProvider>
       </body>

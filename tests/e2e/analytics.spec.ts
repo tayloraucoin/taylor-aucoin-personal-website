@@ -16,6 +16,16 @@ const CONSENT_KEY = "ta:analytics-consent";
 /** gtag.js holds a page's later hits for a few seconds and sends them as one batch. */
 const BATCHED = 15_000;
 
+/**
+ * A page load plus a quiet window long enough for gtag.js to load and send.
+ * Not networkidle: the header's prefetches of routes still to be built
+ * (/work, /contact, /book) keep the network from ever settling.
+ */
+async function settle(page: Page) {
+  await page.waitForLoadState("load");
+  await page.waitForTimeout(2_000);
+}
+
 type Hit = Record<string, string>;
 
 function isGtagJs(url: URL) {
@@ -180,9 +190,9 @@ test("C4 track() after replaceState adds ?q=sentinel sends no q in dl or dr", as
 test.describe("C5 no Google request", () => {
   async function twoLoads(page: Page) {
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await settle(page);
     await page.goto(HARNESS);
-    await page.waitForLoadState("networkidle");
+    await settle(page);
   }
 
   test("in the ask state, no choice made", async ({ browser, baseURL }) => {
@@ -234,7 +244,7 @@ test.describe("C5 no Google request", () => {
     await page.getByRole("button", { name: "Track" }).click();
     await page.waitForTimeout(3_000);
     await page.goto(HARNESS);
-    await page.waitForLoadState("networkidle");
+    await settle(page);
 
     expect(w.google.slice(before).map((r) => r.url())).toEqual([]);
   });
@@ -252,7 +262,7 @@ test("C6 intake, legal and admin paths make no Google request", async ({
     "/admin/login",
   ]) {
     await page.goto(path);
-    await page.waitForLoadState("networkidle");
+    await settle(page);
   }
   expect(w.google.map((r) => r.url())).toEqual([]);
 });

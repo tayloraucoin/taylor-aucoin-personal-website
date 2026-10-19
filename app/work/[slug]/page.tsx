@@ -39,7 +39,7 @@ export default async function WorkPage({
   const c = resolveStudy(slug);
   if (!c) notFound();
   return (
-    <main className="relative">
+    <main id="main" className="relative">
       <RootField />
       <PageDismiss />
       <CaseBody c={c} />

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import CapabilityGrid from "@/components/capabilities/CapabilityGrid";
 import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
 import ClosingCta from "@/components/services/ClosingCta";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -20,7 +19,10 @@ export const metadata: Metadata = {
 
 export default function CapabilitiesPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main
+      id="main"
+      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
+    >
       {/* The field runs the full page height, same as home. */}
       <RootField />
 
@@ -38,7 +40,6 @@ export default function CapabilitiesPage() {
 
       <CapabilityGrid />
       <ClosingCta />
-      <Footer />
     </main>
   );
 }
