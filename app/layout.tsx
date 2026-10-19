@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Albert_Sans, Fragment_Mono, Instrument_Sans } from "next/font/google";
 import Analytics from "@/components/analytics/Analytics";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import SiteChrome from "@/components/ui/SiteChrome";
-import SiteHeader from "@/components/ui/SiteHeader";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
