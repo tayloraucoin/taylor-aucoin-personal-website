@@ -2,6 +2,7 @@ import { expectNoSeriousA11y } from "./axe";
 import { expect, test } from "./fixtures";
 
 const REDIRECTS: [string, string][] = [
+  ["/services", "/work-with-me"],
   ["/stack", "/about#tools"],
   ["/testimonials", "/about#testimonials"],
   ["/stack?x=1", "/about?x=1#tools"],
@@ -18,7 +19,7 @@ for (const [from, to] of REDIRECTS) {
   });
 }
 
-for (const path of ["/services", "/websites", "/websites/coded/intake"]) {
+for (const path of ["/websites", "/websites/coded/intake"]) {
   test(`C2 ${path} answers 200 with no Location`, async ({ request }) => {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status()).toBe(200);

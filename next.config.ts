@@ -125,6 +125,7 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      { source: "/services", destination: "/work-with-me", permanent: true },
       { source: "/stack", destination: "/about#tools", permanent: true },
       {
         source: "/testimonials",

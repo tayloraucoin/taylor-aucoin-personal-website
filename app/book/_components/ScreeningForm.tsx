@@ -10,6 +10,7 @@ import {
   type FormEvent,
 } from "react";
 import Link from "next/link";
+import { NoteForm, type NoteSeed } from "@/components/contact/NoteForm";
 import { Honeypot, useFillTimer } from "@/components/forms/BotFields";
 import { ErrorLine } from "@/components/forms/ErrorLine";
 import { TextAreaField, TextField } from "@/components/forms/Field";
@@ -46,6 +47,8 @@ export type ScreeningValues = {
 export type ScreeningSeed = {
   state: ScreeningState;
   values?: Partial<ScreeningValues>;
+  /** The not-a-fit note's own starting view (sent-from-not-a-fit). */
+  note?: NoteSeed;
 };
 
 const EMPTY: ScreeningValues = {
@@ -78,6 +81,9 @@ export function ScreeningForm({ seed }: { seed?: ScreeningSeed }) {
   const inFlight = useRef(false);
   const fromAction = useRef(false);
   const stampElapsed = useFillTimer();
+  // When the visitor began: the not-a-fit note's fill time counts from here.
+  const [startedAt, setStartedAt] = useState<number>();
+  useEffect(() => setStartedAt(Date.now()), []);
 
   const [values, setValues] = useState<ScreeningValues>({
     ...EMPTY,
@@ -147,20 +153,65 @@ export function ScreeningForm({ seed }: { seed?: ScreeningSeed }) {
     startTransition(() => dispatch(formData));
   }
 
-  if (state.status === "outcome") {
-    const isFit = state.outcome === "fit";
+  if (state.status === "outcome" && state.outcome === "fit") {
     return (
       <div>
         <h1 ref={headingRef} tabIndex={-1} className={H1}>
-          {isFit ? book.fit.h1 : book.notAFit.h1}
+          {book.fit.h1}
         </h1>
         <p className="mt-4 text-lede leading-[1.6] text-(--color-body)">
-          {isFit
-            ? book.fit.intro(state.firstName)
-            : book.notAFit.intro(state.firstName)}
+          {book.fit.intro(state.firstName)}
         </p>
         <hr className="mt-10 border-(--color-line-soft)" />
-        {isFit && state.answers ? <FitActions answers={state.answers} /> : null}
+        {state.answers ? <FitActions answers={state.answers} /> : null}
+      </div>
+    );
+  }
+
+  // Not a fit, or a website or brand: the note, ready with what they wrote
+  // (D-SITE-201). No call anywhere on this view or after it (D-SITE-167).
+  if (state.status === "outcome") {
+    const answers = state.answers;
+    return (
+      <div>
+        <h1 ref={headingRef} tabIndex={-1} className={H1}>
+          {book.notAFit.h1}
+        </h1>
+        <NoteForm
+          from="not_a_fit"
+          sentVariant="alone"
+          intro={
+            <>
+              <p>{book.notAFit.intro(state.firstName)}</p>
+              {state.outcome === "website" ? <WebsiteLine /> : null}
+            </>
+          }
+          prefill={
+            answers
+              ? {
+                  message: answers.building,
+                  name: answers.name ?? "",
+                  email: answers.email,
+                }
+              : undefined
+          }
+          screening={
+            answers
+              ? {
+                  budget: answers.budget,
+                  start: answers.start,
+                  role: answers.role,
+                }
+              : undefined
+          }
+          seed={seed?.note}
+          startedAt={startedAt}
+          messageLabel={book.notAFit.messageLabel}
+          besideButton={
+            <p className="text-meta text-(--color-dim)">{book.replyLine}</p>
+          }
+          sentTitle={book.notAFit.sentTitle}
+        />
       </div>
     );
   }
@@ -277,7 +328,9 @@ export function ScreeningForm({ seed }: { seed?: ScreeningSeed }) {
 /**
  * The fit's call: a POST to the hand-off (SITE-22) with the answers in
  * hidden fields, so nothing typed enters a URL on this origin; beside it,
- * the note for those who would rather write first.
+ * the note for those who would rather write first. The press sends
+ * `book_call_click` and never waits on it: gtag queues the hit and sends it
+ * when the page turns hidden, which leaving normally does.
  */
 function FitActions({ answers }: { answers: BookInput }) {
   return (
@@ -292,6 +345,12 @@ function FitActions({ answers }: { answers: BookInput }) {
         <button
           type="submit"
           className={`${buttonVariants()} w-full md:w-auto`}
+          onClick={() =>
+            track("book_call_click", {
+              surface: "services",
+              placement: "screening_fit",
+            })
+          }
         >
           {book.fit.call}
         </button>
@@ -303,5 +362,20 @@ function FitActions({ answers }: { answers: BookInput }) {
         </Link>
       </p>
     </div>
+  );
+}
+
+/**
+ * A website or brand's way on (D-SITE-166): a muted lead-in and one link to
+ * `/websites`, between the intro and the hairline.
+ */
+function WebsiteLine() {
+  return (
+    <p className="mt-10 flex flex-wrap items-center gap-x-2 text-small text-(--color-dim)">
+      <span>{book.websiteLine.lead}</span>
+      <Link href={siteRoutes.websites} className={LINK}>
+        {book.websiteLine.link}
+      </Link>
+    </p>
   );
 }
