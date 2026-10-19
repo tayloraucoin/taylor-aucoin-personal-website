@@ -45,9 +45,12 @@ function AlsoBuilt() {
         {OTHER_BUILDS.map((b, i) => (
           <span key={b}>
             {i > 0 && (
-              <span aria-hidden className="px-2 text-(--color-dim)">
-                ·
-              </span>
+              <>
+                {" "}
+                <span aria-hidden className="px-1 text-(--color-dim)">
+                  ·
+                </span>{" "}
+              </>
             )}
             {b}
           </span>
