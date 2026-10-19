@@ -1,4 +1,5 @@
 import type { Testimonial } from "@/content/testimonials";
+import { Portrait } from "./Portrait";
 
 /**
  * A case study's testimonial (D-SITE-84): the full card without its project
@@ -16,6 +17,7 @@ export function CaseStudyTestimonial({
   return (
     <figure className="mt-8 grid gap-6 rounded-(--radius) border border-(--color-line-soft) bg-(--color-card) p-6 md:grid-cols-[240px_1fr] md:gap-x-8 md:p-8">
       <figcaption>
+        <Portrait name={t.name} src={t.avatar} className="mb-3" />
         <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
           {t.name}
         </span>

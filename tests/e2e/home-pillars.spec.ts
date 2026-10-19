@@ -237,7 +237,7 @@ test.describe("C5 at 390", () => {
     // Proof names inside an open card are inline text links, not controls.
     expect(
       small.filter(
-        (t) => !["Roomvy", "the family office platform"].includes(t ?? ""),
+        (t) => !["Roomvy", "the Future of Cities platform"].includes(t ?? ""),
       ),
     ).toEqual([]);
 

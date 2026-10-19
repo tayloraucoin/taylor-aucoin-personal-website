@@ -71,7 +71,7 @@ export const STRIPE_SETUP_GUIDE_URL =
  * Portrait photo (PRE-04), served from `public/`. `null` until the asset
  * exists — the bio block renders without it and closes cleanly.
  */
-export const PHOTO: string | null = "/images/me-headshot-1.png";
+export const PHOTO: string | null = "/images/me-headshot-touched-up-wider.webp";
 
 /**
  * Testimonial preview gate (TST-01). While true, entries with

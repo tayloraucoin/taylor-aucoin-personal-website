@@ -71,7 +71,7 @@ export const experience: ExperienceEntry[] = [
   {
     group: "Full-time",
     name: "Everbook",
-    role: "Founding engineer, at Pine Studio",
+    role: "Senior software engineer (founding engineer), at Pine Studio",
     years: "2024 – 2025",
     slug: "everbook",
   },
@@ -84,6 +84,12 @@ export const experience: ExperienceEntry[] = [
   },
   {
     group: "Full-time",
+    name: "Pathfinder Studios",
+    role: "Tech pilot and business development",
+    years: "2023",
+  },
+  {
+    group: "Full-time",
     name: "Calculate by QxMD",
     role: "Frontend software engineer, a WebMD/Medscape company",
     years: "2019 – 2021",
@@ -91,13 +97,19 @@ export const experience: ExperienceEntry[] = [
   },
   {
     group: "Full-time",
-    name: "FYBR Inc. [Taylor confirms]",
-    role: "Developer, first development job",
-    years: "2017",
+    name: "The Chart Guys (Crypto Alerts)",
+    role: "Software developer, UX designer",
+    years: "2017 – 2018",
+  },
+  {
+    group: "Full-time",
+    name: "FYBR Inc. (GIS Drone Imagery Reporting Suite)",
+    role: "Software developer, first development job",
+    years: "2016 – 2017",
   },
   {
     group: "Contract and fractional",
-    name: "Multi-entity family office platform",
+    name: "Future of Cities",
     role: "Fractional CTO",
     years: "2026",
     slug: "family-office-platform",
@@ -112,54 +124,57 @@ export const experience: ExperienceEntry[] = [
   {
     group: "My own products",
     name: "Agora",
-    role: "Founder, engineer",
+    role: "Technical founder (CEO, CTO)",
     years: "2021 – 2026",
     slug: "agora",
   },
   {
     group: "Programmes",
     name: "BCIT ISSP",
-    role: "Technical client and senior engineer, Agora's teams",
-    years: "[years]",
+    role: "Senior developer and project lead, sponsoring through Agora",
+    years: "2021 – 2025",
     anchor: "teaching",
   },
   {
     group: "Programmes",
-    name: "FLUI design hackathon",
-    role: "[role, Taylor confirms]",
-    years: "[year]",
+    name: "FLUI Design Hackathon",
+    role: "Sponsoring client, through Agora",
+    years: "2024",
   },
   {
     group: "Programmes",
-    name: "League of Innovators",
-    role: "[role, Taylor confirms]",
-    years: "[year]",
+    name: "League of Innovators (LOI)",
+    role: "Founder, through Agora (Batch 11 LOI Labs)",
+    years: "2023",
   },
 ];
 
-/** The teaching ledger, by programme. Counts are Taylor's to confirm. */
-export const teachingCount = "[23] cohorts [Taylor confirms]";
+/** The teaching ledger, by programme: 14 + 4 + 2 + 1 + 1 = 22 cohorts. */
+export const teachingCount = "22 cohorts";
 export const teachingLedger: Array<{ name: string; line: string }> = [
   {
     name: "BCIT ISSP",
-    line: "Industry Sponsored Student Projects · [n] cohorts",
+    line: "Industry Sponsored Student Projects · 14 cohorts",
   },
-  { name: "VFS", line: "Vancouver Film School · [n] cohorts" },
-  { name: "A design cohort", line: "[programme name] · [n] cohort" },
-  { name: "Virtual interns", line: "[programme name] · [n] cohorts" },
+  { name: "VFS", line: "Vancouver Film School · 4 cohorts" },
+  {
+    name: "FLUI Design Hackathon",
+    line: "Emily Carr University of Art + Design · 2 cohorts",
+  },
+  {
+    name: "SFU co-op and virtual intern",
+    line: "Co-op student · virtual intern · 2 cohorts",
+  },
 ];
 
 export const education: Array<{ name: string; role: string; years: string }> = [
   {
     name: "Lighthouse Labs",
-    role: "Web development [programme, Taylor confirms]",
+    role: "Web Development bootcamp",
     years: "2016",
   },
-  { name: "[School]", role: "UX design", years: "[year]" },
-  { name: "[School]", role: "Digital marketing", years: "[year]" },
-  {
-    name: "[University]",
-    role: "Bio-medical degree, a semester off and then software",
-    years: "[years]",
-  },
+  { name: "BrainStation", role: "UX Design", years: "2017" },
+  { name: "RED Academy", role: "Digital Marketing Foundations", years: "2019" },
+  { name: "UNBC", role: "Biomedical", years: "2010 – 2012" },
+  { name: "UBCO", role: "Kinesiology", years: "2012 – 2013" },
 ];

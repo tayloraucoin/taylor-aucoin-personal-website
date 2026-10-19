@@ -5,7 +5,7 @@ import { SectionHeading } from "./Row";
 
 /** The canvas draws Bruno's relationship line shorter than his entry's own. */
 const LINES: Record<string, string> = {
-  bruno: "Family office engagement · 2026",
+  bruno: "Future of Cities engagement · 2026",
 };
 
 /**

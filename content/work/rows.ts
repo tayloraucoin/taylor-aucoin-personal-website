@@ -9,6 +9,10 @@
  */
 
 import { cleanCoast } from "@/content/websites-clean-coast";
+import agoraBrandCover from "@/public/images/branding/agora-brand-cover.jpg";
+import agoraBrandLogo from "@/public/images/branding/agora-brand-logo.jpg";
+import ccBrandCover from "@/public/images/branding/conscious-connections-brand-cover.jpg";
+import ccBrandLockup from "@/public/images/branding/conscious-connections-brand-lockup.jpg";
 import type { MediaItem, WorkRow } from "./types";
 
 const cleanCoastGallery: MediaItem[] = cleanCoast.shots.map((shot) => ({
@@ -26,11 +30,21 @@ export const workRows: WorkRow[] = [
     title: "Agora",
     tagline: "[Taylor writes: one line on the kit]",
     role: "Brand kit and components",
-    period: "[year]",
+    period: "2020–2026",
     sortDate: "2026-01",
     caseStudySlug: "agora",
-    liveUrl: "https://agora.art",
-    gallery: [],
+    gallery: [
+      {
+        src: agoraBrandCover,
+        alt: "Agora brand kit cover: the AGORA wordmark in plum on a pale ground with two four-point stars, the line 'The art you wear matches the art you are.' and three pairings: embodied but not staged, kindred but not a clique, mythic but not make-believe.",
+        caption: "Brand kit cover, from the Paper file",
+      },
+      {
+        src: agoraBrandLogo,
+        alt: "Agora brand kit logo page: the wordmark and its variants on the light ground.",
+        caption: "Logo, from the Paper file",
+      },
+    ],
     published: true,
     beats: {
       problem: "[Taylor writes: what the brand had to feel like]",
@@ -45,11 +59,21 @@ export const workRows: WorkRow[] = [
     title: "Conscious Connections",
     tagline: "[Taylor writes: one line on the kit]",
     role: "Brand kit and components",
-    period: "[year]",
+    period: "2025–2026",
     sortDate: "2026-10",
     caseStudySlug: "conscious-connections",
-    liveUrl: "https://consciousconnections.app/",
-    gallery: [],
+    gallery: [
+      {
+        src: ccBrandCover,
+        alt: "Conscious Connections brand identity cover: the headline 'Depth earns the play.' in cream and gold serif on a deep wine ground, with the heart-flame mark and the lockup above it.",
+        caption: "Brand identity cover, from the Paper file",
+      },
+      {
+        src: ccBrandLockup,
+        alt: "Conscious Connections brand portfolio page on the lockup and the heart-flame mark.",
+        caption: "Lockup and mark, from the Paper file",
+      },
+    ],
     published: true,
     beats: {
       problem: "[Taylor writes: what the brand had to feel like]",

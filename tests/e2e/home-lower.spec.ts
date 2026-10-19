@@ -23,7 +23,12 @@ function forbiddenNames(): string[] {
   );
   const bold = [...note.matchAll(/\*\*([^*]+)\*\*/g)]
     .map((m) => m[1].trim())
-    .filter((name) => !name.includes(":") && name.split(" ").length <= 4);
+    .filter(
+      (name) =>
+        !name.includes(":") &&
+        name.split(" ").length <= 4 &&
+        !["Future of Cities", "Bruno Vitale"].includes(name),
+    );
   expect(bold.length).toBeGreaterThan(0);
   return [...new Set([...bold, "Durable", "Viewpoint"])];
 }
@@ -71,20 +76,19 @@ test.describe("at 1440", () => {
     ).toHaveCount(0);
   });
 
-  test("C2 four cards in order, two columns, no avatar; no quote twice", async ({
+  test("C2 four cards in order, two columns, round photos; no quote twice", async ({
     page,
   }) => {
     await page.goto("/");
     const cards = testimonials(page).locator("figure");
-    await expect(cards.locator("figcaption > span:first-child")).toHaveText([
+    await expect(cards.locator("figcaption span:first-child")).toHaveText([
       "Dawson Whitfield",
-      "Bruno",
+      "Bruno Vitale",
       "Vaughn Richards",
       "Yogesh Verma",
     ]);
-    await expect(testimonials(page).locator("img, [aria-hidden]")).toHaveCount(
-      0,
-    );
+    await expect(testimonials(page).locator("img")).toHaveCount(4);
+    await expect(testimonials(page).locator("[aria-hidden]")).toHaveCount(0);
     const lefts = await cards.evaluateAll((els) =>
       els.map((el) => Math.round(el.getBoundingClientRect().left)),
     );

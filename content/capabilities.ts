@@ -186,10 +186,10 @@ export const capabilities: Capability[] = [
     title: "Data and state architecture that survives feature growth",
     tech: "typed end-to-end · schema design · RLS",
     approach:
-      "Full database ERDs designed before the first migration: the family office platform's 200+ models with row-level security across 150+ tables, and deny-by-default RLS on every Conscious Connections table, declared through per-table policy factories. Typed contracts from Postgres to the pixel.",
+      "Full database ERDs designed before the first migration: the Future of Cities platform's 200+ models with row-level security across 150+ tables, and deny-by-default RLS on every Conscious Connections table, declared through per-table policy factories. Typed contracts from Postgres to the pixel.",
     proof: [
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
@@ -225,7 +225,7 @@ export const capabilities: Capability[] = [
       "Ten legacy databases across five business entities became one monorepo, one database, one login. Migration and reconciliation came first, visible features second, and the legacy code kept running while the ground moved under it.",
     proof: [
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
     ],
@@ -255,7 +255,7 @@ export const capabilities: Capability[] = [
     proof: [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
     ],
@@ -285,11 +285,11 @@ export const capabilities: Capability[] = [
     title: "Booking, inventory, and accommodation flows",
     tech: "allocation · availability · edge cases",
     approach:
-      "Roomvy's event-scoped group booking (allocated hotel inventory, hold blocks, multi-room checkout) and the retreat booking engine on the family office platform. Zero issues reported against the Roomvy client.",
+      "Roomvy's event-scoped group booking (allocated hotel inventory, hold blocks, multi-room checkout) and the retreat booking engine on the Future of Cities platform. Zero issues reported against the Roomvy client.",
     proof: [
       { label: "Roomvy", href: "/work/roomvy" },
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
     ],
@@ -495,10 +495,10 @@ export const capabilities: Capability[] = [
     title: "Write the spec everyone else can build from",
     tech: "specification · decision records",
     approach:
-      "Tutorial-grade tickets that map every layer of a feature before it's built — writing a spec that precise is coding the feature through another person, or an AI agent. The family office handoff shipped with role-scoped SOPs and contributor guides an AI-assisted team still builds from; Conscious Connections runs on slice specs with kickoff and completion protocols.",
+      "Tutorial-grade tickets that map every layer of a feature before it's built — writing a spec that precise is coding the feature through another person, or an AI agent. The Future of Cities handoff shipped with role-scoped SOPs and contributor guides an AI-assisted team still builds from; Conscious Connections runs on slice specs with kickoff and completion protocols.",
     proof: [
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
@@ -525,12 +525,12 @@ export const capabilities: Capability[] = [
     title: "Design the interface, not just build it",
     tech: "product design · UX · UI",
     approach:
-      "I design the interfaces I ship: Everbook's author dashboard and book previews, the family office CRM, Agora's storefront, and all of Conscious Connections. Design and engineering in one head means nothing gets lost between the mock and the build.",
+      "I design the interfaces I ship: Everbook's author dashboard and book previews, the Future of Cities CRM, Agora's storefront, and all of Conscious Connections. Design and engineering in one head means nothing gets lost between the mock and the build.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
       { label: "Agora", href: "/work/agora" },
@@ -556,11 +556,11 @@ export const capabilities: Capability[] = [
     title: "Run with loose guidelines, deliver a finished product",
     tech: "minimal direction · full ownership",
     approach:
-      "Everbook started as light Notion notes and a market reference; the family office asked for one platform where ten systems stood. Both times the input was a direction rather than a spec, and the output was a shipped product.",
+      "Everbook started as light Notion notes and a market reference; Future of Cities asked for one platform where ten systems stood. Both times the input was a direction rather than a spec, and the output was a shipped product.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
     ],
@@ -689,10 +689,10 @@ export const capabilities: Capability[] = [
     title: "Build the component kit your team ships from",
     tech: "Storybook · design systems · shared UI",
     approach:
-      "Component libraries in Storybook across the family office platform, Everbook, and Agora: shared UI that keeps five apps looking like one product, so the next engineer composes instead of reinventing.",
+      "Component libraries in Storybook across the Future of Cities platform, Everbook, and Agora: shared UI that keeps five apps looking like one product, so the next engineer composes instead of reinventing.",
     proof: [
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
       { label: "Everbook", href: "/work/everbook" },
@@ -826,10 +826,10 @@ export const capabilities: Capability[] = [
     title: "Scope the build and sequence the roadmap",
     tech: "scoping · sequencing · build plans",
     approach:
-      "Deciding what gets built, and in what order: the family office engagement was sequenced data-first even though it meant weeks without visible features. Specs come after; this is the layer above them.",
+      "Deciding what gets built, and in what order: the Future of Cities engagement was sequenced data-first even though it meant weeks without visible features. Specs come after; this is the layer above them.",
     proof: [
       {
-        label: "the family office platform",
+        label: "the Future of Cities platform",
         href: "/work/family-office-platform",
       },
       { label: "Everbook", href: "/work/everbook" },

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import type { Testimonial } from "@/content/testimonials";
+import { Portrait } from "./Portrait";
 
 const LINK =
   "inline-flex min-h-11 items-center text-(length:--text-small) text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-[3px] transition-colors duration-(--dur-fast) hover:text-(--color-body) md:min-h-6";
@@ -24,6 +25,7 @@ export function FullTestimonial({
   return (
     <figure className="grid gap-6 rounded-(--radius) border border-(--color-line-soft) bg-(--color-card) p-6 md:grid-cols-[240px_1fr] md:gap-x-8 md:p-8">
       <figcaption>
+        <Portrait name={t.name} src={t.avatar} className="mb-3" />
         <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
           {t.name}
         </span>

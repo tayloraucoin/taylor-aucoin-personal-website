@@ -1,9 +1,11 @@
+import futureOfCitiesLogo from "@/public/images/future-of-cities-logo.jpg";
 import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
 import type { CaseStudy } from "./types";
 
 export const familyOfficePlatform = {
   slug: "family-office-platform",
-  title: "Multi-Entity Family Office Platform",
+  title: "Future of Cities",
+  clientMark: { src: futureOfCitiesLogo, alt: "Future of Cities logo" },
   meta: "Platform · CRM",
   tagline:
     "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
@@ -74,7 +76,7 @@ export const familyOfficePlatform = {
   ],
   brief: {
     intro:
-      "The client was a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
+      "The client was Future of Cities, a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
     groups: [
       {
         header: "EXISTING CONDITIONS",
@@ -190,7 +192,7 @@ export const familyOfficePlatform = {
         label: "UNIFIED DATA LAYER",
         screen: {
           src: architecture,
-          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          alt: "architecture diagram of the Future of Cities platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
           caption:
             "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
           frame: "panel",
@@ -281,7 +283,7 @@ export const familyOfficePlatform = {
       items: [
         {
           src: architecture,
-          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          alt: "architecture diagram of the Future of Cities platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
           caption:
             "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
           // A light-background diagram, so it is inset on a dark field rather

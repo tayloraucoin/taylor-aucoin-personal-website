@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Testimonial } from "@/content/testimonials";
+import { Portrait } from "./Portrait";
 
 /** Bespoke avatar — image when the asset exists, initials placeholder until
  *  then. Square at the site radius (3px), not a circle: sharp is the house
@@ -135,7 +136,7 @@ export default function TestimonialCard({
 
 /**
  * Home's card (D-SITE-56, 62): one contiguous span of the recommendation,
- * the name and title under it, no avatar or initials tile, no Read more;
+ * the name and title under it, the round photo beside them, no Read more;
  * the full text lives on /about. `span` defaults to the lead quote.
  */
 export function TestimonialQuoteCard({
@@ -150,13 +151,16 @@ export function TestimonialQuoteCard({
       <blockquote className="text-[20px] leading-[1.55] text-(--color-ink)">
         <p>“{span}”</p>
       </blockquote>
-      <figcaption className="mt-6">
-        <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
-          {t.name}
-        </span>
-        <span className="mt-0.5 block text-(length:--text-meta) text-(--color-dim)">
-          {t.title}
-        </span>
+      <figcaption className="mt-6 flex items-center gap-3">
+        <Portrait name={t.name} src={t.avatar} />
+        <div>
+          <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
+            {t.name}
+          </span>
+          <span className="mt-0.5 block text-(length:--text-meta) text-(--color-dim)">
+            {t.title}
+          </span>
+        </div>
       </figcaption>
     </figure>
   );

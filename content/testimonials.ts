@@ -63,14 +63,15 @@ export const testimonials: Testimonial[] = [
     project: { label: "Everbook", href: "/work/everbook" },
     caseStudySpan:
       "He was a pleasure to work with, always reliable, sharp, and dedicated to building great product.",
+    avatar: "/images/testimonials/dawson-whitfield.jpg",
     approved: true,
   },
   {
     slug: "bruno",
-    name: "Bruno",
-    title: "Creative Director, Family Office",
+    name: "Bruno Vitale",
+    title: "Creative Director, Future of Cities",
     relationship: "worked-for",
-    relationshipLine: "Creative Director · family office engagement · 2026",
+    relationshipLine: "Creative Director · Future of Cities engagement · 2026",
     quote:
       "He successfully consolidated our infrastructure into a single unified platform, database, and authentication system.",
     full: [
@@ -81,11 +82,12 @@ export const testimonials: Testimonial[] = [
       "I highly recommend Taylor to any organization seeking a true strategic technical partner.",
     ],
     project: {
-      label: "Family Office Platform",
+      label: "Future of Cities",
       href: "/work/family-office-platform",
     },
     caseStudySpan:
       "Most importantly, Taylor established robust technical conventions, documentation, and standard operating procedures.",
+    avatar: "/images/testimonials/bruno-vitale.jpg",
     approved: true,
   },
   {
@@ -102,12 +104,13 @@ export const testimonials: Testimonial[] = [
       "Happy to provide a reference anytime.",
     ],
     project: { label: "FYBR · first development job" },
+    avatar: "/images/testimonials/vaughn-richards.jpg",
     approved: true,
   },
   {
     slug: "yogesh-verma",
     name: "Yogesh Verma",
-    title: "Senior Software Engineer",
+    title: "Senior Software Engineer · via BCIT ISSP",
     relationship: "led",
     relationshipLine:
       "Reported to Taylor directly · BCIT ISSP, two terms · 2021",
@@ -125,6 +128,7 @@ export const testimonials: Testimonial[] = [
       "Stripe checkout (v1) and analytics on Agora, under Taylor's specs and code review",
     caseStudySpan:
       "His ability to break down a complex task into small, well-elaborated action items is impeccable and a joy to work with.",
+    avatar: "/images/testimonials/yogesh-verma.jpg",
     approved: true,
   },
   {
