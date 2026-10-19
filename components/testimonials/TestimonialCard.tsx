@@ -69,7 +69,10 @@ export default function TestimonialCard({
         {expanded ? (
           <div className="space-y-3">
             {t.full.map((p, i) => (
-              <p key={i}>{i === 0 ? <>“{p}</> : p}{i === t.full.length - 1 && "”"}</p>
+              <p key={i}>
+                {i === 0 ? <>“{p}</> : p}
+                {i === t.full.length - 1 && "”"}
+              </p>
             ))}
           </div>
         ) : (
@@ -125,6 +128,35 @@ export default function TestimonialCard({
             )}
           </>
         )}
+      </figcaption>
+    </figure>
+  );
+}
+
+/**
+ * Home's card (D-SITE-56, 62): one contiguous span of the recommendation,
+ * the name and title under it, no avatar or initials tile, no Read more;
+ * the full text lives on /about. `span` defaults to the lead quote.
+ */
+export function TestimonialQuoteCard({
+  t,
+  span = t.quote,
+}: {
+  t: Testimonial;
+  span?: string;
+}) {
+  return (
+    <figure className="flex flex-col rounded-(--radius) border border-(--color-line-soft) bg-(--color-card) p-6 md:p-8">
+      <blockquote className="text-[20px] leading-[1.55] text-(--color-ink)">
+        <p>“{span}”</p>
+      </blockquote>
+      <figcaption className="mt-6">
+        <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
+          {t.name}
+        </span>
+        <span className="mt-0.5 block text-(length:--text-meta) text-(--color-dim)">
+          {t.title}
+        </span>
       </figcaption>
     </figure>
   );
