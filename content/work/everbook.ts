@@ -1,12 +1,12 @@
-import type { CaseStudy } from "./types";
 import ecomHome from "@/public/work/everbook/everbook-ecom-home.png";
-import lifeStoryEcom from "@/public/work/everbook/everbook-life-story-ecom.png";
+import coverPreview from "@/public/work/everbook/everbook-life-story-cover-preview.png";
+import lifeStoryDashboard from "@/public/work/everbook/everbook-life-story-dashboard.png";
 import lifeStoryEcomCont from "@/public/work/everbook/everbook-life-story-ecom-cont.png";
 import lifeStoryEcomMobile from "@/public/work/everbook/everbook-life-story-ecom-mobile.png";
-import lifeStoryDashboard from "@/public/work/everbook/everbook-life-story-dashboard.png";
-import coverPreview from "@/public/work/everbook/everbook-life-story-cover-preview.png";
-import pagesPreview from "@/public/work/everbook/everbook-life-story-pages-preview.png";
+import lifeStoryEcom from "@/public/work/everbook/everbook-life-story-ecom.png";
 import interviewOpening from "@/public/work/everbook/everbook-life-story-interview-opening.png";
+import pagesPreview from "@/public/work/everbook/everbook-life-story-pages-preview.png";
+import type { CaseStudy } from "./types";
 
 export const everbook = {
   slug: "everbook",
@@ -19,6 +19,31 @@ export const everbook = {
   roleLabel: "Founding Engineer",
   role: "Founding engineer, CTO-track",
   period: "2024 — 2025",
+  type: "full-time",
+  listRole: "Founding engineer",
+  sortDate: "2025-10",
+  facts: [
+    { value: "Founding Engineer", meta: "Founding engineer, CTO-track" },
+    {
+      value: "2024 to 2025",
+      meta: "full-time · realtime voice ai · print engine",
+    },
+    { value: "[Taylor writes: fact]", meta: "[draft]" },
+    {
+      value: "everbook.com",
+      meta: "live site",
+      href: "https://www.everbook.com/",
+    },
+  ],
+  builtFormat: "gallery",
+  beats: {
+    problem:
+      "A greenfield concept: light product notes, a market reference, and no code. The product is an AI voice interview that becomes a typeset, press-ready hardcover.",
+    decided:
+      "Wire the browser straight to the model. The realtime voice session is a direct WebRTC connection from the client to OpenAI; the server never touches the audio.",
+    happened:
+      "Fourteen months from first commit: MVP to production in six, then a relaunch. Over 99% production stability.",
+  },
   engagementType: "Maps to · 0→1 Build",
   mediaPreview: true,
   stack: [
@@ -58,7 +83,8 @@ export const everbook = {
     },
     {
       label: "Commerce",
-      value: "Two checkout systems, three print providers, webhook-driven orders",
+      value:
+        "Two checkout systems, three print providers, webhook-driven orders",
     },
     {
       label: "Stability",
@@ -111,7 +137,7 @@ export const everbook = {
           "Browser connects by WebRTC directly to OpenAI's Realtime API; the server only mints a short-lived, scoped credential",
           "Dual parallel recorders: a combined mix of the storyteller and the AI voice for playback, and an audio-only track chunked turn-by-turn into Whisper for transcription",
           "Voice-activity detection tuned with a deliberately long silence threshold, so reflective and elderly storytellers aren't cut off mid-thought",
-          "The interview ends itself: when the AI judges the story arc complete it speaks a set phrase. The app detects it in the transcript, and a spoken \"yes\" advances the flow with no button press",
+          'The interview ends itself: when the AI judges the story arc complete it speaks a set phrase. The app detects it in the transcript, and a spoken "yes" advances the flow with no button press',
           "Persistent storyteller memories carried between sessions, so each interview knows the person it's talking to",
         ],
       },
@@ -129,7 +155,8 @@ export const everbook = {
       },
       {
         header: "Commerce & checkout",
-        intro: "Two checkout systems over shared payment, tax, and shipping infrastructure.",
+        intro:
+          "Two checkout systems over shared payment, tax, and shipping infrastructure.",
         bullets: [
           "Carts for both authenticated and anonymous buyers, reconciled on login",
           "A universal single-page checkout with Apple Pay and Google Pay, and a dedicated multi-step wizard for the Life Story product, gift flows included",
@@ -139,7 +166,8 @@ export const everbook = {
       },
       {
         header: "Print fulfillment",
-        intro: "From confirmed order to a hardcover at the door, across three print providers.",
+        intro:
+          "From confirmed order to a hardcover at the door, across three print providers.",
         bullets: [
           "Each page rendered to its own PDF by headless Chrome and merged one page at a time, for reliability at scale",
           "Cover mathematics computed to the printer's spec: spine width from page count, board thickness, wrap area",
@@ -167,7 +195,7 @@ export const everbook = {
         "The webhook is the single writer of truth for orders. The checkout UI only gets Stripe to a confirmed payment — it never creates the order.",
       alternative:
         "Let the client create the order after payment confirms — simpler, faster to build, and how most first versions do it.",
-      why: "A closed tab or a dropped connection mid-confirmation must never leave a customer charged with no order. So order creation lives in one server-side transaction, reconstructed entirely from payment metadata: users provisioned, projects activated, line items built, print jobs fired, receipt sent. The cost is a race the UI has to absorb — the success page can load before the order exists, so it polls, treating \"not found\" as \"not yet\" rather than as an error.",
+      why: 'A closed tab or a dropped connection mid-confirmation must never leave a customer charged with no order. So order creation lives in one server-side transaction, reconstructed entirely from payment metadata: users provisioned, projects activated, line items built, print jobs fired, receipt sent. The cost is a race the UI has to absorb — the success page can load before the order exists, so it polls, treating "not found" as "not yet" rather than as an error.',
     },
     {
       chip: "BOOK GENERATION",
@@ -304,6 +332,9 @@ export const everbook = {
   ],
   links: [
     { label: "Site", href: "https://www.everbook.com/" },
-    { label: "Life story", href: "https://www.everbook.com/ca/product/life-story" },
+    {
+      label: "Life story",
+      href: "https://www.everbook.com/ca/product/life-story",
+    },
   ],
 } satisfies CaseStudy;

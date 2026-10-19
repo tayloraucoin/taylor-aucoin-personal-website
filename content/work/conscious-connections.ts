@@ -1,10 +1,10 @@
-import type { CaseStudy } from "./types";
 import { workMediaUrl } from "@/lib/work-media";
+import brainDumpJane from "@/public/work/conscious-connections/brain-dump/brain-dump-jane.png";
+import brainDumpTaylor from "@/public/work/conscious-connections/brain-dump/brain-dump-taylor.png";
 import marketingHeroDesktop from "@/public/work/conscious-connections/marketing/marketing-hero-desktop.png";
 import strengthsSection from "@/public/work/conscious-connections/onboarding/strengths-section.png";
-import brainDumpTaylor from "@/public/work/conscious-connections/brain-dump/brain-dump-taylor.png";
-import brainDumpJane from "@/public/work/conscious-connections/brain-dump/brain-dump-jane.png";
 import actionButtons from "@/public/work/conscious-connections/session/action-buttons.png";
+import type { CaseStudy } from "./types";
 
 /**
  * All claims verified against the Conscious Connections repo's docs and
@@ -25,6 +25,37 @@ export const consciousConnections = {
   roleLabel: "Founder, Engineer",
   role: "Founder, engineer, designer",
   period: "2026 — present",
+  type: "passion",
+  listRole: "Founder, engineer, designer",
+  sortDate: "2026-10",
+  facts: [
+    { value: "Solo build [draft]", meta: "founder · engineer · designer" },
+    { value: "2026 to present", meta: "first commit May 2026" },
+    { value: "Beta", meta: "marketing site live · toolkit ahead of launch" },
+    {
+      value: "consciousconnections.app",
+      meta: "live site",
+      href: "https://consciousconnections.app/",
+    },
+  ],
+  builtFormat: "band",
+  beats: {
+    problem:
+      "A communication and coaching tool for couples, with AI-mediated conflict translation and a safety layer that screens for intimate-partner-violence signals.",
+    decided:
+      "Privacy is enforced by structure, not instruction. Each AI touchpoint has its own context loader declaring exactly what it may see.",
+    happened:
+      "The marketing site is live; the toolkit is in beta ahead of launch.",
+  },
+  aiSat: {
+    product: [
+      "A compress-then-reason pipeline (Haiku distills, Sonnet coaches) with a safety classifier reading raw text in parallel",
+    ],
+    build: [
+      "Solo, with a roster of thirty-plus role-prompted AI agents held to specs and append-only decision logs",
+    ],
+    checked: ["[draft] Taylor's list"],
+  },
   engagementType: "Maps to · 0→1 Build",
   mediaPreview: true,
   stack: [
@@ -78,7 +109,7 @@ export const consciousConnections = {
       {
         header: "THE PRODUCT",
         bullets: [
-          "Each partner privately brain-dumps their side of a conflict; the coach translates each side to the other — delivered as \"[Name] is saying…\", never in the AI's own voice",
+          'Each partner privately brain-dumps their side of a conflict; the coach translates each side to the other — delivered as "[Name] is saying…", never in the AI\'s own voice',
           "The coach speaks at exactly three invoked moments — Get Perspective, I'm Stuck, and an explicit request. It never interjects on its own",
           "Deliberately a coaching tool, not therapy: it never diagnoses and never adjudicates who's right",
           "No streaks, no gamification, no engagement bait. The session itself is never paywalled; conversion happens in the calm",
@@ -114,7 +145,7 @@ export const consciousConnections = {
         intro:
           "A Turborepo monorepo: two live Next.js apps, twelve shared packages, and a hard rule about what lives where.",
         bullets: [
-          "Apps are composition only; capability lives in packages. The placement question is literally \"who imports this?\"",
+          'Apps are composition only; capability lives in packages. The placement question is literally "who imports this?"',
           "One typed contract from schema to client: Drizzle → tRPC → TanStack Query, validated with the same Zod schemas on both sides",
           "Row-level security enabled deny-by-default on every table, with policy factories so each table's access intent is declared rather than improvised",
           "Every request runs through a transaction-scoped RLS bridge that sets the user's identity as Postgres session variables, so the database, not the service code, enforces who sees what",
@@ -127,7 +158,7 @@ export const consciousConnections = {
           "A couple's first hour: a structured discovery interview that becomes a persistent relationship profile.",
         bullets: [
           "Two-partner onboarding on one shared device: a pass-the-device flow with per-member resume, so each partner answers privately",
-          "The partner without an account yet is an \"empty seat\": a real database row with a first name and no login, claimed later from their own device",
+          'The partner without an account yet is an "empty seat": a real database row with a first name and no login, claimed later from their own device',
           "Five discovery layers (strengths, story, patterns, attachment, values) on one headless form engine with autosave",
           "AI insight extraction turns the interview into structured insights the couple reviews together, with per-member approvals, versioning, and realtime sync",
           "Consent tiers on every insight are derived server-side from the insight's category; the model is structurally unable to set trust-gate levels",
