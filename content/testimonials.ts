@@ -35,15 +35,18 @@ export type Testimonial = {
   avatar?: string;
   /** For reports: what they worked on under Taylor. */
   workedOn?: string;
+  /**
+   * The span a case study shows (D-SITE-84, 94): contiguous in `full`, and
+   * never the one home or /about shows. Absent means no testimonial there.
+   */
+  caseStudySpan?: string;
   /** True only after the person explicitly confirms publication. */
   approved: boolean;
 };
 
 /** What renders: approved always; pending only while the preview flag is on. */
 export const visibleTestimonials = () =>
-  testimonials.filter(
-    (t) => t.approved || SHOW_PENDING_TESTIMONIALS,
-  );
+  testimonials.filter((t) => t.approved || SHOW_PENDING_TESTIMONIALS);
 
 export const testimonials: Testimonial[] = [
   {
@@ -58,6 +61,8 @@ export const testimonials: Testimonial[] = [
       "Taylor is a phenomenal engineer. During his time at Pine Studio, he took rough concepts and turned them into full products. He owned the project scope, technical architecture, and development through to launch. He was a pleasure to work with, always reliable, sharp, and dedicated to building great product. I highly recommend him.",
     ],
     project: { label: "Everbook", href: "/work/everbook" },
+    caseStudySpan:
+      "He was a pleasure to work with, always reliable, sharp, and dedicated to building great product.",
     approved: true,
   },
   {
@@ -79,6 +84,8 @@ export const testimonials: Testimonial[] = [
       label: "Family Office Platform",
       href: "/work/family-office-platform",
     },
+    caseStudySpan:
+      "Most importantly, Taylor established robust technical conventions, documentation, and standard operating procedures.",
     approved: true,
   },
   {
@@ -114,7 +121,10 @@ export const testimonials: Testimonial[] = [
       "I believe Taylor will be a great addition to any team looking for a Senior Frontend Engineer, with an additional focus on project management.",
     ],
     project: { label: "Agora V1 · BCIT ISSP", href: "/work/agora" },
-    workedOn: "Stripe checkout (v1) and analytics on Agora, under Taylor's specs and code review",
+    workedOn:
+      "Stripe checkout (v1) and analytics on Agora, under Taylor's specs and code review",
+    caseStudySpan:
+      "His ability to break down a complex task into small, well-elaborated action items is impeccable and a joy to work with.",
     approved: true,
   },
   {
