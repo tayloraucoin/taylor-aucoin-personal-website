@@ -71,6 +71,8 @@ export const siteRoutes = {
   about: "/about",
   workWithMe: "/work-with-me",
   book: "/book",
+  /** The fit view posts here; it answers 303 to Cal.com (SITE-22). */
+  bookHandoff: "/book/handoff",
   contact: "/contact",
   capabilities: "/capabilities",
   websites: "/websites",
