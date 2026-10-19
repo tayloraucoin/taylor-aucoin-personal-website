@@ -139,6 +139,36 @@ test.describe("at 1440", () => {
     await page.goto("/?state=capabilities-all");
     await expect(chips(page)).toHaveCount(25);
   });
+
+  test("feedback 2026-10-19: rows carry Paper's padding, a closed row as tall as its text", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const section = page.locator("section[aria-label=Pillars]");
+    const panel = await section
+      .locator("ul")
+      .evaluate((ul) => getComputedStyle(ul.parentElement!).padding);
+    expect(panel).toBe("8px 32px");
+    const rows = await section.locator("li").evaluateAll((lis) =>
+      lis.map((li) => {
+        const s = getComputedStyle(li);
+        const button = li.querySelector("button")!;
+        const line = button.children[1] as HTMLElement;
+        return {
+          padding: [s.paddingTop, s.paddingBottom],
+          // The button is as tall as the longer of its title and line.
+          extra: Math.round(
+            button.getBoundingClientRect().height -
+              line.getBoundingClientRect().height,
+          ),
+        };
+      }),
+    );
+    for (const row of rows) {
+      expect(row.padding).toEqual(["24px", "24px"]);
+      expect(row.extra).toBe(0);
+    }
+  });
 });
 
 test.describe("C4 reduced motion", () => {
