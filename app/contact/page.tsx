@@ -34,6 +34,7 @@ export default async function ContactPage({
           sentVariant="with_call"
           intro={<p>{contact.intro}</p>}
           seed={seed}
+          holdUntilValid
         />
       </div>
     </main>

@@ -58,7 +58,9 @@ const CALL_AS_TEXT =
  * when the visitor began (the screening form's mount on `/book`), so the
  * fill-time rule counts from there and a note sent at once still goes.
  * `besideButton` replaces the "Or email" line; `messageLabel` and
- * `sentTitle` default to `/contact`'s.
+ * `sentTitle` default to `/contact`'s. `holdUntilValid` (`/contact`) keeps
+ * the button `aria-disabled` until the message and email pass the schema,
+ * described by the field errors still standing.
  */
 export function NoteForm({
   from,
@@ -71,6 +73,7 @@ export function NoteForm({
   messageLabel = contact.fields.message.label,
   besideButton,
   sentTitle = contact.sentTitle,
+  holdUntilValid = false,
 }: {
   from: NoteFrom;
   sentVariant: "with_call" | "alone";
@@ -82,6 +85,7 @@ export function NoteForm({
   messageLabel?: string;
   besideButton?: ReactNode;
   sentTitle?: string;
+  holdUntilValid?: boolean;
 }) {
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
@@ -181,6 +185,10 @@ export function NoteForm({
 
   const fieldId = (name: string) => `${id}-${name}`;
 
+  const live = noteSchema.safeParse({ ...values, from, screening });
+  const standing = live.success ? {} : noteFieldErrors(live.error);
+  const blocked = holdUntilValid && !live.success;
+
   return (
     <div>
       <div className="mt-4 text-lede leading-[1.6] text-(--color-body)">
@@ -253,7 +261,14 @@ export function NoteForm({
             label={contact.button}
             busyLabel={contact.sending}
             busy={pending}
+            blockedBy={blocked ? fieldId("why-blocked") : undefined}
           />
+          {holdUntilValid ? (
+            <span id={fieldId("why-blocked")} className="sr-only">
+              {standing.message ? contact.errors.message : ""}{" "}
+              {standing.email ? contact.errors.email : ""}
+            </span>
+          ) : null}
           {besideButton ?? (
             <a href={`mailto:${SITE.email}`} className={LINK}>
               {contact.orEmail}
