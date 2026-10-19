@@ -5,7 +5,7 @@ import { GalleryOpener } from "./GalleryOpener";
 import { LIST_TITLES, workIndex } from "./words";
 
 const LINK =
-  "inline-flex min-h-11 items-center text-left text-(length:--text-body) text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) md:min-h-7";
+  "inline-flex min-h-11 items-center text-left text-(length:--text-small) leading-[1.2] font-medium text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-3 transition-colors duration-(--dur-fast) hover:text-(--color-body) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) md:min-h-7";
 
 const host = (url: string) => new URL(url).host.replace(/^www\./, "");
 
@@ -13,6 +13,8 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
  * One piece of work (work-index-build §4, 5): title over tagline, role over
  * period, a right-aligned link stack at 1440; stacked at 390 with role ·
  * period on one line. Every repeated link is described by the row's title.
+ * The stack's links are Paper's: Small 15 at weight 500, an 18px line and a
+ * 3px underline offset (feedback 2026-10-19: they had been set at body 17).
  */
 export function WorkRow({ entry }: { entry: WorkEntry }) {
   const titleId = `work-row-${entry.id}`;

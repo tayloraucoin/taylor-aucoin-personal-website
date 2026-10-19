@@ -149,6 +149,31 @@ test.describe("at 1440", () => {
     await expect(opener).toBeFocused();
   });
 
+  test("feedback 2026-10-19: the tab line holds without chips; stack links at Paper's size", async ({
+    page,
+  }) => {
+    const line = async () =>
+      tabsNav(page).evaluate((nav) => {
+        const row = nav.parentElement!.getBoundingClientRect();
+        return [row.top, row.height];
+      });
+    await page.goto("/work");
+    await expect(chipsNav(page)).toBeVisible();
+    const product = await line();
+    const link = await page
+      .getByRole("link", { name: "Read the decision story" })
+      .first()
+      .evaluate((a) => {
+        const s = getComputedStyle(a);
+        return [s.fontSize, s.fontWeight, s.lineHeight, s.textUnderlineOffset];
+      });
+    expect(link).toEqual(["15px", "500", "18px", "3px"]);
+
+    await page.goto("/work?tab=websites");
+    await expect(page.locator("main nav")).toHaveCount(1);
+    expect(await line()).toEqual(product);
+  });
+
   test("C6 no family office name in any tab", async ({ page }) => {
     for (const url of [
       "/work",

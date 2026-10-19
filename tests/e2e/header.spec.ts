@@ -70,7 +70,7 @@ test.describe("C3 at 1440", () => {
         ...NAV.map(([label, href]) => [label, href]),
         ["Book a 30-minute call", "/book"],
       ]);
-      await expect(h.getByRole("group", { name: "Theme" })).toBeVisible();
+      await expect(h.getByRole("button", { name: "Theme" })).toBeVisible();
       await expect(h.getByText("Résumé")).toHaveCount(0);
 
       const nav = h.getByRole("navigation", { name: "Main" });
@@ -108,7 +108,7 @@ test.describe("C4 at 390", () => {
         h.getByRole("link", { name: "Book a 30-minute call" }),
       ).toBeHidden();
       const toggle = await h
-        .getByRole("group", { name: "Theme" })
+        .getByRole("button", { name: "Theme" })
         .boundingBox();
       const nav = await h
         .getByRole("navigation", { name: "Main" })
@@ -270,11 +270,33 @@ test("C6 dark with nothing stored whatever the system prefers; light after the t
   await page.goto("/");
   await expect(page.locator("html")).toHaveClass(/\bdark\b/);
 
-  await page
-    .getByRole("group", { name: "Theme" })
-    .getByRole("button", { name: "Light" })
-    .click();
+  const theme = header(page).getByRole("button", { name: "Theme" });
+  await expect(theme).toHaveAccessibleDescription(
+    "Dark is on; switches to light",
+  );
+  await theme.click();
+  await expect(theme).toHaveAccessibleDescription(
+    "Light is on; switches to dark",
+  );
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/\blight\b/);
+  await header(page).getByRole("button", { name: "Theme" }).click();
+  await expect(page.locator("html")).toHaveClass(/\bdark\b/);
   await context.close();
+});
+
+test("feedback 2026-10-19: the theme control is Paper's one 36px button, not a three-way group", async ({
+  page,
+  context,
+}) => {
+  await stubGoogle(context);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const h = header(page);
+  await expect(h.getByRole("group", { name: "Theme" })).toHaveCount(0);
+  const theme = h.getByRole("button", { name: "Theme" });
+  const box = await theme.boundingBox();
+  expect([box!.width, box!.height]).toEqual([36, 36]);
+  await expect(theme.locator("svg")).toHaveCount(1);
+  await expectNoSeriousA11y(page, { include: "header" });
 });

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { hidesCallButton } from "@/lib/routes";
 import { BookCallLink } from "./BookCallLink";
 import { currentNavItem, headerCallSurface, NAV_ITEMS } from "./nav";
+import { ThemeButton } from "./ThemeButton";
 
 /**
  * The header's path-aware half: the nav with its current item, the call
@@ -56,7 +56,7 @@ export function HeaderNav() {
           />
         </div>
       )}
-      <ThemeToggle />
+      <ThemeButton />
     </>
   );
 }

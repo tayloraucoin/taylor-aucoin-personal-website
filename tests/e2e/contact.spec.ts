@@ -117,7 +117,8 @@ test.describe("at 1440", () => {
     const actions = countActions(page);
     await open(page);
     await main(page).getByLabel("Email").fill("sam@example");
-    await sendButton(page).click();
+    // Held aria-disabled until valid, the button still takes a press.
+    await sendButton(page).press("Enter");
 
     const message = main(page).getByLabel("Message");
     const email = main(page).getByLabel("Email");
@@ -172,6 +173,53 @@ test.describe("at 1440", () => {
     release();
     await expect(main(page)).toContainText(`Sent. I'll reply to ${NOTE.email}`);
     expect(actions).toHaveLength(1);
+  });
+
+  test("feedback 2026-10-19: Send holds aria-disabled, saying why, until the message and email are both valid", async ({
+    page,
+    context,
+  }) => {
+    await stubGoogle(context);
+    const actions = countActions(page);
+    await open(page);
+    const button = sendButton(page);
+    const why = async () =>
+      page
+        .locator(`[id="${await button.getAttribute("aria-describedby")}"]`)
+        .textContent();
+
+    await expect(button).toHaveAttribute("aria-disabled", "true");
+    await expect(button).not.toHaveAttribute("disabled");
+    expect(await why()).toContain("Add a line or two about what you need.");
+    expect(await why()).toContain("That doesn't look like an email address");
+    expect(
+      await button.evaluate((el) => [
+        getComputedStyle(el).opacity,
+        getComputedStyle(el).cursor,
+      ]),
+    ).toEqual(["0.6", "not-allowed"]);
+
+    await main(page).getByLabel("Message").fill(NOTE.message);
+    await expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(await why()).not.toContain("Add a line or two");
+    expect(await why()).toContain("That doesn't look like an email address");
+
+    await main(page).getByLabel("Email").fill("visitor@example");
+    await expect(button).toHaveAttribute("aria-disabled", "true");
+
+    await main(page).getByLabel("Email").fill(NOTE.email);
+    await expect(button).not.toHaveAttribute("aria-disabled");
+    await expect(button).not.toHaveAttribute("aria-describedby");
+
+    // Reachable by keyboard while held, and a press only shows the errors.
+    await main(page).getByLabel("Message").fill("");
+    await button.focus();
+    await expect(button).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(main(page).getByLabel("Message")).toBeFocused();
+    await page.waitForTimeout(500);
+    expect(actions).toEqual([]);
+    await expectNoSeriousA11y(page, { include: "main form" });
   });
 
   test("C7 with Name blank, sent replaces the intro and form, focused, title changed, call offered", async ({
@@ -398,7 +446,7 @@ test.describe("C10 at 390", () => {
     await noSideScroll(page);
     await expectNoSeriousA11y(page, { include: "main" });
 
-    await sendButton(page).click();
+    await sendButton(page).press("Enter");
     await expect(main(page).getByLabel("Message")).toBeFocused();
     await noSideScroll(page);
     await expectNoSeriousA11y(page, { include: "main" });

@@ -12,6 +12,11 @@ type Pillar = { title: string; line: string; open: string };
  * button, Esc closes it and focus stays. The ring is the house's masked
  * ring (law 1), which stops under reduced motion. The open row fades in by
  * CSS (`@starting-style`), never an animated height.
+ *
+ * Padding is the Paper artboards' (feedback 2026-10-19): the panel is 8px by
+ * 32px with 24px rows at 1440, 4px by 20px with 20px rows at 390. A closed
+ * row is as tall as its text; at 1440 the full-width button is 27px, past
+ * the 24px target floor.
  */
 export function Pillars({
   items,
@@ -35,13 +40,16 @@ export function Pillars({
 
   return (
     <section aria-label="Pillars" className="mt-16 md:mt-24">
-      <GradientRing hoverAccelerate={false} className="px-6 md:px-8">
+      <GradientRing
+        hoverAccelerate={false}
+        className="px-5 py-1 md:px-8 md:py-2"
+      >
         <ul className="divide-y divide-(--color-line-soft)">
           {items.map((p, i) => {
             const isOpen = open.has(i);
             const panel = `${id}-pillar-${i}`;
             return (
-              <li key={p.title} className="py-6">
+              <li key={p.title} className="py-5 md:py-6">
                 <h3>
                   <button
                     type="button"
@@ -54,7 +62,7 @@ export function Pillars({
                         set(i, false);
                       }
                     }}
-                    className="grid min-h-11 w-full cursor-pointer grid-cols-[1fr_auto] gap-x-6 gap-y-2 text-left md:grid-cols-[280px_1fr_auto] md:gap-x-8"
+                    className="grid w-full cursor-pointer grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-left md:grid-cols-[280px_1fr_auto] md:gap-x-8"
                   >
                     <span className="font-display text-(length:--text-h4) leading-[1.25] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
                       {p.title}

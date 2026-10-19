@@ -57,8 +57,13 @@ export default async function WorkPage({
 
       <div className="mt-10 flex flex-col gap-4 border-b border-(--color-line-soft) md:mt-12 md:flex-row md:items-end md:justify-between">
         <WorkTabsNav tabs={visibleTabs()} selected={tab} />
-        {chips.length > 0 && (
+        {chips.length > 0 ? (
           <TypeChipsNav tab={tab} chips={chips} selected={type} />
+        ) : (
+          // A tab with no type chips (Websites) keeps the chip row's height
+          // at md and up, a 40px chip over its 12px foot, so the tab line
+          // does not jump (feedback 2026-10-19).
+          <div aria-hidden className="max-md:hidden md:h-13" />
         )}
       </div>
 
