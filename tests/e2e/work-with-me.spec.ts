@@ -211,6 +211,51 @@ test.describe("C4 events", () => {
   });
 });
 
+test("feedback 2026-10-19: How to start is three cards on the card surface, copy unchanged", async ({
+  page,
+  context,
+}) => {
+  await stubGoogle(context);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/work-with-me");
+  const section = main(page).locator("section[aria-labelledby=start-heading]");
+  const cards = section.locator("ol > li");
+  await expect(cards).toHaveCount(3);
+  await expect(cards.locator("h3")).toHaveText([
+    "A 30-minute call",
+    "A scoped proposal",
+    "A start date",
+  ]);
+  await expect(section).toContainText("I reply within one business day.");
+  const looks = await cards.evaluateAll((lis) =>
+    lis.map((li) => {
+      const s = getComputedStyle(li);
+      const card = getComputedStyle(document.documentElement).getPropertyValue(
+        "--color-card",
+      );
+      const probe = document.createElement("div");
+      probe.style.backgroundColor = card;
+      document.body.append(probe);
+      const want = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return [
+        s.backgroundColor === want,
+        s.borderTopWidth,
+        s.borderTopLeftRadius,
+        li.getBoundingClientRect().top,
+      ];
+    }),
+  );
+  for (const [onCard, border, radius] of looks) {
+    expect([onCard, border, radius]).toEqual([true, "1px", "3px"]);
+  }
+  // One row of three at 1440.
+  expect(new Set(looks.map((l) => l[3])).size).toBe(1);
+  await expectNoSeriousA11y(page, {
+    include: "section[aria-labelledby=start-heading]",
+  });
+});
+
 test("C5 FAQ open, 390 layout, axe, skip link", async ({ page, browser }) => {
   await page.goto("/work-with-me");
   const faq = page.locator("section", {
