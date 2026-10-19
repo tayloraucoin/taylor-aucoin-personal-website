@@ -81,6 +81,13 @@ export const book = {
     h1: "Let's talk first [draft]",
     intro: (firstName?: string) =>
       `[draft] ${greeting(firstName)} From what you've shared, a short exchange by email will tell us more than a call. Add anything you like and send it.`,
+    messageLabel: "Your note [draft]",
+    /** [ASSUMPTION] the words file names no sent title; the H1 stays. */
+    sentTitle: `Sent — Let's talk first [draft] — ${SITE.name}`,
+  },
+  websiteLine: {
+    lead: "Need a website or a brand?",
+    link: "See how a coded site works [draft]",
   },
 } as const;
 
