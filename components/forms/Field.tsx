@@ -12,7 +12,7 @@ import { ErrorLine } from "./ErrorLine";
  * invalid. Placeholders are hints under the label, never the label (A-16).
  * Controlled, so a failed send keeps every answer.
  */
-const CONTROL =
+export const CONTROL =
   "block w-full rounded-(--radius) border border-(--color-line-strong) bg-transparent px-[14px] text-small text-(--color-ink) placeholder:text-(--color-dim) transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) aria-invalid:border-2 aria-invalid:border-(--color-ink) aria-invalid:px-[13px]";
 
 type Common = {

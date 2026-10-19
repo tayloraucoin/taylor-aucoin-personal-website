@@ -110,3 +110,26 @@ export const selectedWork = {
   /** The filter's live count; the wording is Taylor's to write. */
   liveCount: "[Taylor's to write] {n}",
 } as const;
+
+/** The notes signup (home-words.md, Notes signup). */
+export const notes = {
+  heading: "Notes",
+  line: "[Draft] How I build with AI: what I let it do, what I check, and why.",
+  label: "Email",
+  placeholder: "you@company.com",
+  hint: "Used only for the notes. Unsubscribe from any email.",
+  button: "Get the notes",
+  sending: "Sending",
+  retry: "Try again",
+  done: (address: string) => `[Draft] Signed up. Notes will go to ${address}.`,
+  error:
+    "[Draft] It didn't send. Check your connection and try again; your address is still here.",
+  invalid:
+    "[Draft] That address needs an ending, like .com or .ca. Nothing was sent.",
+} as const;
+
+/**
+ * The consent wording's version, stored with every signup. Bump it whenever
+ * `notes.hint` changes.
+ */
+export const NOTES_CONSENT_VERSION = "2026-10-19";

@@ -39,6 +39,7 @@ export * from "./invoice-emails";
 export * from "./lead-emails";
 export * from "./lead-syncs";
 export * from "./leads";
+export * from "./note-signups";
 export * from "./orders";
 export * from "./pipeline-steps";
 export * from "./products";
