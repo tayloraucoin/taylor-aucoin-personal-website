@@ -203,6 +203,14 @@ export const toolGroups: readonly ToolGroup[] = [
       { name: "Linear (project management)", label: "Linear" },
       { name: "Cursor" },
       { name: "Claude Code" },
+      {
+        name: "agent-orchestrated development (role-prompted agents, slice specs, append-only decision logs)",
+        label: "Agent-orchestrated development",
+      },
+      {
+        name: "engineering conventions and schema standards as artifacts",
+        label: "Engineering conventions and schema standards",
+      },
     ],
   },
   {
