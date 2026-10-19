@@ -1,8 +1,10 @@
 import { HomeHero } from "@/app/_components/HomeHero";
+import { NotesSignup } from "@/app/_components/NotesSignup";
 import { Pillars } from "@/app/_components/Pillars";
 import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
 import { SelectedWork } from "@/app/_components/SelectedWork";
+import { NOTES_STATES, notesFixtures } from "@/app/_fixtures";
 import RootField from "@/components/field/RootField";
 import Testimonials from "@/components/sections/Testimonials";
 import { pillars } from "@/content/home";
@@ -16,6 +18,7 @@ const STATES = [
   "selected-work-websites",
   "selected-work-branding",
   "selected-work-filtered",
+  ...NOTES_STATES,
 ] as const;
 
 /**
@@ -61,6 +64,13 @@ export default async function Home({
       />
       {/* Renders nothing when visibleTestimonials() is empty. */}
       <Testimonials />
+      <NotesSignup
+        seed={
+          (NOTES_STATES as readonly string[]).includes(state)
+            ? notesFixtures[state as (typeof NOTES_STATES)[number]]
+            : undefined
+        }
+      />
     </main>
   );
 }
