@@ -48,6 +48,17 @@ export type Capability = {
   offer: string;
   /** Filter-matching only. Lowercase. */
   keywords: string[];
+  /**
+   * The short name on home's capability chip (D-SITE-46), as drawn on the
+   * Paper Home and Capabilities pages. Absent → no chip.
+   */
+  chip?: string;
+  /**
+   * Taylor's comfort, which orders the chips and is never rendered or sent
+   * to the client (D-SITE-65). Synthetic until he supplies his own: these
+   * reproduce the drawn order.
+   */
+  comfort?: number;
 };
 
 const BCIT_ISSP_URL =
@@ -56,6 +67,8 @@ const BCIT_ISSP_URL =
 export const capabilities: Capability[] = [
   {
     slug: "zero-to-one",
+    chip: "0→1 builds",
+    comfort: 9.8,
     tags: ["Delivery"],
     title: "Turn a spec into a shipped product, solo",
     tech: "0→1 delivery",
@@ -81,6 +94,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "ai-features",
+    chip: "AI features",
+    comfort: 9.5,
     tags: ["AI"],
     title: "Ship AI features that don't rot your codebase",
     tech: "LLM orchestration · evals · structured output",
@@ -109,6 +124,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "payments",
+    chip: "Payments and tax",
+    comfort: 8.0,
     tags: ["Commerce"],
     title: "Payments, tax, and refunds that survive real orders",
     tech: "Stripe · subscriptions · webhooks",
@@ -139,6 +156,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "data-architecture",
+    chip: "Data and state architecture",
+    comfort: 9.2,
     tags: ["Data"],
     title: "Data and state architecture that survives feature growth",
     tech: "typed end-to-end · schema design · RLS",
@@ -169,12 +188,16 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "consolidate",
+    chip: "System consolidation",
+    comfort: 6.8,
     tags: ["Data"],
     title: "Consolidate several half-built systems into one",
     tech: "monorepo · shared schema · migrations",
     approach:
       "Ten legacy databases across five business entities became one monorepo, one database, one login. Migration and reconciliation came first, visible features second, and the legacy code kept running while the ground moved under it.",
-    proof: [{ label: "Family Office Platform", href: "/work/family-office-platform" }],
+    proof: [
+      { label: "Family Office Platform", href: "/work/family-office-platform" },
+    ],
     offer: "Fractional CTO",
     keywords: [
       "monorepo",
@@ -190,6 +213,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "ai-native-process",
+    chip: "AI engineering process",
+    comfort: 7.7,
     tags: ["AI", "Process"],
     title: "Turn AI coding agents into a disciplined engineering team",
     tech: "Cursor · Claude Code · convention systems · role prompts",
@@ -218,6 +243,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "booking-inventory",
+    chip: "Booking and inventory",
+    comfort: 6.5,
     tags: ["Commerce"],
     title: "Booking, inventory, and accommodation flows",
     tech: "allocation · availability · edge cases",
@@ -246,6 +273,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "search-discovery",
+    chip: "Search and discovery",
+    comfort: 8.3,
     tags: ["Data", "AI"],
     title: "Search and discovery that actually finds things",
     tech: "Elasticsearch · ranking · recommendations",
@@ -267,6 +296,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "ai-duty-of-care",
+    chip: "AI with a duty of care",
+    comfort: 5.0,
     tags: ["AI", "Quality"],
     title: "Build AI products that carry a duty of care",
     tech: "safety classifiers · tiered response · fail-open design",
@@ -291,6 +322,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "realtime-sync",
+    chip: "Realtime sync",
+    comfort: 6.2,
     tags: ["Data"],
     title: "Realtime sync that survives bad networks",
     tech: "Supabase Realtime · presence · offline outbox",
@@ -314,6 +347,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "performance",
+    chip: "Rendering performance",
+    comfort: 7.1,
     tags: ["Quality"],
     title: "Make a slow app fast",
     tech: "rendering performance · caching · Lighthouse",
@@ -336,6 +371,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "realtime-voice",
+    chip: "Realtime voice",
+    comfort: 4.7,
     tags: ["AI"],
     title: "Realtime voice and audio interfaces",
     tech: "streaming AI · latency budgets",
@@ -357,6 +394,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "velocity",
+    chip: "Senior velocity",
+    comfort: 4.4,
     tags: ["Delivery"],
     title: "Add senior velocity to an existing codebase",
     tech: "your stack · your conventions",
@@ -377,6 +416,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "correctness",
+    chip: "Correctness",
+    comfort: 7.4,
     tags: ["Quality"],
     title: "Correctness under pressure",
     tech: "defect prevention · clinical-grade care",
@@ -401,6 +442,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "specification",
+    chip: "Specification",
+    comfort: 8.9,
     tags: ["Process"],
     title: "Write the spec everyone else can build from",
     tech: "specification · decision records",
@@ -425,6 +468,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "interface-design",
+    chip: "Interface design",
+    comfort: 8.6,
     tags: ["Design"],
     title: "Design the interface, not just build it",
     tech: "product design · UX · UI",
@@ -450,6 +495,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "ambiguity",
+    chip: "Loose briefs, finished product",
+    comfort: 4.1,
     tags: ["Delivery"],
     title: "Run with loose guidelines, deliver a finished product",
     tech: "minimal direction · full ownership",
@@ -473,6 +520,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "junior-team",
+    chip: "Leading junior teams",
+    comfort: 3.2,
     tags: ["Process"],
     title: "Lead and level up a junior team",
     tech: "mentorship · code review · standards",
@@ -494,6 +543,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "metadata-enrichment",
+    chip: "Metadata enrichment",
+    comfort: 3.8,
     tags: ["Data", "AI"],
     title: "Turn a raw catalog into structured, trustworthy metadata",
     tech: "LLM pipelines · ML classification · data quality",
@@ -515,6 +566,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "qa-testing",
+    chip: "Testing",
+    comfort: 5.9,
     tags: ["Quality"],
     title: "Tests that earn deploy confidence",
     tech: "unit · integration · CI",
@@ -538,6 +591,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "animation-craft",
+    chip: "Animation and interaction",
+    comfort: 3.5,
     tags: ["Design"],
     title: "Animation and interaction craft",
     tech: "Motion · CSS · canvas",
@@ -566,6 +621,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "component-kit",
+    chip: "Component kits",
+    comfort: 5.6,
     tags: ["Design"],
     title: "Build the component kit your team ships from",
     tech: "Storybook · design systems · shared UI",
@@ -646,6 +703,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "branding",
+    chip: "Branding",
+    comfort: 2.9,
     tags: ["Design"],
     title: "Take a company through a formal branding process",
     tech: "brand pillars · identity · brand guide",
@@ -667,6 +726,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "data-pipelines",
+    chip: "Data pipelines",
+    comfort: 2.6,
     tags: ["Data"],
     title: "Data scraping and lead pipelines",
     tech: "scraping · processing · human-in-the-loop",
@@ -688,6 +749,8 @@ export const capabilities: Capability[] = [
   },
   {
     slug: "roadmapping",
+    chip: "Scoping and roadmaps",
+    comfort: 5.3,
     tags: ["Process"],
     title: "Scope the build and sequence the roadmap",
     tech: "scoping · sequencing · build plans",
