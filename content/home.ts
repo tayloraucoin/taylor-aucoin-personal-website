@@ -17,10 +17,11 @@ export const homeHero = {
 /** The proof bar: a ledger in type, a fact over a meta line (D-SITE-48). */
 export const proofBar: readonly { fact: string; meta: string }[] = [
   { fact: "Since 2016", meta: "building software" },
+  // TODO(lane C): the products figure is proposed in the copy pass; kept as is.
   { fact: "[12] products", meta: "zero to one, and counting" },
   {
-    fact: "[23] cohorts taught",
-    meta: "BCIT ISSP · VFS · a design cohort · virtual interns",
+    fact: "22 cohorts taught",
+    meta: "BCIT ISSP · VFS · FLUI · SFU co-op · virtual intern",
   },
   {
     fact: "Four seats [draft]",

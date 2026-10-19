@@ -16,10 +16,7 @@ const CALL = "Book a 30-minute call";
 const BAR = [
   ["Since 2016", "building software"],
   ["[12] products", "zero to one, and counting"],
-  [
-    "[23] cohorts taught",
-    "BCIT ISSP · VFS · a design cohort · virtual interns",
-  ],
+  ["22 cohorts taught", "BCIT ISSP · VFS · FLUI · SFU co-op · virtual intern"],
   [
     "Four seats [draft]",
     "founder · founding engineer · product designer · fractional CTO",
