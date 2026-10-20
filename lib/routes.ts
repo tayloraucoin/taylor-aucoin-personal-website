@@ -17,6 +17,12 @@ import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 const INTAKE_PREFIX = "/websites/intake";
 
 /**
+ * The intake's test harness (SITE-28). Covered by `isIntakePath` so it renders
+ * chrome-free and unmeasured, as an intake screen does; it 404s in production.
+ */
+const INTAKE_HARNESS = "/test-harness/intake";
+
+/**
  * True on any client-intake surface.
  *
  * The site's chrome and its analytics are mounted in the root layout, so each
@@ -26,7 +32,7 @@ const INTAKE_PREFIX = "/websites/intake";
  * paying client does not need.
  */
 export function isIntakePath(pathname: string): boolean {
-  return [INTAKE_PREFIX, SHOWCASE_INTAKE_PREFIX].some(
+  return [INTAKE_PREFIX, SHOWCASE_INTAKE_PREFIX, INTAKE_HARNESS].some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }

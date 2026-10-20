@@ -40,12 +40,12 @@ export function InkCluster({
     >
       <h2
         id={id}
-        className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)"
+        className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
       >
         {mono}
       </h2>
 
-      <p className="mt-3 mb-6 max-w-[52ch] font-body text-[16px] font-light leading-[1.6] text-(--color-ink)">
+      <p className="mt-3 mb-6 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-body">
         {intro}
       </p>
 

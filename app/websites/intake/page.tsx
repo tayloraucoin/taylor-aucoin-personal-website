@@ -6,7 +6,6 @@ import {
   requireEngagement,
 } from "@/server/services/engagement";
 import { readResumeCookie } from "./_actions/start";
-import { Eyebrow } from "./_components/eyebrow";
 import { StartForm } from "./_components/start-form";
 
 /* This page is public and tokenless, so unlike the layout's neutral card it
@@ -57,20 +56,18 @@ export default async function IntakeStartPage({
 
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         Let&apos;s get your site started.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
         A few details to set things up. The full questionnaire comes next —
         about 30 minutes, and you can skip anything you&apos;re not sure about.
       </p>
 
       {inProgress ? (
         <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-          <p className="font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
             You already started one for{" "}
             <span className="text-(--color-ink)">
               {inProgress.businessName}
@@ -80,7 +77,7 @@ export default async function IntakeStartPage({
           <p className="mt-3">
             <Link
               href={intakeRoutes.entry(inProgress.token)}
-              className="font-mono text-[11px] uppercase tracking-[.10em] text-(--color-c2) underline underline-offset-4 hover:text-(--color-c3)"
+              className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
             >
               Pick up where you left off →
             </Link>
@@ -95,11 +92,11 @@ export default async function IntakeStartPage({
       {/* Notice at the point of collection: this is the first screen that
           takes personal information, so the privacy policy is named here —
           before the pay screen's acceptance line, not only on it. */}
-      <p className="mt-10 border-t border-(--color-faint) pt-5 font-mono text-[10px] uppercase leading-[1.8] tracking-[.18em] text-(--color-dim)">
+      <p className="mt-10 border-t border-(--color-faint) pt-5 text-meta leading-[1.55] text-(--color-dim)">
         Nothing is charged on this page. Everything you enter is confidential ·{" "}
         <Link
           href={legalRoutes.privacy}
-          className="underline underline-offset-4 transition-colors hover:text-(--color-ink)"
+          className="inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           Privacy
         </Link>

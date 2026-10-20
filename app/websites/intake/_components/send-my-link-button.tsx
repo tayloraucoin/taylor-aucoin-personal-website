@@ -17,10 +17,7 @@ export function SendMyLinkButton({ token }: { token: string }) {
 
   if (result === "sent") {
     return (
-      <p
-        aria-live="polite"
-        className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)"
-      >
+      <p aria-live="polite" className="text-meta text-(--color-ink)">
         Sent — check your email
       </p>
     );
@@ -42,7 +39,7 @@ export function SendMyLinkButton({ token }: { token: string }) {
       {result === "failed" ? (
         <p
           aria-live="polite"
-          className="mt-2 font-body text-[13.5px] font-light text-(--color-c2)"
+          className="mt-2 text-meta leading-[1.55] text-(--color-ink)"
         >
           That didn&apos;t send. Keep this tab open, or ask Taylor for a fresh
           link.

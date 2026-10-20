@@ -38,13 +38,12 @@ export type Choice = { value: string; label: string; disabled?: boolean };
  * literals, and it is why the selected border's colour has one home.
  */
 export const CARD_CLASS =
-  "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left font-body text-[16px] font-light leading-[1.4] transition-colors duration-(--dur-fast) ease-(--ease-out)";
+  "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left text-[16px] leading-[1.4] sm:text-body transition-colors duration-(--dur-fast) ease-(--ease-out)";
 
 export const UNSELECTED_CLASS =
-  "border-(--color-faint) bg-(--color-card) text-(--color-body) hover:border-(--color-gold-line-soft) hover:bg-(--color-card-hover)";
+  "border-(--color-border-strong) text-(--color-body) hover:border-(--color-ink)";
 
-export const SELECTED_CLASS =
-  "border-(--color-gold-line) bg-(--color-card-hover) text-(--color-ink)";
+export const SELECTED_CLASS = "border-(--color-ink) text-(--color-ink)";
 
 const DISABLED_CLASS =
   "border-(--color-faint) bg-(--color-card) text-(--color-dim) opacity-60";
@@ -165,18 +164,42 @@ export function ChoiceGroup({
                 onChange={() => toggle(option.value)}
                 className="sr-only"
               />
+              {/* The choice row's 16px control: a radio ring holding a mark
+                  dot when chosen, or a checkbox filled in text colour with a
+                  ground-coloured check (plumb-proposals-2). */}
               <span
                 aria-hidden
-                className={`mr-3 h-2 w-2 shrink-0 rounded-full transition-colors duration-(--dur-fast) ${
-                  isSelected ? "bg-(--color-c2)" : "bg-(--color-faint)"
+                className={`mr-3 flex size-4 shrink-0 items-center justify-center border ${
+                  multiple ? "rounded-(--radius)" : "rounded-full"
+                } ${
+                  isSelected && multiple
+                    ? "border-(--color-ink) bg-(--color-ink) text-(--color-ground-a)"
+                    : "border-(--color-border-strong)"
                 }`}
-              />
+              >
+                {isSelected && !multiple ? (
+                  <span className="size-2 rounded-full bg-(--color-mark)" />
+                ) : null}
+                {isSelected && multiple ? (
+                  <svg
+                    viewBox="0 0 12 12"
+                    className="size-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M2 6.5 4.75 9 10 3" />
+                  </svg>
+                ) : null}
+              </span>
               <span className="grow">{option.label}</span>
 
               {/* Says why it cannot be unticked, rather than leaving a control
                   that silently ignores the click. */}
               {isLocked ? (
-                <span className="ml-3 shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                <span className="ml-3 shrink-0 text-meta text-(--color-dim)">
                   Always
                 </span>
               ) : null}

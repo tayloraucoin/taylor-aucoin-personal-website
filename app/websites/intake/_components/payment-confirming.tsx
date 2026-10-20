@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eyebrow } from "./eyebrow";
 
 const POLL_MS = 2000;
 const GIVE_UP_AFTER_MS = 40000;
@@ -41,15 +40,13 @@ export function PaymentConfirming({ supportEmail }: { supportEmail: string }) {
 
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         Confirming your payment.
       </h1>
 
       <p
         aria-live="polite"
-        className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)"
+        className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body"
       >
         {gaveUp
           ? "This is taking longer than it should. Your payment went through — nothing is lost. Send Taylor a note and he'll sort it out."
@@ -60,7 +57,7 @@ export function PaymentConfirming({ supportEmail }: { supportEmail: string }) {
         <p className="mt-6">
           <a
             href={`mailto:${supportEmail}`}
-            className="font-mono text-[11px] uppercase tracking-[.10em] text-(--color-c2) underline underline-offset-4 hover:text-(--color-c3)"
+            className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
           >
             {supportEmail}
           </a>

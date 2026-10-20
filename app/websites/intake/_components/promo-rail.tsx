@@ -45,7 +45,7 @@ export function PromoRail({
       <button
         type="button"
         onClick={onOpen}
-        className="font-mono text-[10px] uppercase tracking-[.16em] text-(--color-dim) underline decoration-(--color-faint) underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+        className="inline-flex min-h-11 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
       >
         Have a code from our call?
       </button>
@@ -56,7 +56,7 @@ export function PromoRail({
     <div>
       <label
         htmlFor="promo-code"
-        className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)"
+        className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
       >
         Promo code
       </label>
@@ -75,13 +75,13 @@ export function PromoRail({
               onApply();
             }
           }}
-          className="min-h-12 w-full min-w-0 grow rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 font-mono text-[16px] tracking-[.04em] text-(--color-ink) placeholder:text-(--color-dim) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="min-h-12 w-full min-w-0 grow rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 font-code text-[16px] text-(--color-ink) placeholder:text-(--color-dim) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
         />
         <button
           type="button"
           disabled={state.status === "checking" || !value.trim()}
           onClick={onApply}
-          className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 font-mono text-[11px] uppercase tracking-[.10em] text-(--color-body) transition-colors hover:border-(--color-gold-line) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="min-h-12 shrink-0 rounded-(--radius) border border-(--color-faint) px-5 text-small text-(--color-ink) transition-colors hover:border-(--color-ink) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
         >
           {state.status === "checking" ? "Checking…" : "Apply"}
         </button>
@@ -89,7 +89,7 @@ export function PromoRail({
       {state.status === "invalid" ? (
         <p
           aria-live="polite"
-          className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-2 text-meta leading-[1.55] text-(--color-ink)"
         >
           That code isn&apos;t one of mine — worth checking the spelling.
         </p>

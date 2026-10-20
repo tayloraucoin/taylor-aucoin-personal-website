@@ -51,12 +51,14 @@ export function KnownFact({
   }
 
   return (
-    <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-body text-[16px] font-light leading-[1.4] text-(--color-ink)">
-      <span className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-        {label}
-      </span>
-      {value ?? "—"}
-      {action}
-    </p>
+    // The read-only known fact (plumb-proposals-2): a meta label over a body
+    // value, a hairline below.
+    <div className="border-b border-(--color-faint) pb-3">
+      <p className="text-meta leading-[1.55] text-(--color-dim)">{label}</p>
+      <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[16px] leading-[1.5] text-(--color-ink) sm:text-body">
+        {value ?? "—"}
+        {action}
+      </p>
+    </div>
   );
 }

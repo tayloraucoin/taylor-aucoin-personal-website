@@ -1,16 +1,12 @@
 /**
- * The site's mono eyebrow with its gold hairline trailing right, at intake
- * scale. Same idiom as Hero and SectionLabel — all-caps, wide-tracked mono is
- * what makes this read as the same product.
+ * The old intake eyebrow, kept only for the coded tree's last importers until
+ * SITE-29 removes them. It renders as meta 13 in sentence case with no rule:
+ * the mono caps and gold hairline are gone with the rebrand (D-SITE-158, A-07).
  */
 export function Eyebrow({ children }: { children: string }) {
   return (
-    <div className="mb-5 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
-      <span>{children}</span>
-      <span
-        aria-hidden
-        className="order-first h-px w-6 shrink-0 bg-(--color-rule)"
-      />
-    </div>
+    <p className="mb-3 text-meta leading-[1.55] text-(--color-dim)">
+      {children}
+    </p>
   );
 }

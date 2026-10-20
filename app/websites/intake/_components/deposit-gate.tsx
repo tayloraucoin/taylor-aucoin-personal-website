@@ -2,7 +2,6 @@ import { formatMoney } from "@/lib/intake/money";
 import type { Engagement } from "@/server/services/engagement";
 import type { SellableProduct } from "@/server/services/products";
 import { DepositCheckout, type CheckoutAddonView } from "./deposit-checkout";
-import { Eyebrow } from "./eyebrow";
 
 /**
  * P0 — Confirm & pay (UX spec §3).
@@ -63,19 +62,17 @@ export function DepositGate({
 
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         {engagement.businessName}
       </h1>
 
-      <p className="mt-4 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
         Hi {firstName} — here&apos;s everything from our call, ready to go.
       </p>
 
       <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-6">
         {engagement.projectSummary ? (
-          <p className="font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
             {engagement.projectSummary}
           </p>
         ) : null}
@@ -87,19 +84,19 @@ export function DepositGate({
               : ""
           }
         >
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             Deposit to start
           </p>
           {/* Solid gold display type — the site's as-built stat-number
               treatment. See DEVIATIONS 2026-08-18. */}
-          <p className="mt-2 font-display text-3xl font-medium tracking-[-.02em] text-(--color-c2)">
+          <p className="mt-2 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink) tabular-nums">
             {amount}
           </p>
         </div>
       </div>
 
       {canceled ? (
-        <p className="mt-6 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+        <p className="mt-6 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
           No charge was made. Whenever you&apos;re ready.
         </p>
       ) : null}
@@ -117,7 +114,7 @@ export function DepositGate({
         isAdminTest={isAdminTest}
       />
 
-      <div className="mt-5 space-y-1.5 font-mono text-[10px] uppercase leading-[1.7] tracking-[.18em] text-(--color-dim)">
+      <div className="mt-5 space-y-1.5 text-meta leading-[1.55] text-(--color-dim)">
         <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
         <p>Shows as TAYLORAUCOIN.COM on your statement</p>
         <p>Receipt emailed automatically</p>
@@ -126,12 +123,12 @@ export function DepositGate({
       {/* D-INT-10, ruled 2026-08-21: refundable in full until the build
           starts; earned once it does. Terms §5 is the binding form of this
           sentence — the two must always agree. */}
-      <p className="mt-4 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
+      <p className="mt-4 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
         Change your mind before I start building? The deposit comes back in full
         — just ask.
       </p>
 
-      <p className="mt-8 max-w-[48ch] border-t border-(--color-faint) pt-5 font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
+      <p className="mt-8 max-w-[48ch] border-t border-(--color-faint) pt-5 text-meta leading-[1.55] text-(--color-dim)">
         Right after this you&apos;ll get a short questionnaire — about 20
         minutes, skip anything you&apos;re not sure about.
       </p>

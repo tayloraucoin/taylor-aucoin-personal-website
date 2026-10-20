@@ -18,14 +18,20 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
  * Both intake layouts render this, so it is one component rather than two
  * copies of a wrapper. [ASSUMPTION: position and spacing — top-right of the
  * column, `mb-6` — reversible, chosen against the step header's `mb-8`.]
+ *
+ * It also holds the screen's one `main` (C-SITE-intake-coded-10): every route
+ * under both intake layouts renders inside it, so no screen carries its own and
+ * none goes without. The theme row stays outside it, a setting above the page.
+ * Under reduced motion every transition in the frame is 0ms (D-SITE-178): the
+ * site-wide rule leaves 0.01ms, so this one is scoped and wins on specificity.
  */
 export function IntakeTheme({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="motion-reduce:duration-0! motion-reduce:[&_*]:duration-0!">
       <div className="mb-6 flex justify-end">
         <ThemeToggle size="touch" />
       </div>
-      {children}
-    </>
+      <main id="main">{children}</main>
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export function RankButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="rounded-(--radius) px-2 py-1 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-(--color-dim)"
+      className="rounded-(--radius) px-2 py-1 text-meta text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-(--color-dim)"
     >
       {children}
     </button>

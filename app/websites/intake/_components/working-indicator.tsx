@@ -20,7 +20,8 @@ import { useEffect, useState } from "react";
  *
  * Messages advance on a timer and stop on the last one rather than looping, so
  * a wait that outruns the script goes quiet instead of cycling forever and
- * looking like a carousel.
+ * looking like a carousel. Under reduced motion neither moves: the segment
+ * hides and the first line stays (intake-coded.md, token rules).
  */
 export function WorkingIndicator({
   messages,
@@ -34,6 +35,9 @@ export function WorkingIndicator({
 
   useEffect(() => {
     if (index >= messages.length - 1) return;
+    // Under reduced motion the line holds its first message: a changing line
+    // is motion too (D-SITE-178).
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const timer = window.setTimeout(
       () => setIndex((current) => current + 1),
@@ -49,11 +53,10 @@ export function WorkingIndicator({
         className="h-px w-full overflow-hidden bg-(--color-faint)"
       >
         <div
-          className="h-px w-[30%]"
+          className="h-px w-[30%] motion-reduce:hidden"
           style={{
-            background:
-              "linear-gradient(90deg, transparent, var(--color-c2), var(--color-c3), transparent)",
-            animation: "ingest-sweep 2200ms ease-(--ease-out) infinite",
+            background: "var(--color-mark)",
+            animation: "ingest-sweep 2200ms var(--ease-out) infinite",
           }}
         />
       </div>
@@ -62,7 +65,7 @@ export function WorkingIndicator({
           interrupting itself every four seconds would be the opposite. */}
       <p
         aria-live="polite"
-        className="mt-5 font-body text-[16px] font-light leading-[1.6] text-(--color-body)"
+        className="mt-5 text-[16px] leading-[1.6] text-(--color-body) sm:text-body"
       >
         {messages[index]}
       </p>
