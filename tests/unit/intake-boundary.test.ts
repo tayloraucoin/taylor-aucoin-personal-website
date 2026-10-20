@@ -49,8 +49,39 @@ test("SITE-28 C2 the matcher flags each protected path and passes a component", 
  * A subject match can only be blind, never wrong: requiring one SITE-30 commit
  * since the branch left main turns a stray prefix into a failure (SITE-30 C2).
  */
-test("SITE-30 C2 at least one commit since main has a subject starting SITE-30:", () => {
-  const base = git("merge-base", "HEAD", "main").trim();
-  const subjects = git("log", "--format=%s", `${base}..HEAD`).split("\n");
-  assert.ok(subjects.some((subject) => subject.startsWith("SITE-30:")));
+for (const ticket of ["SITE-30", "SITE-31"]) {
+  test(`${ticket} C2 at least one commit since main has a subject starting ${ticket}:`, () => {
+    const base = git("merge-base", "HEAD", "main").trim();
+    const subjects = git("log", "--format=%s", `${base}..HEAD`).split("\n");
+    assert.ok(subjects.some((subject) => subject.startsWith(`${ticket}:`)));
+  });
+}
+
+/**
+ * SITE-31 C2: the legal restyle changes classes only, never the documents'
+ * text and version or the consent control behind /privacy.
+ */
+function isProtectedLegalPath(path: string): boolean {
+  return (
+    path === "content/legal.ts" ||
+    path.startsWith("lib/legal/") ||
+    path.startsWith("components/analytics/") ||
+    path.startsWith("lib/analytics/")
+  );
+}
+
+test("SITE-31 C2 no SITE-31 commit touches the legal text or the consent control", () => {
+  assert.deepEqual(changedPathsFor("SITE-31").filter(isProtectedLegalPath), []);
+});
+
+test("SITE-31 C2 the legal matcher flags each protected path and passes a page", () => {
+  for (const path of [
+    "content/legal.ts",
+    "lib/legal/version.ts",
+    "components/analytics/ConsentBanner.tsx",
+    "lib/analytics/events.ts",
+  ]) {
+    assert.equal(isProtectedLegalPath(path), true, path);
+  }
+  assert.equal(isProtectedLegalPath("app/privacy/page.tsx"), false);
 });

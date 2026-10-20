@@ -63,6 +63,13 @@ const FILES: Record<string, readonly string[]> = {
     ]),
   ),
   "SITE-29": SITE_29_FILES,
+  // SITE-31: the legal pages and their reading shell, by the same five checks.
+  "SITE-31": [
+    "app/privacy/page.tsx",
+    "app/websites/privacy/page.tsx",
+    "app/websites/terms/page.tsx",
+    ...intakeSourceFiles("components/websites/legal"),
+  ],
 };
 
 for (const [ticket, files] of Object.entries(FILES)) {
