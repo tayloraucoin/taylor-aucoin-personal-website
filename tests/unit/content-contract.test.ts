@@ -113,6 +113,21 @@ test("C5 rows.ts holds six rows and every caseStudySlug names a study", () => {
   assert.equal(row("conscious-connections-kit").type, "passion");
   assert.equal(row("taylor-aucoin-kit").type, "own-brand");
   assert.equal(row("taylor-aucoin-kit").caseStudySlug, undefined);
+  // Round 3: 5 to 7 Paper frames per kit, Agora led by its dark cover.
+  for (const r of branding) {
+    assert.ok(
+      r.gallery.length >= 5 && r.gallery.length <= 7,
+      `${r.title} has 5 to 7 frames`,
+    );
+    for (const m of r.gallery) {
+      assert.ok(m.alt && m.caption, `${r.title} frame has alt and caption`);
+      assert.doesNotMatch(`${m.alt} ${m.caption}`, /Cho|ChoZen|ChoVerse/);
+    }
+  }
+  assert.match(
+    String((row("agora-kit").gallery[0].src as { src: string }).src),
+    /agora-cover-dark/,
+  );
 
   assert.equal(row("kryshan-randel").published, true);
   assert.equal(row("kryshan-randel").liveUrl, "https://kryshanrandel.com/");

@@ -9,10 +9,25 @@
  */
 
 import { cleanCoast } from "@/content/websites-clean-coast";
-import agoraBrandCover from "@/public/images/branding/agora-brand-cover.jpg";
-import agoraBrandLogo from "@/public/images/branding/agora-brand-logo.jpg";
-import ccBrandCover from "@/public/images/branding/conscious-connections-brand-cover.jpg";
-import ccBrandLockup from "@/public/images/branding/conscious-connections-brand-lockup.jpg";
+import agoraColourRolesDark from "@/public/images/branding/agora-colour-roles-dark.webp";
+import agoraComponentsDark from "@/public/images/branding/agora-components-dark.webp";
+import agoraCoverDark from "@/public/images/branding/agora-cover-dark.webp";
+import agoraCreatorPageDark from "@/public/images/branding/agora-creator-page-dark.webp";
+import agoraLogoDark from "@/public/images/branding/agora-logo-dark.webp";
+import agoraPalette from "@/public/images/branding/agora-palette.webp";
+import agoraType from "@/public/images/branding/agora-type.webp";
+import ccCover from "@/public/images/branding/conscious-connections-cover.webp";
+import ccIcons from "@/public/images/branding/conscious-connections-icons.webp";
+import ccLockup from "@/public/images/branding/conscious-connections-lockup.webp";
+import ccPalette from "@/public/images/branding/conscious-connections-palette.webp";
+import ccSessionRoom from "@/public/images/branding/conscious-connections-session-room.webp";
+import ccType from "@/public/images/branding/conscious-connections-type.webp";
+import taCover from "@/public/images/branding/taylor-aucoin-cover.webp";
+import taLogo from "@/public/images/branding/taylor-aucoin-logo.webp";
+import taPalette from "@/public/images/branding/taylor-aucoin-palette.webp";
+import taShareImage from "@/public/images/branding/taylor-aucoin-share-image.webp";
+import taThemes from "@/public/images/branding/taylor-aucoin-themes.webp";
+import taType from "@/public/images/branding/taylor-aucoin-type.webp";
 import krDesktopAbout from "@/public/images/websites/kryshan-randel/desktop-about.webp";
 import krDesktopHome from "@/public/images/websites/kryshan-randel/desktop-home.webp";
 import krDesktopFilm from "@/public/images/websites/kryshan-randel/desktop-just-watch-us.webp";
@@ -43,14 +58,39 @@ export const workRows: WorkRow[] = [
     caseStudySlug: "agora",
     gallery: [
       {
-        src: agoraBrandCover,
-        alt: "Agora brand kit cover: the AGORA wordmark in plum on a pale ground with two four-point stars, the line 'The art you wear matches the art you are.' and three pairings: embodied but not staged, kindred but not a clique, mythic but not make-believe.",
-        caption: "Brand kit cover, from the Paper file",
+        src: agoraCoverDark,
+        alt: "Agora brand kit cover on the dark plum ground: the AGORA wordmark in a gold-to-lilac gradient with two four-point stars, the line 'The art you wear matches the art you are.' and three pairings: embodied but not staged, kindred but not a clique, mythic but not make-believe.",
+        caption: "Cover, dark, from the Paper file",
       },
       {
-        src: agoraBrandLogo,
-        alt: "Agora brand kit logo page: the wordmark and its variants on the light ground.",
-        caption: "Logo, from the Paper file",
+        src: agoraLogoDark,
+        alt: "The wordmark on dark at two sizes, filled with the gold-to-plum gradient, beside the square O mark at 64 and 32 pixels.",
+        caption: "Logo on dark, from the Paper file",
+      },
+      {
+        src: agoraPalette,
+        alt: "Four colour ramps from 50 to 900: plum, gold, a plum-grey neutral and red, each step with its hex and OKLCH values.",
+        caption: "Palette, from the Paper file",
+      },
+      {
+        src: agoraColourRolesDark,
+        alt: "A table of colour roles on dark: background, primary in light plum, secondary in gold, accent, muted, destructive in red, card, sidebar, ring, input, border and five chart colours, each with what it is used for.",
+        caption: "Colour roles on dark, from the Paper file",
+      },
+      {
+        src: agoraType,
+        alt: "The two typefaces, Instrument Sans for the interface and Brygada 1918 for display, then five styles from display to meta with sample lines.",
+        caption: "Type, from the Paper file",
+      },
+      {
+        src: agoraComponentsDark,
+        alt: "Components on dark: five button styles in each state, inputs and a maker autocomplete, filter chips, badges, avatars, a card, a dialog, a toast, and a look card beside the app frame.",
+        caption: "Components on dark, from the Paper file",
+      },
+      {
+        src: agoraCreatorPageDark,
+        alt: "A creator's page at desktop width on dark: her name and handle above a grid of nine look cards, each with a title and the makers it credits. The photos are placeholders.",
+        caption: "A creator's page, dark, from the Paper file",
       },
     ],
     published: true,
@@ -76,14 +116,34 @@ export const workRows: WorkRow[] = [
     caseStudySlug: "conscious-connections",
     gallery: [
       {
-        src: ccBrandCover,
-        alt: "Conscious Connections brand identity cover: the headline 'Depth earns the play.' in cream and gold serif on a deep wine ground, with the heart-flame mark and the lockup above it.",
-        caption: "Brand identity cover, from the Paper file",
+        src: ccCover,
+        alt: "Conscious Connections brand identity cover: the headline 'Depth earns the play.' in cream and gold serif on a deep wine ground, with the heart-flame lockup above it.",
+        caption: "Cover, from the Paper file",
       },
       {
-        src: ccBrandLockup,
-        alt: "Conscious Connections brand portfolio page on the lockup and the heart-flame mark.",
+        src: ccLockup,
+        alt: "The lockup, Conscious and Connections in cream serif with the heart-flame mark between them, and the mark alone on a cream tile and a crimson tile.",
         caption: "Lockup and mark, from the Paper file",
+      },
+      {
+        src: ccPalette,
+        alt: "Six grounds side by side, from parchment and petal through ember and crimson to ink and glow, each with what it is used for and its contrast ratios, then three candidate reds and the crimson ramp.",
+        caption: "Palette, from the Paper file",
+      },
+      {
+        src: ccType,
+        alt: "The line 'Your room is ready.' with ready in red italic, above EB Garamond and Source Sans 3 and a type scale from hero to small.",
+        caption: "Type, from the Paper file",
+      },
+      {
+        src: ccIcons,
+        alt: "Twelve line icons in cream on dark, each with its name and use, and three shown at their real size beside text.",
+        caption: "Icons, from the Paper file",
+      },
+      {
+        src: ccSessionRoom,
+        alt: "The session room at desktop width, light above dark: a private note, the coach's reply, both partners' messages, the reply field, and a side rail saying who sees what.",
+        caption: "The session room, light and dark, from the Paper file",
       },
     ],
     published: true,
@@ -107,7 +167,38 @@ export const workRows: WorkRow[] = [
     period: "2026",
     sortDate: "2026-10",
     liveUrl: "https://tayloraucoin.com",
-    gallery: [],
+    gallery: [
+      {
+        src: taCover,
+        alt: "Brand kit cover on a near-black ground: the line 'The whole product, thought through.' above a short note on what the kit holds, then the pillars, the two directions and the status.",
+        caption: "Cover, from the Paper file",
+      },
+      {
+        src: taLogo,
+        alt: "The Taylor Aucoin wordmark on dark and light, the TA monogram over a gold or patina rule in four tiles, clear space, minimum sizes, and four ways never to set the name.",
+        caption: "Wordmark and monogram, from the Paper file",
+      },
+      {
+        src: taPalette,
+        alt: "Three ramps from 50 to 900, Carbon, Gold and Patina, each step with its hex and use, and Lamplight shown as a glow on dark and on light.",
+        caption: "Palette, from the Paper file",
+      },
+      {
+        src: taType,
+        alt: "Three typefaces, Instrument Sans for titles, Albert Sans for body and Fragment Mono for code, then the type scale from display to code block.",
+        caption: "Type, from the Paper file",
+      },
+      {
+        src: taThemes,
+        alt: "The two directions, gold and patina, each shown dark and light with a heading, buttons, a link and a card, above the colour tokens and six colour rules.",
+        caption: "Two directions, dark and light, from the Paper file",
+      },
+      {
+        src: taShareImage,
+        alt: "The link preview image in both directions: the name and 'The whole product, thought through.' on a dark ground, with a gold or patina rule before 'Product engineer since 2016'.",
+        caption: "Share image, from the Paper file",
+      },
+    ],
     published: true,
     beats: {
       problem:

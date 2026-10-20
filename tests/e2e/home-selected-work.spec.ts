@@ -204,17 +204,17 @@ test.describe("at 1440", () => {
     await thumb.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    // The row holds two boards; the section holds more.
-    await expect(dialog).toContainText("2 / 2");
+    // The row holds its own six frames; the section holds more.
+    await expect(dialog).toContainText("2 / 6");
     await expect(dialog).toHaveAttribute(
       "aria-label",
-      /^Conscious Connections brand portfolio page/,
+      /^The lockup, Conscious/,
     );
     await page.keyboard.press("ArrowRight");
-    await expect(dialog).toContainText("1 / 2");
+    await expect(dialog).toContainText("3 / 6");
     await expect(dialog).toHaveAttribute(
       "aria-label",
-      /^Conscious Connections brand identity cover/,
+      /^Six grounds side by side/,
     );
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
