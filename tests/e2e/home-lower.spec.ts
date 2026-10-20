@@ -77,8 +77,10 @@ test.describe("at 1440", () => {
     await expect(tools).toHaveText([
       "Claude Code",
       "Cursor",
-      "OpenAI API",
+      "Paper",
       "Linear",
+      "Notion",
+      "Loom",
       "Git",
       "Turborepo",
     ]);
@@ -99,7 +101,7 @@ test.describe("at 1440", () => {
     );
     expect(new Set(marks.map((m) => m[4])).size).toBe(1);
     expect(marks.map((m) => m.slice(0, 4))).toEqual(
-      Array(6).fill([20, 20, "true", true]),
+      Array(8).fill([20, 20, "true", true]),
     );
     await expect(
       how(page).locator("button, details, [aria-expanded]"),
