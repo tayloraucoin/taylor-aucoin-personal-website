@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/Button";
 import { workWithMe } from "@/content/home";
 import { siteRoutes } from "@/lib/routes";
 
@@ -7,8 +8,9 @@ const LINK =
 
 /**
  * Work with me (D-SITE-57): roles, each with how it is engaged and who it
- * suits, every row a link to /work-with-me; then the link and the one line
- * to /websites.
+ * suits, every row a link to /work-with-me with a mark-coloured arrow in a
+ * fixed 24px slot; then the ghost button and the one line to /websites.
+ * Home's one solid button is the PageClose after it (feedback round 2).
  */
 export function WorkWithMe() {
   return (
@@ -24,7 +26,7 @@ export function WorkWithMe() {
           <li key={row.role} className="border-b border-(--color-line-soft)">
             <Link
               href={siteRoutes.workWithMe}
-              className="grid min-h-11 gap-1 py-5 transition-colors duration-(--dur-fast) hover:bg-(--color-tint) md:grid-cols-[240px_240px_1fr] md:items-baseline md:gap-6 md:py-6"
+              className="relative grid min-h-11 gap-1 py-5 pr-11 transition-colors duration-(--dur-fast) hover:bg-(--color-tint) md:grid-cols-[240px_240px_1fr_24px] md:items-baseline md:gap-6 md:py-6 md:pr-0"
             >
               <span className="text-(length:--text-lede) font-medium text-(--color-ink)">
                 {row.role}
@@ -35,21 +37,30 @@ export function WorkWithMe() {
               <span className="text-(length:--text-body) text-(--color-body)">
                 {row.bestFor}
               </span>
+              <span
+                aria-hidden
+                className="absolute top-5 right-0 w-6 text-right text-(length:--text-body) leading-[27px] text-(--color-mark) md:static"
+              >
+                →
+              </span>
             </Link>
           </li>
         ))}
       </ul>
-      <p className="mt-6">
-        <Link href={siteRoutes.workWithMe} className={LINK}>
+      <div className="flex flex-col items-start gap-4 pt-6 md:flex-row md:items-center md:gap-8 md:pt-8">
+        <Link
+          href={siteRoutes.workWithMe}
+          className={buttonVariants({ variant: "ghost" })}
+        >
           {workWithMe.link}
         </Link>
-      </p>
-      <p className="mt-2 flex flex-wrap items-center gap-x-3 text-(length:--text-body) text-(--color-body)">
-        <span>{workWithMe.websitesLine}</span>
-        <Link href={siteRoutes.websites} className={LINK}>
-          {workWithMe.websitesLink}
-        </Link>
-      </p>
+        <p className="flex flex-wrap items-center gap-x-3 text-(length:--text-body) text-(--color-body)">
+          <span>{workWithMe.websitesLine}</span>
+          <Link href={siteRoutes.websites} className={LINK}>
+            {workWithMe.websitesLink}
+          </Link>
+        </p>
+      </div>
     </section>
   );
 }
