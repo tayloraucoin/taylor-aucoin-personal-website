@@ -1,3 +1,6 @@
+import calculatorList from "@/public/images/work/calculate-qxmd/calculator-list.webp";
+import calculatorTnm from "@/public/images/work/calculate-qxmd/calculator-tnm-staging.webp";
+import medscapeCalculators from "@/public/images/work/calculate-qxmd/medscape-calculators.webp";
 import type { CaseStudy } from "./types";
 
 export const calculateQxmd = {
@@ -223,6 +226,29 @@ export const calculateQxmd = {
       "A formal rebuild blueprint for Read delivered before departure",
     ],
   },
-  media: [],
+  media: [
+    {
+      label: "THE PRODUCT",
+      items: [
+        {
+          src: calculatorList,
+          alt: "Calculate by QxMD, the list of calculators: an A to Z index, a search box, and each calculator with a one-line use.",
+        },
+        {
+          src: calculatorTnm,
+          alt: "A calculator in use: Breast Cancer TNM staging, with its seven questions listed on the left and the answers to pick from on the right.",
+        },
+      ],
+    },
+    {
+      label: "INSIDE MEDSCAPE",
+      items: [
+        {
+          src: medscapeCalculators,
+          alt: "Medscape's Tools and Reference page, Calculators, listed by medical specialty.",
+        },
+      ],
+    },
+  ],
   links: [{ label: "Site", href: "https://qxmd.com/calculate" }],
 } satisfies CaseStudy;

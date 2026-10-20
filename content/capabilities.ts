@@ -97,7 +97,7 @@ export const capabilities: Capability[] = [
     title: "Turn a spec into a shipped product, solo",
     tech: "0→1 delivery",
     approach:
-      "I take a product from an idea or a rough spec to something live, and I carry every layer myself: architecture, schema, interface, infrastructure. You get one accountable person instead of a team to assemble, and a codebase with its conventions written down, so the next engineer can pick it up.",
+      "I take a product from an idea or a rough spec to something live, and I carry every layer myself: architecture, schema, interface, infrastructure. You get one accountable person instead of a team to assemble, and a codebase with its conventions written down, so the next engineer can pick it up. Everbook went from product notes to a production MVP in six months, solo.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
@@ -126,7 +126,7 @@ export const capabilities: Capability[] = [
     title: "Ship AI features that don't rot your codebase",
     tech: "LLM orchestration · evals · structured output",
     approach:
-      "I build AI features to the same standard as the rest of the code. Model calls sit behind typed boundaries, output is checked against a schema, and the evals get written before the prompts they grade. That's what keeps the AI part from becoming the part of the codebase nobody wants to touch.",
+      "I build AI features to the same standard as the rest of the code. Model calls sit behind typed boundaries, output is checked against a schema, and the evals get written before the prompts they grade. That's what keeps the AI part from becoming the part of the codebase nobody wants to touch. Conscious Connections runs six eval suites, and the safety evals gate on recall across three runs in a row.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
@@ -158,7 +158,7 @@ export const capabilities: Capability[] = [
     title: "Payments, tax, and refunds that survive real orders",
     tech: "Stripe · subscriptions · webhooks",
     approach:
-      "Checkout, tax, refunds, subscriptions, and the webhooks that tie them together. A bug here costs real money or a real customer. So webhooks are the only thing that writes an order, and every path that moves money is tested.",
+      "Checkout, tax, refunds, subscriptions, and the webhooks that tie them together. A bug here costs real money or a real customer. So webhooks are the only thing that writes an order, and every path that moves money is tested. Everbook runs two payment processors and three print providers behind one commerce layer.",
     proof: [
       { label: "Agora", href: "/work/agora" },
       { label: "Everbook", href: "/work/everbook" },
@@ -191,7 +191,7 @@ export const capabilities: Capability[] = [
     title: "Data and state architecture that survives feature growth",
     tech: "typed end-to-end · schema design · RLS",
     approach:
-      "I design the data model before the first migration: the entities, who can see what, and how the types carry from Postgres up to the screen. A good model is why the twentieth feature is as easy to add as the second.",
+      "I design the data model before the first migration: the entities, who can see what, and how the types carry from Postgres up to the screen. A good model is why the twentieth feature is as easy to add as the second. The Future of Cities platform has 200+ models, with row-level security across 150+ tables.",
     proof: [
       {
         label: "the Future of Cities platform",
@@ -227,7 +227,7 @@ export const capabilities: Capability[] = [
     title: "Consolidate several half-built systems into one",
     tech: "monorepo · shared schema · migrations",
     approach:
-      "When a business runs on several systems that don't talk to each other, I fold them into one codebase and one database, with one login. Migration comes first, even when that means weeks with nothing new to show, and the old systems keep running until the new one can carry them.",
+      "When a business runs on several systems that don't talk to each other, I fold them into one codebase and one database, with one login. Migration comes first, even when that means weeks with nothing new to show, and the old systems keep running until the new one can carry them. Ten legacy databases across five business entities became one.",
     proof: [
       {
         label: "the Future of Cities platform",
@@ -256,7 +256,7 @@ export const capabilities: Capability[] = [
     title: "Turn AI coding agents into a disciplined engineering team",
     tech: "Cursor · Claude Code · convention systems · role prompts",
     approach:
-      "I run AI coding agents the way a lead runs a team: written conventions, a role for each job, specs to build against and a log of every decision. Their output holds to the same standard as mine, and the process keeps working after I hand it over.",
+      "I run AI coding agents the way a lead runs a team: written conventions, a role for each job, specs to build against and a log of every decision. Their output holds to the same standard as mine, and the process keeps working after I hand it over. The cast is thirty-plus written roles, each injected into the thread that needs it.",
     proof: [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       {
@@ -290,7 +290,7 @@ export const capabilities: Capability[] = [
     title: "Booking, inventory, and accommodation flows",
     tech: "allocation · availability · edge cases",
     approach:
-      "Room blocks, holds, availability and group checkout. Booking breaks at the edges (two people after the last room, a hold that expires mid-payment), so I design for those cases before the easy path.",
+      "Room blocks, holds, availability and group checkout. Booking breaks at the edges (two people after the last room, a hold that expires mid-payment), so I design for those cases before the easy path. Zero issues reported against the Roomvy client.",
     proof: [
       { label: "Roomvy", href: "/work/roomvy" },
       {
@@ -348,7 +348,7 @@ export const capabilities: Capability[] = [
     title: "Build AI products that carry a duty of care",
     tech: "safety classifiers · tiered response · fail-open design",
     approach:
-      "Some AI products meet people at a hard moment. For those I build safety as its own system: a classifier running beside the main model, private tiered responses, and a crisis path that still works if every model is down. If your product touches health or relationships, this is the part users and regulators will judge you on.",
+      "Some AI products meet people at a hard moment. For those I build safety as its own system: a classifier running beside the main model, private tiered responses, and a crisis path that still works if every model is down. If your product touches health or relationships, this is the part users and regulators will judge you on. Flag records carry no text and no person-level labels.",
     proof: [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
     ],
@@ -375,7 +375,7 @@ export const capabilities: Capability[] = [
     title: "Realtime sync that survives bad networks",
     tech: "Supabase Realtime · presence · offline outbox",
     approach:
-      "Live, shared sessions that hold up on a bad connection. Writes queue while the network is down and reconcile when it comes back, so a dropped signal costs a refetch and nobody loses what they typed.",
+      "Live, shared sessions that hold up on a bad connection. Writes queue while the network is down and reconcile when it comes back, so a dropped signal costs a refetch and nobody loses what they typed. Queued writes carry idempotency keys.",
     proof: [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
     ],
@@ -450,7 +450,7 @@ export const capabilities: Capability[] = [
     title: "Add senior velocity to an existing codebase",
     tech: "your stack · your conventions",
     approach:
-      "I join an existing codebase and ship inside its conventions, its design language and its review process, without asking you to adopt mine. You get senior output in the first weeks, and the code reads like your team wrote it.",
+      "I join an existing codebase and ship inside its conventions, its design language and its review process, without asking you to adopt mine. You get senior output in the first weeks, and the code reads like your team wrote it. Roomvy's booking client shipped solo with zero issues reported in production.",
     proof: [{ label: "Roomvy", href: "/work/roomvy" }],
     offer: "Contract",
     keywords: [
@@ -473,7 +473,7 @@ export const capabilities: Capability[] = [
     title: "Correctness under pressure",
     tech: "defect prevention · clinical-grade care",
     approach:
-      "For code where a wrong answer hurts someone, I test past what the ticket asks: unit and integration tests on every calculation, end-to-end coverage on the flows that matter. You get releases you don't have to hold your breath for.",
+      "For code where a wrong answer hurts someone, I test past what the ticket asks: unit and integration tests on every calculation, end-to-end coverage on the flows that matter. You get releases you don't have to hold your breath for. Zero bugs reported through Medscape or production across my tenure on Calculate.",
     proof: [
       { label: "Calculate by QxMD", href: "/work/calculate-qxmd" },
       { label: "Roomvy", href: "/work/roomvy" },
@@ -500,7 +500,7 @@ export const capabilities: Capability[] = [
     title: "Write the spec everyone else can build from",
     tech: "specification · decision records",
     approach:
-      "I write specs detailed enough that another engineer, or an AI agent, can build the feature without coming back to ask. Every layer is mapped before the code starts. It's how a small team ships like a bigger one, and how the work outlives my time on it.",
+      "I write specs detailed enough that another engineer, or an AI agent, can build the feature without coming back to ask. Every layer is mapped before the code starts. It's how a small team ships like a bigger one, and how the work outlives my time on it. Conscious Connections runs on slice specs with kickoff and completion protocols.",
     proof: [
       {
         label: "the Future of Cities platform",
@@ -530,7 +530,7 @@ export const capabilities: Capability[] = [
     title: "Design the interface, not just build it",
     tech: "product design · UX · UI",
     approach:
-      "I design the interfaces I build, from the flow down to the last state of each screen. With design and engineering in one head, nothing gets lost between the mockup and the code, and you aren't paying two people to argue about it.",
+      "I design the interfaces I build, from the flow down to the last state of each screen. With design and engineering in one head, nothing gets lost between the mockup and the code, and you aren't paying two people to argue about it. That covers Everbook's author dashboard, the Future of Cities CRM, Agora's storefront and all of Conscious Connections.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
@@ -561,7 +561,7 @@ export const capabilities: Capability[] = [
     title: "Run with loose guidelines, deliver a finished product",
     tech: "minimal direction · full ownership",
     approach:
-      "Give me a direction and a market reference and I'll come back with a shipped product. I fill the gaps with decisions, write them down and check them with you, so you aren't stuck writing the spec yourself.",
+      "Give me a direction and a market reference and I'll come back with a shipped product. I fill the gaps with decisions, write them down and check them with you, so you aren't stuck writing the spec yourself. Everbook started as light Notion notes and a market reference.",
     proof: [
       { label: "Everbook", href: "/work/everbook" },
       {
@@ -590,7 +590,7 @@ export const capabilities: Capability[] = [
     title: "Lead and level up a junior team",
     tech: "mentorship · code review · standards",
     approach:
-      "I lead junior developers to production-grade work: scoping it so they can succeed, reviewing every pull request, and teaching the standards as we go. At peak I ran four teams at once, over twenty developers.",
+      "I lead junior developers to production-grade work: scoping it so they can succeed, reviewing every pull request, and teaching the standards as we go. At peak I ran four teams at once, over twenty developers. Fourteen cohorts through BCIT's industry-sponsored projects program.",
     proof: [{ label: "BCIT ISSP", href: BCIT_ISSP_URL, external: true }],
     offer: "Fractional CTO",
     keywords: [
@@ -614,7 +614,7 @@ export const capabilities: Capability[] = [
     title: "Turn a raw catalog into structured, trustworthy metadata",
     tech: "LLM pipelines · ML classification · data quality",
     approach:
-      "When a catalogue's titles and descriptions can't be trusted, I build the pipeline that fixes them: LLM extraction and ML classification that tag every product against a schema. Clean metadata is what search and recommendations stand on.",
+      "When a catalogue's titles and descriptions can't be trusted, I build the pipeline that fixes them: LLM extraction and ML classification that tag every product against a schema. Clean metadata is what search and recommendations stand on. Keyword rules had failed on tags as basic as gender fit.",
     proof: [{ label: "Agora", href: "/work/agora" }],
     offer: "Contract",
     keywords: [
@@ -638,7 +638,7 @@ export const capabilities: Capability[] = [
     title: "Tests that earn deploy confidence",
     tech: "unit · integration · CI",
     approach:
-      "I put tests where a wrong answer is expensive (money, or a clinical number) and make them the gate for every deploy. That's what lets you ship often without a manual check each time.",
+      "I put tests where a wrong answer is expensive (money, or a clinical number) and make them the gate for every deploy. That's what lets you ship often without a manual check each time. Covered: Agora's checkout and tax logic, Calculate's clinical formulas.",
     proof: [
       { label: "Agora", href: "/work/agora" },
       { label: "Calculate by QxMD", href: "/work/calculate-qxmd" },
@@ -694,7 +694,7 @@ export const capabilities: Capability[] = [
     title: "Build the component kit your team ships from",
     tech: "Storybook · design systems · shared UI",
     approach:
-      "A shared component library, documented in Storybook, that several apps build from. Your next engineer composes screens from parts that already exist, and every app still looks like one product.",
+      "A shared component library, documented in Storybook, that several apps build from. Your next engineer composes screens from parts that already exist, and every app still looks like one product. On the Future of Cities platform it keeps five apps looking like one product.",
     proof: [
       {
         label: "the Future of Cities platform",
@@ -761,7 +761,7 @@ export const capabilities: Capability[] = [
     title: "A React Native app that shares its logic with the web",
     tech: "React Native · Expo · monorepo",
     approach:
-      "One monorepo, one set of business logic, two surfaces. I set up web codebases so the mobile app is a move rather than a rewrite, with lint rules in CI that keep the shared logic free of anything web-only.",
+      "One monorepo, one set of business logic, two surfaces. I set up web codebases so the mobile app is a move rather than a rewrite, with lint rules in CI that keep the shared logic free of anything web-only. Ten standing mobile-readiness rules govern the Conscious Connections web work today.",
     offer: "Fixed-scope 0→1 build",
     keywords: [
       "react native",
@@ -807,7 +807,7 @@ export const capabilities: Capability[] = [
     title: "Data scraping and lead pipelines",
     tech: "scraping · processing · human-in-the-loop",
     approach:
-      "I build acquisition pipelines end to end: collection, a processor that scores each lead, a human review step, and a clean import into your admin. You get a list your team can act on, and the tooling to run it again.",
+      "I build acquisition pipelines end to end: collection, a processor that scores each lead, a human review step, and a clean import into your admin. You get a list your team can act on, and the tooling to run it again. For Agora: Instagram profiles through Phantombuster and a custom Node.js processor, out as CSVs synced into the admin.",
     proof: [{ label: "Agora", href: "/work/agora" }],
     offer: "Contract",
     keywords: [
@@ -831,7 +831,7 @@ export const capabilities: Capability[] = [
     title: "Scope the build and sequence the roadmap",
     tech: "scoping · sequencing · build plans",
     approach:
-      "Deciding what gets built, and in what order, before anyone writes a spec. Sometimes the right first month has nothing visible to show because the data has to be sound first, and I'll make that case to you plainly.",
+      "Deciding what gets built, and in what order, before anyone writes a spec. Sometimes the right first month has nothing visible to show because the data has to be sound first, and I'll make that case to you plainly. The Future of Cities engagement went data-first, with weeks before anything visible.",
     proof: [
       {
         label: "the Future of Cities platform",

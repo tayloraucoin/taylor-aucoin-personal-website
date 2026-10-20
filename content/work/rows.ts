@@ -13,6 +13,13 @@ import agoraBrandCover from "@/public/images/branding/agora-brand-cover.jpg";
 import agoraBrandLogo from "@/public/images/branding/agora-brand-logo.jpg";
 import ccBrandCover from "@/public/images/branding/conscious-connections-brand-cover.jpg";
 import ccBrandLockup from "@/public/images/branding/conscious-connections-brand-lockup.jpg";
+import krDesktopAbout from "@/public/images/websites/kryshan-randel/desktop-about.webp";
+import krDesktopHome from "@/public/images/websites/kryshan-randel/desktop-home.webp";
+import krDesktopFilm from "@/public/images/websites/kryshan-randel/desktop-just-watch-us.webp";
+import krDesktopTeaching from "@/public/images/websites/kryshan-randel/desktop-teaching.webp";
+import krDesktopWork from "@/public/images/websites/kryshan-randel/desktop-work.webp";
+import krMobileHome from "@/public/images/websites/kryshan-randel/mobile-home.webp";
+import krMobileWork from "@/public/images/websites/kryshan-randel/mobile-work.webp";
 import type { MediaItem, WorkRow } from "./types";
 
 const cleanCoastGallery: MediaItem[] = cleanCoast.shots.map((shot) => ({
@@ -121,7 +128,56 @@ export const workRows: WorkRow[] = [
     role: "Coded website, brand kit",
     period: "2026",
     sortDate: "2026-01",
-    gallery: [],
+    liveUrl: "https://kryshanrandel.com/",
+    gallery: [
+      {
+        src: krDesktopHome,
+        alt: "Kryshan Randel's home page: the line 'I direct, shoot and edit stories that are hard to look away from' in white and red, five film stills as cards, and a link to all 24 pieces.",
+        caption: "Home",
+      },
+      {
+        src: krDesktopWork,
+        alt: "The work page: 24 pieces as a grid of film stills, with filters for directing, camera, editing, behind the scenes and personal projects.",
+        caption: "Work",
+      },
+      {
+        src: krDesktopFilm,
+        alt: "A single film's page: a behind-the-scenes still from Just Watch Us, filling the width with a play button.",
+        caption: "A film's page",
+      },
+      {
+        src: krDesktopTeaching,
+        alt: "The teaching page: where he teaches, programs and camps, one-on-one coaching, and two photos with students.",
+        caption: "Teaching",
+      },
+      {
+        src: krDesktopAbout,
+        alt: "The about page: his story in five paragraphs beside a photo of him setting up a shot on location.",
+        caption: "About",
+      },
+      {
+        src: krMobileHome,
+        alt: "The home page on a phone, headline first and the film cards stacked below it.",
+        caption: "Home, on a phone",
+        size: "narrow",
+      },
+      {
+        src: krMobileWork,
+        alt: "The work page on a phone, the film cards in a single column.",
+        caption: "Work, on a phone",
+        size: "narrow",
+      },
+    ],
+    example: {
+      desktop: {
+        src: krDesktopHome,
+        alt: "Kryshan Randel's home page: the line 'I direct, shoot and edit stories that are hard to look away from' in white and red, five film stills as cards, and a link to all 24 pieces.",
+      },
+      phone: {
+        src: krMobileHome,
+        alt: "The home page on a phone, headline first and the film cards stacked below it.",
+      },
+    },
     published: true,
     beats: {
       problem:
