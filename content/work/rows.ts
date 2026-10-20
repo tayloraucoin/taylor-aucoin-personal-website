@@ -169,8 +169,14 @@ export const workRows: WorkRow[] = [
       },
     ],
     example: {
-      desktop: krDesktopHome,
-      phone: krMobileHome,
+      desktop: {
+        src: krDesktopHome,
+        alt: "Kryshan Randel's home page: the line 'I direct, shoot and edit stories that are hard to look away from' in white and red, five film stills as cards, and a link to all 24 pieces.",
+      },
+      phone: {
+        src: krMobileHome,
+        alt: "The home page on a phone, headline first and the film cards stacked below it.",
+      },
     },
     published: true,
     beats: {
