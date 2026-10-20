@@ -1,0 +1,5 @@
+command: yarn typecheck
+exit: 0
+at: 2026-10-15T19:39:28Z
+head: aacccf45949609272f7c259d0f870833a191ccf3
+---

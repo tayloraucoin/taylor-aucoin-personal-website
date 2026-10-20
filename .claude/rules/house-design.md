@@ -8,7 +8,7 @@ paths:
 
 # House design law (carried verbatim from the old CLAUDE.md)
 
-The product's design law until layer 3 part 9 writes its design layer. Carried from `docs/_legacy/claude-md-2026-10-14.md` (each `docs/` path now under `docs/_legacy/`), amended for the rebrand on 2026-10-15 (`docs/decisions/changelog.md`).
+The product's design law until layer 3 part 9 writes its design layer. Carried from `docs/_legacy/claude-md-2026-10-14.md` (each `docs/` path now under `docs/_legacy/`), amended for the rebrand and the home notes signup on 2026-10-15 (`docs/decisions/changelog.md`).
 
 ## The one rule
 
@@ -51,6 +51,6 @@ These are laws. They were each learned by breaking them.
 - Never hardcode a hex: colour comes from the tokens in `app/globals.css`, set for four modes (A or B by `?direction=b`, light or dark). Gold is never text on a light ground.
 - Do not use Inter.
 - Do not make the background "more exciting." The lamplight glow is deliberately quiet (10% dark, 22% light) so text stays readable.
-- Do not add a blog, a newsletter, or a "now" page. Those routes are reserved but out of scope for v1.
+- Do not add a blog, a `/notes` page, or a "now" page. Those routes are reserved but out of scope for v1. One exception: a single notes signup block on home (SITE brief, Home §8). It promises no cadence (`docs/product/brand/voice_taylor-aucoin.md`), and it adds no `/notes` page until a first post exists.
 - Do not put DJ / music / festival content anywhere. Explicitly excluded for v1.
 - Do not write copy in a startup-marketing voice. See `docs/_legacy/TASTE-PROFILE.md` § voice.

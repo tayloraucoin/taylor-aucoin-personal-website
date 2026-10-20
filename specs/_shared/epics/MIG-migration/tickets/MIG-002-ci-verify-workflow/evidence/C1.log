@@ -1,0 +1,105 @@
+command: yarn build:agent
+exit: 0
+at: 2026-10-15T19:39:02Z
+head: aacccf45949609272f7c259d0f870833a191ccf3
+---
+   ▲ Next.js 15.5.23
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/32) ...
+   Generating static pages (8/32) 
+   Generating static pages (16/32) 
+   Generating static pages (24/32) 
+ ✓ Generating static pages (32/32)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                   Size  First Load JS
+┌ ○ /                                      6.27 kB         122 kB
+├ ○ /_not-found                               1 kB         103 kB
+├ ○ /(.)stack                               2.3 kB         108 kB
+├ ƒ /(.)work/[slug]                         1.2 kB         120 kB
+├ ○ /about                                   189 B         116 kB
+├ ƒ /admin                                   166 B         102 kB
+├ ƒ /admin/design-reviews                    187 B         106 kB
+├ ƒ /admin/design-reviews/[id]               187 B         106 kB
+├ ƒ /admin/engagements                       187 B         106 kB
+├ ƒ /admin/engagements/[id]                5.34 kB         111 kB
+├ ƒ /admin/finances/invoice-links          2.69 kB         105 kB
+├ ƒ /admin/intake/examples                   187 B         106 kB
+├ ƒ /admin/intake/examples/packs/[pack]    12.1 kB         234 kB
+├ ƒ /admin/intake/preview/[section]         1.1 kB         284 kB
+├ ƒ /admin/intake/questions                9.64 kB         293 kB
+├ ƒ /admin/leads                           2.85 kB         150 kB
+├ ƒ /admin/leads/[id]                        391 B         113 kB
+├ ƒ /admin/login                             869 B         103 kB
+├ ƒ /admin/pipeline                        3.56 kB         125 kB
+├ ƒ /admin/pipeline/[id]                     129 B         111 kB
+├ ƒ /admin/pipeline/new                      129 B         111 kB
+├ ƒ /admin/queue                           13.5 kB         141 kB
+├ ƒ /admin/scoreboard                        187 B         106 kB
+├ ƒ /admin/sync                            1.57 kB         104 kB
+├ ƒ /admin/transcripts                       166 B         106 kB
+├ ƒ /admin/transcripts/export                166 B         102 kB
+├ ƒ /api/admin/transcribe-preview            166 B         102 kB
+├ ƒ /api/cron/reminders                      166 B         102 kB
+├ ƒ /api/intake/transcribe                   166 B         102 kB
+├ ƒ /api/intake/upload                       166 B         102 kB
+├ ƒ /api/review/comments                     166 B         102 kB
+├ ƒ /api/review/comments/[id]                166 B         102 kB
+├ ƒ /api/review/health                       166 B         102 kB
+├ ƒ /api/review/submissions                  166 B         102 kB
+├ ƒ /api/webhooks/stripe                     166 B         102 kB
+├ ○ /apple-icon.png                            0 B            0 B
+├ ○ /banner-export                         3.06 kB         110 kB
+├ ƒ /banner-export/save                      166 B         102 kB
+├ ○ /capabilities                          8.65 kB         119 kB
+├ ○ /privacy                                 923 B         119 kB
+├ ○ /services                              2.35 kB         118 kB
+├ ○ /stack                                 1.49 kB         112 kB
+├ ○ /testimonials                          4.42 kB         120 kB
+├ ○ /websites                                 3 kB         114 kB
+├ ○ /websites/coded                        1.84 kB         118 kB
+├ ƒ /websites/coded/intake                 1.82 kB         153 kB
+├ ƒ /websites/coded/intake/[token]         3.31 kB         143 kB
+├ ƒ /websites/coded/intake/[token]/[step]   1.9 kB         257 kB
+├ ƒ /websites/coded/intake/[token]/done    4.19 kB         110 kB
+├ ƒ /websites/coded/intake/[token]/review    432 B         106 kB
+├ ƒ /websites/coded/intake/add-ons         7.26 kB         113 kB
+├ ƒ /websites/intake                       1.58 kB         110 kB
+├ ƒ /websites/intake/[token]               3.69 kB         120 kB
+├ ƒ /websites/intake/[token]/[step]        2.55 kB         193 kB
+├ ƒ /websites/intake/[token]/done            533 B         106 kB
+├ ○ /websites/platform                     4.18 kB         120 kB
+├ ○ /websites/privacy                        187 B         106 kB
+├ ○ /websites/terms                          187 B         106 kB
+└ ● /work/[slug]                             787 B         125 kB
+    ├ /work/family-office-platform
+    ├ /work/conscious-connections
+    ├ /work/everbook
+    └ [+3 more paths]
++ First Load JS shared by all               102 kB
+  ├ chunks/1255-215f47de0b437941.js        46.1 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js    54.2 kB
+  └ other shared chunks (total)            1.95 kB
+
+
+ƒ Middleware                               94.5 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
