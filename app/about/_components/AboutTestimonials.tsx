@@ -1,5 +1,6 @@
 import { FullTestimonial } from "@/components/testimonials/FullTestimonial";
 import { testimonials } from "@/content/testimonials";
+import { SITE } from "@/lib/config";
 import { pendingFixture } from "../_fixtures";
 import { SectionHeading } from "./Row";
 
@@ -54,6 +55,14 @@ export function AboutTestimonials({ pending }: { pending: boolean }) {
           </div>
         </div>
       ))}
+      <p className="mt-8">
+        <a
+          href={`${SITE.linkedin}details/recommendations/`}
+          className="inline-flex min-h-11 items-center text-(length:--text-meta) text-(--color-dim) underline decoration-1 underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-body) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
+        >
+          Read more recommendations on LinkedIn
+        </a>
+      </p>
     </section>
   );
 }

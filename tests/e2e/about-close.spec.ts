@@ -39,7 +39,7 @@ test("C1 the h2s in order, Tools core only in five groups, résumé links name (
   expect(h2s).toEqual([
     "How I think",
     "Experience",
-    "Teaching",
+    "Teaching & Sponsoring Programs",
     "Education",
     "Tools",
     "Testimonials",
