@@ -27,8 +27,8 @@ import {
   type IngestionOutcome,
 } from "@/lib/intake/ingestion-record";
 import type { PrimerProposal } from "@/lib/intake/primer-proposal";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
-import { showcaseKinds } from "@/lib/intake/tracks";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
+import { showcaseKinds, showcaseVentureTypes } from "@/lib/intake/tracks";
 import {
   byteCeilingFor,
   leavesInfrastructure,
@@ -153,8 +153,8 @@ function checkIngestionInventory(): void {
   }
 
   const kinds = showcaseKinds().map((k) => k.key);
-  const keysFor = (kind: ShowcaseKind) =>
-    new Set(ingestionFieldsFor(kind).map((f) => f.key));
+  const keysFor = (kind: ShowcaseKind, ventureType: VentureType | null = null) =>
+    new Set(ingestionFieldsFor(kind, ventureType).map((f) => f.key));
 
   // The venture-only questions never reach a portfolio's run, and the
   // portfolio's "how long" never reaches a venture's.
@@ -175,6 +175,23 @@ function checkIngestionInventory(): void {
   const reached = kinds.flatMap((kind) => never.filter((key) => keysFor(kind).has(key)).map((key) => `${kind}.${key}`));
   if (reached.length > 0) fail(`format-unsafe keys in an ingestion inventory: ${reached.join(", ")}`);
   else pass("no radio-backed, gated, or input field reaches any kind's run");
+
+  // VEN: the sub-type is a radio and the founder's to choose. It never reaches
+  // a run, under any kind or sub-type, and leaving the sub-type out reads as
+  // plain venture rather than as any one sub-type (C3, fails closed).
+  const subtypes: (VentureType | null)[] = [null, ...showcaseVentureTypes];
+  const subtypeReached = kinds.flatMap((kind) =>
+    subtypes
+      .filter((t) => keysFor(kind, t).has("ventureType"))
+      .map((t) => `${kind}/${t ?? "none"}`),
+  );
+  if (subtypeReached.length > 0) fail(`ventureType reaches a run: ${subtypeReached.join(", ")}`);
+  else pass("ventureType reaches no run, on any kind or sub-type");
+  const defaulted = kinds.filter(
+    (kind) => [...keysFor(kind)].join() !== [...keysFor(kind, null)].join(),
+  );
+  if (defaulted.length > 0) fail(`ingestionFieldsFor(kind) differs from (kind, null): ${defaulted.join(", ")}`);
+  else pass("leaving the sub-type out reads as plain venture");
 
   for (const kind of kinds) {
     console.log(`      ${kind}: ${keysFor(kind).size} fields`);

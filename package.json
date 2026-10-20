@@ -68,7 +68,7 @@
     "test:e2e": "playwright test",
     "capture": "node --import tsx scripts/capture-states.ts",
     "check:build-output": "node --import tsx scripts/check-build-output.ts",
-    "verify": "yarn lint && yarn typecheck && yarn test && yarn build:agent && yarn check-settings && yarn test:hooks && yarn check-specs && yarn check-test-weakening && yarn check-reviewers && yarn check-refs && yarn budget && yarn gen:agents --check && yarn check-types:tooling"
+    "verify": "yarn lint && yarn typecheck && yarn test && yarn build:agent && yarn check-settings && yarn test:hooks && yarn check-specs && yarn check-test-weakening && yarn check-reviewers && yarn check-refs && yarn budget && yarn gen:agents --check && yarn check-types:tooling && yarn verify:tracks && yarn eval:primer --inventory"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.121.0",

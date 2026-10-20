@@ -30,6 +30,10 @@ import {
   personVoiceOptionsFor,
   showcaseDisciplines,
   showcaseKinds,
+  showcaseSubtypeOverlayKeys,
+  showcaseVentureTypes,
+  ventureTypeChoices,
+  ventureTypeOf,
   workShapeFor,
   labelFor,
   nextStep,
@@ -66,6 +70,9 @@ import type { IntakeAnswers } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { readStepAnswers } from "@/server/services/submission";
+
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 
 let failures = 0;
 
@@ -494,12 +501,134 @@ function checkKinds(): void {
   check(
     "a venture carries every group",
     groups("venture"),
-    ["ask", "claims", "documents", "roster", "stage"],
+    ["ask", "claims", "documents", "raise", "roster", "stage"],
   );
   check("a practice carries the ask and the claims", groups("practice"), [
     "ask",
     "claims",
   ]);
+}
+
+/* ── VEN-1 — the venture sub-type and its overlay ────────────────────────── */
+
+/** The tree where no component may decide who is asked (C-VEN-kind-5). */
+const COMPONENTS_DIR = "app/websites/coded/intake/_components";
+
+/**
+ * Every sub-type comparison in a source text, as the matched snippets.
+ *
+ * A component reads who is asked through `ForKinds` and the registry; one that
+ * compares `ventureType`, or compares anything to a sub-type value, is holding
+ * a private opinion the overview cannot report (M-ADM-7). A field key such as
+ * `fieldKey="place"` is an assignment, not a comparison, and does not match.
+ */
+function subtypeComparisons(source: string): string[] {
+  const values = showcaseVentureTypes.join("|");
+  const quoted = `["'\`](?:${values})["'\`]`;
+  const pattern = new RegExp(
+    [
+      String.raw`\bventureType\s*[!=]==`,
+      String.raw`[!=]==\s*ventureType\b`,
+      String.raw`[!=]==\s*` + quoted,
+      quoted + String.raw`\s*[!=]==`,
+    ].join("|"),
+    "g",
+  );
+  return source.match(pattern) ?? [];
+}
+
+function sourceFiles(dir: string): string[] {
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
+    .map((entry) => path.join(entry.parentPath, entry.name))
+    .sort();
+}
+
+function checkVentureTypes(): void {
+  const venture = copyPackFor("venture");
+
+  // Plain venture, and every sub-type without an overlay, is the venture pack
+  // itself: "exactly as today" as an identity, not a comparison (C-VEN-kind-3).
+  const notPlace = showcaseVentureTypes.filter((t) => t !== "place");
+  check(
+    "venture with no sub-type, or a sub-type with no overlay, is the venture pack by reference",
+    [null, ...notPlace].filter((t) => copyPackFor("venture", t) !== venture),
+    [],
+  );
+  check(
+    "a place venture reads its own overlaid pack",
+    copyPackFor("venture", "place") !== venture,
+    true,
+  );
+  check(
+    "every other pack ignores a sub-type",
+    SHOWCASE_FLAVOURS.filter((flavour) => flavour !== "venture").flatMap(
+      (flavour) =>
+        showcaseVentureTypes
+          .filter((t) => copyPackFor(flavour, t) !== copyPackFor(flavour))
+          .map((t) => `${flavour}:${t}`),
+    ),
+    [],
+  );
+
+  // Overlay keys are plain strings in the copy file, so this is where they are
+  // held to the registry.
+  const listed: readonly string[] = showcaseVentureTypes;
+  check(
+    "every overlay key is a listed sub-type",
+    Object.entries(showcaseSubtypeOverlayKeys).flatMap(([flavour, keys]) =>
+      (keys ?? [])
+        .filter((key) => !listed.includes(key))
+        .map((key) => `${flavour}:${key}`),
+    ),
+    [],
+  );
+
+  // Values have one home and labels another; the join must lose nothing.
+  check(
+    "the venture pack labels every sub-type",
+    showcaseVentureTypes.filter((t) => !venture.ventureType?.labels[t]),
+    [],
+  );
+  check(
+    "the sub-type options are the registry's, in its order",
+    ventureTypeChoices(venture).map((choice) => choice.value),
+    [...showcaseVentureTypes],
+  );
+  check(
+    "a pack that does not ask the sub-type offers no options",
+    ventureTypeChoices(copyPackFor("entity")),
+    [],
+  );
+
+  // The sub-type reaches only a venture, so a stale one adds nothing.
+  check(
+    "a stale place on a studio is no sub-type",
+    ventureTypeOf({ about: { siteKind: "studio", ventureType: "place" } }),
+    null,
+  );
+  check(
+    "a place venture carries the place group",
+    [...groupsFor("venture", "place")].includes("place"),
+    true,
+  );
+
+  // No component decides who is asked by comparing a sub-type.
+  const offending = sourceFiles(COMPONENTS_DIR).flatMap((file) =>
+    subtypeComparisons(readFileSync(file, "utf8")).map(
+      (match) => `${file}: ${match}`,
+    ),
+  );
+  check("no component under _components/ compares a sub-type", offending, []);
+  check(
+    "the scan catches a sub-type comparison",
+    [
+      subtypeComparisons('if (ventureType === "place") return null;').length > 0,
+      subtypeComparisons("const open = 'place' === picked;").length > 0,
+      subtypeComparisons('<DocumentDrop fieldKey="place" />').length,
+    ],
+    [true, true, 0],
+  );
 }
 
 /* ── PORT-13 — changing the kind changes questions, never answers ────────── */
@@ -1567,6 +1696,7 @@ function main(): void {
   checkResolution();
   checkFlavour();
   checkKinds();
+  checkVentureTypes();
   checkLabels();
   checkGallery();
   checkTasteContract();
