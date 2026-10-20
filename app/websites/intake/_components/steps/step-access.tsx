@@ -47,7 +47,7 @@ const CALLOUT_CLASS =
 const CALLOUT_EYEBROW_CLASS =
   "font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)";
 const CALLOUT_BODY_CLASS =
-  "mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-body";
+  "mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)";
 const CALLOUT_LINK_CLASS =
   "text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2";
 

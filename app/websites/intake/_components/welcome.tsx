@@ -34,7 +34,7 @@ export function Welcome({
           : `Hi ${firstName}.`}
       </h1>
 
-      <div className="mt-6 max-w-[48ch] space-y-4 text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+      <div className="mt-6 max-w-[48ch] space-y-4 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         <p>Everything we need to build your site — about 30 minutes.</p>
         <p>
           Skip anything you&apos;re not sure about; we&apos;ll go through it

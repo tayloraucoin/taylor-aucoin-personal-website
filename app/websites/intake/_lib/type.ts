@@ -18,7 +18,7 @@ export const H4 =
 
 /** Body 17, 16 under 640, weight 400. */
 export const BODY =
-  "text-[16px] leading-[1.6] text-(--color-body) sm:text-body";
+  "text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)";
 
 /** Small 15 at 400: labels and option text. */
 export const SMALL = "text-small leading-[1.5] text-(--color-body)";

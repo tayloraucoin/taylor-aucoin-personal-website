@@ -108,7 +108,7 @@ export function FeedbackBlock({ token }: Readonly<{ token: string }>) {
 
   if (state.status === "sent") {
     return (
-      <p className="mt-10 border-t border-(--color-faint) pt-6 font-body text-[16px] font-light leading-[1.6] text-(--color-c2)">
+      <p className="mt-10 border-t border-(--color-faint) pt-6 text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)">
         {COPY.done}
       </p>
     );
@@ -128,10 +128,10 @@ export function FeedbackBlock({ token }: Readonly<{ token: string }>) {
 
   return (
     <section className="mt-10 border-t border-(--color-faint) pt-6">
-      <h2 className="font-display text-[22px] font-medium leading-[1.2] tracking-[-.02em] text-(--color-ink)">
+      <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {COPY.heading}
       </h2>
-      <p className="mt-2 max-w-[48ch] font-body text-[15px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-2 max-w-[48ch] text-small leading-[1.6] text-(--color-body)">
         {COPY.intro}
       </p>
 
@@ -166,7 +166,7 @@ export function FeedbackBlock({ token }: Readonly<{ token: string }>) {
         </label>
         <p
           id="f-feedback-thoughts-help"
-          className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
+          className="mt-1.5 text-meta leading-[1.55] text-(--color-dim)"
         >
           {COPY.thoughtsHelp}
         </p>
@@ -182,10 +182,7 @@ export function FeedbackBlock({ token }: Readonly<{ token: string }>) {
       </div>
 
       {state.status === "error" ? (
-        <p
-          aria-live="polite"
-          className="mt-5 font-body text-[15px] font-light text-(--color-c2)"
-        >
+        <p aria-live="polite" className="mt-5 text-small text-(--color-ink)">
           {state.message}
         </p>
       ) : null}
@@ -203,7 +200,7 @@ export function FeedbackBlock({ token }: Readonly<{ token: string }>) {
         <button
           type="button"
           onClick={() => setState({ status: "closed" })}
-          className="font-body text-[15px] font-light text-(--color-dim) underline underline-offset-4 transition-colors hover:text-(--color-ink)"
+          className="inline-flex min-h-11 items-center text-small text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           {COPY.cancel}
         </button>

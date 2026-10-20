@@ -63,7 +63,7 @@ export function CustomPages({
                   this row is chosen for the same reason and by the same act. */}
               <span
                 aria-hidden
-                className="h-2 w-2 shrink-0 rounded-full bg-(--color-c2)"
+                className="h-2 w-2 shrink-0 rounded-full bg-(--color-mark)"
               />
 
               <TextField
@@ -86,9 +86,9 @@ export function CustomPages({
                   onBlur();
                 }}
                 aria-label={`${COPY.remove} page ${index + 1}`}
-                className="flex size-9 shrink-0 items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                className="flex size-9 shrink-0 items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
               >
-                <span aria-hidden className="font-mono text-[13px]">
+                <span aria-hidden className="text-meta">
                   ✕
                 </span>
               </button>

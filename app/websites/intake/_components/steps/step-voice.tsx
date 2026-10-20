@@ -52,7 +52,7 @@ export function StepVoice({
           Voice note
         </h2>
 
-        <p className="mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+        <p className="mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
           Record a 2–3 minute voice memo on your phone answering: how did you
           get into this, and what&apos;s a job you were proud of? Send the file
           here. This is the single most useful thing you can give us.

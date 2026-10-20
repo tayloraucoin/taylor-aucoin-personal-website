@@ -1,4 +1,9 @@
 import type { ReactNode } from "react";
+import { ShowcaseDone } from "@/app/websites/coded/intake/_components/showcase-done";
+import { ShowcasePayGate } from "@/app/websites/coded/intake/_components/showcase-pay-gate";
+import { ShowcaseStart } from "@/app/websites/coded/intake/_components/showcase-start";
+import { ShowcaseWelcome } from "@/app/websites/coded/intake/_components/showcase-welcome";
+import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
 import { KnownFact } from "@/app/websites/intake/_components/known-fact";
 import { LinkUnavailable } from "@/app/websites/intake/_components/link-unavailable";
 import { PaymentConfirming } from "@/app/websites/intake/_components/payment-confirming";
@@ -10,6 +15,7 @@ import { SITE } from "@/lib/config";
 import { stepByNumber } from "@/lib/intake/tracks";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
+import type { SellableProduct } from "@/server/services/products";
 import { PreviewModeProvider } from "./preview-mode";
 import { SaveLineDriver } from "./save-line-driver";
 
@@ -36,6 +42,14 @@ export const INTAKE_STATE_KEYS = [
   "unavailable",
   "unavailable-invalid",
   "working",
+  // SITE-29: the coded flow.
+  "start",
+  "start-resume",
+  "invalid",
+  "welcome",
+  "step",
+  "pay",
+  "done",
 ] as const;
 
 export type IntakeStateKey = (typeof INTAKE_STATE_KEYS)[number];
@@ -88,6 +102,28 @@ const WORKING_LINES = [
   "[Fixture: second line]",
   "[Fixture: third line]",
 ] as const;
+
+/** A sellable row, invented: nothing here reaches Stripe or the catalogue. */
+function product(
+  key: string,
+  name: string,
+  priceCents: number,
+  repeatable = false,
+): SellableProduct {
+  return {
+    id: `prod_synthetic_${key}`,
+    key,
+    name,
+    description: "[Fixture: one line on what this adds]",
+    priceCents,
+    repeatable,
+    track: "showcase",
+    stripePriceId: `price_synthetic_${key}`,
+  };
+}
+
+/** The `step` key's step: 2 of 10, About you, as drawn. */
+const ABOUT_STEP = 2;
 
 /**
  * One state, rendered as the client meets it. `navigate` points a step's Back
@@ -145,6 +181,81 @@ function body(
       return <LinkUnavailable expired />;
     case "unavailable-invalid":
       return <LinkUnavailable />;
+    case "start":
+      return <ShowcaseStart inProgress={null} />;
+    case "start-resume":
+      return (
+        <ShowcaseStart
+          inProgress={{ token: SYNTHETIC_TOKEN, name: "Sam Fixture" }}
+        />
+      );
+    case "invalid":
+      return <ShowcaseStart inProgress={null} invalidEmail="sam@fixture" />;
+    case "welcome":
+      return (
+        <ShowcaseWelcome
+          engagement={syntheticEngagement("showcase", { startedAt: null })}
+          token={SYNTHETIC_TOKEN}
+        />
+      );
+    case "step":
+      return (
+        <StepShell
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          step={stepByNumber("showcase", ABOUT_STEP)}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          <StepAbout
+            token={SYNTHETIC_TOKEN}
+            initial={{}}
+            initialKind="portfolio"
+            prefill={{
+              contactName: "Sam Fixture",
+              contactEmail: "fixture@example.invalid",
+              contactPhone: null,
+            }}
+            headshots={[]}
+          />
+        </StepShell>
+      );
+    case "pay":
+      return (
+        <ShowcasePayGate
+          engagement={syntheticEngagement("showcase", { paidAt: null })}
+          token={SYNTHETIC_TOKEN}
+          canceled={false}
+          half={product("showcase_half", "[Fixture: half now]", 100000)}
+          full={product("showcase_full", "[Fixture: in full]", 200000)}
+          addons={[
+            product("addon_one", "[Fixture: first add-on]", 30000),
+            product("addon_two", "[Fixture: second add-on]", 45000),
+          ]}
+          extraPage={product(
+            "extra_page",
+            "[Fixture: extra page]",
+            15000,
+            true,
+          )}
+          seoPost={null}
+        />
+      );
+    case "done":
+      return (
+        <ShowcaseDone
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          unanswered={[
+            { step: "[Fixture: a step]", labels: ["[Fixture: a question]"] },
+            {
+              step: "[Fixture: another step]",
+              labels: ["[Fixture: another question]"],
+            },
+          ]}
+          shortfall={null}
+        />
+      );
     case "working":
       return (
         <div>

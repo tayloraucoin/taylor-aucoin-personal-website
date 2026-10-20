@@ -46,7 +46,7 @@ export function PaymentConfirming({ supportEmail }: { supportEmail: string }) {
 
       <p
         aria-live="polite"
-        className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body"
+        className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)"
       >
         {gaveUp
           ? "This is taking longer than it should. Your payment went through — nothing is lost. Send Taylor a note and he'll sort it out."

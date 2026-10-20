@@ -55,7 +55,7 @@ export function KnownFact({
     // value, a hairline below.
     <div className="border-b border-(--color-faint) pb-3">
       <p className="text-meta leading-[1.55] text-(--color-dim)">{label}</p>
-      <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[16px] leading-[1.5] text-(--color-ink) sm:text-body">
+      <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[16px] leading-[1.5] text-(--color-ink) sm:text-(length:--text-body)">
         {value ?? "—"}
         {action}
       </p>

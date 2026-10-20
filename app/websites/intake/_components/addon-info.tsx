@@ -48,7 +48,7 @@ export function AddonInfo({ productKey }: { productKey: string }) {
               {detail.heading}
             </h2>
 
-            <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+            <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
               {detail.intro}
             </p>
 
@@ -58,7 +58,7 @@ export function AddonInfo({ productKey }: { productKey: string }) {
                   <h3 className="border-b border-(--color-faint) pb-2.5 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
                     {section.label}
                   </h3>
-                  <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+                  <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
                     {section.body}
                   </p>
                 </section>

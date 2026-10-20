@@ -52,7 +52,7 @@ export default async function IntakeDonePage({
         That&apos;s everything, {firstName}.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Taylor reads all of this before your call, so the call is short.
       </p>
 

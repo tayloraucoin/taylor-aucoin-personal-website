@@ -25,7 +25,7 @@ export function StepHeading({ children }: { children: string }) {
     <h1
       ref={ref}
       tabIndex={-1}
-      className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink) focus:outline-none"
+      className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink) focus:outline-none focus-visible:outline-none"
     >
       {children}
     </h1>

@@ -1,14 +1,10 @@
-import Link from "next/link";
-import { eyebrowFor } from "@/lib/intake/tracks";
 import { socialCard } from "@/lib/metadata";
-import { legalRoutes, showcaseIntakeRoutes } from "@/lib/routes";
 import {
   EngagementNotFoundError,
   requireEngagement,
 } from "@/server/services/engagement";
-import { Eyebrow } from "../../intake/_components/eyebrow";
 import { readShowcaseResumeCookie } from "./_actions/start";
-import { ShowcaseStartForm } from "./_components/showcase-start-form";
+import { ShowcaseStart } from "./_components/showcase-start";
 
 /* This page is public and tokenless, so unlike the layout's neutral card it
  * can say something useful. It is still noindex: the URL is handed out, never
@@ -60,52 +56,5 @@ export default async function ShowcaseIntakeStartPage({
     }
   }
 
-  return (
-    <div>
-      <Eyebrow>{eyebrowFor("showcase")}</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
-        Let&apos;s get your site started.
-      </h1>
-
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
-        A few details to set things up. The full questionnaire comes next —
-        about 45 minutes, and you can skip anything you&apos;re not sure about.
-      </p>
-
-      {inProgress ? (
-        <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-          <p className="font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
-            You already started one as{" "}
-            <span className="text-(--color-ink)">{inProgress.name}</span>.
-          </p>
-          <p className="mt-3">
-            <Link
-              href={showcaseIntakeRoutes.entry(inProgress.token)}
-              className="font-mono text-[11px] uppercase tracking-[.10em] text-(--color-c2) underline underline-offset-4 hover:text-(--color-c3)"
-            >
-              Pick up where you left off →
-            </Link>
-          </p>
-        </div>
-      ) : null}
-
-      <div className="mt-10">
-        <ShowcaseStartForm promo={promo} />
-      </div>
-
-      {/* Notice at the point of collection: this is the first screen that takes
-          personal information, so the privacy policy is named here — before the
-          pay screen's acceptance line, not only on it. */}
-      <p className="mt-10 border-t border-(--color-faint) pt-5 font-mono text-[10px] uppercase leading-[1.8] tracking-[.18em] text-(--color-dim)">
-        Nothing is charged on this page. Everything you enter is confidential ·{" "}
-        <Link
-          href={legalRoutes.privacy}
-          className="underline underline-offset-4 transition-colors hover:text-(--color-ink)"
-        >
-          Privacy
-        </Link>
-      </p>
-    </div>
-  );
+  return <ShowcaseStart promo={promo} inProgress={inProgress} />;
 }

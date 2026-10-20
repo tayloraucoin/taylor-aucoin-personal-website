@@ -237,7 +237,7 @@ test.describe("C7 axe on every harness key", () => {
         for (const key of KEYS) {
           test(key, async ({ page }) => {
             await page.addInitScript(
-              ([theme]) => localStorage.setItem("theme", theme),
+              ([theme]) => localStorage.setItem("ta-theme", theme),
               [scheme],
             );
             await page.goto(at(key));

@@ -72,11 +72,23 @@ const DISCIPLINES: readonly Choice[] = showcaseDisciplines().map((d) => ({
   label: d.label,
 }));
 
-export function ShowcaseStartForm({ promo }: { promo?: string }) {
+const EMAIL_ERROR =
+  "That doesn't look like an email address — check for a typo.";
+
+export function ShowcaseStartForm({
+  promo,
+  invalidEmail,
+}: {
+  promo?: string;
+  /** The `invalid` fixture: an address that fails the check, already blurred. */
+  invalidEmail?: string;
+}) {
   const [result, formAction, pending] = useActionState(action, null);
   // Submitting would mint a real engagement and a real token.
   const preview = useIsPreview();
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(
+    invalidEmail ? EMAIL_ERROR : null,
+  );
   const [siteKind, setSiteKind] = useState<string>("");
   const [disciplines, setDisciplines] = useState<string[]>([]);
 
@@ -119,6 +131,7 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
           name="contactEmail"
           mode="email"
           required
+          defaultValue={invalidEmail}
           invalid={Boolean(emailError)}
           helpId={emailError ? "contactEmail-help" : undefined}
           onValueChange={() => {
@@ -126,11 +139,7 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
           }}
           onBlur={(event) => {
             const value = event.target.value.trim();
-            setEmailError(
-              value && !looksLikeEmail(value)
-                ? "That doesn't look like an email address — check for a typo."
-                : null,
-            );
+            setEmailError(value && !looksLikeEmail(value) ? EMAIL_ERROR : null);
           }}
         />
       </Field>
@@ -239,7 +248,7 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
       {result && "error" in result ? (
         <p
           role="alert"
-          className="mb-5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mb-5 text-meta leading-[1.55] text-(--color-ink)"
         >
           {result.error}
         </p>
@@ -251,7 +260,7 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
       {result && "sent" in result ? (
         <p
           role="status"
-          className="mb-5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)"
+          className="mb-5 text-meta leading-[1.55] text-(--color-body)"
         >
           You already have one of these on the go. We&rsquo;ve sent the link to
           that address.
@@ -262,7 +271,7 @@ export function ShowcaseStartForm({ promo }: { promo?: string }) {
         {pending ? "Starting…" : "Start →"}
       </GradientButton>
       {preview ? (
-        <p className="mt-2 text-xs text-(--color-dim)">
+        <p className="mt-2 text-meta text-(--color-dim)">
           Starting is disabled in preview.
         </p>
       ) : null}

@@ -152,8 +152,8 @@ export function TopFive({
               />
               <span
                 aria-hidden
-                className={`mr-3 w-6 shrink-0 font-mono text-[10px] tracking-[.18em] ${
-                  picked ? "text-(--color-c2)" : "text-(--color-faint)"
+                className={`mr-3 w-6 shrink-0 text-meta tabular-nums ${
+                  picked ? "text-(--color-ink)" : "text-(--color-faint)"
                 }`}
               >
                 {picked ? String(rank + 1).padStart(2, "0") : "—"}
@@ -176,7 +176,7 @@ export function TopFive({
       {refused ? (
         <p
           aria-live="polite"
-          className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           That&apos;s {LIMIT} already — untick one to make room. The limit is
           the question, not a rule: five is what makes the answer useful.
@@ -185,9 +185,7 @@ export function TopFive({
 
       {picks.length > 0 ? (
         <div className="mt-6">
-          <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            In order, best first
-          </p>
+          <p className="text-meta text-(--color-dim)">In order, best first</p>
 
           <ol className="mt-3 space-y-2">
             {picks.map((key, index) => {
@@ -198,14 +196,14 @@ export function TopFive({
                   key={key}
                   className="flex flex-wrap items-baseline gap-x-3 gap-y-2 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3"
                 >
-                  <span className="font-mono text-[10px] tracking-[.18em] text-(--color-c2)">
+                  <span className="text-meta text-(--color-dim) tabular-nums">
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
-                  <span className="min-w-0 grow font-body text-[16px] font-light text-(--color-ink)">
+                  <span className="min-w-0 grow text-[16px] text-(--color-ink) sm:text-(length:--text-body)">
                     {title ?? "That project"}
                     {title ? null : (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                      <span className="ml-2 text-meta text-(--color-dim)">
                         no longer in your list
                       </span>
                     )}

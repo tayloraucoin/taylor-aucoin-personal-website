@@ -122,7 +122,7 @@ export function ExtrasCheckout({
             <span className="font-body text-[16px] leading-[1.4] text-(--color-body)">
               {row.name}
             </span>
-            <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+            <span className="shrink-0 text-meta text-(--color-dim)">
               {/* [COPY — draft] */}
               Already yours
             </span>
@@ -141,11 +141,11 @@ export function ExtrasCheckout({
             >
               {row.name}
             </label>
-            <span className="shrink-0 font-mono text-[12px] tracking-[.06em] text-(--color-dim)">
+            <span className="shrink-0 text-small tabular-nums text-(--color-dim)">
               {formatMoney(row.unitCents, currency)} each
             </span>
           </div>
-          <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
             {row.description}
           </p>
           <div className="mt-3 flex items-center gap-3">
@@ -153,7 +153,7 @@ export function ExtrasCheckout({
               id={`count-${row.key}`}
               value={count}
               onChange={(event) => set(row.key, Number(event.target.value))}
-              className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)"
+              className="min-h-12 border-(--color-faint) bg-(--color-card) text-[16px] text-(--color-ink) sm:text-(length:--text-body) transition-colors hover:border-(--color-ink) focus:border-(--color-ink)"
             >
               {Array.from({ length: row.max + 1 }, (_, n) => (
                 <option key={n} value={n}>
@@ -162,7 +162,7 @@ export function ExtrasCheckout({
               ))}
             </NativeSelect>
             {count > 0 ? (
-              <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
+              <span className="text-small tabular-nums text-(--color-ink)">
                 {formatMoney(row.unitCents * count, currency)}
               </span>
             ) : null}
@@ -189,9 +189,9 @@ export function ExtrasCheckout({
         />
         <span
           aria-hidden
-          className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-c2) ${
+          className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-focus) ${
             isOn
-              ? "border-(--color-c2) bg-(--color-c2)"
+              ? "border-(--color-ink) bg-(--color-ink)"
               : "border-(--color-faint) bg-transparent"
           }`}
         >
@@ -217,18 +217,18 @@ export function ExtrasCheckout({
               {row.name}
             </span>
             <span
-              className={`shrink-0 font-mono text-[12px] tracking-[.06em] transition-colors ${
+              className={`shrink-0 text-small tabular-nums transition-colors ${
                 isOn ? "text-(--color-ink)" : "text-(--color-dim)"
               }`}
             >
               {ownerName ? "Included" : formatMoney(row.unitCents, currency)}
             </span>
           </span>
-          <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <span className="mt-1 block max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
             {row.description}
           </span>
           {ownerName ? (
-            <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+            <span className="mt-1 block max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
               {/* [COPY — pending Taylor] — the pay screen's line */}
               Comes with the {ownerName.toLowerCase()} — it can&apos;t run
               without one, so you&apos;re not paying for it twice.
@@ -243,7 +243,7 @@ export function ExtrasCheckout({
   return (
     <div>
       {canceled ? (
-        <p className="mt-6 max-w-[48ch] font-body text-[14px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-6 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
           No charge was made. Whenever you&apos;re ready.
         </p>
       ) : null}
@@ -265,7 +265,7 @@ export function ExtrasCheckout({
         <div className={`py-4 ${INTAKE_COLUMN}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+              <span className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
                 Total
               </span>
               <span
@@ -273,9 +273,7 @@ export function ExtrasCheckout({
                 className="font-body text-[16px] text-(--color-ink)"
               >
                 {formatMoney(totalCents, currency)}
-                <span className="ml-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-                  + GST
-                </span>
+                <span className="ml-2 text-meta text-(--color-dim)">+ GST</span>
               </span>
             </div>
 
@@ -295,7 +293,7 @@ export function ExtrasCheckout({
           {error ? (
             <p
               aria-live="polite"
-              className="mt-2.5 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+              className="mt-2.5 max-w-[48ch] text-meta leading-[1.55] text-(--color-ink)"
             >
               {error}
             </p>

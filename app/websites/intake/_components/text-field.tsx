@@ -17,19 +17,18 @@ import { DocHint, DocTag } from "./document";
  * ring) still sees which field is live. Strong border at rest (D-SITE-153).
  */
 const CONTROL_CLASS =
-  "w-full rounded-(--radius) border bg-(--color-card) px-3.5 text-[16px] text-(--color-ink) sm:text-body transition-colors duration-(--dur-fast) ease-(--ease-out) placeholder:text-(--color-dim) disabled:cursor-not-allowed disabled:opacity-60";
+  "w-full rounded-(--radius) bg-(--color-card) text-[16px] text-(--color-ink) sm:text-(length:--text-body) transition-colors duration-(--dur-fast) ease-(--ease-out) placeholder:text-(--color-dim) disabled:cursor-not-allowed disabled:opacity-60";
 
 const BORDER_DEFAULT =
-  "border-(--color-border-strong) hover:border-(--color-ink) focus:border-(--color-ink)";
+  "border px-3.5 border-(--color-border-strong) hover:border-(--color-ink) focus:border-(--color-ink)";
 
 /**
  * The invalid input: a 2px text-colour border, never red (D-SITE-154). The
  * palette has no red, and a form whose whole promise is "nothing you write
  * here is wrong" should not shout at someone for a typo in their own email
- * address. The second pixel is an inset shadow so the field does not shift.
+ * address. Padding gives back the second pixel so the text does not shift.
  */
-const BORDER_INVALID =
-  "border-(--color-ink) shadow-[inset_0_0_0_1px_var(--color-ink)]";
+const BORDER_INVALID = "border-2 border-(--color-ink) px-[13px]";
 
 /**
  * Per-mode input attributes, following the Conscious Connections `Input`

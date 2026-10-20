@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
 import { MachineFilled, useMachineFilled } from "./machine-filled";
+import { WarningGlyph } from "./warning-glyph";
 
 /**
  * Label, optional why-line, control, optional note.
@@ -105,9 +106,10 @@ export function Field({
         <p
           id={`${id}-help`}
           role="alert"
-          className="mt-1.5 text-meta leading-[1.55] text-(--color-ink)"
+          className="mt-1.5 flex items-start gap-2 text-meta leading-[1.55] text-(--color-ink)"
         >
-          {error}
+          <WarningGlyph />
+          <span>{error}</span>
         </p>
       ) : help ? (
         <p

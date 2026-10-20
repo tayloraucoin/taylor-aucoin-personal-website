@@ -18,7 +18,7 @@ export function LinkUnavailable({ expired = false }: { expired?: boolean }) {
         {expired ? "This link has expired." : "This link isn't working."}
       </h1>
 
-      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {expired
           ? "Links stop working after a while for safety. Send Taylor a note and he'll send a fresh one — everything you entered is still there."
           : "The address may be incomplete, or the link may have expired. Send Taylor a note and he'll send a fresh one — nothing you entered is lost."}

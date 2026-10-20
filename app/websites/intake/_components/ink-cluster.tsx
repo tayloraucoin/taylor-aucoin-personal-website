@@ -45,7 +45,7 @@ export function InkCluster({
         {mono}
       </h2>
 
-      <p className="mt-3 mb-6 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-body">
+      <p className="mt-3 mb-6 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)">
         {intro}
       </p>
 

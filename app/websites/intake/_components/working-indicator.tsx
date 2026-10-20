@@ -65,7 +65,7 @@ export function WorkingIndicator({
           interrupting itself every four seconds would be the opposite. */}
       <p
         aria-live="polite"
-        className="mt-5 text-[16px] leading-[1.6] text-(--color-body) sm:text-body"
+        className="mt-5 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)"
       >
         {messages[index]}
       </p>

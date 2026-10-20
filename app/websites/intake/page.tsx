@@ -60,14 +60,14 @@ export default async function IntakeStartPage({
         Let&apos;s get your site started.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         A few details to set things up. The full questionnaire comes next —
         about 30 minutes, and you can skip anything you&apos;re not sure about.
       </p>
 
       {inProgress ? (
         <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             You already started one for{" "}
             <span className="text-(--color-ink)">
               {inProgress.businessName}
@@ -96,7 +96,7 @@ export default async function IntakeStartPage({
         Nothing is charged on this page. Everything you enter is confidential ·{" "}
         <Link
           href={legalRoutes.privacy}
-          className="inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
+          className="inline-block -my-[15px] py-[15px] text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           Privacy
         </Link>

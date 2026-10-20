@@ -38,7 +38,7 @@ export type Choice = { value: string; label: string; disabled?: boolean };
  * literals, and it is why the selected border's colour has one home.
  */
 export const CARD_CLASS =
-  "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left text-[16px] leading-[1.4] sm:text-body transition-colors duration-(--dur-fast) ease-(--ease-out)";
+  "flex min-h-12 w-full items-center rounded-(--radius) border px-3.5 py-3 text-left text-[16px] leading-[1.4] sm:text-(length:--text-body) transition-colors duration-(--dur-fast) ease-(--ease-out)";
 
 export const UNSELECTED_CLASS =
   "border-(--color-border-strong) text-(--color-body) hover:border-(--color-ink)";

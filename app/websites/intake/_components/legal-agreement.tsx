@@ -30,7 +30,7 @@ export function LegalAgreement({
   const [open, setOpen] = useState<"terms" | "privacy" | null>(null);
 
   const linkClass =
-    "inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)";
+    "inline-block -my-[15px] py-[15px] text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)";
 
   return (
     <>

@@ -52,6 +52,7 @@ export function ShowcasePayButton({
   return (
     <div>
       <GradientButton
+        className="w-full justify-center"
         disabled={disabled || pending || plan === null || preview}
         onClick={() => {
           if (plan === null) return;
@@ -80,7 +81,7 @@ export function ShowcasePayButton({
       {failed ? (
         <p
           aria-live="polite"
-          className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           That didn&apos;t open — try once more, and tell Taylor if it keeps
           happening. Nothing has been charged.

@@ -8,7 +8,7 @@ import { isProtectedIntakePath } from "./intake-idioms";
  * path. Every commit whose subject starts with a listed ticket's id is read
  * from git, and none may touch a protected path. Each intake ticket adds its id.
  */
-const TICKETS = ["SITE-28"] as const;
+const TICKETS = ["SITE-28", "SITE-29"] as const;
 
 function git(...args: string[]): string {
   return execFileSync("git", args, { encoding: "utf8" });

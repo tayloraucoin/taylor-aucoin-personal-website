@@ -121,7 +121,7 @@ export function StepShell({
 
         {step.intro ? (
           <p
-            className={`mt-3 max-w-[48ch] text-[16px] leading-[1.6] sm:text-body ${
+            className={`mt-3 max-w-[48ch] text-[16px] leading-[1.6] sm:text-(length:--text-body) ${
               step.emphasis === "ink"
                 ? "text-(--color-ink)"
                 : "text-(--color-body)"

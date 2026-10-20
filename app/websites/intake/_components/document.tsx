@@ -67,7 +67,7 @@ export function DocOptions({
       {options.map((option) => (
         <li
           key={option.value}
-          className="text-[16px] leading-[1.5] text-(--color-body) sm:text-body"
+          className="text-[16px] leading-[1.5] text-(--color-body) sm:text-(length:--text-body)"
         >
           {/* On-screen bullet only — a Markdown list draws its own. */}
           <span aria-hidden data-md="skip" className="mr-2 text-(--color-dim)">

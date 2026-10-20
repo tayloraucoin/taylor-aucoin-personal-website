@@ -55,7 +55,7 @@ export function ShowcaseWaiveButton({
       {failed ? (
         <p
           aria-live="polite"
-          className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           {/* [COPY — pending Taylor] */}
           That didn&apos;t go through — try once more, and tell Taylor if it

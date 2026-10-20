@@ -25,7 +25,7 @@ import { Field } from "./field";
  */
 
 const ROW_CLASS =
-  "flex min-h-12 cursor-pointer gap-3 rounded-(--radius) border border-(--color-border-strong) px-3.5 py-3 text-[16px] leading-[1.4] sm:text-body text-(--color-body)";
+  "flex min-h-12 cursor-pointer gap-3 rounded-(--radius) border border-(--color-border-strong) px-3.5 py-3 text-[16px] leading-[1.4] sm:text-(length:--text-body) text-(--color-body)";
 
 const BOX_CLASS = "h-5 w-5 shrink-0 accent-(--color-ink)";
 
@@ -68,7 +68,7 @@ export function CheckRow({
     <label
       className={
         bare
-          ? "flex min-h-12 cursor-pointer items-center gap-3 text-[16px] text-(--color-body) sm:text-body"
+          ? "flex min-h-12 cursor-pointer items-center gap-3 text-[16px] text-(--color-body) sm:text-(length:--text-body)"
           : `${ROW_CLASS} ${align === "start" ? "items-start" : "items-center"}`
       }
     >

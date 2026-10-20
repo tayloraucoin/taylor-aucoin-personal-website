@@ -66,13 +66,13 @@ export function DepositGate({
         {engagement.businessName}
       </h1>
 
-      <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+      <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Hi {firstName} — here&apos;s everything from our call, ready to go.
       </p>
 
       <div className="mt-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-6">
         {engagement.projectSummary ? (
-          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+          <p className="text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {engagement.projectSummary}
           </p>
         ) : null}
@@ -96,7 +96,7 @@ export function DepositGate({
       </div>
 
       {canceled ? (
-        <p className="mt-6 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-body">
+        <p className="mt-6 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
           No charge was made. Whenever you&apos;re ready.
         </p>
       ) : null}

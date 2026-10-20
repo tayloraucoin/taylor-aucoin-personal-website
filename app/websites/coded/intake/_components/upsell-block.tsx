@@ -48,10 +48,10 @@ export function UpsellQuestions({
     <Reveal extras={extras} dependsOn={{ extra }}>
       <>
         <div className="mb-7 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+          <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             {block.eyebrow}
           </p>
-          <p className="mt-3 font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {block.body}
           </p>
         </div>
