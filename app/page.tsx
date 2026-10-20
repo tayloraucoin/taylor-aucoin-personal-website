@@ -7,6 +7,7 @@ import { Pillars } from "@/app/_components/Pillars";
 import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
 import { SelectedWork } from "@/app/_components/SelectedWork";
+import type { DialogSeed } from "@/app/_components/TestimonialCards";
 import { WorkWithMe } from "@/app/_components/WorkWithMe";
 import { PageClose } from "@/components/site/PageClose";
 // import { NOTES_STATES, notesFixtures } from "@/app/_fixtures";
@@ -22,8 +23,24 @@ const STATES = [
   "selected-work-websites",
   "selected-work-branding",
   "selected-work-filtered",
+  // The testimonial dialog (feedback round 2). At 390 and under reduced
+  // motion, each is the same key at that width or media setting.
+  "testimonial-open",
+  "testimonial-first",
+  "testimonial-last",
+  "testimonial-focus",
   // ...NOTES_STATES, back with the notes signup below.
 ] as const;
+
+/** Each dialog state's person and focus, as drawn in "Home · round 2". */
+const TESTIMONIAL_SEEDS: Partial<
+  Record<(typeof STATES)[number] | "default", DialogSeed>
+> = {
+  "testimonial-open": { index: 1 },
+  "testimonial-first": { index: 0 },
+  "testimonial-last": { index: 3 },
+  "testimonial-focus": { index: 2, focus: "next" },
+};
 
 /**
  * Home in D-SITE-50's order: hero, proof bar, pillars, Problems I take on,
@@ -69,7 +86,7 @@ export default async function Home({
           }
         />
         <HowIWork />
-        <HomeTestimonials />
+        <HomeTestimonials seed={TESTIMONIAL_SEEDS[state]} />
         <WorkWithMe />
         {/*
         The notes signup is commented out on home until Taylor sets the
