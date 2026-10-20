@@ -1,13 +1,14 @@
 import { HomeHero } from "@/app/_components/HomeHero";
 import { HomeTestimonials } from "@/app/_components/HomeTestimonials";
 import { HowIWork } from "@/app/_components/HowIWork";
-import { NotesSignup } from "@/app/_components/NotesSignup";
+// Notes signup is off on home for now (feedback round 2): see below.
+// import { NotesSignup } from "@/app/_components/NotesSignup";
 import { Pillars } from "@/app/_components/Pillars";
 import { ProblemsITakeOn } from "@/app/_components/ProblemsITakeOn";
 import { ProofBar } from "@/app/_components/ProofBar";
 import { SelectedWork } from "@/app/_components/SelectedWork";
 import { WorkWithMe } from "@/app/_components/WorkWithMe";
-import { NOTES_STATES, notesFixtures } from "@/app/_fixtures";
+// import { NOTES_STATES, notesFixtures } from "@/app/_fixtures";
 import { pillars } from "@/content/home";
 import { readPageState, type PageSearchParams } from "@/lib/page-state";
 
@@ -19,7 +20,7 @@ const STATES = [
   "selected-work-websites",
   "selected-work-branding",
   "selected-work-filtered",
-  ...NOTES_STATES,
+  // ...NOTES_STATES, back with the notes signup below.
 ] as const;
 
 /**
@@ -64,6 +65,13 @@ export default async function Home({
       <HowIWork />
       <HomeTestimonials />
       <WorkWithMe />
+      {/*
+        The notes signup is commented out on home until Taylor sets the
+        newsletter up (feedback round 2:
+        specs/web/epics/SITE-public-site-redesign/feedback/2026-10-19-round-2/feedback.md).
+        The component, its action and the note_signups migration stay; to bring
+        it back, restore this block, the two imports and NOTES_STATES above.
+
       <NotesSignup
         seed={
           (NOTES_STATES as readonly string[]).includes(state)
@@ -71,6 +79,7 @@ export default async function Home({
             : undefined
         }
       />
+      */}
     </main>
   );
 }

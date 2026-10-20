@@ -9,6 +9,10 @@ import { isGoogleHost } from "./google-hosts";
  * Addresses are `@example.test`.
  */
 
+// Feedback round 2 (2026-10-19): the signup is commented out on home until
+// Taylor sets the newsletter up. Unskip when app/page.tsx renders it again.
+test.skip(true, "notes signup commented out on home, feedback round 2");
+
 const block = (page: Page) =>
   page.locator("section[aria-labelledby=notes-heading]");
 const field = (page: Page) => block(page).getByLabel("Email");

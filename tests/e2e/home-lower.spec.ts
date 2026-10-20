@@ -41,11 +41,7 @@ const STATES = [
   "selected-work-websites",
   "selected-work-branding",
   "selected-work-filtered",
-  "notes-sending",
-  "notes-done",
-  "notes-error",
-  "notes-invalid",
-  "notes-already",
+  // The notes states come back with the home signup (feedback round 2).
 ];
 
 test.describe("at 1440", () => {
@@ -164,7 +160,6 @@ test.describe("at 1440", () => {
       "How I work",
       "Testimonials",
       "Work with me",
-      "Notes",
     ]);
     expect(
       await page.evaluate(() => {
@@ -176,6 +171,10 @@ test.describe("at 1440", () => {
         );
       }),
     ).toBe(true);
+    // Feedback round 2: the notes signup is commented out on home.
+    await expect(
+      page.locator("section[aria-labelledby=notes-heading]"),
+    ).toHaveCount(0);
     await expect(page.getByText("Signal", { exact: true })).toHaveCount(0);
     await expect(page.locator("main canvas")).toHaveCount(0);
     await expect(page.getByText("Years shipping")).toHaveCount(0);
@@ -211,7 +210,6 @@ test.describe("at 1440", () => {
       // "Read them in full": a control the contract's list leaves out.
       "Testimonials",
       "Work with me",
-      "Notes",
       "footer",
     ];
     const seen: string[] = [];

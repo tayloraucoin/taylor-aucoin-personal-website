@@ -1,14 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import Image from "next/image";
-import type { MediaItem } from "@/content/work";
+import { createPortal } from "react-dom";
 import { PLAY_TRIANGLE_PATH } from "@/components/work/play-icon";
+import type { MediaItem } from "@/content/work";
 
 export type ZoomItem = Pick<MediaItem, "src" | "alt" | "caption" | "video">;
 
 type OpenState = { list: "strip" | "rail"; index: number };
+
+/**
+ * One shared empty rail. A `= []` default is a new array on every render, and
+ * the open effect used to depend on it: each run's `setBox` re-rendered, the
+ * dependency changed, and the effect ran again until React threw "Maximum
+ * update depth exceeded" (feedback round 2, 2026-10-19).
+ */
+const NO_RAIL: ZoomItem[] = [];
 
 function LightboxVideo({
   poster,
@@ -109,7 +117,7 @@ function LightboxVideo({
  */
 export default function MediaLightbox({
   items,
-  railItems = [],
+  railItems = NO_RAIL,
   children,
 }: {
   items: ZoomItem[];
@@ -142,6 +150,16 @@ export default function MediaLightbox({
     if (open !== null) lastOpen.current = open;
   }, [open]);
 
+  /**
+   * The lists as of the last render, read by the open effect's key handler.
+   * The effect depends on `isOpen` alone, so a caller that builds its lists
+   * inline cannot re-run it (and its `setBox`) on every render.
+   */
+  const lists = useRef({ items, railItems });
+  useEffect(() => {
+    lists.current = { items, railItems };
+  });
+
   const isOpen = open !== null;
   const activeList = open?.list === "rail" ? railItems : items;
   const count = activeList.length;
@@ -153,7 +171,10 @@ export default function MediaLightbox({
     const step = (delta: number) =>
       setOpen((current) => {
         if (current === null) return null;
-        const list = current.list === "rail" ? railItems : items;
+        const list =
+          current.list === "rail"
+            ? lists.current.railItems
+            : lists.current.items;
         const len = list.length;
         if (len === 0) return null;
         return {
@@ -231,7 +252,7 @@ export default function MediaLightbox({
         ?.querySelector<HTMLElement>(`[${attr}="${restore.index}"]`)
         ?.focus();
     };
-  }, [isOpen, items, railItems]);
+  }, [isOpen]);
 
   const onDelegatedClick = (e: React.MouseEvent) => {
     const railTrigger = (e.target as HTMLElement).closest<HTMLElement>(
@@ -264,7 +285,10 @@ export default function MediaLightbox({
     dims && box ? Math.min(box.w / dims.width, box.h / dims.height, 1) : null;
   const fitted =
     dims && scale !== null
-      ? { w: Math.round(dims.width * scale), h: Math.round(dims.height * scale) }
+      ? {
+          w: Math.round(dims.width * scale),
+          h: Math.round(dims.height * scale),
+        }
       : null;
 
   const chip =
@@ -335,7 +359,9 @@ export default function MediaLightbox({
               {item.video ? (
                 <LightboxVideo
                   key={item.video.src}
-                  poster={typeof item.src === "string" ? item.src : item.src.src}
+                  poster={
+                    typeof item.src === "string" ? item.src : item.src.src
+                  }
                   videoSrc={item.video.src}
                   altSrc={item.video.altSrc}
                   altType={item.video.altType}

@@ -185,6 +185,40 @@ test.describe("at 1440", () => {
     await expect(kr.locator("img, [data-zoom-index], button")).toHaveCount(0);
   });
 
+  test("feedback round 2: a branding image opens only its row's boards, with no console error", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    await page.goto("/");
+    await tab(page, "Branding & UI").click();
+    const cc = story(page, "Conscious Connections");
+    const thumb = cc.locator("[data-zoom-index]").first();
+    await thumb.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    // The row holds two boards; the section holds more.
+    await expect(dialog).toContainText("2 / 2");
+    await expect(dialog).toHaveAttribute(
+      "aria-label",
+      /^Conscious Connections brand portfolio page/,
+    );
+    await page.keyboard.press("ArrowRight");
+    await expect(dialog).toContainText("1 / 2");
+    await expect(dialog).toHaveAttribute(
+      "aria-label",
+      /^Conscious Connections brand identity cover/,
+    );
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(thumb).toBeFocused();
+    expect(errors).toEqual([]);
+  });
+
   test("C6 See the work focuses the first story's heading", async ({
     page,
   }) => {
