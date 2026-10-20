@@ -1,9 +1,10 @@
+import { ToolsRow } from "@/app/_components/ToolsRow";
 import { howIWork } from "@/content/home";
 
 /**
  * How I work (D-SITE-58): five numbered steps in a row at 1440, stacked with
  * a fixed number column at 390, then the AI block's three lists shown as
- * outputs, never opened.
+ * outputs, never opened, then the tools row (feedback round 2).
  */
 export function HowIWork() {
   return (
@@ -48,6 +49,7 @@ export function HowIWork() {
           </div>
         ))}
       </div>
+      <ToolsRow />
     </section>
   );
 }
