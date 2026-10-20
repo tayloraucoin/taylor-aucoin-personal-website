@@ -66,8 +66,17 @@ test.describe("at 1440", () => {
       "Passion projects",
       "Own brand",
     ]);
+    // Feedback round 2: Websites keeps the chips, disabled, at md and up.
     await page.goto("/work?tab=websites");
-    await expect(page.locator("main nav")).toHaveCount(1);
+    await expect(page.locator("main nav")).toHaveCount(2);
+    await expect(chipsNav(page).locator("a")).toHaveCount(0);
+    await expect(chipsNav(page).locator("[aria-disabled=true]")).toHaveText([
+      "All",
+      "Full-time",
+      "Contract",
+      "Business",
+      "Passion projects",
+    ]);
   });
 
   test("C2 chip by keyboard, reload, hrefs", async ({ page }) => {
@@ -167,8 +176,64 @@ test.describe("at 1440", () => {
     expect(link).toEqual(["15px", "500", "18px", "3px"]);
 
     await page.goto("/work?tab=websites");
-    await expect(page.locator("main nav")).toHaveCount(1);
     expect(await line()).toEqual(product);
+  });
+
+  test("feedback round 2: tab switches move nothing; Websites' chips are disabled and unfocusable", async ({
+    page,
+  }) => {
+    const box = (nav: ReturnType<typeof tabsNav>) =>
+      nav.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return [r.x, r.y + scrollY, r.width, r.height];
+      });
+    const tabLinks = () =>
+      tabsNav(page)
+        .locator("a")
+        .evaluateAll((els) =>
+          els.map((a) => {
+            const r = a.getBoundingClientRect();
+            return [r.x, r.y + scrollY, r.width, r.height];
+          }),
+        );
+
+    await page.goto("/work");
+    const tabs = await box(tabsNav(page));
+    // Branding's chips are fewer, so the row's width differs by tab; its
+    // top and height are what hold the tab line.
+    const rowLine = async () => {
+      const [, y, , h] = await box(chipsNav(page));
+      return [y, h];
+    };
+    const row = await rowLine();
+    const links = await tabLinks();
+
+    for (const name of ["Websites", "Branding & UI", "Product engineering"]) {
+      await tabsNav(page).getByRole("link", { name }).click();
+      await expect(tabsNav(page).locator("a[aria-current=true]")).toHaveText(
+        name,
+      );
+      expect(await box(tabsNav(page)), name).toEqual(tabs);
+      expect(await rowLine(), name).toEqual(row);
+      expect(await tabLinks(), name).toEqual(links);
+    }
+
+    await page.goto("/work?tab=websites");
+    const chips = chipsNav(page).locator("[aria-disabled=true]");
+    await expect(chips.first()).toBeVisible();
+    expect(
+      await chips.evaluateAll((els) =>
+        els.map((el) => [
+          el.tabIndex,
+          el.hasAttribute("href"),
+          getComputedStyle(el).opacity,
+          getComputedStyle(el).cursor,
+        ]),
+      ),
+    ).toEqual(Array(5).fill([-1, false, "0.6", "not-allowed"]));
+    await chips.first().click({ force: true });
+    await expect(page).toHaveURL(/\/work\?tab=websites$/);
+    await expectNoSeriousA11y(page, { include: "main nav" });
   });
 
   test("C6 no family office name in any tab", async ({ page }) => {

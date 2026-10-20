@@ -48,11 +48,25 @@ export function tabVariants({ selected }: { selected: boolean }): string {
 /**
  * A type filter chip (D-SITE-54): hairline-bordered; selected takes the raised
  * surface, the strong border and a mark-coloured check (drawn by the caller).
+ * `disabled` is the kit's disabled look (60% opacity, not-allowed, no hover)
+ * for a row that shows but does not filter.
  */
-export function chipVariants({ selected }: { selected: boolean }): string {
-  return `inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-(--radius) border px-4 font-body text-(length:--text-small) transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) md:min-h-10 ${
+export function chipVariants({
+  selected,
+  disabled = false,
+}: {
+  selected: boolean;
+  disabled?: boolean;
+}): string {
+  return `inline-flex min-h-11 items-center gap-2 rounded-(--radius) border px-4 font-body text-(length:--text-small) transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) md:min-h-10 ${
+    disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+  } ${
     selected
       ? "border-(--color-line-strong) bg-(--color-card) text-(--color-ink)"
-      : "border-(--color-line-soft) text-(--color-body) hover:border-(--color-line-strong) hover:text-(--color-ink)"
+      : `border-(--color-line-soft) text-(--color-body)${
+          disabled
+            ? ""
+            : " hover:border-(--color-line-strong) hover:text-(--color-ink)"
+        }`
   }`;
 }

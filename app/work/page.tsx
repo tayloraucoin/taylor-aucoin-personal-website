@@ -5,6 +5,7 @@ import { readPageState, type PageSearchParams } from "@/lib/page-state";
 import { siteRoutes } from "@/lib/routes";
 import {
   chipsForTab,
+  DEFAULT_TAB,
   entriesForTab,
   filterByType,
   groupByType,
@@ -61,10 +62,15 @@ export default async function WorkPage({
         {chips.length > 0 ? (
           <TypeChipsNav tab={tab} chips={chips} selected={type} />
         ) : (
-          // A tab with no type chips (Websites) keeps the chip row's height
-          // at md and up, a 40px chip over its 12px foot, so the tab line
-          // does not jump (feedback 2026-10-19).
-          <div aria-hidden className="max-md:hidden md:h-13" />
+          // A tab with no type chips (Websites) shows the default tab's chips,
+          // disabled, at md and up, so the tab line does not jump (feedback
+          // round 2, 2026-10-19).
+          <TypeChipsNav
+            tab={tab}
+            chips={chipsForTab(entriesForTab(DEFAULT_TAB))}
+            selected="all"
+            disabled
+          />
         )}
       </div>
 
