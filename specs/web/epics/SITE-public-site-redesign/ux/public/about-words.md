@@ -10,7 +10,7 @@ Part of `about.md`. Every string, by Gloss. Copy is Taylor's; nothing here is im
 
 | Where | String | Source |
 | --- | --- | --- |
-| Meta title / description | "About — Taylor Aucoin"; "Systems designer from a bio-med background. Twelve products from zero to one, fourteen BCIT cohorts mentored, based in Vancouver. The person behind the work." | existing: `app/about/page.tsx` (flag: "fourteen" against [23]) |
+| Meta title / description | "About — Taylor Aucoin"; "Product engineer from a bio-med background, based in Vancouver. Thirteen products taken from zero to one and 22 cohorts taught and sponsored." | `app/about/page.tsx` (2026-10-20: role and cohort count match home) |
 | Header | Taylor Aucoin · Work · About · Work with me · Contact · Book a 30-minute call | canvas; "Contact" D-SITE-130 |
 | Eyebrow | The person behind the work | existing: `app/about/page.tsx` |
 | h1 · location | About · From BC · Vancouver for ten years | existing: page, `content/about.ts` `locationLine` |
@@ -18,7 +18,7 @@ Part of `about.md`. Every string, by Gloss. Copy is Taylor's; nothing here is im
 | How I think | heading; the three rows Systems, biologically · The weeds are the work · Builder's output, with bodies | existing: `content/about.ts` `howIThink` (Mentorship row moves to Teaching) |
 | Experience heads | Experience · Full-time · Contract and fractional · My own products · Programmes | canvas (D-SITE-70) |
 | Full-time rows | Everbook · Founding engineer, at Pine Studio · 2024 – 2025; Roomvy · Senior frontend engineer, at Pathfinder Studios · 2023; Calculate by QxMD · Frontend software engineer, a WebMD/Medscape company · 2019 – 2021; FYBR Inc. [Taylor confirms] · Developer, first development job · 2017 | canvas (roles differ from `content/work/*.ts` `role`; D-SITE-197); FYBR `[draft]` |
-| Contract row | Multi-entity family office platform · Fractional CTO · 2026 | canvas; `content/work/family-office-platform.ts` |
+| Contract row | Multi-entity family office platform · Fractional CTO · 2026 | canvas; `content/work/future-of-cities.ts` |
 | Own products | Conscious Connections · Founder, engineer, designer · 2026 – present; Agora · Founder, engineer · 2021 – 2026 | existing: `content/work/*.ts` |
 | Also built | Also built · Social Photography Hub · Artist Hivemind Hub · Crypto Alerts · GIS Drone Imagery Reporting Suite | existing: `lib/config.ts` `OTHER_BUILDS` (Hivemind: Taylor confirms) |
 | Programmes | BCIT ISSP · Technical client and senior engineer, Agora's teams · [years]; FLUI design hackathon · [role, Taylor confirms] · [year]; League of Innovators · [role, Taylor confirms] · [year] | canvas; brackets `[draft]` |

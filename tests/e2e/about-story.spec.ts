@@ -9,7 +9,7 @@ const SLUG_ROWS = [
   ["Everbook", "everbook"],
   ["Roomvy", "roomvy"],
   ["Calculate by QxMD", "calculate-qxmd"],
-  ["Future of Cities", "family-office-platform"],
+  ["Future of Cities", "future-of-cities"],
   ["Conscious Connections", "conscious-connections"],
   ["Agora", "agora"],
 ] as const;

@@ -195,7 +195,7 @@ export const capabilities: Capability[] = [
     proof: [
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       { label: "Everbook", href: "/work/everbook" },
@@ -231,7 +231,7 @@ export const capabilities: Capability[] = [
     proof: [
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
     ],
     offer: "Fractional CTO",
@@ -261,7 +261,7 @@ export const capabilities: Capability[] = [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
     ],
     offer: "Fractional CTO",
@@ -295,7 +295,7 @@ export const capabilities: Capability[] = [
       { label: "Roomvy", href: "/work/roomvy" },
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
     ],
     offer: "Contract",
@@ -504,7 +504,7 @@ export const capabilities: Capability[] = [
     proof: [
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
       { label: "Conscious Connections", href: "/work/conscious-connections" },
     ],
@@ -536,7 +536,7 @@ export const capabilities: Capability[] = [
       { label: "Conscious Connections", href: "/work/conscious-connections" },
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
       { label: "Agora", href: "/work/agora" },
     ],
@@ -566,7 +566,7 @@ export const capabilities: Capability[] = [
       { label: "Everbook", href: "/work/everbook" },
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
     ],
     offer: "Fixed-scope 0→1 build",
@@ -698,7 +698,7 @@ export const capabilities: Capability[] = [
     proof: [
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
       { label: "Everbook", href: "/work/everbook" },
       { label: "Agora", href: "/work/agora" },
@@ -835,7 +835,7 @@ export const capabilities: Capability[] = [
     proof: [
       {
         label: "the Future of Cities platform",
-        href: "/work/family-office-platform",
+        href: "/work/future-of-cities",
       },
       { label: "Everbook", href: "/work/everbook" },
       { label: "Agora", href: "/work/agora" },

@@ -23,7 +23,7 @@ export type Offer = {
 export const offers: Offer[] = [
   {
     tag: "01 / Contract",
-    title: "Contract senior/staff engineer",
+    title: "Contract product engineer",
     cadence: "3–12 months · embedded",
     bestFor: "Teams that need senior throughput now.",
     includes: [
@@ -160,7 +160,7 @@ export const closing =
 
 /** SVC-09 — two-line bio beside the photo. Taylor owns the final wording. */
 export const bio =
-  "Senior product engineer and technical founder: thirteen products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+  "Product engineer and technical founder: thirteen products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
 
 /**
  * /work-with-me roles (D-SITE-57): seats of one job, never a menu (D-SITE-125).

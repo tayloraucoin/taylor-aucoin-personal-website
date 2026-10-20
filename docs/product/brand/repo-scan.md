@@ -49,7 +49,7 @@ The site presents Taylor Aucoin as a "Senior/staff product engineer" in Vancouve
 - QxMD, "a WebMD/Medscape company"; Medscape (`content/work/calculate-qxmd.ts`)
 - Pathfinder Studios (`content/work/roomvy.ts`)
 - Pine Studio (Everbook) (`content/testimonials.ts`)
-- A family office, unnamed: "a retreat center, a foundation, an events operation, a personal brand, and the headquarters" (`content/work/family-office-platform.ts`)
+- A family office, unnamed: "a retreat center, a foundation, an events operation, a personal brand, and the headquarters" (`content/work/future-of-cities.ts`)
 - FYBR Inc. — "first development job" (`content/testimonials.ts`)
 - BCIT ISSP; "an SFU co-op" (`components/sections/Capabilities.tsx`, `content/work/agora.ts`)
 - Clean Coast Detailing, `cleancoast.ca` — websites case, `published: true` (`content/websites-clean-coast.ts`)
@@ -59,7 +59,7 @@ The site presents Taylor Aucoin as a "Senior/staff product engineer" in Vancouve
 
 | # | Title | Role | Period | Tagline (verbatim) | Outcome claims (verbatim) | File |
 |---|---|---|---|---|---|---|
-| 1 | Multi-Entity Family Office Platform | Fractional CTO | 2026 | "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre." | "Ten legacy systems unified into one database" · "Five production applications live on a shared platform" · meta: "Five production apps in six weeks." | `content/work/family-office-platform.ts` |
+| 1 | Multi-Entity Family Office Platform | Fractional CTO | 2026 | "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre." | "Ten legacy systems unified into one database" · "Five production applications live on a shared platform" · meta: "Five production apps in six weeks." | `content/work/future-of-cities.ts` |
 | 2 | Conscious Connections | Founder, engineer, designer | 2026 — present | "A communication and coaching tool for couples, with AI-mediated conflict translation and a safety layer that screens for intimate-partner-violence signals. My own product, built between engagements." | "Ninety-one human-reviewed migrations and two append-only decision logs" · "The marketing site is live; the toolkit is in beta ahead of launch." | `content/work/conscious-connections.ts` |
 | 3 | Everbook | Founding engineer, CTO-track | 2024 — 2025 | "An AI voice interview that becomes a typeset, press-ready hardcover: the interview engine, print pipeline, and commerce platform behind it, built solo from first commit through a relaunch." | "MVP to production in six" (of fourteen months) · "Over 99% production stability" · "Two checkout systems and three print providers" · "The role ended in October 2025 in a company-wide layoff after a strategic pivot to marketing operations." | `content/work/everbook.ts` |
 | 4 | Roomvy | Senior frontend engineer (Pathfinder Studios) | 2023 | "The entire client-facing booking frontend, built solo: an Airbnb-style room-block flow for conferences and tournaments, with zero issues reported in production." | "Zero reported defects, with self-managed QA as the only release gate" · "the agency's pipeline dried up before a next project existed, and the role ended there." | `content/work/roomvy.ts` |

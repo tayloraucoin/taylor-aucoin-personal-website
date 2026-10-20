@@ -44,7 +44,7 @@ out_of_scope:
   - "The no-testimonial re-export from Paper (D-SITE-196): a Design thread, before this build starts"
 criteria:
   - id: C1
-    statement: "/work/everbook and /work/agora render What I built as a gallery (lead screen, captioned thumbs, an All n images tile, then the two-column surface list); /work/conscious-connections as the band (captioned tiles on a surface panel, the surface list, All n images); /work/roomvy as surface rows then its screens in framed panels with a meta credit line; /work/family-office-platform as rows with its diagram under Unified data layer only; /work/calculate-qxmd as rows with no image, tile or All n images (C-SITE-case-study-8)"
+    statement: "/work/everbook and /work/agora render What I built as a gallery (lead screen, captioned thumbs, an All n images tile, then the two-column surface list); /work/conscious-connections as the band (captioned tiles on a surface panel, the surface list, All n images); /work/roomvy as surface rows then its screens in framed panels with a meta credit line; /work/future-of-cities as rows with its diagram under Unified data layer only; /work/calculate-qxmd as rows with no image, tile or All n images (C-SITE-case-study-8)"
     evidence: test
     command: "yarn test:e2e tests/e2e/case-study-formats.spec.ts"
   - id: C2

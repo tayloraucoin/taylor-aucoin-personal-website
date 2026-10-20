@@ -88,7 +88,7 @@ A Product Engineer with a decade of full-stack software engineering behind him a
 
 | Case study | Role · period | What the site claims (verbatim) | File |
 |---|---|---|---|
-| Multi-Entity Family Office Platform | Fractional CTO · 2026 | "Ten legacy systems unified into one database" · "Five production applications live on a shared platform" · "Five production apps in six weeks." | `content/work/family-office-platform.ts` |
+| Multi-Entity Family Office Platform | Fractional CTO · 2026 | "Ten legacy systems unified into one database" · "Five production applications live on a shared platform" · "Five production apps in six weeks." | `content/work/future-of-cities.ts` |
 | Conscious Connections | Founder, engineer, designer · 2026 to present | "Ninety-one human-reviewed migrations and two append-only decision logs" · "The marketing site is live; the toolkit is in beta ahead of launch." | `content/work/conscious-connections.ts` |
 | Everbook | Founding engineer, CTO-track · 2024–2025 | "MVP to production in six" (of fourteen months) · "Over 99% production stability" · "Two checkout systems and three print providers" | `content/work/everbook.ts` |
 | Roomvy | Senior frontend engineer (Pathfinder Studios) · 2023 | "Zero reported defects, with self-managed QA as the only release gate" | `content/work/roomvy.ts` |

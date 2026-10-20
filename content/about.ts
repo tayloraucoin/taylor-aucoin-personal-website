@@ -112,7 +112,7 @@ export const experience: ExperienceEntry[] = [
     name: "Future of Cities",
     role: "Fractional CTO",
     years: "2026",
-    slug: "family-office-platform",
+    slug: "future-of-cities",
   },
   {
     group: "My own products",

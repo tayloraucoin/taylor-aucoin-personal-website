@@ -135,6 +135,12 @@ const nextConfig: NextConfig = {
       // The coded page moved to `/websites` (D-SITE-111). Exact path only, no
       // `:path*`: the intake under `/websites/coded/intake` stays (D-SITE-160, 215).
       { source: "/websites/coded", destination: "/websites", permanent: true },
+      // The family office case study took its public name (2026-10-20).
+      {
+        source: "/work/family-office-platform",
+        destination: "/work/future-of-cities",
+        permanent: true,
+      },
     ];
   },
 

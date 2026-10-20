@@ -8,7 +8,7 @@ const SLUGS = [
   "everbook",
   "roomvy",
   "calculate-qxmd",
-  "family-office-platform",
+  "future-of-cities",
   "agora",
   "conscious-connections",
 ];

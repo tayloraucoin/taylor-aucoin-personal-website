@@ -13,7 +13,7 @@ const EXPECTED_TYPE: Record<string, string> = {
   everbook: "full-time",
   roomvy: "full-time",
   "calculate-qxmd": "full-time",
-  "family-office-platform": "contract",
+  "future-of-cities": "contract",
   agora: "business",
   "conscious-connections": "passion",
 };
@@ -51,7 +51,7 @@ test("C1 every study carries type, listRole, sortDate, builtFormat and four fact
 test("C2 builtFormat per study, and only the Unified data layer card carries a screen", () => {
   const formats = Object.fromEntries(work.map((w) => [w.slug, w.builtFormat]));
   assert.deepEqual(formats, {
-    "family-office-platform": "rows-paired",
+    "future-of-cities": "rows-paired",
     "conscious-connections": "band",
     everbook: "gallery",
     roomvy: "rows-after",
@@ -61,7 +61,7 @@ test("C2 builtFormat per study, and only the Unified data layer card carries a s
   for (const study of work) {
     const cards = Array.isArray(study.built) ? [] : study.built.cards;
     const withScreen = cards.filter((c) => c.screen).map((c) => c.label);
-    if (study.slug === "family-office-platform") {
+    if (study.slug === "future-of-cities") {
       assert.deepEqual(withScreen, ["UNIFIED DATA LAYER"]);
     } else {
       assert.deepEqual(withScreen, [], `${study.slug} has a screen`);

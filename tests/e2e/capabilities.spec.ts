@@ -210,7 +210,7 @@ test.describe("at 1440", () => {
       "/work/conscious-connections",
     );
     expect(hrefs.get("the Future of Cities platform")).toBe(
-      "/work/family-office-platform",
+      "/work/future-of-cities",
     );
 
     await chip(page, "Leading junior teams").click();

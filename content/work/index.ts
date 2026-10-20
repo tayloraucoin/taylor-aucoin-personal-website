@@ -3,7 +3,7 @@ import { agora } from "./agora";
 import { calculateQxmd } from "./calculate-qxmd";
 import { consciousConnections } from "./conscious-connections";
 import { everbook } from "./everbook";
-import { familyOfficePlatform } from "./family-office-platform";
+import { futureOfCities } from "./future-of-cities";
 import { roomvy } from "./roomvy";
 import type { CaseStudy } from "./types";
 
@@ -36,7 +36,7 @@ export type {
 
 /** Display order. Reorder imports here when slot order changes. */
 export const work: CaseStudy[] = [
-  familyOfficePlatform,
+  futureOfCities,
   consciousConnections,
   everbook,
   roomvy,
