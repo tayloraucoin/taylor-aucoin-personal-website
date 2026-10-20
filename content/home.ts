@@ -39,22 +39,22 @@ export const pillars: readonly { title: string; line: string; open: string }[] =
     {
       title: "Systems, end to end",
       line: "I fit the system to the problem in front of me, then own it from the database to the last pixel.",
-      open: "Future of Cities had ten databases that didn't talk to each other, so the first two weeks went to one data layer and nothing anyone could see. Everbook's interview had to feel live. There the browser talks straight to the model, and the server never touches the audio. The stack changes with the problem. What stays the same is ownership: I can explain every layer, and the people after me can run it.",
+      open: "You get one owner for the whole system and a stack picked for your problem, not my habits. I can explain every layer, and the people after me can run it.",
     },
     {
       title: "Judgment, not tickets",
       line: "A feature starts as a UX problem and has to end as a business outcome.",
-      open: "I've been the founder and the first engineer, so I build like both.",
+      open: "I've been the founder and the first engineer, so I build like both. You get someone who asks what a feature is for before building it, and sets it up so you can tell whether it worked.",
     },
     {
       title: "Conventions that compound",
       line: "I learn your codebase's conventions down pat, or level them up with an AI build system your team keeps using.",
-      open: "Roomvy ran on an agency's stack and conventions, none of them mine, and I shipped the whole booking client inside them. At Everbook I wrote the conventions, API standards and review process as engineers joined. Future of Cities got the same, written for people building with Claude Code, and they've kept extending the platform without engineering staff.",
+      open: "If your codebase has conventions, I work inside them, and my code reads like your team's. If it doesn't, I write them as I go, with API standards and a review process set up for building with Claude Code. Your team can keep extending the product after I've gone.",
     },
     {
       title: "Fast and precise",
       line: "Founders, leads and clients keep saying the same thing: fast, and it holds up in production.",
-      open: "When the Future of Cities scope grew mid-engagement, the CRM was live in four days. Calculate shipped to physicians inside Medscape, and no one reported a bug from launch to the day I left. Most of the speed comes from mapping the build before I start. Anything where a wrong answer costs someone gets tested well past what the ticket asks.",
+      open: "Most of the speed comes from mapping the build before I start. Anything where a wrong answer costs your users gets tested well past what the ticket asks.",
     },
   ];
 

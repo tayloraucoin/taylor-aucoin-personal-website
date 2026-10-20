@@ -57,6 +57,10 @@ test.describe("at 1440", () => {
     );
     await expect(panel).toBeVisible();
     await expect(panel).toContainText("I've been the founder");
+    // Round 3: the open rows say what a team gets; the cases live in Problems.
+    await expect(page.locator("section[aria-label=Pillars]")).not.toContainText(
+      /Future of Cities|Everbook|Roomvy|Calculate|Medscape/,
+    );
 
     await page.keyboard.press("Escape");
     await expect(second).toHaveAttribute("aria-expanded", "false");
