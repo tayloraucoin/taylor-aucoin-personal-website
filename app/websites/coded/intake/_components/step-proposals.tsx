@@ -55,13 +55,13 @@ export function StepProposals({
     >
       <h2
         id="primer-proposals"
-        className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)"
+        className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
       >
         From what you pasted
       </h2>
 
       {/* [COPY — pending Taylor] */}
-      <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+      <p className="mt-3 text-meta leading-[1.55] text-(--color-dim)">
         Suggestions, not answers. Nothing below is saved until you take it.
       </p>
 
@@ -71,11 +71,11 @@ export function StepProposals({
             key={proposal.fieldKey}
             className="border-t border-(--color-faint) pt-4"
           >
-            <p className="font-body text-[13.5px] font-light text-(--color-dim)">
+            <p className="text-meta text-(--color-dim)">
               {labelFor("showcase", proposal.fieldKey)}
             </p>
 
-            <p className="mt-1 font-body text-[16px] font-light leading-[1.5] text-(--color-ink)">
+            <p className="mt-1 text-[16px] sm:text-(length:--text-body) leading-[1.5] text-(--color-ink)">
               {proposal.value}
             </p>
 
@@ -83,11 +83,11 @@ export function StepProposals({
                 isn't one. A guess that looks like a quote is the failure this
                 whole feature is arranged against. */}
             {proposal.quote ? (
-              <p className="mt-2 border-l border-(--color-faint) pl-3 font-body text-[13.5px] font-light italic leading-[1.5] text-(--color-dim)">
+              <p className="mt-2 border-l border-(--color-faint) pl-3 text-meta leading-[1.55] text-(--color-dim)">
                 {proposal.quote}
               </p>
             ) : (
-              <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+              <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
                 A guess from what you pasted, not something you said.
               </p>
             )}
@@ -103,7 +103,7 @@ export function StepProposals({
                     () => router.refresh(),
                   );
                 }}
-                className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
               >
                 Use this
               </button>
@@ -116,7 +116,7 @@ export function StepProposals({
                   // reappearing on the next load, never an answer.
                   void dismissPrimerProposal(token, proposal.fieldKey);
                 }}
-                className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
               >
                 Not that
               </button>

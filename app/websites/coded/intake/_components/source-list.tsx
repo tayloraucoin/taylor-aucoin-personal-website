@@ -3,9 +3,9 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useIsPreview } from "@/components/intake/preview-mode";
-import { TextArea } from "../../../intake/_components/text-field";
 import { readSourceFile } from "../_actions/read-source";
 import { saveTranscriptEdit } from "../_actions/save-transcript";
+import { TextArea } from "../../../intake/_components/text-field";
 
 /** One file or fetched page, as the step page hands it down. */
 export type SourceRow = {
@@ -73,7 +73,7 @@ export function SourceList({
 
   return (
     <section className="mb-8">
-      <h3 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+      <h3 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {copy.title}
       </h3>
 
@@ -140,14 +140,11 @@ function Source({
 
   return (
     <li className="border-t border-(--color-faint) pt-4">
-      <p className="font-body text-[15px] font-light leading-[1.4] text-(--color-ink)">
+      <p className="text-small leading-[1.4] text-(--color-ink)">
         {row.originalName ?? "A file you sent"}
       </p>
 
-      <p
-        aria-live="polite"
-        className="mt-1 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-proof-label)"
-      >
+      <p aria-live="polite" className="mt-1 text-meta text-(--color-dim)">
         {pending ? copy.reading : line}
       </p>
 
@@ -157,7 +154,7 @@ function Source({
             type="button"
             onClick={() => setOpen((current) => !current)}
             aria-expanded={open}
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
           >
             {/* [COPY — pending Taylor] */}
             {open ? "Hide what we read" : "See what we read"}
@@ -174,7 +171,7 @@ function Source({
                 router.refresh();
               })
             }
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
           >
             {copy.retry}
           </button>
@@ -186,7 +183,7 @@ function Source({
           {/* [COPY — pending Taylor] — the sentence that makes the reading
               honest. It is a machine's reading of their file, they hold the
               original, and they are the only person who can tell. */}
-          <p className="mb-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mb-2 text-meta leading-[1.55] text-(--color-dim)">
             This is what we made of it — a machine&apos;s reading, not your
             words. Fix anything it got wrong and we&apos;ll use your version.
           </p>
@@ -214,7 +211,7 @@ function Source({
           {saved !== "idle" ? (
             <p
               aria-live="polite"
-              className="mt-1.5 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+              className="mt-1.5 text-meta text-(--color-dim)"
             >
               {saved === "saving" ? "Saving…" : "Saved"}
             </p>

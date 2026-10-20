@@ -25,7 +25,10 @@ export function StepHeading({ children }: { children: string }) {
     <h1
       ref={ref}
       tabIndex={-1}
-      className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink) focus:outline-none focus-visible:outline-none"
+      className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)"
+      // Focused by script on arrival, never reached by Tab: no ring. Inline,
+      // because the global :focus-visible rule is unlayered and beats a utility.
+      style={{ outline: "none" }}
     >
       {children}
     </h1>

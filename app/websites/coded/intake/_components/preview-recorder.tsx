@@ -177,9 +177,7 @@ export function PreviewRecorder() {
 
   return (
     <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-4">
-      <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-        {COPY.note}
-      </p>
+      <p className="text-meta text-(--color-dim)">{COPY.note}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
         {phase.status === "recording" ? (
@@ -190,10 +188,7 @@ export function PreviewRecorder() {
           </GhostButton>
         )}
 
-        <p
-          aria-live="polite"
-          className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)"
-        >
+        <p aria-live="polite" className="text-meta text-(--color-ink)">
           {phase.status === "recording"
             ? `${COPY.recording} · ${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`
             : phase.status === "working"
@@ -203,17 +198,13 @@ export function PreviewRecorder() {
       </div>
 
       {phase.status === "error" ? (
-        <p className="mt-4 font-body text-[15px] font-light text-(--color-c2)">
-          {phase.message}
-        </p>
+        <p className="mt-4 text-small text-(--color-ink)">{phase.message}</p>
       ) : null}
 
       {phase.status === "done" ? (
         <div className="mt-5 border-t border-(--color-faint) pt-4">
-          <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            {COPY.heading}
-          </p>
-          <p className="mt-3 whitespace-pre-wrap font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="text-meta text-(--color-dim)">{COPY.heading}</p>
+          <p className="mt-3 whitespace-pre-wrap text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {phase.transcript}
           </p>
         </div>
@@ -224,7 +215,7 @@ export function PreviewRecorder() {
 
 function Notice({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)/60">
+    <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center text-meta text-(--color-dim)/60">
       {children}
     </p>
   );

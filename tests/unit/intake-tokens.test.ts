@@ -9,6 +9,7 @@ import { findIdioms, intakeSourceFiles } from "./intake-idioms";
  */
 const TREES: Record<string, readonly string[]> = {
   "SITE-28": ["app/websites/intake"],
+  "SITE-30": ["app/websites/intake", "app/websites/coded/intake"],
 };
 
 /** SITE-29's coded files: the entry, money and plain question screens. */
@@ -113,4 +114,11 @@ test("SITE-29 C1 eyebrow.tsx is gone and nothing imports an Eyebrow", () => {
       /import[^;]*\bEyebrow\b[^;]*from/.test(readFileSync(file, "utf8")),
     );
   assert.deepEqual(importers, []);
+});
+
+test("SITE-30 C1 no file in either intake tree names GradientRing", () => {
+  const named = TREES["SITE-30"]!.flatMap(intakeSourceFiles).filter((file) =>
+    readFileSync(file, "utf8").includes("GradientRing"),
+  );
+  assert.deepEqual(named, []);
 });

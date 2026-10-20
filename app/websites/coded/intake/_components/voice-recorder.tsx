@@ -60,8 +60,8 @@ import { PreviewRecorder } from "./preview-recorder";
  * counting: it is information, and it is the only non-visual confirmation that
  * recording is live.
  *
- * This component sits **inside** the step's existing `GradientRing` and never
- * introduces a second one (D-INT-3 / D-PORT-7).
+ * This component sits **inside** the step's one voice-note card and never
+ * introduces a second card (D-INT-3 / D-PORT-7).
  */
 
 /** Written to IndexedDB every five seconds. Bounds loss without thrashing. */
@@ -740,7 +740,7 @@ export function VoiceRecorder({
           className="mb-4 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-4 outline-none"
         >
           {/* [COPY — pending Taylor] */}
-          <p className="font-body text-[14px] font-light leading-[1.6] text-(--color-body)">
+          <p className="text-meta leading-[1.6] text-(--color-body)">
             There&apos;s a recording here from earlier
             {recovered.durationMs > 0
               ? ` — about ${clock(recovered.durationMs)}`
@@ -755,7 +755,7 @@ export function VoiceRecorder({
             <button
               type="button"
               onClick={() => void discardRecovered()}
-              className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 transition-colors duration-(--dur-fast) hover:text-(--color-c2)"
+              className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
             >
               Start again
             </button>
@@ -770,7 +770,7 @@ export function VoiceRecorder({
               <div className="flex items-center gap-3">
                 <span
                   aria-hidden
-                  className="h-6 w-1 shrink-0 rounded-full bg-(--color-c2)"
+                  className="h-6 w-1 shrink-0 rounded-full bg-(--color-mark)"
                   style={{
                     // The meter is the animation, so it is the thing that
                     // freezes. A fixed bar under reduced motion still shows
@@ -780,21 +780,21 @@ export function VoiceRecorder({
                       : `scaleY(${0.25 + level * 0.75})`,
                   }}
                 />
-                <p className="font-mono text-[12px] tracking-[.14em] text-(--color-c2)">
+                <p className="text-meta tabular-nums text-(--color-ink)">
                   {clock(elapsed)}
                 </p>
               </div>
 
               {elapsed >= NUDGE_MS ? (
                 // [COPY — pending Taylor]
-                <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
                   That&apos;s plenty — stop whenever you like.
                 </p>
               ) : null}
 
               {!durable ? (
                 // [COPY — pending Taylor]
-                <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
                   This browser won&apos;t let us hold the recording on your
                   device, so it&apos;s only safe once it&apos;s sent.
                 </p>
@@ -819,7 +819,7 @@ export function VoiceRecorder({
 
               {denied ? (
                 // [COPY — pending Taylor]
-                <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-3 text-meta leading-[1.55] text-(--color-dim)">
                   No microphone here — record on your phone and add the file
                   below instead.
                 </p>
@@ -830,12 +830,12 @@ export function VoiceRecorder({
           {phase === "stopped_local" || phase === "uploading" ? (
             <>
               {/* [COPY — pending Taylor] */}
-              <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+              <p className="text-meta text-(--color-dim)">
                 Sending — {clock(elapsed)}
               </p>
               <div className="mt-2 h-px w-full bg-(--color-faint)">
                 <div
-                  className="h-px bg-(--color-c2) transition-[width] duration-(--dur-fast)"
+                  className="h-px bg-(--color-mark) transition-[width] duration-(--dur-fast)"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -845,9 +845,7 @@ export function VoiceRecorder({
           {phase === "uploaded" ? (
             <>
               {/* [COPY — pending Taylor] */}
-              <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-                Sent
-              </p>
+              <p className="text-meta text-(--color-ink)">Sent</p>
               <div className="mt-3">
                 <GhostButton onClick={() => void start()}>
                   Record another
@@ -859,7 +857,7 @@ export function VoiceRecorder({
           {phase === "upload_failed" ? (
             <>
               {/* [COPY — pending Taylor] */}
-              <p className="font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+              <p className="text-meta leading-[1.55] text-(--color-dim)">
                 That didn&apos;t send. Your recording is still here — try again
                 whenever you&apos;re ready.
               </p>
@@ -911,14 +909,12 @@ function TranscriptBlock({
 
   return (
     <div className="mt-4 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-4">
-      <p className="truncate font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
-        {row.name}
-      </p>
+      <p className="truncate text-meta text-(--color-dim)">{row.name}</p>
 
       {row.state.status === "running" ? (
         // No spinner. A progress animation on a form reads as trouble.
         // [COPY — pending Taylor]
-        <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
           Writing this up — it takes a minute.
         </p>
       ) : null}
@@ -926,7 +922,7 @@ function TranscriptBlock({
       {row.state.status === "failed" ? (
         <>
           {/* [COPY — pending Taylor] */}
-          <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
             We couldn&apos;t write this one up. Your recording is safe either
             way — Taylor will listen to it.
           </p>
@@ -943,7 +939,7 @@ function TranscriptBlock({
           {/* [COPY — pending Taylor] */}
           <p
             id={helpId}
-            className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
+            className="mt-2 text-meta leading-[1.55] text-(--color-dim)"
           >
             A machine wrote this out. Fix anything it got wrong — names
             especially — or leave it.
@@ -958,10 +954,10 @@ function TranscriptBlock({
             onChange={(event) => onEdit(event.target.value)}
             aria-describedby={helpId}
             rows={8}
-            className="mt-2 min-h-[160px] w-full resize-y rounded-(--radius) border border-(--color-faint) bg-transparent px-3 py-3 font-body text-[15px] font-light leading-[1.6] text-(--color-body) outline-none transition-colors duration-(--dur-fast) focus:border-(--color-c2)"
+            className="mt-2 min-h-[160px] w-full resize-y rounded-(--radius) border border-(--color-border-strong) bg-transparent px-3 py-3 text-small leading-[1.6] text-(--color-body) outline-none transition-colors duration-(--dur-fast) focus:border-(--color-c2)"
           />
 
-          <p className="mt-1 h-4 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
+          <p className="mt-1 h-4 text-meta text-(--color-dim)">
             {row.save === "saving"
               ? "Saving"
               : row.save === "saved"

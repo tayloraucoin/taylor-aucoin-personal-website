@@ -142,7 +142,7 @@ export function SpectrumScale({
         <label
           id={labelId}
           htmlFor={inputId}
-          className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+          className="text-meta text-(--color-dim)"
         >
           {spectrum.label}
         </label>
@@ -153,7 +153,7 @@ export function SpectrumScale({
           <button
             type="button"
             onClick={() => onChange(undefined)}
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 hover:text-(--color-ink)"
+            className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
           >
             Clear
           </button>
@@ -165,8 +165,8 @@ export function SpectrumScale({
           thumb in the same place. */}
       <p
         aria-hidden
-        className={`mt-1.5 min-h-[1.4em] font-mono text-[12px] tracking-[.14em] ${
-          unset ? "text-(--color-dim)" : "text-(--color-c2)"
+        className={`mt-1.5 min-h-[1.4em] text-meta tabular-nums ${
+          unset ? "text-(--color-dim)" : "text-(--color-ink)"
         }`}
       >
         {unset ? "—" : `${shown} · ${lean}`}
@@ -224,19 +224,19 @@ export function SpectrumScale({
         }}
       >
         <div className="min-w-0 basis-1/2">
-          <p className="font-body text-[13.5px] font-light leading-[1.4] text-(--color-body)">
+          <p className="text-meta leading-[1.4] text-(--color-body)">
             {spectrum.ends.low}
           </p>
-          <p className="mt-1 font-body text-[13px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-1 text-meta leading-[1.5] text-(--color-dim)">
             {spectrum.means.low}
           </p>
         </div>
 
         <div className="min-w-0 basis-1/2 text-right">
-          <p className="font-body text-[13.5px] font-light leading-[1.4] text-(--color-body)">
+          <p className="text-meta leading-[1.4] text-(--color-body)">
             {spectrum.ends.high}
           </p>
-          <p className="mt-1 font-body text-[13px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-1 text-meta leading-[1.5] text-(--color-dim)">
             {spectrum.means.high}
           </p>
         </div>

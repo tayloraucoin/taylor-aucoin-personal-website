@@ -126,10 +126,10 @@ export function ExtractionBlock({
   if (document) {
     return (
       <section className="mb-10">
-        <h3 className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)">
+        <h3 className="text-small leading-[1.4] font-medium text-(--color-ink)">
           The fast way
         </h3>
-        <p className="mt-1.5 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-1.5 max-w-[68ch] text-meta leading-[1.55] text-(--color-dim)">
           {intro}
         </p>
         <div className="mt-2">
@@ -142,11 +142,11 @@ export function ExtractionBlock({
 
   return (
     <section className="mb-10 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-      <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+      <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         The fast way
       </h2>
 
-      <p className="mt-3 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {intro}
       </p>
 
@@ -218,10 +218,8 @@ function Line({
   afterLine: string;
   onRetry: () => void;
 }) {
-  const dim =
-    "font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)";
-  const gold =
-    "font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)";
+  const dim = "text-meta leading-[1.55] text-(--color-dim)";
+  const gold = "text-meta leading-[1.55] text-(--color-ink)";
 
   switch (state.status) {
     case "idle":
@@ -264,7 +262,7 @@ function Line({
               <button
                 type="button"
                 onClick={onRetry}
-                className="underline underline-offset-2 hover:text-(--color-c3) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                className="underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
               >
                 Try again
               </button>

@@ -4,15 +4,21 @@ import { ShowcasePayGate } from "@/app/websites/coded/intake/_components/showcas
 import { ShowcaseStart } from "@/app/websites/coded/intake/_components/showcase-start";
 import { ShowcaseWelcome } from "@/app/websites/coded/intake/_components/showcase-welcome";
 import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
+import { StepAudience } from "@/app/websites/coded/intake/_components/steps/step-audience";
+import { StepIngest } from "@/app/websites/coded/intake/_components/steps/step-ingest";
+import { StepTaste } from "@/app/websites/coded/intake/_components/steps/step-taste";
+import { StepWords } from "@/app/websites/coded/intake/_components/steps/step-words";
 import { KnownFact } from "@/app/websites/intake/_components/known-fact";
 import { LinkUnavailable } from "@/app/websites/intake/_components/link-unavailable";
+import { IngestionMarksProvider } from "@/app/websites/intake/_components/machine-filled";
 import { PaymentConfirming } from "@/app/websites/intake/_components/payment-confirming";
 import { ResumeList } from "@/app/websites/intake/_components/resume-list";
 import type { SaveState } from "@/app/websites/intake/_components/save-indicator";
 import { StepShell } from "@/app/websites/intake/_components/step-shell";
 import { WorkingIndicator } from "@/app/websites/intake/_components/working-indicator";
+import type { ExampleSet, ExampleSite } from "@/content/intake-examples";
 import { SITE } from "@/lib/config";
-import { stepByNumber } from "@/lib/intake/tracks";
+import { stepByNumber, stepsFor } from "@/lib/intake/tracks";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
 import type { SellableProduct } from "@/server/services/products";
@@ -50,6 +56,12 @@ export const INTAKE_STATE_KEYS = [
   "step",
   "pay",
   "done",
+  // SITE-30: the taste gallery, the credits import and the voice step.
+  "taste",
+  "import",
+  "import-reading",
+  "import-mark",
+  "words",
 ] as const;
 
 export type IntakeStateKey = (typeof INTAKE_STATE_KEYS)[number];
@@ -121,6 +133,48 @@ function product(
     stripePriceId: `price_synthetic_${key}`,
   };
 }
+
+/** One example site, invented, shot with an image already under `public/`. */
+function exampleSite(key: string, name: string): ExampleSite {
+  return {
+    key,
+    name,
+    url: `https://${key}.invalid`,
+    role: "[Fixture: role line]",
+    group: "dark-cinematic",
+    axes: { ground: "dark", motion: "still", density: "balanced" },
+    styles: ["grid", "serif"],
+    build: "custom",
+    embed: false,
+    checkedOn: "2026-10-01",
+    captures: [
+      {
+        src: "/websites/clean-coast/desktop-home.jpg",
+        width: 1600,
+        height: 1000,
+        alt: `[Fixture: ${name} home page]`,
+      },
+    ],
+  };
+}
+
+/** The `taste` key's gallery: one group, three sites, in memory. */
+const GALLERY: ExampleSet = {
+  curated: true,
+  sites: [
+    exampleSite("fixture-one", "Fixture One"),
+    exampleSite("fixture-two", "Fixture Two"),
+    exampleSite("fixture-three", "Fixture Three"),
+  ],
+};
+
+/** A showcase step by key, so a fixture names the step it draws. */
+function showcaseStep(key: string) {
+  return stepsFor("showcase").find((step) => step.key === key)!;
+}
+
+/** The `import-mark` key's filled field and the line it was read from. */
+const MARKED_VALUE = "[Fixture: book a call, or email me about a commission]";
 
 /** The `step` key's step: 2 of 10, About you, as drawn. */
 const ABOUT_STEP = 2;
@@ -255,6 +309,95 @@ function body(
           ]}
           shortfall={null}
         />
+      );
+    case "taste":
+      return (
+        <StepShell
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          step={showcaseStep("taste")}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          <StepTaste
+            token={SYNTHETIC_TOKEN}
+            initial={{ picks: [{ siteKey: "fixture-one", score: 4 }] }}
+            flavour="generic"
+            gallery={GALLERY}
+            files={{ inspiration: [] }}
+            motion={{ priceCents: null, currency: "cad" }}
+            initialOpen={["dark-cinematic"]}
+          />
+        </StepShell>
+      );
+    case "import":
+    case "import-reading":
+      return (
+        <StepShell
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          step={showcaseStep("ingest")}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          <StepIngest
+            token={SYNTHETIC_TOKEN}
+            initial={{ dump: "[Fixture: a pasted bio and credits list]" }}
+            flavour="generic"
+            files={[]}
+            runState={
+              stateKey === "import"
+                ? { status: "done", filled: 6, failed: ["[fixture.pdf]"] }
+                : { status: "running" }
+            }
+          />
+        </StepShell>
+      );
+    case "import-mark":
+      return (
+        <StepShell
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          step={showcaseStep("audience")}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          <IngestionMarksProvider
+            fields={[
+              {
+                stepKey: "audience",
+                fieldKey: "whatShouldTheyDo",
+                value: MARKED_VALUE,
+                quote: "[Fixture: the sentence it was read from.]",
+                assumed: false,
+                source: { name: "[fixture-bio.pdf]", transcribed: false },
+              },
+            ]}
+          >
+            <StepAudience
+              token={SYNTHETIC_TOKEN}
+              initial={{ whatShouldTheyDo: MARKED_VALUE }}
+              flavour="generic"
+            />
+          </IngestionMarksProvider>
+        </StepShell>
+      );
+    case "words":
+      return (
+        <StepShell
+          track="showcase"
+          token={SYNTHETIC_TOKEN}
+          step={showcaseStep("words")}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          <StepWords
+            token={SYNTHETIC_TOKEN}
+            initial={{}}
+            flavour="generic"
+            files={{ voiceNote: [], writing: [] }}
+          />
+        </StepShell>
       );
     case "working":
       return (

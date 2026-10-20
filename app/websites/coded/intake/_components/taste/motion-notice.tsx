@@ -24,7 +24,8 @@ const COPY = {
   canceled: "No charge was made. Whenever you're ready.",
   failed:
     "That didn't open — try once more, and tell Taylor if it keeps happening. Nothing has been charged.",
-  confirming: "Confirming your payment. This usually takes a couple of seconds.",
+  confirming:
+    "Confirming your payment. This usually takes a couple of seconds.",
   slow: "Stripe has it. If this card doesn't update in a minute, carry on — Taylor sees the payment either way.",
   unavailable:
     "Motion isn't available to add here right now — mention it to Taylor and he'll sort it out.",
@@ -85,7 +86,9 @@ export function MotionNotice({
         </DocTag>
         <Card eyebrow={COPY.offerEyebrow}>{COPY.offer("$N")}</Card>
 
-        <DocTag>Shown when it HAS been purchased, here or on the pay screen</DocTag>
+        <DocTag>
+          Shown when it HAS been purchased, here or on the pay screen
+        </DocTag>
         <Card eyebrow={COPY.boughtEyebrow}>{COPY.bought}</Card>
         <UpsellQuestions
           form={form}
@@ -155,14 +158,14 @@ function Offer({
       {returned === "added" ? (
         <p
           aria-live="polite"
-          className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)"
+          className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-body)"
         >
           {COPY.confirming} {COPY.slow}
         </p>
       ) : null}
 
       {price === null ? (
-        <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
           {COPY.unavailable}
         </p>
       ) : (
@@ -195,14 +198,14 @@ function Offer({
             {pending ? COPY.opening : COPY.buy(price)}
           </GhostButton>
 
-          <span className="font-body text-[13.5px] font-light text-(--color-dim)">
+          <span className="text-meta text-(--color-dim)">
             {preview ? COPY.preview : COPY.trust}
           </span>
         </div>
       )}
 
       {returned === "canceled" ? (
-        <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+        <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-body)">
           {COPY.canceled}
         </p>
       ) : null}
@@ -210,7 +213,7 @@ function Offer({
       {failed ? (
         <p
           aria-live="polite"
-          className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-ink)"
         >
           {COPY.failed}
         </p>
@@ -220,19 +223,13 @@ function Offer({
 }
 
 /** The callout both states wear: same border, same eyebrow, same register. */
-function Card({
-  eyebrow,
-  children,
-}: {
-  eyebrow: string;
-  children: ReactNode;
-}) {
+function Card({ eyebrow, children }: { eyebrow: string; children: ReactNode }) {
   return (
     <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-      <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {eyebrow}
       </p>
-      <p className="mt-3 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {children}
       </p>
     </div>

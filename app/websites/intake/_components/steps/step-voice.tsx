@@ -19,7 +19,7 @@ import { FileDrop, type ExistingFile } from "../file-drop";
  * into obligation. The verification call covers the same ground; the memo just
  * gets there in three minutes instead of thirty.
  *
- * The ring is gone under the new brand (no GradientRing anywhere in the
+ * The ring is gone under the new brand (no gradient ring anywhere in the
  * intake, D-SITE-158): the card is the kit's surface card with a hairline, a
  * grouped block, and its place first on the step carries the weight.
  *

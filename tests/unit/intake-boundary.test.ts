@@ -8,7 +8,7 @@ import { isProtectedIntakePath } from "./intake-idioms";
  * path. Every commit whose subject starts with a listed ticket's id is read
  * from git, and none may touch a protected path. Each intake ticket adds its id.
  */
-const TICKETS = ["SITE-28", "SITE-29"] as const;
+const TICKETS = ["SITE-28", "SITE-29", "SITE-30"] as const;
 
 function git(...args: string[]): string {
   return execFileSync("git", args, { encoding: "utf8" });
@@ -43,4 +43,14 @@ test("SITE-28 C2 the matcher flags each protected path and passes a component", 
     isProtectedIntakePath("app/websites/intake/_components/field.tsx"),
     false,
   );
+});
+
+/**
+ * A subject match can only be blind, never wrong: requiring one SITE-30 commit
+ * since the branch left main turns a stray prefix into a failure (SITE-30 C2).
+ */
+test("SITE-30 C2 at least one commit since main has a subject starting SITE-30:", () => {
+  const base = git("merge-base", "HEAD", "main").trim();
+  const subjects = git("log", "--format=%s", `${base}..HEAD`).split("\n");
+  assert.ok(subjects.some((subject) => subject.startsWith("SITE-30:")));
 });

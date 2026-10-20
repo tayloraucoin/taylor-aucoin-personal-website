@@ -397,10 +397,10 @@ export function FileDrop({
     <div>
       {preview ? (
         <>
-          <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center text-meta text-(--color-dim)/60">
+          <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center text-meta text-(--color-dim)">
             {label}
           </p>
-          <p className="mt-2 text-xs text-(--color-dim)">
+          <p className="mt-2 text-meta text-(--color-dim)">
             Uploads are disabled in preview.
           </p>
         </>

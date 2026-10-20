@@ -83,7 +83,7 @@ export function ComeAcross({
           and a two-row textarea was quietly asking for a paragraph nobody had
           (Taylor, 2026-09-03). */}
       <TextField
-        id="f-comeAcross-input"
+        id="f-comeAcross"
         helpId="f-comeAcross-help"
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -100,11 +100,11 @@ export function ComeAcross({
         </GhostButton>
 
         {preview ? (
-          <span className="font-body text-[13.5px] font-light text-(--color-dim)">
+          <span className="text-meta text-(--color-dim)">
             Not available in preview.
           </span>
         ) : (
-          <span className="font-body text-[13.5px] font-light text-(--color-dim)">
+          <span className="text-meta text-(--color-dim)">
             {/* [COPY — pending Taylor] */}
             Reads what you&apos;ve already answered and takes a guess.
           </span>
@@ -123,7 +123,7 @@ export function ComeAcross({
               {state.sentence}
             </Suggestion>
           ) : null}
-          <p className="font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="text-meta leading-[1.55] text-(--color-dim)">
             {/* [COPY — pending Taylor] */}
             Neither of these is saved until you use one, and you can rewrite it
             afterwards. If they&apos;re both wrong, that&apos;s useful too —
@@ -135,7 +135,7 @@ export function ComeAcross({
       {state.status === "failed" ? (
         <p
           aria-live="polite"
-          className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           {/* [COPY — pending Taylor] — every line below. */}
           {state.reason === "empty"
@@ -169,16 +169,14 @@ function Suggestion({
 }) {
   return (
     <div className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-3.5">
-      <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-        {label}
-      </p>
-      <p className="mt-2 font-body text-[16px] font-light leading-[1.5] text-(--color-ink)">
+      <p className="text-meta text-(--color-dim)">{label}</p>
+      <p className="mt-2 text-[16px] sm:text-(length:--text-body) leading-[1.5] text-(--color-ink)">
         {children}
       </p>
       <button
         type="button"
         onClick={onUse}
-        className="mt-2.5 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline underline-offset-2 transition-colors hover:text-(--color-c3) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+        className="mt-2.5 text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
       >
         Use this
       </button>
