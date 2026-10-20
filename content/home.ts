@@ -80,7 +80,7 @@ export const selectedWork = {
     branding: "Branding & UI",
   },
   featured: {
-    product: ["conscious-connections", "everbook", "family-office-platform"],
+    product: ["conscious-connections", "everbook", "future-of-cities"],
     websites: ["kryshan-randel"],
     branding: ["taylor-aucoin-kit", "conscious-connections-kit", "agora-kit"],
   },

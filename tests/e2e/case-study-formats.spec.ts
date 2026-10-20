@@ -63,7 +63,7 @@ test.describe("at 1440", () => {
       "Design direction by Nick Kidd (Pathfinder Studios); I built the application.",
     );
 
-    await page.goto("/work/family-office-platform");
+    await page.goto("/work/future-of-cities");
     await expect(buttons(page)).toHaveCount(1);
     const row = built(page)
       .locator("div.grid")
@@ -138,7 +138,7 @@ test.describe("at 390", () => {
         "agora",
         "conscious-connections",
         "roomvy",
-        "family-office-platform",
+        "future-of-cities",
         "calculate-qxmd",
       ]) {
         await page.goto(`/work/${slug}`);

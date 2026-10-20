@@ -17,7 +17,7 @@ import { Tools } from "./_components/Tools";
 import { ABOUT_STATES } from "./_fixtures";
 
 const description =
-  "Systems designer from a bio-med background. Thirteen products from zero to one, fourteen BCIT cohorts mentored, based in Vancouver. The person behind the work.";
+  "Product engineer from a bio-med background, based in Vancouver. Thirteen products taken from zero to one and 22 cohorts taught and sponsored.";
 
 export const metadata: Metadata = {
   title: "About",

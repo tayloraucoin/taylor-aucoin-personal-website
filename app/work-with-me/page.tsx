@@ -11,7 +11,7 @@ import { HowToStart } from "./_components/HowToStart";
 import { Roles } from "./_components/Roles";
 
 const description =
-  "Contract senior/staff product engineer and fractional CTO, remote from Vancouver. Fixed-scope 0→1 builds, embedded senior throughput, technical partnership.";
+  "Product engineer for hire, contract or fractional, remote from Vancouver. Embedded on a big team, or head of product or CTO on a small one.";
 
 export const metadata: Metadata = {
   title: "Work with me",

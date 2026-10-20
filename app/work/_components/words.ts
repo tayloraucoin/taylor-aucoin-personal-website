@@ -48,5 +48,5 @@ export const workIndex = {
  * stays for the case study; this list holds the few that differ.
  */
 export const LIST_TITLES: Record<string, string> = {
-  "family-office-platform": "Future of Cities",
+  "future-of-cities": "Future of Cities",
 };

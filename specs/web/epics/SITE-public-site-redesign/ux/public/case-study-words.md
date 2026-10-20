@@ -25,7 +25,7 @@ Part of `case-study.md`. Gloss, handoff pass. Every string is Taylor's; none is 
 | What I built              | `built` intro, surface names and bodies; tile captions                     | existing: `<slug>` (`built`, `media`)                                                  |
 | Gallery opener            | "All n images" (n from the study's media count)                            | canvas (D-SITE-82)                                                                     |
 | Rows credit               | e.g. "Design direction by Nick Kidd (Pathfinder Studios); I built the application." | existing: `roomvy.ts` media caption                                  |
-| Paired caption, link      | the family office diagram caption; Agora's "Read the design overview"      | existing: `family-office-platform.ts`, `agora.ts` (D-SITE-96)                          |
+| Paired caption, link      | the family office diagram caption; Agora's "Read the design overview"      | existing: `future-of-cities.ts`, `agora.ts` (D-SITE-96)                          |
 | Process                   | intro; step titles, muted intros, bullets                                  | existing: `<slug>` `process`                                                           |
 | Decisions                 | `chip` labels (rendered uppercase), statement, "Instead of", "Why", bodies | existing: `<slug>`, `components/ui/DecisionCard.tsx`                                   |
 | Privacy artifact caption  | "Each partner's brain-dump stays private to its author. [draft]"           | [draft]                                                                                |

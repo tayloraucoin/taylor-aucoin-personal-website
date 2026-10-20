@@ -7,7 +7,7 @@ import { isWorkPublished } from "@/lib/config";
  * `content/work`'s published studies.
  */
 export const PUBLISHED_SLUGS: readonly string[] = [
-  "family-office-platform",
+  "future-of-cities",
   "conscious-connections",
   "everbook",
   "roomvy",

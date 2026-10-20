@@ -1,12 +1,12 @@
 import futureOfCitiesLogo from "@/public/images/future-of-cities-logo.jpg";
-import crmEventRules from "@/public/images/work/family-office-platform/crm-event-rules.webp";
-import crmPipelineBoard from "@/public/images/work/family-office-platform/crm-pipeline-board.webp";
-import membershipTiers from "@/public/images/work/family-office-platform/membership-tiers.webp";
-import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
+import crmEventRules from "@/public/images/work/future-of-cities/crm-event-rules.webp";
+import crmPipelineBoard from "@/public/images/work/future-of-cities/crm-pipeline-board.webp";
+import membershipTiers from "@/public/images/work/future-of-cities/membership-tiers.webp";
+import architecture from "@/public/work/future-of-cities/family-office-architecture.webp";
 import type { CaseStudy } from "./types";
 
-export const familyOfficePlatform = {
-  slug: "family-office-platform",
+export const futureOfCities = {
+  slug: "future-of-cities",
   title: "Future of Cities",
   clientMark: { src: futureOfCitiesLogo, alt: "Future of Cities logo" },
   meta: "Platform · CRM",

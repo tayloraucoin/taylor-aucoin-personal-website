@@ -64,7 +64,7 @@ All confirmed by Taylor in this thread (rounds 1, 2 and 4).
    - "Since 2016": value decision 7. Replaces the "9.5" years stat.
    - Twelve products taken from zero to one: `lib/config.ts`, `components/sections/Signal.tsx`.
    - Fourteen BCIT cohorts: `components/sections/Capabilities.tsx`.
-   - Five production apps in six weeks: `content/work/family-office-platform.ts`.
+   - Five production apps in six weeks: `content/work/future-of-cities.ts`.
 4. Three decision stories (problem / decided / happened, a real artifact, a live link): Conscious Connections, Everbook, the family office. The family office has no live link; its architecture diagram is the artifact, and Bruno's named quote stands in for the link (round 3.4, judgment).
 5. How I work: the path, stopping at scope, build, ship, measure, iterate (round 5.4; value decision 2). Launch and funnel work never appears on home. With it, the "what I let AI do / what I check" block.
 6. Named testimonials.

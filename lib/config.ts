@@ -112,7 +112,7 @@ export const AGORA = {
 
 export const SITE = {
   name: "Taylor Aucoin",
-  role: "Senior/staff product engineer",
+  role: "Product engineer",
   location: "Vancouver",
   url: "https://tayloraucoin.com",
   email: "hello@tayloraucoin.com",
@@ -130,7 +130,7 @@ export const SITE = {
    * composed from `role` + `tagline`. Keep it 140–160 characters.
    */
   metaDescription:
-    "Senior/staff product engineer in Vancouver. Thirteen products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
+    "Product engineer in Vancouver, building software since 2016. Thirteen products taken from zero to one in AI platforms, healthtech, commerce and booking.",
 } as const;
 
 /**

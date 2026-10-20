@@ -83,7 +83,7 @@ export const testimonials: Testimonial[] = [
     ],
     project: {
       label: "Future of Cities",
-      href: "/work/family-office-platform",
+      href: "/work/future-of-cities",
     },
     caseStudySpan:
       "Most importantly, Taylor established robust technical conventions, documentation, and standard operating procedures.",

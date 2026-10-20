@@ -39,7 +39,7 @@ planned_paths:
   - "content/work/calculate-qxmd.ts"
   - "content/work/conscious-connections.ts"
   - "content/work/everbook.ts"
-  - "content/work/family-office-platform.ts"
+  - "content/work/future-of-cities.ts"
   - "content/work/roomvy.ts"
   - "tests/**"
 depends_on: [ SITE-1 ]
