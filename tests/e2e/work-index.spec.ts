@@ -139,7 +139,17 @@ test.describe("at 1440", () => {
   test("C4 websites tab, gallery opener", async ({ page }) => {
     await page.goto("/work?tab=websites");
     expect(await h3s(page)).toEqual(["Kryshan Randel"]);
-    await expect(page.locator("main li button")).toHaveCount(0);
+    // Kryshan Randel has captured screens since round 2; the own-brand kit is
+    // the row with an empty gallery.
+    await expect(
+      page.getByRole("button", { name: /^All \d+ images$/ }),
+    ).toHaveCount(1);
+    await page.goto("/work?tab=branding");
+    const kit = page
+      .locator("main li")
+      .filter({ has: page.getByRole("heading", { name: "Taylor Aucoin" }) });
+    await expect(kit).toHaveCount(1);
+    await expect(kit.locator("button")).toHaveCount(0);
 
     await page.goto("/work?state=gallery");
     const opener = page.getByRole("button", { name: "All 2 images" });
