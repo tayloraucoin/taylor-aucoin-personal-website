@@ -11,13 +11,13 @@ export default function LegalArticle({ doc }: { doc: LegalDoc }) {
   return (
     <article>
       <header>
-        <h1 className="font-display text-[clamp(26px,5vw,34px)] font-medium leading-[1.12] tracking-[-.02em] text-(--color-ink)">
+        <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
           {doc.title}
         </h1>
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-[.22em] text-(--color-dim)">
+        <p className="mt-3 text-meta text-(--color-dim)">
           Effective {doc.effective} · Version {doc.version}
         </p>
-        <p className="mt-5 max-w-[52ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+        <p className="mt-5 max-w-[52ch] font-body text-[16px] leading-[1.66] text-(--color-body)">
           {doc.intro}
         </p>
       </header>

@@ -23,7 +23,7 @@ function Row({
 }) {
   return (
     <div className="border-t border-(--color-faint) py-5 md:grid md:grid-cols-[180px_1fr] md:gap-8">
-      <span className="mb-2 block font-mono text-[10px] uppercase tracking-[.24em] text-(--color-c2) md:mb-0">
+      <span className="mb-2 block text-meta text-(--color-dim) md:mb-0">
         {label}
       </span>
       <div className="max-w-[62ch] text-[14px] leading-[1.65] text-(--color-body)">
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
     >
       <RootField />
 
-      <div className="mb-6 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
+      <div className="mb-6 flex items-center gap-3.5 text-meta text-(--color-dim)">
         <span>What this site measures</span>
         <span
           aria-hidden
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
         />
       </div>
 
-      <h1 className="mb-8 font-display text-[clamp(32px,4.4vw,52px)] font-medium leading-[1.05] tracking-[-.03em] text-(--color-ink)">
+      <h1 className="mb-8 font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         Privacy
       </h1>
 
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
       <Row label="Turning it off">
         Use the control below, send Global Privacy Control from your browser, or
         block{" "}
-        <span className="font-mono text-[13px]">googletagmanager.com</span>
+        <span className="font-code text-[13px]">googletagmanager.com</span>
         . Any of the three works; none of them breaks the site.
         <ConsentControl />
       </Row>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
       <Row label="Contact">
         <a
           href={`mailto:${SITE.email}`}
-          className="text-(--color-c2) underline underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-c3)"
+          className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           {SITE.email}
         </a>

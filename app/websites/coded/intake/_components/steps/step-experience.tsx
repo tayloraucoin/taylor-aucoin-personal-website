@@ -271,7 +271,7 @@ export function StepExperience({
       */}
       {named.length > 0 ? (
         <>
-          <p className="mb-7 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="mb-7 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {pack.personProof.intro}
           </p>
 

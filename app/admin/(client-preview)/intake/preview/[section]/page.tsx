@@ -11,6 +11,10 @@ import { DepositGate } from "@/app/websites/intake/_components/deposit-gate";
 import { StartForm } from "@/app/websites/intake/_components/start-form";
 import { StepShell } from "@/app/websites/intake/_components/step-shell";
 import { Welcome } from "@/app/websites/intake/_components/welcome";
+import {
+  IntakeStateView,
+  isIntakeStateKey,
+} from "@/components/intake/intake-fixtures";
 import { PreviewModeProvider } from "@/components/intake/preview-mode";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import { flavourForKind, showcaseKinds, stepsFor } from "@/lib/intake/tracks";
@@ -92,17 +96,19 @@ export default async function IntakeSectionPreviewPage({
         backHref={backToReview(track, kind, film, allExtras)}
       />
 
-      <PreviewModeProvider render="interface" scope="one">
-        {await sectionBody({
-          section,
-          track,
-          kind,
-          flavour,
-          engagement,
-          query: previewQuery,
-          extras,
-        })}
-      </PreviewModeProvider>
+      <main id="main">
+        <PreviewModeProvider render="interface" scope="one">
+          {await sectionBody({
+            section,
+            track,
+            kind,
+            flavour,
+            engagement,
+            query: previewQuery,
+            extras,
+          })}
+        </PreviewModeProvider>
+      </main>
     </>
   );
 }
@@ -152,6 +158,21 @@ async function sectionBody({
   /** What the rail is pretending this client bought. Empty is the default. */
   extras: readonly string[];
 }) {
+  // The drawn states on synthetic engagements held in memory (SITE-28,
+  // D-SITE-218): save, resume, confirming, unavailable and the rest. A step's
+  // Back and Continue walk this preview, as the step sections below do.
+  if (isIntakeStateKey(section)) {
+    return (
+      <IntakeStateView
+        stateKey={section}
+        navigate={{
+          step: (stepKey) => adminRoutes.intakeSectionPreview(stepKey, query),
+          done: adminRoutes.intakeSectionPreview("done", query),
+        }}
+      />
+    );
+  }
+
   if (section === "start") {
     return track === "showcase" ? <ShowcaseStartForm /> : <StartForm />;
   }
@@ -178,11 +199,8 @@ async function sectionBody({
     // Real prices, read live, exactly as the review page does — a preview of a
     // money screen that invented a number would be worse than no preview.
     try {
-      const { deposit, addons, extraPage, seoPost } = await getCheckoutCatalogue(
-        false,
-        track,
-        "half",
-      );
+      const { deposit, addons, extraPage, seoPost } =
+        await getCheckoutCatalogue(false, track, "half");
       const full =
         track === "showcase"
           ? await findSellableProductByKey("showcase_full")

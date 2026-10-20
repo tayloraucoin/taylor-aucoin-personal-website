@@ -1,28 +1,27 @@
 "use client";
 
-import GradientRing from "@/components/ui/GradientRing";
 import { useReportSaveState } from "../../_lib/save-state";
 import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { LongAnswer } from "../answer-inputs";
+import { CheckAnswer } from "../check-answer";
 import { Field } from "../field";
 import { FileDrop, type ExistingFile } from "../file-drop";
-import { CheckAnswer } from "../check-answer";
 
 /**
  * Step 5 — How you talk.
  *
  * The voice note is the single most valuable thing a client can give us, and
- * the only place in this entire flow where the gradient ring appears
- * (D-INT-3). Rationing the site's signature element to one card is what gives
- * this field its weight without a word of pressure.
+ * the one grouped card on the step (D-INT-3, restyled by D-SITE-158). Giving
+ * it the only card is what gives this field its weight without a word of
+ * pressure.
  *
  * And the skip line under it is not a hedge — prominence must never curdle
  * into obligation. The verification call covers the same ground; the memo just
  * gets there in three minutes instead of thirty.
  *
- * The ring holds still under `prefers-reduced-motion` (GradientRing handles
- * that itself) and does not accelerate on hover here: this is a form, not a
- * portfolio card inviting a cursor.
+ * The ring is gone under the new brand (no gradient ring anywhere in the
+ * intake, D-SITE-158): the card is the kit's surface card with a hairline, a
+ * grouped block, and its place first on the step carries the weight.
  *
  * The file input carries no `accept` filter, deliberately. On some mobile
  * browsers `accept` does not merely sort the picker, it hides everything else
@@ -48,15 +47,12 @@ export function StepVoice({
 
   return (
     <>
-      <GradientRing
-        hoverAccelerate={false}
-        className="mb-8 rounded-(--radius) bg-(--color-card) p-5"
-      >
-        <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      <section className="mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
+        <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
           Voice note
-        </p>
+        </h2>
 
-        <p className="mt-3 font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+        <p className="mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
           Record a 2–3 minute voice memo on your phone answering: how did you
           get into this, and what&apos;s a job you were proud of? Send the file
           here. This is the single most useful thing you can give us.
@@ -72,10 +68,10 @@ export function StepVoice({
           />
         </div>
 
-        <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-3 text-meta leading-[1.55] text-(--color-dim)">
           Can&apos;t be bothered recording? Skip it — the call covers this too.
         </p>
-      </GradientRing>
+      </section>
 
       <Field
         id="f-screenshots"

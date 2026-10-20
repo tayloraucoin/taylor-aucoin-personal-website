@@ -89,10 +89,7 @@ function matching(test: KindTest): string[] {
  */
 function KindTag({ kinds }: Readonly<{ kinds: readonly string[] }>) {
   return (
-    <p
-      data-md="kinds"
-      className="mb-3 font-mono text-[10px] tracking-[.12em] text-(--color-c2)"
-    >
+    <p data-md="kinds" className="mb-3 text-meta text-(--color-ink)">
       asked of: {kinds.join(" · ")}
     </p>
   );
@@ -162,10 +159,7 @@ export function ForKindsStub({
   return (
     <div className="mb-8">
       <KindTag kinds={matching(test)} />
-      <p
-        data-md="help"
-        className="font-body text-[15px] font-light leading-[1.5] text-(--color-dim)"
-      >
+      <p data-md="help" className="text-meta leading-[1.55] text-(--color-dim)">
         {note}
       </p>
     </div>

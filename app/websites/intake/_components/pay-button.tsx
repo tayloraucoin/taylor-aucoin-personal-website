@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startDepositCheckout } from "../[token]/_actions/pay";
-import { useIsPreview } from "@/components/intake/preview-mode";
 
 /**
  * The one disabled button in the entire flow.
@@ -75,7 +75,7 @@ export function PayButton({
       {failed ? (
         <p
           aria-live="polite"
-          className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           That didn&apos;t open — try once more, and tell Taylor if it keeps
           happening. Nothing has been charged.

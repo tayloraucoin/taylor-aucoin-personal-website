@@ -2,9 +2,9 @@
 
 import type { ReactNode } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
+import type { StepAutosave } from "./answer-inputs";
 import { DocTag } from "./document";
 import { Field } from "./field";
-import type { StepAutosave } from "./answer-inputs";
 
 /**
  * A single checkbox whose meaning is a sentence, not a word.
@@ -25,9 +25,9 @@ import type { StepAutosave } from "./answer-inputs";
  */
 
 const ROW_CLASS =
-  "flex min-h-12 cursor-pointer gap-3 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3 font-body text-[16px] font-light leading-[1.4] text-(--color-body)";
+  "flex min-h-12 cursor-pointer gap-3 rounded-(--radius) border border-(--color-border-strong) px-3.5 py-3 text-[16px] leading-[1.4] sm:text-(length:--text-body) text-(--color-body)";
 
-const BOX_CLASS = "h-5 w-5 shrink-0 accent-(--color-c2)";
+const BOX_CLASS = "h-5 w-5 shrink-0 accent-(--color-ink)";
 
 /**
  * The control itself, controlled by its caller.
@@ -56,7 +56,7 @@ export function CheckRow({
         <DocTag>Checkbox</DocTag>
         <p
           data-md="help"
-          className="mt-1 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-body)"
+          className="mt-1 max-w-[68ch] text-small leading-[1.5] text-(--color-body)"
         >
           {children}
         </p>
@@ -68,7 +68,7 @@ export function CheckRow({
     <label
       className={
         bare
-          ? "flex min-h-12 cursor-pointer items-center gap-3 font-body text-[16px] font-light text-(--color-body)"
+          ? "flex min-h-12 cursor-pointer items-center gap-3 text-[16px] text-(--color-body) sm:text-(length:--text-body)"
           : `${ROW_CLASS} ${align === "start" ? "items-start" : "items-center"}`
       }
     >

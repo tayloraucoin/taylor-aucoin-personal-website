@@ -120,11 +120,11 @@ export function StyleSearch({
 
   return (
     <section className="mt-12 border-t border-(--color-faint) pt-7">
-      <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+      <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {COPY.label}
       </h2>
 
-      <p className="mt-4 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {COPY.intro}
       </p>
 
@@ -152,7 +152,7 @@ export function StyleSearch({
           {running ? COPY.running : COPY.button}
         </GhostButton>
 
-        <span className="font-body text-[13.5px] font-light text-(--color-dim)">
+        <span className="text-meta text-(--color-dim)">
           {preview ? COPY.preview : COPY.aside}
         </span>
       </div>
@@ -189,10 +189,10 @@ export function StyleSearch({
           none of them is something the client did wrong. */}
       {state.status === "failed" ? (
         <p
-          className={`mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] ${
+          className={`mt-3 max-w-[48ch] text-meta leading-[1.5] ${
             state.reason === "empty"
               ? "text-(--color-dim)"
-              : "text-(--color-c2)"
+              : "text-(--color-ink)"
           }`}
         >
           {state.reason === "empty"
@@ -209,14 +209,14 @@ export function StyleSearch({
           something. Saying "nothing convincing came back" there is the feature
           reporting a hit as a miss. */}
       {state.status === "none" ? (
-        <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
           {state.familiar > 0 ? COPY.familiar : COPY.none}
         </p>
       ) : null}
 
       {state.status === "results" ? (
         <div>
-          <p className="mt-4 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-4 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
             {COPY.found}
           </p>
 
@@ -233,17 +233,17 @@ export function StyleSearch({
                     href={result.url}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                    className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
                   >
                     {result.host} ↗
                   </a>
 
-                  <p className="mt-2 font-body text-[16px] font-light leading-[1.5] text-(--color-ink)">
+                  <p className="mt-2 text-[16px] sm:text-(length:--text-body) leading-[1.5] text-(--color-ink)">
                     {result.why}
                   </p>
 
                   {isAdded ? (
-                    <p className="mt-2.5 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                    <p className="mt-2.5 text-meta text-(--color-dim)">
                       {COPY.added}
                     </p>
                   ) : (
@@ -253,7 +253,7 @@ export function StyleSearch({
                         onAdd(result.url);
                         setAdded((current) => new Set(current).add(result.url));
                       }}
-                      className="mt-2.5 min-h-11 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline underline-offset-2 transition-colors hover:text-(--color-c3) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                      className="mt-2.5 text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
                     >
                       {COPY.add}
                     </button>

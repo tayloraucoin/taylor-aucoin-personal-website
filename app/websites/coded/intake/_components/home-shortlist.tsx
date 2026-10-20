@@ -107,7 +107,7 @@ export function HomeShortlist({
 
   if (nothing) {
     return (
-      <p className="font-body text-[15px] font-light leading-[1.6] text-(--color-dim)">
+      <p className="text-meta leading-[1.55] text-(--color-dim)">
         Nothing to shortlist yet — this fills in from the videos and files you
         add on the earlier steps. Come back once they&apos;re in, or just say it
         in the box above.
@@ -119,9 +119,7 @@ export function HomeShortlist({
     <div className="space-y-7">
       {videos.length > 0 ? (
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            Your videos
-          </p>
+          <p className="text-meta text-(--color-dim)">Your videos</p>
 
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {videos.map((video) => {
@@ -134,7 +132,7 @@ export function HomeShortlist({
                   key={video.ref}
                   className={`overflow-hidden rounded-(--radius) border transition-colors duration-(--dur-fast) ${
                     picked
-                      ? "border-(--color-gold-line) bg-(--color-card-hover)"
+                      ? "border-(--color-ink)"
                       : "border-(--color-faint) bg-(--color-card)"
                   }`}
                 >
@@ -152,13 +150,13 @@ export function HomeShortlist({
                       className="aspect-video w-full border-0 bg-(--color-card)"
                     />
                   ) : (
-                    <p className="px-3.5 pt-3.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                    <p className="px-3.5 pt-3.5 text-meta leading-[1.55] text-(--color-dim)">
                       No preview for this one —{" "}
                       <a
                         href={video.url}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="underline underline-offset-2 hover:text-(--color-c2)"
+                        className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
                       >
                         open the link
                       </a>
@@ -176,12 +174,12 @@ export function HomeShortlist({
                     <span
                       aria-hidden
                       className={`mt-2 h-2 w-2 shrink-0 rounded-full transition-colors duration-(--dur-fast) ${
-                        picked ? "bg-(--color-c2)" : "bg-(--color-faint)"
+                        picked ? "bg-(--color-mark)" : "bg-(--color-faint)"
                       }`}
                     />
-                    <span className="min-w-0 font-body text-[16px] font-light leading-[1.4] text-(--color-body)">
+                    <span className="min-w-0 text-[16px] leading-[1.4] sm:text-(length:--text-body) text-(--color-body)">
                       {label}
-                      <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                      <span className="mt-0.5 block text-meta text-(--color-dim)">
                         {video.source}
                       </span>
                     </span>
@@ -195,9 +193,7 @@ export function HomeShortlist({
 
       {files.length > 0 ? (
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            Your images and files
-          </p>
+          <p className="text-meta text-(--color-dim)">Your images and files</p>
 
           <div className="mt-3 flex flex-col gap-2">
             {files.map((file) => {
@@ -219,11 +215,11 @@ export function HomeShortlist({
                   <span
                     aria-hidden
                     className={`mr-3 h-2 w-2 shrink-0 rounded-full transition-colors duration-(--dur-fast) ${
-                      picked ? "bg-(--color-c2)" : "bg-(--color-faint)"
+                      picked ? "bg-(--color-mark)" : "bg-(--color-faint)"
                     }`}
                   />
                   <span className="min-w-0 grow truncate">{file.name}</span>
-                  <span className="ml-3 shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                  <span className="ml-3 shrink-0 text-meta text-(--color-dim)">
                     {file.source}
                   </span>
                 </label>

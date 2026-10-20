@@ -85,10 +85,7 @@ export function Reveal({
   if (useIsDocument()) {
     return (
       <div className="mb-8 border-l border-(--color-faint) pl-5">
-        <p
-          data-md="condition"
-          className="mb-3 font-mono text-[10px] tracking-[.12em] text-(--color-dim)"
-        >
+        <p data-md="condition" className="mb-3 text-meta text-(--color-dim)">
           {describe(dependsOn)}
         </p>
         {children}

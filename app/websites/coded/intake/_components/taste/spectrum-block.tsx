@@ -46,12 +46,12 @@ export function SpectrumBlock({
 
       <p
         aria-hidden
-        className="mb-2 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)"
+        className="mb-2 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
       >
         {legend}
       </p>
 
-      <p className="mb-7 max-w-[52ch] font-body text-[15px] font-light leading-[1.6] text-(--color-dim)">
+      <p className="mb-7 max-w-[52ch] text-meta leading-[1.55] text-(--color-dim)">
         {intro}
       </p>
 

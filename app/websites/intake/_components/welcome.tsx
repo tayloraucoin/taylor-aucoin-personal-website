@@ -2,7 +2,6 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { stepsFor } from "@/lib/intake/tracks";
 import { intakeRoutes } from "@/lib/routes";
 import type { Engagement } from "@/server/services/engagement";
-import { Eyebrow } from "./eyebrow";
 import { SendMyLinkButton } from "./send-my-link-button";
 
 /**
@@ -29,15 +28,13 @@ export function Welcome({
 
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         {engagement.paidAt
           ? `Deposit received — thanks, ${firstName}.`
           : `Hi ${firstName}.`}
       </h1>
 
-      <div className="mt-6 max-w-[48ch] space-y-4 font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <div className="mt-6 max-w-[48ch] space-y-4 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         <p>Everything we need to build your site — about 30 minutes.</p>
         <p>
           Skip anything you&apos;re not sure about; we&apos;ll go through it
@@ -53,7 +50,7 @@ export function Welcome({
         <SendMyLinkButton token={token} />
       </div>
 
-      <p className="mt-10 border-t border-(--color-faint) pt-5 font-mono text-[10px] uppercase leading-[1.8] tracking-[.18em] text-(--color-dim)">
+      <p className="mt-10 border-t border-(--color-faint) pt-5 text-meta leading-[1.55] text-(--color-dim)">
         Everything you enter here is confidential — it&apos;s used to build your
         site and nothing else.
       </p>

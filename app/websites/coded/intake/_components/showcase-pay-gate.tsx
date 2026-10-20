@@ -1,8 +1,6 @@
-import { eyebrowFor } from "@/lib/intake/tracks";
 import type { Engagement } from "@/server/services/engagement";
 import type { SellableProduct } from "@/server/services/products";
 import type { CheckoutAddonView } from "../../../intake/_components/deposit-checkout";
-import { Eyebrow } from "../../../intake/_components/eyebrow";
 import { ShowcaseCheckout } from "./showcase-checkout";
 
 /**
@@ -60,13 +58,11 @@ export function ShowcasePayGate({
 
   return (
     <div>
-      <Eyebrow>{eyebrowFor(engagement.track)}</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         The build is $2,000.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Five pages, your work fully produced, real code you own, hosting that
         costs close to nothing. Extra pages are $150 each — add them below if
         you already know you need them, or leave it: you&apos;ll pick pages
@@ -75,7 +71,7 @@ export function ShowcasePayGate({
       </p>
 
       {canceled ? (
-        <p className="mt-6 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+        <p className="mt-6 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
           No charge was made. Whenever you&apos;re ready.
         </p>
       ) : null}
@@ -95,7 +91,7 @@ export function ShowcasePayGate({
         // Under the button, and only while there is a payment for them to be
         // true of — the checkout drops them when the free code is active.
         trust={
-          <div className="mt-5 space-y-1.5 font-mono text-[10px] uppercase leading-[1.7] tracking-[.18em] text-(--color-dim)">
+          <div className="mt-5 space-y-1.5 text-meta leading-[1.55] text-(--color-dim)">
             <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
             <p>Shows as TAYLORAUCOIN.COM on your statement</p>
             <p>Receipt emailed automatically</p>

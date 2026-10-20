@@ -7,7 +7,6 @@ import {
 } from "@/server/services/engagement";
 import { collectUnanswered } from "@/server/services/output";
 import { CompleteOnArrival } from "../../_components/complete-on-arrival";
-import { Eyebrow } from "../../_components/eyebrow";
 import { LinkUnavailable } from "../../_components/link-unavailable";
 
 /**
@@ -49,13 +48,11 @@ export default async function IntakeDonePage({
         alreadyComplete={Boolean(engagement.completedAt)}
       />
 
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         That&apos;s everything, {firstName}.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Taylor reads all of this before your call, so the call is short.
       </p>
 
@@ -68,14 +65,14 @@ export default async function IntakeDonePage({
 
       {unanswered.length > 0 ? (
         <section className="mt-12 border-t border-(--color-faint) pt-6">
-          <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             We&apos;ll cover these on the call
           </h2>
 
           <ul className="mt-4 space-y-3">
             {unanswered.map((group) => (
               <li key={group.step}>
-                <p className="font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+                <p className="text-meta leading-[1.55] text-(--color-body)">
                   <span className="text-(--color-ink)">{group.step}</span>
                   {" — "}
                   {group.labels.join(", ").toLowerCase()}

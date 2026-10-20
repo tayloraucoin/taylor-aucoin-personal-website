@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
 import { MachineFilled, useMachineFilled } from "./machine-filled";
+import { WarningGlyph } from "./warning-glyph";
 
 /**
  * Label, optional why-line, control, optional note.
@@ -105,14 +106,15 @@ export function Field({
         <p
           id={`${id}-help`}
           role="alert"
-          className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-1.5 flex items-start gap-2 text-meta leading-[1.55] text-(--color-ink)"
         >
-          {error}
+          <WarningGlyph />
+          <span>{error}</span>
         </p>
       ) : help ? (
         <p
           id={`${id}-help`}
-          className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
+          className="mt-1.5 text-meta leading-[1.55] text-(--color-dim)"
         >
           {help}
         </p>
@@ -127,7 +129,7 @@ export function Field({
       {note ? (
         <p
           aria-live="polite"
-          className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-2 text-meta leading-[1.55] text-(--color-ink)"
         >
           {note}
         </p>
@@ -165,15 +167,12 @@ function FieldDocument({
       <div className="flex items-baseline justify-between gap-4">
         <h3
           data-md="question"
-          className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)"
+          className="text-small leading-[1.4] font-medium text-(--color-ink)"
         >
           {label}
         </h3>
         {fieldKey ? (
-          <span
-            data-md="key"
-            className="shrink-0 font-mono text-[10px] tracking-[.12em] text-(--color-dim)"
-          >
+          <span data-md="key" className="shrink-0 text-meta text-(--color-dim)">
             {fieldKey}
           </span>
         ) : null}
@@ -182,7 +181,7 @@ function FieldDocument({
       {help ? (
         <p
           data-md="help"
-          className="mt-1.5 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)"
+          className="mt-1.5 max-w-[68ch] text-meta leading-[1.55] text-(--color-dim)"
         >
           {help}
         </p>
@@ -193,7 +192,7 @@ function FieldDocument({
       {note ? (
         <p
           data-md="note"
-          className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mt-2 text-meta leading-[1.55] text-(--color-ink)"
         >
           {note}
         </p>

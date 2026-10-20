@@ -116,7 +116,7 @@ function Group({
 }) {
   return (
     <section className="mt-10 border-t border-(--color-faint) pt-7">
-      <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+      <h2 className="mb-6 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {label}
       </h2>
       {children}

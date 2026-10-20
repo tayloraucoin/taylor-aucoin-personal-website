@@ -62,13 +62,7 @@ export function measureStage(): StageBox {
  * slow frame never shows a blank box, and a frame that never arrives leaves the
  * capture in place with nobody told anything alarming.
  */
-export function SiteStage({
-  site,
-  box,
-}: {
-  site: ExampleSite;
-  box: StageBox;
-}) {
+export function SiteStage({ site, box }: { site: ExampleSite; box: StageBox }) {
   const framed = box.wide && site.embed;
   const [loaded, setLoaded] = useState(false);
   const [handedOver, setHandedOver] = useState(false);
@@ -180,8 +174,8 @@ export function SiteStage({
                   behavior: "smooth",
                 })
               }
-              className={`h-2.5 w-2.5 rounded-full transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${
-                index === shown ? "bg-(--color-c2)" : "bg-(--color-faint)"
+              className={`h-2.5 w-2.5 rounded-full transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) ${
+                index === shown ? "bg-(--color-mark)" : "bg-(--color-faint)"
               }`}
             />
           ))}

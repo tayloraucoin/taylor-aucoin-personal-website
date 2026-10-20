@@ -166,21 +166,20 @@ export function PickBlock({
   if (document) {
     return (
       <div className="mt-5">
-        <DocTag>Select · opens a scale and a note; saved, it shows both with Edit and Remove</DocTag>
+        <DocTag>
+          Select · opens a scale and a note; saved, it shows both with Edit and
+          Remove
+        </DocTag>
         <PickScale idPrefix={idPrefix} value={undefined} onChange={() => {}} />
         <div className="mt-4">
-          <p
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
-          >
-            {COPY.noteLabel}
-          </p>
+          <p className="text-meta text-(--color-dim)">{COPY.noteLabel}</p>
           <TextArea
             id={noteId}
             value=""
             onChange={() => {}}
             placeholder={COPY.notePlaceholder}
           />
-          <p className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-1.5 text-meta leading-[1.55] text-(--color-dim)">
             {COPY.noteHelp}
           </p>
         </div>
@@ -203,7 +202,7 @@ export function PickBlock({
         <div className="mt-7">
           <label
             htmlFor={noteId}
-            className="block font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+            className="block text-meta text-(--color-dim)"
           >
             {COPY.noteLabel}
           </label>
@@ -222,7 +221,7 @@ export function PickBlock({
           </div>
           <p
             id={`${noteId}-help`}
-            className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
+            className="mt-1.5 text-meta leading-[1.55] text-(--color-dim)"
           >
             {COPY.noteHelp}
           </p>
@@ -235,7 +234,7 @@ export function PickBlock({
           <button
             type="button"
             onClick={cancel}
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
           >
             {COPY.cancel}
           </button>
@@ -248,9 +247,9 @@ export function PickBlock({
     return (
       <div className="mt-5">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+          <p className="text-meta text-(--color-dim)">
             Picked ·{" "}
-            <span className="text-(--color-c2)">
+            <span className="text-(--color-ink)">
               {pick.score === undefined ? "—" : pick.score} / 7
             </span>
           </p>
@@ -270,16 +269,16 @@ export function PickBlock({
         </div>
 
         {pick.note?.trim() ? (
-          <p className="mt-2.5 line-clamp-2 font-body text-[16px] font-light leading-[1.6] text-(--color-ink)">
+          <p className="mt-2.5 line-clamp-2 text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)">
             {pick.note}
           </p>
         ) : (
-          <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-2 text-meta leading-[1.55] text-(--color-dim)">
             {COPY.noNote}{" "}
             <button
               type="button"
               onClick={() => setComposing(true)}
-              className="underline underline-offset-2 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+              className="-my-[15px] py-[15px] text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
             >
               {COPY.addNote}
             </button>
@@ -294,7 +293,7 @@ export function PickBlock({
       {removed ? (
         <p
           aria-live="polite"
-          className="mb-3 font-body text-[13.5px] font-light text-(--color-c2)"
+          className="mb-3 text-meta leading-[1.55] text-(--color-ink)"
         >
           {COPY.removed}{" "}
           <button
@@ -305,7 +304,7 @@ export function PickBlock({
               setNote(removed.note ?? "");
               setRemoved(null);
             }}
-            className="underline underline-offset-2 hover:text-(--color-c3)"
+            className="underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
           >
             {COPY.undo}
           </button>
@@ -334,7 +333,7 @@ function BlockLink({
     <button
       type="button"
       onClick={onClick}
-      className="min-h-11 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+      className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
     >
       {children}
     </button>

@@ -143,7 +143,7 @@ export function MachineFilled({
 
   return (
     <div className="mt-2">
-      <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-proof-label)">
+      <p className="text-meta text-(--color-dim)">
         {/* [COPY — pending Taylor] — three readings, and the difference
             between them is real. The client's own paste is the strongest
             provenance there is. A file we unzipped and read gives its exact
@@ -154,13 +154,13 @@ export function MachineFilled({
       </p>
 
       {field.quote ? (
-        <p className="mt-1.5 border-l border-(--color-faint) pl-3 font-body text-[13.5px] font-light italic leading-[1.5] text-(--color-dim)">
+        <p className="mt-1.5 border-l border-(--color-faint) pl-3 text-meta leading-[1.55] text-(--color-dim)">
           {field.quote}
         </p>
       ) : (
-        <p className="mt-1.5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-          {/* [COPY — pending Taylor] */}
-          A guess from what you sent, not something you said.
+        <p className="mt-1.5 text-meta leading-[1.55] text-(--color-dim)">
+          {/* [COPY — pending Taylor] */}A guess from what you sent, not
+          something you said.
         </p>
       )}
     </div>
@@ -182,7 +182,7 @@ export function MachineFilledEntry({
   if (!field) return null;
 
   return (
-    <p className="mb-3 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-proof-label)">
+    <p className="mb-3 text-meta text-(--color-dim)">
       {/* [COPY — pending Taylor] */}
       {sourceLine(field.source)} — check it over
     </p>

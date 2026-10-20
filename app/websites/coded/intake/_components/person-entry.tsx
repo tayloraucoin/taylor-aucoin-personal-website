@@ -54,21 +54,19 @@ export function PersonEntryCard({
         type="button"
         onClick={() => setOpen(true)}
         aria-expanded={false}
-        className="flex min-h-12 w-full items-baseline gap-3 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3 text-left transition-colors duration-(--dur-fast) hover:bg-(--color-card-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+        className="flex min-h-12 w-full items-baseline gap-3 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-3.5 py-3 text-left transition-colors duration-(--dur-fast) hover:bg-(--color-card-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
       >
-        <span className="font-mono text-[10px] tracking-[.18em] text-(--color-c2)">
+        <span className="text-meta text-(--color-dim) tabular-nums">
           {String(index + 1).padStart(2, "0")}
         </span>
-        <span className="min-w-0 grow font-body text-[16px] font-light text-(--color-ink)">
+        <span className="min-w-0 grow text-[16px] text-(--color-ink) sm:text-(length:--text-body)">
           {entry.name}
           {entry.role ? (
             <span className="text-(--color-dim)"> · {entry.role}</span>
           ) : null}
         </span>
         {files.length > 0 ? (
-          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-            photo
-          </span>
+          <span className="shrink-0 text-meta text-(--color-dim)">photo</span>
         ) : null}
       </button>
     );
@@ -81,7 +79,7 @@ export function PersonEntryCard({
           type="button"
           onClick={() => setOpen(false)}
           aria-expanded
-          className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="inline-flex min-h-11 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
         >
           Collapse
         </button>

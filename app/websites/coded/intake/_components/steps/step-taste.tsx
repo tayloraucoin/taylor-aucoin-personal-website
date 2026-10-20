@@ -6,7 +6,11 @@ import { GROUP_ORDER } from "@/content/intake-examples/taxonomy";
 import { mintEntryKey } from "@/lib/intake/entry-key";
 import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { picksOf, spectrumsOf, TASTE_PICKS_ASKED } from "@/lib/intake/taste-picks";
+import {
+  picksOf,
+  spectrumsOf,
+  TASTE_PICKS_ASKED,
+} from "@/lib/intake/taste-picks";
 import { copyPackFor } from "@/lib/intake/tracks";
 import type {
   TastePick,
@@ -97,6 +101,7 @@ export function StepTaste({
   files,
   purchasedExtras = [],
   motion,
+  initialOpen = [],
 }: {
   token: string;
   initial: Record<string, unknown>;
@@ -124,6 +129,11 @@ export function StepTaste({
     currency: string;
     returned?: "added" | "canceled";
   };
+  /**
+   * Groups open on arrival. None for a client; the intake fixtures open one so
+   * the drawn state can be seen (SITE-30).
+   */
+  initialOpen?: readonly ExampleGroup[];
 }) {
   const form = useStepAutosave({ token, stepKey: "taste", initial });
   useReportSaveState(form.state, form.retry);
@@ -141,7 +151,7 @@ export function StepTaste({
   const picks = picksOf(form.values);
 
   const [openGroups, setOpenGroups] = useState<ReadonlySet<ExampleGroup>>(
-    new Set(),
+    () => new Set(initialOpen),
   );
   /** The site the picks list sent them back to, if any. Presentation only. */
   const [editing, setEditing] = useState<string | null>(null);
@@ -246,10 +256,10 @@ export function StepTaste({
         // Announced once, when the ask is met. Announcing every increment would
         // make a screen reader count out loud through a whole gallery.
         aria-live={met ? "polite" : "off"}
-        className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+        className="text-meta text-(--color-dim)"
       >
         Picked ·{" "}
-        <span className="text-(--color-c2)">
+        <span className="text-(--color-ink)">
           {/* Clamped, so the met state reads "5 of 5" rather than "6 of 5" —
               a count that overshoots its own denominator reads as broken, and
               this line's whole job is to be a plain fact. */}
@@ -325,7 +335,7 @@ export function StepTaste({
   return (
     <>
       {sites.length === 0 ? (
-        <p className="mb-10 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-dim)">
+        <p className="mb-10 max-w-[48ch] text-[16px] sm:text-(length:--text-body) leading-[1.6] text-(--color-dim)">
           {TASTE_ABSENT_LINE}
         </p>
       ) : (
@@ -493,7 +503,7 @@ export function StepTaste({
       />
 
       <section className="mt-12 border-t border-(--color-faint) pt-7">
-        <h2 className="mb-6 font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+        <h2 className="mb-6 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
           Everything else
         </h2>
 

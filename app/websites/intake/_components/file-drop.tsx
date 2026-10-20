@@ -1,27 +1,27 @@
 "use client";
 
+import { useEffect, useId, useRef, useState } from "react";
 import {
+  closestCenter,
   DndContext,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
   rectSortingStrategy,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useId, useRef, useState } from "react";
-import { MAX_UPLOAD_BYTES } from "@/lib/validators/intake";
 import { useIsDocument, useIsPreview } from "@/components/intake/preview-mode";
+import { MAX_UPLOAD_BYTES } from "@/lib/validators/intake";
 import {
   removeIntakeFile,
   reorderIntakeFiles,
@@ -177,7 +177,9 @@ export function FileDrop({
    * Unkeyed drops keep exactly the id they had. The key is twelve characters of
    * `[a-z0-9]` from `mintEntryKey`, so it is safe in an id without escaping.
    */
-  const inputId = entryKey ? `file-${fieldKey}-${entryKey}` : `file-${fieldKey}`;
+  const inputId = entryKey
+    ? `file-${fieldKey}-${entryKey}`
+    : `file-${fieldKey}`;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [tiles, setTiles] = useState<Tile[]>(() => existing.map(tileFrom));
@@ -214,12 +216,16 @@ export function FileDrop({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   function patch(key: string, changes: Partial<Tile>) {
     setTiles((current) =>
-      current.map((tile) => (tile.key === key ? { ...tile, ...changes } : tile)),
+      current.map((tile) =>
+        tile.key === key ? { ...tile, ...changes } : tile,
+      ),
     );
   }
 
@@ -323,7 +329,9 @@ export function FileDrop({
 
   /** Writes the order of everything that has a row. Optimistic; a failure says so. */
   function commitOrder(next: Tile[]) {
-    const ids = next.map((t) => t.fileId).filter((id): id is string => Boolean(id));
+    const ids = next
+      .map((t) => t.fileId)
+      .filter((id): id is string => Boolean(id));
     void reorderIntakeFiles({ token, fieldKey, entryKey }, ids).catch(() => {
       // [COPY — pending Taylor]
       setAnnouncement("That order didn't save — try moving it again.");
@@ -389,10 +397,10 @@ export function FileDrop({
     <div>
       {preview ? (
         <>
-          <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)/60">
+          <p className="flex min-h-12 w-full items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center text-meta text-(--color-dim)">
             {label}
           </p>
-          <p className="mt-2 text-xs text-(--color-dim)">
+          <p className="mt-2 text-meta text-(--color-dim)">
             Uploads are disabled in preview.
           </p>
         </>
@@ -414,7 +422,7 @@ export function FileDrop({
 
           <label
             htmlFor={inputId}
-            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-(--color-ghost-line) hover:text-(--color-c2)"
+            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-(--radius) border border-dashed border-(--color-faint) bg-(--color-card) px-4 py-3 text-center text-meta text-(--color-dim) transition-colors duration-(--dur-fast) hover:border-(--color-ghost-line) hover:text-(--color-ink)"
           >
             {label}
           </label>
@@ -458,7 +466,7 @@ export function FileDrop({
 }
 
 const ACTION =
-  "font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim) underline underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-(--color-dim)";
+  "inline-flex min-h-11 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-(--color-dim)";
 
 /**
  * One tile: the picture (or the extension), the name, the state, and what
@@ -518,9 +526,13 @@ function FileTile({
           // URL for a local one; never an optimizer URL — `remotePatterns`
           // covers the public route only, on purpose.
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={tile.previewUrl} alt="" className="h-20 w-full object-cover" />
+          <img
+            src={tile.previewUrl}
+            alt=""
+            className="h-20 w-full object-cover"
+          />
         ) : (
-          <p className="flex h-20 items-center justify-center truncate px-2 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
+          <p className="flex h-20 items-center justify-center truncate px-2 text-meta text-(--color-dim)">
             {tile.name.split(".").pop()}
           </p>
         )}
@@ -530,7 +542,7 @@ function FileTile({
             type="button"
             ref={setActivatorNodeRef}
             aria-label={`Drag to reorder image ${index + 1}`}
-            className="absolute top-1 left-1 flex size-9 touch-none cursor-grab items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-white backdrop-blur-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) active:cursor-grabbing"
+            className="absolute top-1 left-1 flex size-9 touch-none cursor-grab items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-white backdrop-blur-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) active:cursor-grabbing"
             {...attributes}
             {...listeners}
           >
@@ -540,42 +552,46 @@ function FileTile({
       </div>
 
       <div className="p-2">
-        <p className="truncate font-mono text-[9px] uppercase tracking-[.14em] text-(--color-dim)">
-          {tile.name}
-        </p>
+        <p className="truncate text-meta text-(--color-dim)">{tile.name}</p>
 
         {tile.status === "uploading" ? (
           <div className="mt-1.5 h-px w-full bg-(--color-faint)">
             <div
-              className="h-px bg-(--color-c2) transition-[width] duration-(--dur-fast)"
+              className="h-px bg-(--color-mark) transition-[width] duration-(--dur-fast)"
               style={{ width: `${tile.progress}%` }}
             />
           </div>
         ) : null}
 
         {tile.status === "done" ? (
-          <p className="mt-1 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-c2)">
-            Sent
-          </p>
+          <p className="mt-1 text-meta text-(--color-ink)">Sent</p>
         ) : null}
 
         {tile.status === "failed" ? (
-          <button type="button" onClick={onRetry} className={`mt-1 ${ACTION} text-(--color-c2)`}>
+          <button
+            type="button"
+            onClick={onRetry}
+            className={`mt-1 ${ACTION} text-(--color-ink)`}
+          >
             Didn&apos;t make it — tap to retry
           </button>
         ) : null}
 
         {tile.status === "too_large" ? (
-          <p className="mt-1 font-mono text-[9px] uppercase leading-[1.5] tracking-[.14em] text-(--color-c2)">
+          <p className="mt-1 text-meta leading-[1.55] text-(--color-ink)">
             Too big — text this one to Taylor instead
           </p>
         ) : null}
 
         {removing ? (
           // [COPY — pending Taylor]
-          <p className="mt-1 font-mono text-[9px] uppercase tracking-[.14em] text-(--color-c2)">
+          <p className="mt-1 text-meta text-(--color-ink)">
             Removed.{" "}
-            <button type="button" onClick={onUndo} className={`${ACTION} text-(--color-c2)`}>
+            <button
+              type="button"
+              onClick={onUndo}
+              className={`${ACTION} text-(--color-ink)`}
+            >
               Undo
             </button>
           </p>

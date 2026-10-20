@@ -52,32 +52,32 @@ export function TasteGroup({
           aria-expanded={expanded}
           aria-controls={bodyId}
           onClick={onToggle}
-          className="flex min-h-14 w-full items-start justify-between gap-4 py-5 text-left transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+          className="flex min-h-14 w-full items-start justify-between gap-4 py-5 text-left transition-colors duration-(--dur-fast) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
         >
           <span className="min-w-0">
-            <span className="block font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+            <span className="block font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
               {title}
             </span>
-            <span className="mt-2 block font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+            <span className="mt-2 block text-meta leading-[1.55] text-(--color-body)">
               {line}
             </span>
           </span>
 
           <span className="flex shrink-0 items-center gap-3 pt-0.5">
-            <span className="text-right font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+            <span className="text-right text-meta text-(--color-dim)">
               {count} {count === 1 ? "site" : "sites"}
               {/* The count of picks is the only colour on a header, and it
                   appears only once there is something to count. */}
               {picked > 0 ? (
                 <>
                   {" · "}
-                  <span className="text-(--color-c2)">{picked} picked</span>
+                  <span className="text-(--color-ink)">{picked} picked</span>
                 </>
               ) : null}
             </span>
             <span
               aria-hidden
-              className={`font-mono text-[10px] text-(--color-dim) transition-transform duration-(--dur-fast) ease-(--ease-out) ${
+              className={`text-meta text-(--color-dim) transition-transform duration-(--dur-fast) ease-(--ease-out) ${
                 expanded ? "rotate-180" : ""
               }`}
             >
