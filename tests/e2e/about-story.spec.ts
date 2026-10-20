@@ -27,7 +27,7 @@ test("C1 one h1 after the only eyebrow, then the h2s in order", async ({
   expect(h2s.slice(0, 4)).toEqual([
     "How I think",
     "Experience",
-    "Teaching",
+    "Teaching & Sponsoring Programs",
     "Education",
   ]);
   expect(levels[0]).toEqual(["H1", "About"]);
@@ -133,4 +133,19 @@ test("C5 at 390: no sideways scroll, dates under roles, links 44px, skip link", 
     ),
   );
   expect(inMain).toBe(true);
+});
+
+test("R3 testimonials end on one same-tab link to the LinkedIn recommendations page", async ({
+  page,
+}) => {
+  await page.goto("/about");
+  const link = page
+    .locator("#testimonials")
+    .getByRole("link", { name: "Read more recommendations on LinkedIn" });
+  await expect(link).toHaveCount(1);
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://www.linkedin.com/in/taylor-aucoin/details/recommendations/",
+  );
+  await expect(link).not.toHaveAttribute("target", /.+/);
 });
