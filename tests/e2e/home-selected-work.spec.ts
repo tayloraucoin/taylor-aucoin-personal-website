@@ -53,9 +53,12 @@ test.describe("at 1440", () => {
       "true",
     );
     expect(await titles(page)).toEqual(["Kryshan Randel"]);
+    // Feedback round 2: at md and up Websites keeps the chip row, disabled.
     await expect(
-      section(page).getByRole("group", { name: "Type" }),
-    ).toHaveCount(0);
+      section(page)
+        .getByRole("group", { name: "Type" })
+        .locator("[aria-disabled=true]"),
+    ).toHaveCount(5);
 
     await page.keyboard.press("ArrowRight");
     await expect(tab(page, "Branding & UI")).toBeFocused();
@@ -234,6 +237,68 @@ test.describe("at 1440", () => {
     await expect(heading).toBeInViewport();
   });
 
+  test("feedback round 2: tab switches move nothing; Websites' chips are disabled and unfocusable", async ({
+    page,
+  }) => {
+    const box = (selector: string) =>
+      section(page)
+        .locator(selector)
+        .evaluateAll((els) =>
+          els.map((el) => {
+            const r = el.getBoundingClientRect();
+            return [r.x, r.y + scrollY, r.width, r.height];
+          }),
+        );
+    const group = section(page).getByRole("group", { name: "Type" });
+    // The tab row, each tab, and the chip row's top and height (its width
+    // follows each tab's chips) hold the tab line.
+    // The panel's top is the tab line's bottom.
+    const line = async () => ({
+      tablist: await box("[role=tablist]"),
+      tabs: await box("[role=tab]"),
+      row: await group.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return [r.y + scrollY, r.height];
+      }),
+      panelTop: (await box("[role=tabpanel]"))[0][1],
+    });
+
+    await page.goto("/");
+    const product = await line();
+    for (const name of [
+      "Websites",
+      "Branding & UI",
+      "Product engineering",
+      "Websites",
+    ]) {
+      await tab(page, name).click();
+      await expect(tab(page, name)).toHaveAttribute("aria-selected", "true");
+      expect(await line(), name).toEqual(product);
+    }
+
+    const chips = group.locator("[aria-disabled=true]");
+    await expect(chips).toHaveText([
+      "Featured",
+      "Full-time",
+      "Contract",
+      "Business",
+      "Passion projects",
+    ]);
+    expect(
+      await chips.evaluateAll((els) =>
+        els.map((el) => [
+          el.tabIndex,
+          getComputedStyle(el).opacity,
+          getComputedStyle(el).cursor,
+        ]),
+      ),
+    ).toEqual(Array(5).fill([-1, "0.6", "not-allowed"]));
+    await chips.nth(1).click({ force: true });
+    expect(await titles(page)).toEqual(["Kryshan Randel"]);
+    await expect(chips.nth(0)).toHaveAttribute("aria-pressed", "true");
+    await expectNoSeriousA11y(page, { include: "section#work" });
+  });
+
   test("states by ?state=", async ({ page }) => {
     await page.goto("/?state=selected-work-websites");
     await expect(tab(page, "Websites")).toHaveAttribute(
@@ -270,10 +335,20 @@ test.describe("C7 at 390", () => {
         .locator("button, a")
         .evaluateAll((els) =>
           els
-            .filter((el) => el.getBoundingClientRect().height < 44)
+            // Websites' disabled chip row is hidden below md.
+            .filter(
+              (el) =>
+                el.getClientRects().length > 0 &&
+                el.getBoundingClientRect().height < 44,
+            )
             .map((el) => el.textContent?.trim()),
         );
       expect(small).toEqual([]);
+      if (name === "Websites") {
+        await expect(
+          section(page).getByRole("group", { name: "Type" }),
+        ).toBeHidden();
+      }
       await expectNoSeriousA11y(page, { include: "section#work" });
     });
   }

@@ -105,7 +105,7 @@ export function WorkTabs({
             </button>
           ))}
         </div>
-        {tab.chips.length > 1 && (
+        {tab.chips.length > 1 ? (
           <div
             role="group"
             aria-label="Type"
@@ -134,7 +134,38 @@ export function WorkTabs({
               </button>
             ))}
           </div>
-        )}
+        ) : tabs[0].chips.length > 1 ? (
+          // A tab with no type chips keeps the default tab's row at md and
+          // up, in the kit's disabled look and out of the tab order, so the
+          // tab line never jumps between tabs; hidden below md (feedback
+          // round 2, as /work's TypeChipsNav does).
+          <div
+            role="group"
+            aria-label="Type"
+            className="flex flex-wrap gap-2 pb-4 max-md:hidden md:justify-end"
+          >
+            {tabs[0].chips.map((c, i) => (
+              <button
+                key={c.key}
+                type="button"
+                aria-pressed={i === 0}
+                aria-disabled="true"
+                tabIndex={-1}
+                className={chipVariants({ selected: i === 0, disabled: true })}
+              >
+                {i === 0 && (
+                  <Check
+                    aria-hidden
+                    size={14}
+                    strokeWidth={2}
+                    className="text-(--color-mark)"
+                  />
+                )}
+                {c.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
       <p aria-live="polite" className="sr-only">
         {announce}
