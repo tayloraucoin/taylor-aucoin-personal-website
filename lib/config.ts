@@ -149,8 +149,6 @@ export const STACK_META_DESCRIPTION =
 export const OTHER_BUILDS = [
   "Social Photography Hub",
   "Artist Hivemind Hub",
-  "Crypto Alerts",
-  "GIS Drone Imagery Reporting Suite",
 ] as const;
 
 /**

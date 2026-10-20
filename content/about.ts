@@ -156,7 +156,10 @@ export const teachingLedger: Array<{ name: string; line: string }> = [
     name: "BCIT ISSP",
     line: "Industry Sponsored Student Projects · 14 cohorts",
   },
-  { name: "VFS", line: "Vancouver Film School · 4 cohorts" },
+  {
+    name: "VFC",
+    line: "Venture for Canada intrapreneurship program · 4 cohorts",
+  },
   {
     name: "FLUI Design Hackathon",
     line: "Emily Carr University of Art + Design · 2 cohorts",

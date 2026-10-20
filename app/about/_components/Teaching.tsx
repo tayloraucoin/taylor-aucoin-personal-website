@@ -17,7 +17,7 @@ export function Teaching() {
       className="mt-16 scroll-mt-24 md:mt-24"
     >
       <SectionHeading id="teaching-heading" tabIndex={-1} aside={teachingCount}>
-        Teaching
+        Teaching &amp; Sponsoring Programs
       </SectionHeading>
       <ul className="mt-8 grid gap-0 md:grid-cols-4 md:gap-8">
         {teachingLedger.map((c) => (

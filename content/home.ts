@@ -21,8 +21,8 @@ export const proofBar: readonly { fact: string; meta: string }[] = [
   // feedback/2026-10-19/copy-review.md for the rule and the count.
   { fact: "13 products", meta: "zero to one, and counting" },
   {
-    fact: "22 cohorts taught",
-    meta: "BCIT ISSP · VFS · FLUI · SFU co-op · virtual intern",
+    fact: "22 cohorts taught and sponsored",
+    meta: "BCIT ISSP · VFC · FLUI · SFU co-op · virtual intern",
   },
   {
     fact: "Five roles",
