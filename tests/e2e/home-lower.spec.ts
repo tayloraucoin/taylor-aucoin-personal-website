@@ -41,13 +41,17 @@ const STATES = [
   "selected-work-websites",
   "selected-work-branding",
   "selected-work-filtered",
+  "testimonial-open",
+  "testimonial-first",
+  "testimonial-last",
+  "testimonial-focus",
   // The notes states come back with the home signup (feedback round 2).
 ];
 
 test.describe("at 1440", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test("C1 five steps in one row, three lists, no disclosure", async ({
+  test("C1 five steps in one row, three lists, the tools row, no disclosure", async ({
     page,
   }) => {
     await page.goto("/");
@@ -66,7 +70,37 @@ test.describe("at 1440", () => {
       "What I give it",
       "What I let AI do",
       "What I check",
+      // Feedback round 2: "Tools" is a placeholder for Taylor's word.
+      "Tools",
     ]);
+    const tools = how(page).locator("h3 + ul").last().locator("li");
+    await expect(tools).toHaveText([
+      "Claude Code",
+      "Cursor",
+      "OpenAI API",
+      "Linear",
+      "Git",
+      "Turborepo",
+    ]);
+    // Each mark inline at 20px, in the body colour, one row at 1440.
+    const marks = await tools.evaluateAll((els) =>
+      els.map((el) => {
+        const svg = el.querySelector("svg")!;
+        const r = svg.getBoundingClientRect();
+        return [
+          r.width,
+          r.height,
+          svg.getAttribute("aria-hidden"),
+          getComputedStyle(svg).fill ===
+            getComputedStyle(el.querySelector("span")!).color,
+          Math.round(el.getBoundingClientRect().top),
+        ];
+      }),
+    );
+    expect(new Set(marks.map((m) => m[4])).size).toBe(1);
+    expect(marks.map((m) => m.slice(0, 4))).toEqual(
+      Array(6).fill([20, 20, "true", true]),
+    );
     await expect(
       how(page).locator("button, details, [aria-expanded]"),
     ).toHaveCount(0);
@@ -84,7 +118,9 @@ test.describe("at 1440", () => {
       "Yogesh Verma",
     ]);
     await expect(testimonials(page).locator("img")).toHaveCount(4);
-    await expect(testimonials(page).locator("[aria-hidden]")).toHaveCount(0);
+    // Feedback round 2: each card is a button with an aria-hidden expand mark.
+    await expect(testimonials(page).locator("figure > button")).toHaveCount(4);
+    await expect(testimonials(page).locator("[aria-hidden]")).toHaveCount(4);
     const lefts = await cards.evaluateAll((els) =>
       els.map((el) => Math.round(el.getBoundingClientRect().left)),
     );
@@ -105,7 +141,7 @@ test.describe("at 1440", () => {
     expect(sentences.length).toBe(new Set(sentences).size);
   });
 
-  test("C3 five role rows to /work-with-me; the websites line to /websites", async ({
+  test("C3 five role rows to /work-with-me with an arrow; the ghost button; the websites line to /websites", async ({
     page,
   }) => {
     await page.goto("/");
@@ -117,6 +153,8 @@ test.describe("at 1440", () => {
           a.children[0]?.textContent,
           a.getAttribute("href"),
           a.children.length,
+          a.lastElementChild?.getAttribute("aria-hidden"),
+          a.lastElementChild?.getBoundingClientRect().width,
         ]),
       ),
     ).toEqual(
@@ -126,17 +164,26 @@ test.describe("at 1440", () => {
         "Systems consultant",
         "Fractional CTO",
         "0→1 build",
-      ].map((role) => [role, "/work-with-me", 3]),
+      ].map((role) => [role, "/work-with-me", 4, "true", 24]),
     );
-    await expect(
-      wwm(page).getByRole("link", { name: "Work with me", exact: true }),
-    ).toHaveAttribute("href", "/work-with-me");
+    // Feedback round 2: the faint link is now the ghost (outlined) button.
+    const button = wwm(page).getByRole("link", {
+      name: "Work with me",
+      exact: true,
+    });
+    await expect(button).toHaveAttribute("href", "/work-with-me");
+    expect(
+      await button.evaluate((el) => {
+        const cs = getComputedStyle(el);
+        return [cs.borderTopWidth, cs.height, cs.backgroundColor];
+      }),
+    ).toEqual(["1px", "44px", "rgba(0, 0, 0, 0)"]);
     await expect(
       wwm(page).getByRole("link", { name: "Websites" }),
     ).toHaveAttribute("href", "/websites");
   });
 
-  test("C4 D-SITE-50's order in main, footer after; no old sections or field", async ({
+  test("C4 D-SITE-50's order in main, then the PageClose, footer after; no old sections or field", async ({
     page,
   }) => {
     await page.goto("/");
@@ -164,13 +211,23 @@ test.describe("at 1440", () => {
     expect(
       await page.evaluate(() => {
         const main = document.querySelector("main#main")!;
+        const close = document.querySelector("[data-page-close]")!;
         const footer = document.querySelector("footer")!;
-        return !!(
-          main.compareDocumentPosition(footer) &
-          Node.DOCUMENT_POSITION_FOLLOWING
-        );
+        const after = (a: Node, b: Node) =>
+          !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+        return [after(main, close), after(close, footer)];
       }),
-    ).toBe(true);
+    ).toEqual([true, true]);
+    // Feedback round 2: home ends on the call-led close with the résumé,
+    // which holds the page's one solid button.
+    const close = page.locator("[data-page-close=call]");
+    await expect(close).toHaveCount(1);
+    await expect(close.locator("p").first()).toHaveText(
+      "A 30-minute call, no pitch. We'll figure out if I'm the right fit.",
+    );
+    await expect(close.getByRole("link", { name: "Résumé (PDF)" })).toHaveCount(
+      1,
+    );
     // Feedback round 2: the notes signup is commented out on home.
     await expect(
       page.locator("section[aria-labelledby=notes-heading]"),
@@ -210,6 +267,7 @@ test.describe("at 1440", () => {
       // "Read them in full": a control the contract's list leaves out.
       "Testimonials",
       "Work with me",
+      "close",
       "footer",
     ];
     const seen: string[] = [];
@@ -221,6 +279,7 @@ test.describe("at 1440", () => {
         const outline = getComputedStyle(el).outlineWidth;
         if (el.closest("footer")) return ["footer", outline];
         if (el.closest("header")) return ["header", outline];
+        if (el.closest("[data-page-close]")) return ["close", outline];
         if (!el.closest("main")) return ["skip", outline];
         const section = el.closest("main > section");
         const label =
