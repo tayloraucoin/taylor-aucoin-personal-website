@@ -219,7 +219,7 @@ test.describe("C4 at 390", () => {
     await page.goto(PATH);
     const close = fixture(page, "call");
     const box = async (name: string) =>
-      (await close.getByRole("link", { name }).boundingBox())!;
+      (await close.getByRole("link", { name, exact: true }).boundingBox())!;
     const call = await box("Book a 30-minute call");
     const resume = await box("Résumé (PDF)");
     const note = await box("Send a note");

@@ -227,9 +227,17 @@ test.describe("at 1440", () => {
     await expect(close.locator("p").first()).toHaveText(
       "A 30-minute call, no pitch. We'll figure out if I'm the right fit.",
     );
-    await expect(close.getByRole("link", { name: "Résumé (PDF)" })).toHaveCount(
-      1,
-    );
+    // Dark mode (the ground state) links the carbon PDF, with the print
+    // version beside it (ResumeLink).
+    await expect(
+      close.getByRole("link", { name: "Résumé (PDF)", exact: true }),
+    ).toHaveAttribute("href", "/taylor-aucoin-resume-dark.pdf");
+    await expect(
+      close.getByRole("link", {
+        name: "Print version of the résumé (PDF)",
+        exact: true,
+      }),
+    ).toHaveAttribute("href", "/taylor-aucoin-resume.pdf");
     // Feedback round 2: the notes signup is commented out on home.
     await expect(
       page.locator("section[aria-labelledby=notes-heading]"),
