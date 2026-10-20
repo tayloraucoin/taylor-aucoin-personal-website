@@ -99,9 +99,10 @@ test.describe("at 1440", () => {
       "Roomvy",
       "Calculate by QxMD",
     ]);
+    // Lane F's stills (round 2) gave Calculate a gallery.
     await expect(
-      story(page, "Calculate by QxMD").locator("img, [data-zoom-index]"),
-    ).toHaveCount(0);
+      story(page, "Calculate by QxMD").locator("[data-zoom-index]").first(),
+    ).toBeVisible();
     await expect(section(page).locator("[aria-live=polite]")).toHaveText(/3/);
 
     await tab(page, "Branding & UI").click();
@@ -183,9 +184,18 @@ test.describe("at 1440", () => {
     await page.keyboard.press("Escape");
     await expect(all).toBeFocused();
 
+    // Kryshan Randel has captured screens since round 2; the own-brand kit is
+    // the row with an empty gallery.
     await tab(page, "Websites").click();
-    const kr = story(page, "Kryshan Randel");
-    await expect(kr.locator("img, [data-zoom-index], button")).toHaveCount(0);
+    await expect(
+      story(page, "Kryshan Randel").getByRole("button", {
+        name: /^All \d+ images$/,
+      }),
+    ).toBeVisible();
+    await tab(page, "Branding & UI").click();
+    const kit = story(page, "Taylor Aucoin");
+    await expect(kit).toBeVisible();
+    await expect(kit.locator("img, [data-zoom-index], button")).toHaveCount(0);
   });
 
   test("feedback round 2: a branding image opens only its row's boards, with no console error", async ({

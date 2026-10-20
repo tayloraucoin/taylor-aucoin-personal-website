@@ -139,7 +139,17 @@ test.describe("at 1440", () => {
   test("C4 websites tab, gallery opener", async ({ page }) => {
     await page.goto("/work?tab=websites");
     expect(await h3s(page)).toEqual(["Kryshan Randel"]);
-    await expect(page.locator("main li button")).toHaveCount(0);
+    // Kryshan Randel has captured screens since round 2; the own-brand kit is
+    // the row with an empty gallery.
+    await expect(
+      page.getByRole("button", { name: /^All \d+ images$/ }),
+    ).toHaveCount(1);
+    await page.goto("/work?tab=branding");
+    const kit = page
+      .locator("main li")
+      .filter({ has: page.getByRole("heading", { name: "Taylor Aucoin" }) });
+    await expect(kit).toHaveCount(1);
+    await expect(kit.locator("button")).toHaveCount(0);
 
     await page.goto("/work?state=gallery");
     const opener = page.getByRole("button", { name: "All 2 images" });
@@ -297,5 +307,138 @@ test.describe("at 390", () => {
         () => document.activeElement?.closest("main") !== null,
       ),
     ).toBe(true);
+  });
+});
+
+/**
+ * Feedback round 3: a type chip used to drop each row into the group's 200px
+ * label column, so the link stack wrapped a word per line and each divider
+ * ran a fifth of the width. Every row keeps All's columns and divider under
+ * every chip, on every tab; under All too, the 440 title column had left the
+ * link stack 58px wide at 1024 and pushed the page sideways below it.
+ */
+const storyLinks = (page: Page) =>
+  page
+    .getByRole("link", { name: "Read the decision story" })
+    .evaluateAll((links) =>
+      links.map((a) => {
+        const range = document.createRange();
+        range.selectNodeContents(a);
+        return new Set(
+          [...range.getClientRects()].map((r) => Math.round(r.top)),
+        ).size;
+      }),
+    );
+const scrollsSideways = (page: Page) =>
+  page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+
+const rowBoxes = (page: Page) =>
+  page.locator("main section li").evaluateAll((rows) =>
+    Object.fromEntries(
+      rows.map((li) => {
+        const x = (el: Element | null) => {
+          const r = el!.getBoundingClientRect();
+          return [Math.round(r.x), Math.round(r.width)];
+        };
+        return [
+          li.querySelector("h3")!.textContent,
+          {
+            divider: x(li),
+            title: x(li.querySelector("h3")),
+            meta: x(li.querySelector(":scope > p")),
+            links: x(li.querySelector(":scope > div")),
+          },
+        ];
+      }),
+    ),
+  );
+
+for (const width of [1440, 1024]) {
+  test.describe(`feedback round 3 at ${width}`, () => {
+    test.use({ viewport: { width, height: 900 } });
+
+    test("a type chip keeps All's columns and divider width", async ({
+      page,
+    }) => {
+      for (const tab of ["product", "branding", "websites"]) {
+        await page.goto(`/work?tab=${tab}`);
+        const all = await rowBoxes(page);
+        expect(Object.keys(all).length, tab).toBeGreaterThan(0);
+        expect(await scrollsSideways(page), tab).toBe(false);
+        for (const lines of await storyLinks(page)) expect(lines, tab).toBe(1);
+        const chips = await chipsNav(page)
+          .locator("a:not([aria-current])")
+          .evaluateAll((els) => els.map((a) => a.getAttribute("href")!));
+        for (const href of chips) {
+          await page.goto(href);
+          const filtered = await rowBoxes(page);
+          expect(Object.keys(filtered).length, href).toBeGreaterThan(0);
+          for (const [title, boxes] of Object.entries(filtered)) {
+            expect(boxes, `${title} on ${href}`).toEqual(all[title]);
+          }
+        }
+      }
+    });
+  });
+}
+
+test.describe("feedback round 3 at 834", () => {
+  test.use({ viewport: { width: 834, height: 1112 } });
+
+  test("rows stack inside the group's column, with no sideways scroll", async ({
+    page,
+  }) => {
+    for (const url of ["/work", "/work?type=full-time", "/work?tab=branding"]) {
+      await page.goto(url);
+      expect(await scrollsSideways(page), url).toBe(false);
+      for (const lines of await storyLinks(page)) expect(lines, url).toBe(1);
+    }
+  });
+});
+
+test.describe("feedback round 3 at 390", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the story link sits on its own line, unwrapped, under every chip", async ({
+    page,
+  }) => {
+    for (const url of [
+      "/work",
+      "/work?type=full-time",
+      "/work?type=contract",
+    ]) {
+      await page.goto(url);
+      const links = await page
+        .locator("main section li")
+        .filter({
+          has: page.getByRole("link", { name: "Read the decision story" }),
+        })
+        .evaluateAll((rows) =>
+          rows.map((li) => {
+            const tagline = li.querySelectorAll(":scope > p")[1]!;
+            const a = [...li.querySelectorAll("a")].find(
+              (el) => el.textContent === "Read the decision story",
+            )!;
+            const range = document.createRange();
+            range.selectNodeContents(a);
+            const lines = new Set(
+              [...range.getClientRects()].map((r) => Math.round(r.top)),
+            ).size;
+            return {
+              below:
+                a.getBoundingClientRect().top >=
+                tagline.getBoundingClientRect().bottom,
+              lines,
+            };
+          }),
+        );
+      expect(links.length, url).toBeGreaterThan(0);
+      for (const link of links)
+        expect(link, url).toEqual({ below: true, lines: 1 });
+    }
   });
 });

@@ -6,7 +6,10 @@ import { WorkRow } from "./WorkRow";
 /**
  * One type group (D-SITE-100): label in a 200 column at 1440, stacked above
  * its rows at 390, a hairline between groups. With one chip selected the h2
- * stays, visually hidden, so the outline holds (D-SITE-191).
+ * stays, visually hidden, so the outline holds (D-SITE-191). The list is
+ * pinned to the second column: a visually hidden h2 is absolutely positioned,
+ * takes no cell, and would let the list fall into the 200 column (feedback
+ * round 3, 2026-10-19).
  */
 export function TypeGroup({
   type,
@@ -28,7 +31,7 @@ export function TypeGroup({
       >
         {workIndex.groups[type]}
       </h2>
-      <ul>
+      <ul className="md:col-start-2">
         {entries.map((entry) => (
           <WorkRow key={entry.id} entry={entry} />
         ))}
