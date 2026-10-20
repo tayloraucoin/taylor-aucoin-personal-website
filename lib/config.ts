@@ -118,7 +118,10 @@ export const SITE = {
   email: "hello@tayloraucoin.com",
   github: "https://github.com/tayloraucoin",
   linkedin: "https://www.linkedin.com/in/taylor-aucoin/",
+  /** The light résumé: the print and ATS version, and light mode's link. */
   resume: "/taylor-aucoin-resume.pdf",
+  /** The same résumé on carbon, dark mode's link (`ResumeLink`). */
+  resumeDark: "/taylor-aucoin-resume-dark.pdf",
   tagline:
     "Thirteen products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
   /**

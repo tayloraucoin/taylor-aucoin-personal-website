@@ -1,5 +1,5 @@
+import { ResumeLink } from "@/components/site/ResumeLink";
 import { toolGroups } from "@/content/stack";
-import { SITE } from "@/lib/config";
 import { ROW_LINK, SectionHeading } from "./Row";
 
 /** Tools `#tools`: core items only, five groups, the résumé link beside the heading (D-SITE-72). */
@@ -14,10 +14,12 @@ export function Tools() {
         id="tools-heading"
         tabIndex={-1}
         aside={
-          <a href={SITE.resume} className={ROW_LINK}>
-            The full list is in my résumé
-            <span className="sr-only"> (PDF)</span>
-          </a>
+          <span className="flex flex-wrap items-center gap-x-5">
+            <ResumeLink className={ROW_LINK} alternate>
+              The full list is in my résumé
+              <span className="sr-only"> (PDF)</span>
+            </ResumeLink>
+          </span>
         }
       >
         Tools

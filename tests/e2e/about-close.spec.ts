@@ -52,9 +52,16 @@ test("C1 the h2s in order, Tools core only in five groups, résumé links name (
   const resume = page
     .locator("main, [data-page-close]")
     .getByRole("link", { name: /\(PDF\)/ });
-  await expect(resume).toHaveCount(2); // Tools and the close
-  for (const l of await resume.all())
-    await expect(l).toHaveAttribute("href", "/taylor-aucoin-resume.pdf");
+  // Tools and the close, each a dark-mode résumé and its print version.
+  const hrefs = await resume.evaluateAll((els) =>
+    els.map((a) => a.getAttribute("href")),
+  );
+  expect(hrefs).toEqual([
+    "/taylor-aucoin-resume-dark.pdf",
+    "/taylor-aucoin-resume.pdf",
+    "/taylor-aucoin-resume-dark.pdf",
+    "/taylor-aucoin-resume.pdf",
+  ]);
 });
 
 test("C2 four testimonials in full under two subheads, no tabs", async ({

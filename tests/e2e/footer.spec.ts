@@ -17,7 +17,7 @@ const CHROME = [
 
 const FOOTER_LINKS = [
   ["About", "/about"],
-  ["Résumé (PDF)", "/taylor-aucoin-resume.pdf"],
+  ["Résumé (PDF)", "/taylor-aucoin-resume-dark.pdf"],
   ["Contact", "/contact"],
   ["GitHub", "https://github.com/tayloraucoin"],
   ["LinkedIn", "https://www.linkedin.com/in/taylor-aucoin/"],

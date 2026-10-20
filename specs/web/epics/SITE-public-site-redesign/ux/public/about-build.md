@@ -59,7 +59,7 @@ Today only GA4 `page_view` fires, consent-gated. Per D-SITE-176: `book_call_clic
 | C-SITE-about-8 | `?state=pending-testimonial` | outside production: one synthetic card marked "Pending approval" under Engineers I led, no text from an unapproved entry; in production: no pending card | test |
 | C-SITE-about-9 | Tools render | only items flagged core in `content/stack.ts`, in five groups | test |
 | C-SITE-about-10 | Experience renders | each row with a case study links to its `/work/[slug]`; "Also built" holds no links; BCIT ISSP's "Teaching" goes to `#teaching` | test |
-| C-SITE-about-11 | the three résumé links | each points at `SITE.resume` and names "(PDF)" in its accessible name | test |
+| C-SITE-about-11 | the three résumé links | each follows the theme (`ResumeLink`) and names "(PDF)"; in dark, Tools and the close add "Print version" | test |
 | C-SITE-about-12 | 390 width | no horizontal scroll; every Experience and Education date on its own line; inline link targets ≥44px tall | capture |
 | C-SITE-about-13 | `pending-testimonial` at 1440 and 390, dark and light | matches `captures/about/pending-testimonial-*` | capture |
 | C-SITE-about-14 | a booking button is clicked with analytics consent | one `book_call_click` with `surface: "about"` and `placement` only; none without consent | test |

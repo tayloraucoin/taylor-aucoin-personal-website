@@ -76,7 +76,8 @@ test.describe("C1 and C2 at 1440", () => {
     await expect(close).toContainText("Available now · fixture availability");
     expect(await links(close)).toEqual([
       ["Book a 30-minute call", "/book"],
-      ["Résumé (PDF)", "/taylor-aucoin-resume.pdf"],
+      ["Résumé (PDF)", "/taylor-aucoin-resume-dark.pdf"],
+      ["Print version of the résumé (PDF)", "/taylor-aucoin-resume.pdf"],
       ["Send a note", "/contact"],
     ]);
     await expect(close).toContainText("Not ready to book?");
@@ -87,6 +88,19 @@ test.describe("C1 and C2 at 1440", () => {
       .locator("> div")
       .evaluate((el) => getComputedStyle(el).borderTopWidth);
     expect(rule).toBe("1px");
+  });
+
+  test("C1 in light mode the résumé is the print PDF, with no alternate", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem("ta-theme", "light"));
+    await page.goto(PATH);
+    const close = fixture(page, "call");
+    expect(await links(close)).toEqual([
+      ["Book a 30-minute call", "/book"],
+      ["Résumé (PDF)", "/taylor-aucoin-resume.pdf"],
+      ["Send a note", "/contact"],
+    ]);
   });
 
   test("C2 the close without a résumé and the note-led close", async ({

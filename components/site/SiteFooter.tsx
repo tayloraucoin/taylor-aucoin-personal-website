@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SITE } from "@/lib/config";
 import { siteRoutes } from "@/lib/routes";
+import { ResumeLink } from "./ResumeLink";
 
 const LINK =
   "text-(--color-body) transition-colors duration-(--dur-fast) hover:text-(--color-ink)";
@@ -27,9 +28,9 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <a href={SITE.resume} className={LINK}>
+              <ResumeLink className={LINK}>
                 Résumé<span className="sr-only"> (PDF)</span>
-              </a>
+              </ResumeLink>
             </li>
             <li>
               <Link href={siteRoutes.contact} className={LINK}>

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/Button";
-import { SITE } from "@/lib/config";
 import { siteRoutes } from "@/lib/routes";
 import { BookCallLink } from "./BookCallLink";
 import type { CallSurface } from "./nav";
+import { ResumeLink } from "./ResumeLink";
 
 const TEXT_LINK =
   "inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-[3px] transition-colors duration-(--dur-fast) hover:text-(--color-body)";
@@ -18,7 +18,8 @@ const CALL_AS_TEXT =
  * and availability; this holds no page's copy.
  *
  * - `form="call"` (default): the call is the one primary action, then the
- *   résumé when `resume` is set, then "Not ready to book?" with "Send a note".
+ *   résumé when `resume` is set (`ResumeLink`: theme-matched, with a print
+ *   version in dark), then "Not ready to book?" with "Send a note".
  * - `form="note"` (Work with me): "Send a note" is the one primary action,
  *   then "Prefer a call?" with the call as a text link. No résumé.
  *
@@ -73,9 +74,9 @@ export function PageClose({
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-1">
             <BookCallLink surface={surface} slug={slug} placement="close" />
             {resume && (
-              <a href={SITE.resume} className={TEXT_LINK}>
+              <ResumeLink className={TEXT_LINK} alternate>
                 Résumé (PDF)
-              </a>
+              </ResumeLink>
             )}
             <p className="flex basis-full flex-wrap items-center gap-x-2 text-(length:--text-small) text-(--color-dim) md:basis-auto">
               Not ready to book?
