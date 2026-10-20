@@ -1,6 +1,6 @@
-import type { CaseStudy } from "./types";
 import roomvy1 from "@/public/work/roomvy/roomvy-1.webp";
 import roomvy2 from "@/public/work/roomvy/roomvy-2.webp";
+import type { CaseStudy } from "./types";
 
 export const roomvy = {
   slug: "roomvy",
@@ -13,6 +13,19 @@ export const roomvy = {
   roleLabel: "Senior Frontend Engineer",
   role: "Senior frontend engineer (Pathfinder Studios)",
   period: "2023",
+  type: "full-time",
+  listRole: "Senior frontend engineer",
+  sortDate: "2023-01",
+  facts: [
+    {
+      value: "Senior Frontend Engineer",
+      meta: "Senior frontend engineer (Pathfinder Studios)",
+    },
+    { value: "2023", meta: "full-time · booking flow · client app" },
+    { value: "Built solo", meta: "the whole participant-facing client" },
+    { value: "Zero issues", meta: "reported in production" },
+  ],
+  builtFormat: "rows-after",
   engagementType: "Maps to · Contract",
   mediaPreview: true,
   stack: [
@@ -26,7 +39,8 @@ export const roomvy = {
   atAGlance: [
     {
       label: "Engagement",
-      value: "Senior frontend engineer at a small agency, brought in explicitly for velocity",
+      value:
+        "Senior frontend engineer at a small agency, brought in explicitly for velocity",
     },
     {
       label: "Starting point",
@@ -45,7 +59,8 @@ export const roomvy = {
     },
     {
       label: "Payment",
-      value: "A two-phase commit against a custom card API, with no drop-in payment SDK",
+      value:
+        "A two-phase commit against a custom card API, with no drop-in payment SDK",
     },
     {
       label: "Quality",
@@ -82,7 +97,8 @@ export const roomvy = {
     sections: [
       {
         header: "Onboarding & absorption",
-        intro: "The first job was becoming fluent in a codebase and design language I didn't write.",
+        intro:
+          "The first job was becoming fluent in a codebase and design language I didn't write.",
         bullets: [
           "Learned the agency's existing conventions and patterns before contributing — including the ones I'd never have chosen",
           "Took the design specs as the contract: pixel-accurate execution, no reinterpretation",
@@ -105,7 +121,7 @@ export const roomvy = {
         intro:
           "One page, not a wizard: team identity, guest details per room, payment, travel protection, and policy review in a single scroll with a sticky summary.",
         bullets: [
-          "No cart and no login. The \"cart\" is a server-side draft reservation held by a cookie, so an anonymous attendee can leave and return without losing progress",
+          'No cart and no login. The "cart" is a server-side draft reservation held by a cookie, so an anonymous attendee can leave and return without losing progress',
           "Live roster editing: adding or removing a room or guest fires real API mutations immediately, keeping the draft in sync with the backend as the form is filled",
           "Team, group, and location fields relabel themselves per event: one checkout that adapts its vocabulary to each event type",
           "Policy text authored with template placeholders and interpolated from contract data at render time — non-engineers keep it accurate without code changes",
@@ -123,7 +139,8 @@ export const roomvy = {
       },
       {
         header: "Hold blocks",
-        intro: "The parallel path that makes it group software: reserve the rooms before you know the roster.",
+        intro:
+          "The parallel path that makes it group software: reserve the rooms before you know the roster.",
         bullets: [
           "A team lead holds inventory against an event and gets a shareable link with a countdown to release",
           "Teammates self-book into the hold through the same checkout",

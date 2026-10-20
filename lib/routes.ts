@@ -17,6 +17,12 @@ import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 const INTAKE_PREFIX = "/websites/intake";
 
 /**
+ * The intake's test harness (SITE-28). Covered by `isIntakePath` so it renders
+ * chrome-free and unmeasured, as an intake screen does; it 404s in production.
+ */
+const INTAKE_HARNESS = "/test-harness/intake";
+
+/**
  * True on any client-intake surface.
  *
  * The site's chrome and its analytics are mounted in the root layout, so each
@@ -26,7 +32,7 @@ const INTAKE_PREFIX = "/websites/intake";
  * paying client does not need.
  */
 export function isIntakePath(pathname: string): boolean {
-  return [INTAKE_PREFIX, SHOWCASE_INTAKE_PREFIX].some(
+  return [INTAKE_PREFIX, SHOWCASE_INTAKE_PREFIX, INTAKE_HARNESS].some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }
@@ -61,38 +67,62 @@ export const intakeRoutes = {
 } as const;
 
 /**
+ * The public site's pages (D-SITE-164, 165). Every link to one of them is
+ * built here; `websiteRoutes` below still owns the `/websites` tree.
+ */
+export const siteRoutes = {
+  home: "/",
+  work: "/work",
+  caseStudy: (slug: string) => `/work/${slug}`,
+  about: "/about",
+  workWithMe: "/work-with-me",
+  book: "/book",
+  /** The fit view posts here; it answers 303 to Cal.com (SITE-22). */
+  bookHandoff: "/book/handoff",
+  contact: "/contact",
+  capabilities: "/capabilities",
+  websites: "/websites",
+} as const;
+
+/**
+ * True where the header drops its call button: `/book`, where the visitor is
+ * already booking, and every page under `/websites`, which sells a different
+ * service (D-SITE-23, 167).
+ */
+export function hidesCallButton(pathname: string): boolean {
+  return [siteRoutes.book, siteRoutes.websites].some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+/**
  * The website-service marketing pages.
  *
- * `/websites` is a chooser between two builds. The slugs name the DELIVERABLE
- * rather than the buyer: some professions could plausibly buy either track, so
- * "who it's for" cannot carry the distinction on its own, while "a platform you
- * run yourself" versus "code you own" always can. Naming by buyer was the
- * earlier plan and Taylor overruled it.
+ * `/websites` serves the coded build (D-SITE-111); `/websites/coded` answers
+ * 308 there from `next.config.ts` (D-SITE-215). The platform page is legacy,
+ * reached by direct URL only (D-SITE-112).
  *
  * Note `showcase` is the internal key for the coded track everywhere in the
  * data model (`M-PORT-1`), because "portfolio" already means tayloraucoin.com
  * itself in this codebase. Public slug and internal key differ on purpose.
- *
- * The coded track's intake nests under `coded`, immediately below.
  */
 export const websiteRoutes = {
-  chooser: "/websites",
   platform: "/websites/platform",
-  coded: "/websites/coded",
+  coded: "/websites",
 } as const;
 
 /**
- * The showcase track's intake, nested under the sales page that explains it.
+ * The showcase track's intake.
  *
- * Composed from `websiteRoutes.coded` rather than restating the slug, which is
- * still `[PROPOSED — Taylor ratifies]` (marketing scope §3) and therefore has
- * to have exactly one place to rename. Nesting is the trim-back law: someone
- * who cuts this URL back lands on the page describing what they are filling
- * in, never a 404 (WEBSITES-PAGE-SPEC §7, M-PORT-7).
+ * Written as a literal, NOT composed from `websiteRoutes.coded`: the page moved
+ * to `/websites` but the intake stays at `/websites/coded/intake` (D-SITE-160),
+ * so no live resume link, emailed link, admin link or cookie scope moves under
+ * a client mid-form. The redirect matches `/websites/coded` exactly, so nothing
+ * under this prefix is redirected.
  *
  * The durable tree does not move and does not change (that scope's R-3).
  */
-const SHOWCASE_INTAKE_PREFIX = `${websiteRoutes.coded}/intake`;
+const SHOWCASE_INTAKE_PREFIX = "/websites/coded/intake";
 
 export const showcaseIntakeRoutes = {
   start: SHOWCASE_INTAKE_PREFIX,

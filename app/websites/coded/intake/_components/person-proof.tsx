@@ -67,13 +67,10 @@ export function PersonProofCard({
 
   return (
     <section className="mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-      <h3 className="font-display text-[20px] font-medium leading-[1.2] tracking-[-.015em] text-(--color-ink)">
+      <h3 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {name}
         {role ? (
-          <span className="font-body text-[15px] font-light text-(--color-dim)">
-            {" "}
-            · {role}
-          </span>
+          <span className="text-meta text-(--color-dim)"> · {role}</span>
         ) : null}
       </h3>
 

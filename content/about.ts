@@ -33,10 +33,6 @@ export const howIThink: Array<{ lead: string; body: string }> = [
     lead: "Builder's output",
     body: "The feedback I've gotten more than once: I perform much higher than I test. I'm a builder — hyperfocus, plus enough shipped products to know what matters and how to get it done.",
   },
-  {
-    lead: "Mentorship",
-    body: "Five years and fourteen cohorts at BCIT — it started as a way to get velocity behind a project and became something I loved: a young team of scrappy engineers shipping real systems. AI has changed what juniors need, but the experience sharpened how I manage, and the relationships stay.",
-  },
 ];
 
 /** "Off the clock" — two short paragraphs, replacing the old single-block
@@ -49,3 +45,139 @@ export const offTheClock: string[] = [
 /** The sentence to remember. Near-verbatim from Taylor. */
 export const closingLine =
   "I'm a systems designer, and I emotionally invest in the company's success. If I dedicate my energy to you, you get what my mind has to offer.";
+
+/** Teaching's paragraph: the old Mentorship row's body, moved (D-SITE-67). */
+export const teachingParagraph =
+  "Five years and fourteen cohorts at BCIT — it started as a way to get velocity behind a project and became something I loved: a young team of scrappy engineers shipping real systems. AI has changed what juniors need, but the experience sharpened how I manage, and the relationships stay.";
+
+export type ExperienceGroup =
+  "Full-time" | "Contract and fractional" | "My own products" | "Programmes";
+
+/**
+ * The Experience rows (D-SITE-197): about-only roles and years, never read
+ * from `content/work`. Years take an en dash. Brackets are Taylor's to fill.
+ * `slug` links the row to its case study; `anchor` links to a section here.
+ */
+export type ExperienceEntry = {
+  group: ExperienceGroup;
+  name: string;
+  role: string;
+  years: string;
+  slug?: string;
+  anchor?: "teaching";
+};
+
+export const experience: ExperienceEntry[] = [
+  {
+    group: "Full-time",
+    name: "Everbook",
+    role: "Senior software engineer (founding engineer), at Pine Studio",
+    years: "2024 – 2025",
+    slug: "everbook",
+  },
+  {
+    group: "Full-time",
+    name: "Roomvy",
+    role: "Senior frontend engineer, at Pathfinder Studios",
+    years: "2023",
+    slug: "roomvy",
+  },
+  {
+    group: "Full-time",
+    name: "Pathfinder Studios",
+    role: "Tech pilot and business development",
+    years: "2023",
+  },
+  {
+    group: "Full-time",
+    name: "Calculate by QxMD",
+    role: "Frontend software engineer, a WebMD/Medscape company",
+    years: "2019 – 2021",
+    slug: "calculate-qxmd",
+  },
+  {
+    group: "Full-time",
+    name: "The Chart Guys (Crypto Alerts)",
+    role: "Software developer, UX designer",
+    years: "2017 – 2018",
+  },
+  {
+    group: "Full-time",
+    name: "FYBR Inc. (GIS Drone Imagery Reporting Suite)",
+    role: "Software developer, first development job",
+    years: "2016 – 2017",
+  },
+  {
+    group: "Contract and fractional",
+    name: "Future of Cities",
+    role: "Fractional CTO",
+    years: "2026",
+    slug: "family-office-platform",
+  },
+  {
+    group: "My own products",
+    name: "Conscious Connections",
+    role: "Founder, engineer, designer",
+    years: "2026 – present",
+    slug: "conscious-connections",
+  },
+  {
+    group: "My own products",
+    name: "Agora",
+    role: "Technical founder (CEO, CTO)",
+    years: "2021 – 2026",
+    slug: "agora",
+  },
+  {
+    group: "Programmes",
+    name: "BCIT ISSP",
+    role: "Senior developer and project lead, sponsoring through Agora",
+    years: "2021 – 2025",
+    anchor: "teaching",
+  },
+  {
+    group: "Programmes",
+    name: "FLUI Design Hackathon",
+    role: "Sponsoring client, through Agora",
+    years: "2024",
+  },
+  {
+    group: "Programmes",
+    name: "League of Innovators (LOI)",
+    role: "Founder, through Agora (Batch 11 LOI Labs)",
+    years: "2023",
+  },
+];
+
+/** The teaching ledger, by programme: 14 + 4 + 2 + 1 + 1 = 22 cohorts. */
+export const teachingCount = "22 cohorts";
+export const teachingLedger: Array<{ name: string; line: string }> = [
+  {
+    name: "BCIT ISSP",
+    line: "Industry Sponsored Student Projects · 14 cohorts",
+  },
+  {
+    name: "VFC",
+    line: "Venture for Canada intrapreneurship program · 4 cohorts",
+  },
+  {
+    name: "FLUI Design Hackathon",
+    line: "Emily Carr University of Art + Design · 2 cohorts",
+  },
+  {
+    name: "SFU co-op and virtual intern",
+    line: "Co-op student · virtual intern · 2 cohorts",
+  },
+];
+
+export const education: Array<{ name: string; role: string; years: string }> = [
+  {
+    name: "Lighthouse Labs",
+    role: "Web Development bootcamp",
+    years: "2016",
+  },
+  { name: "BrainStation", role: "UX Design", years: "2017" },
+  { name: "RED Academy", role: "Digital Marketing Foundations", years: "2019" },
+  { name: "UNBC", role: "Biomedical", years: "2010 – 2012" },
+  { name: "UBCO", role: "Kinesiology", years: "2012 – 2013" },
+];

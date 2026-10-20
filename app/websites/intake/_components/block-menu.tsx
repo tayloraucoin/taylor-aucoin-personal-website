@@ -40,7 +40,7 @@ export function BlockMenu({
     <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger
         aria-label={label}
-        className="inline-flex size-11 shrink-0 items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) data-[state=open]:text-(--color-c2)"
+        className="inline-flex size-11 shrink-0 items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) data-[state=open]:text-(--color-ink)"
         onClick={(event) => event.stopPropagation()}
       >
         <MoreVertical className="size-4" aria-hidden />
@@ -50,7 +50,7 @@ export function BlockMenu({
         <DropdownMenu.Content
           align="end"
           sideOffset={4}
-          className="z-50 min-w-56 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-1 backdrop-blur-[6px]"
+          className="z-50 min-w-56 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-1"
         >
           {items.map((item) => {
             const disabled = Boolean(item.disabledReason);
@@ -63,7 +63,7 @@ export function BlockMenu({
                 // default-prevented — and it is not: choosing an action is the
                 // end of the interaction, and the live region says what happened.
                 onSelect={() => item.onSelect()}
-                className="cursor-pointer select-none rounded-(--radius) px-3 py-2.5 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) outline-none data-[highlighted]:text-(--color-c2) data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
+                className="cursor-pointer select-none rounded-(--radius) px-3 py-2.5 text-meta text-(--color-dim) outline-none data-[highlighted]:text-(--color-ink) data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
               >
                 {disabled ? item.disabledReason : item.label}
               </DropdownMenu.Item>

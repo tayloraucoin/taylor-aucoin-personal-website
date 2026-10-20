@@ -61,18 +61,20 @@ export function ExampleRow({
   /**
    * See more is offered only where it leads somewhere.
    *
-   * A preview has no overlay to open, and a disabled button beside an enabled
-   * one asks the reader to work out which of two controls is real. Absent says
-   * the same thing in less space and with no ambiguity.
+   * A preview opens no live third-party frame, so a site that would embed one
+   * offers nothing there; a disabled button beside an enabled one asks the
+   * reader to work out which of two controls is real, and absent says the same
+   * thing in less space. A site with no embed opens only its captures, which
+   * a preview may show (the intake fixtures, SITE-30).
    */
-  const seeMore = onSeeMore && !preview ? onSeeMore : null;
+  const seeMore = onSeeMore && (!preview || !site.embed) ? onSeeMore : null;
 
   return (
     <li
       ref={row}
       className={`overflow-hidden rounded-(--radius) border transition-colors duration-(--dur-fast) ease-(--ease-out) ${
         picked
-          ? "border-(--color-gold-line) bg-(--color-card-hover)"
+          ? "border-(--color-ink)"
           : "border-(--color-faint) bg-(--color-card)"
       }`}
     >
@@ -80,7 +82,7 @@ export function ExampleRow({
 
       <div className="p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
-          <p className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)">
+          <p className="text-small leading-[1.4] font-medium text-(--color-ink)">
             {site.name}
           </p>
 
@@ -91,13 +93,13 @@ export function ExampleRow({
             href={site.url}
             target="_blank"
             rel="noreferrer noopener"
-            className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            className="inline-flex min-h-11 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
           >
             {hostOf(site.url)} ↗
           </a>
         </div>
 
-        <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+        <p className="mt-2 text-meta leading-[1.55] text-(--color-body)">
           {site.role}
         </p>
 
@@ -200,7 +202,7 @@ function CaptureGallery({
 
           <p
             aria-live="polite"
-            className="absolute right-3 bottom-3 rounded-(--radius) border border-white/25 bg-(--color-carbon-900)/62 px-2 py-1 font-mono text-[10px] tracking-[.16em] text-white backdrop-blur-[2px]"
+            className="absolute right-3 bottom-3 rounded-(--radius) border border-white/25 bg-(--color-carbon-900)/62 px-2 py-1 text-meta tabular-nums text-white backdrop-blur-[2px]"
           >
             {index + 1} / {site.captures.length}
           </p>
@@ -230,7 +232,7 @@ function PageArrow({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-[18px] text-white backdrop-blur-[2px] transition-opacity duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-carbon-900)/82 disabled:pointer-events-none disabled:opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
+      className={`absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-(--color-carbon-900)/62 text-[18px] text-white backdrop-blur-[2px] transition-opacity duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-carbon-900)/82 disabled:pointer-events-none disabled:opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) ${className ?? ""}`}
     >
       <span aria-hidden>{children}</span>
     </button>
@@ -251,7 +253,7 @@ function TagChips({ site }: { site: ExampleSite }) {
       {tagsFor(site).map((tag) => (
         <li
           key={tag}
-          className="rounded-(--radius) border border-(--color-faint) px-2 py-1 font-mono text-[9px] uppercase tracking-[.2em] text-(--color-dim)"
+          className="rounded-(--radius) border border-(--color-faint) px-2 py-1 text-meta text-(--color-dim)"
         >
           {tag}
         </li>

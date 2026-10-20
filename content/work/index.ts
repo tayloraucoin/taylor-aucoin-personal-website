@@ -1,20 +1,27 @@
+import { isWorkPublished } from "@/lib/config";
 import { agora } from "./agora";
 import { calculateQxmd } from "./calculate-qxmd";
 import { consciousConnections } from "./conscious-connections";
 import { everbook } from "./everbook";
 import { familyOfficePlatform } from "./family-office-platform";
 import { roomvy } from "./roomvy";
-import { isWorkPublished } from "@/lib/config";
 import type { CaseStudy } from "./types";
 
+export { workRows } from "./rows";
+
 export type {
+  AiSat,
   AtAGlanceRow,
+  Beats,
   BriefContent,
   BrokeCategory,
   BrokeContent,
   BulletGroup,
   BuiltCard,
   BuiltContent,
+  BuiltFormat,
+  Discipline,
+  Fact,
   CaseLink,
   CaseStudy,
   Decision,
@@ -23,6 +30,8 @@ export type {
   OutcomeContent,
   ProcessContent,
   ProcessSection,
+  WorkRow,
+  WorkType,
 } from "./types";
 
 /** Display order. Reorder imports here when slot order changes. */

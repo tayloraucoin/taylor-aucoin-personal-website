@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Albert_Sans, Fragment_Mono, Instrument_Sans } from "next/font/google";
 import Analytics from "@/components/analytics/Analytics";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SkipLink } from "@/components/site/SkipLink";
 import SiteChrome from "@/components/ui/SiteChrome";
-import SiteHeader from "@/components/ui/SiteHeader";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SITE } from "@/lib/config";
 import { socialCard } from "@/lib/metadata";
@@ -61,10 +63,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <html
@@ -78,10 +78,13 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <SiteChrome>
+            <SkipLink />
             <SiteHeader />
           </SiteChrome>
           {children}
-          {modal}
+          <SiteChrome>
+            <SiteFooter />
+          </SiteChrome>
           <Analytics />
         </ThemeProvider>
       </body>

@@ -30,7 +30,7 @@ export function LegalAgreement({
   const [open, setOpen] = useState<"terms" | "privacy" | null>(null);
 
   const linkClass =
-    "underline decoration-(--color-faint) underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)";
+    "inline-block -my-[15px] py-[15px] text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)";
 
   return (
     <>
@@ -43,10 +43,10 @@ export function LegalAgreement({
         />
         <span
           aria-hidden
-          className={`mt-[2px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-c2) ${
+          className={`mt-[2px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-focus) ${
             checked
-              ? "border-(--color-c2) bg-(--color-c2)"
-              : "border-(--color-faint) bg-transparent"
+              ? "border-(--color-ink) bg-(--color-ink)"
+              : "border-(--color-border-strong) bg-transparent"
           }`}
         >
           {checked ? (
@@ -61,7 +61,7 @@ export function LegalAgreement({
             </svg>
           ) : null}
         </span>
-        <span className="max-w-[46ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
+        <span className="max-w-[46ch] text-meta leading-[1.55] text-(--color-dim)">
           I agree to the{" "}
           <button
             type="button"

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
 import Faq from "@/components/ui/Faq";
 import SectionLabel from "@/components/ui/SectionLabel";
 import AiEmployees from "@/components/websites/AiEmployees";
@@ -67,7 +66,10 @@ export const metadata: Metadata = {
 
 export default function WebsitesPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
+    <main
+      id="main"
+      className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14"
+    >
       <RootField />
       <WebsitesHero />
       <Deliverables />
@@ -83,7 +85,6 @@ export default function WebsitesPage() {
         <Faq items={faq} />
       </section>
       <WebsitesClose />
-      <Footer />
     </main>
   );
 }

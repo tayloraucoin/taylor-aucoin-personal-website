@@ -1,25 +1,6 @@
 "use client";
 
 import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
-import { useReducedMotion } from "motion/react";
-import {
   createContext,
   useContext,
   useEffect,
@@ -29,6 +10,25 @@ import {
   type ComponentProps,
   type ReactNode,
 } from "react";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import { useIsDocument } from "@/components/intake/preview-mode";
 import { GhostButton } from "@/components/ui/GradientButton";
 import type { ListAction } from "@/lib/intake/entry-merge";
@@ -118,9 +118,9 @@ export function RepeatableBlock<T>({
    * What the last removal took, in original positions, so undo can put a
    * single card or a whole set of duplicates back where they were.
    */
-  const [removed, setRemoved] = useState<
-    { item: T; index: number }[] | null
-  >(null);
+  const [removed, setRemoved] = useState<{ item: T; index: number }[] | null>(
+    null,
+  );
   const [announcement, setAnnouncement] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const document = useIsDocument();
@@ -132,7 +132,9 @@ export function RepeatableBlock<T>({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   useEffect(() => {
@@ -200,7 +202,9 @@ export function RepeatableBlock<T>({
     if (!removed) return;
     const copy = [...blocks];
     // Ascending, so each splice lands at the index it was recorded at.
-    for (const { item, index } of [...removed].sort((a, b) => a.index - b.index)) {
+    for (const { item, index } of [...removed].sort(
+      (a, b) => a.index - b.index,
+    )) {
       copy.splice(index, 0, item);
     }
     onChange(copy);
@@ -253,7 +257,7 @@ export function RepeatableBlock<T>({
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
           <span className="flex items-center gap-2">
             {draggable && keyOf ? <DragHandle /> : null}
-            <span className="font-mono text-[10px] tracking-[.18em] text-(--color-c2)">
+            <span className="text-meta text-(--color-dim) tabular-nums">
               {String(index + 1).padStart(2, "0")}
             </span>
           </span>
@@ -285,7 +289,7 @@ export function RepeatableBlock<T>({
               <button
                 type="button"
                 onClick={() => remove(index)}
-                className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors duration-(--dur-fast) hover:text-(--color-c2)"
+                className="inline-flex min-h-11 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
               >
                 Remove
               </button>
@@ -300,7 +304,11 @@ export function RepeatableBlock<T>({
     const key = keyOf ? keyOf(item) : index;
 
     return draggable && keyOf ? (
-      <SortableCard key={key} id={keyOf(item)} reduceMotion={Boolean(reduceMotion)}>
+      <SortableCard
+        key={key}
+        id={keyOf(item)}
+        reduceMotion={Boolean(reduceMotion)}
+      >
         {card}
       </SortableCard>
     ) : (
@@ -339,7 +347,10 @@ export function RepeatableBlock<T>({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={onDragEnd}
-          accessibility={{ announcements: ANNOUNCEMENTS, screenReaderInstructions: INSTRUCTIONS }}
+          accessibility={{
+            announcements: ANNOUNCEMENTS,
+            screenReaderInstructions: INSTRUCTIONS,
+          }}
         >
           <SortableContext
             items={blocks.map(keyOf)}
@@ -355,14 +366,14 @@ export function RepeatableBlock<T>({
       {removed ? (
         <p
           aria-live="polite"
-          className="mb-4 font-body text-[13.5px] font-light text-(--color-c2)"
+          className="mb-4 text-meta leading-[1.55] text-(--color-ink)"
         >
           {/* [COPY — draft, pending Taylor] on the counted form. */}
           Removed{removed.length > 1 ? ` ${removed.length}` : ""}.{" "}
           <button
             type="button"
             onClick={undo}
-            className="underline underline-offset-2 hover:text-(--color-c3)"
+            className="inline-flex min-h-11 items-center underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
           >
             Undo
           </button>
@@ -400,13 +411,20 @@ function positionOf(entry: {
  * still reports the result once the drop lands.
  */
 const ANNOUNCEMENTS: NonNullable<
-  NonNullable<ComponentProps<typeof DndContext>["accessibility"]>["announcements"]
+  NonNullable<
+    ComponentProps<typeof DndContext>["accessibility"]
+  >["announcements"]
 > = {
-  onDragStart: ({ active }) => `Picked up item ${positionOf(active) ?? ""}.`.replace("  ", " "),
+  onDragStart: ({ active }) =>
+    `Picked up item ${positionOf(active) ?? ""}.`.replace("  ", " "),
   onDragOver: ({ over }) =>
-    over ? `Over position ${positionOf(over) ?? ""}.` : "No longer over the list.",
+    over
+      ? `Over position ${positionOf(over) ?? ""}.`
+      : "No longer over the list.",
   onDragEnd: ({ over }) =>
-    over ? `Dropped at position ${positionOf(over) ?? ""}.` : "Dropped where it was.",
+    over
+      ? `Dropped at position ${positionOf(over) ?? ""}.`
+      : "Dropped where it was.",
   onDragCancel: () => "Reordering cancelled.",
 };
 
@@ -433,8 +451,15 @@ function SortableCard({
   reduceMotion: boolean;
   children: ReactNode;
 }) {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
   return (
     <div
@@ -447,7 +472,9 @@ function SortableCard({
       }}
       className={`${CARD} ${isDragging ? "opacity-60" : ""}`}
     >
-      <GripContext.Provider value={{ attributes, listeners, setActivatorNodeRef }}>
+      <GripContext.Provider
+        value={{ attributes, listeners, setActivatorNodeRef }}
+      >
         {children}
       </GripContext.Provider>
     </div>
@@ -477,7 +504,7 @@ function DragHandle() {
       type="button"
       ref={grip.setActivatorNodeRef}
       aria-label="Drag to reorder"
-      className="-ml-2 flex size-11 shrink-0 touch-none cursor-grab items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-c2) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) active:cursor-grabbing"
+      className="-ml-2 flex size-11 shrink-0 touch-none cursor-grab items-center justify-center rounded-(--radius) text-(--color-dim) transition-colors duration-(--dur-fast) hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) active:cursor-grabbing"
       {...grip.attributes}
       {...grip.listeners}
     >

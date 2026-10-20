@@ -160,4 +160,93 @@ export const closing =
 
 /** SVC-09 — two-line bio beside the photo. Taylor owns the final wording. */
 export const bio =
-  "Senior product engineer and technical founder: twelve products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+  "Senior product engineer and technical founder: thirteen products taken from zero to one across healthtech, AI platforms, commerce, and booking. Remote from Vancouver.";
+
+/**
+ * /work-with-me roles (D-SITE-57): seats of one job, never a menu (D-SITE-125).
+ * Terms are home's; best-for and includes come from `offers` where drawn.
+ */
+export type Role = {
+  name: string;
+  terms: string;
+  bestFor: string;
+  includes: string[];
+};
+
+export const roles: Role[] = [
+  {
+    name: "Product engineer",
+    terms: "Full-time · contract · fractional",
+    bestFor: offers[0].bestFor,
+    includes: offers[0].includes,
+  },
+  {
+    name: "Product designer",
+    terms: "Full-time · contract · fractional",
+    bestFor: "Teams that want the screens designed by the person who'll build them.",
+    includes: [
+      "Flows and interfaces, designed and then built",
+      "A component kit the next engineer composes from",
+      "Design calls made knowing what they cost to build",
+    ],
+  },
+  {
+    name: "Systems consultant",
+    terms: "Scoped engagement",
+    bestFor: "System design, before the build.",
+    includes: [
+      "An architecture and data model, written down before any code",
+      "A build order: what ships first, and why",
+      "A review of the system you have, with what I'd change",
+    ],
+  },
+  {
+    name: "Fractional CTO",
+    terms: "Retainer, 1–2 days a week",
+    bestFor: offers[2].bestFor,
+    includes: offers[2].includes,
+  },
+  {
+    name: "0→1 build",
+    terms: "Fixed scope, 8–16 weeks",
+    bestFor: offers[1].bestFor,
+    includes: offers[1].includes,
+  },
+];
+
+/** The smaller group below the roles (D-SITE-128). Prices: Taylor's (D-SITE-203). */
+export type BuildingRow = {
+  name: string;
+  price: string;
+  line: string;
+  /** The proof link, over "Send a note". The conventions install has none. */
+  proof?: { label: string; href: string };
+};
+
+export const building: BuildingRow[] = [
+  {
+    name: "Coded website",
+    price: "$2,000 CAD + GST",
+    line: "Websites for creative work. 3 days to your first look.",
+    proof: { label: "Websites", href: "/websites" },
+  },
+  {
+    name: "Branding",
+    price: "$750",
+    line: "A brand built in order, from pillars to logo, with a guide so you can apply it yourself.",
+    proof: { label: "Branding & UI", href: "/work?tab=branding" },
+  },
+  {
+    name: "Conventions install",
+    price: "Contact for a quote",
+    line: "Your codebase's conventions, written as files your team and its AI tools build from.",
+  },
+];
+
+export const workWithMeWords = {
+  eyebrowSuffix: "Contract & fractional",
+  sub: "Same work, sized to your team. On a big team I'm a senior or staff engineer. On a small one I'm head of product or CTO, part-time if full-time is more than you need.",
+  note: "Send a note",
+  close:
+    "Tell me what you're building in a note. If a call makes sense after that, we'll book one.",
+};

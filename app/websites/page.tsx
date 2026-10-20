@@ -1,106 +1,67 @@
 import type { Metadata } from "next";
-import RootField from "@/components/field/RootField";
-import Footer from "@/components/sections/Footer";
-import TrackDoors from "@/components/websites/TrackDoors";
-import TrackPicker from "@/components/websites/TrackPicker";
-import { chooser, chooserFallback } from "@/content/websites-chooser";
+import { Changes } from "@/app/websites/_components/Changes";
+import { CodedClose } from "@/app/websites/_components/CodedClose";
+import { CodedHero } from "@/app/websites/_components/CodedHero";
+import { FaqList } from "@/app/websites/_components/FaqList";
+import { LabelList } from "@/app/websites/_components/LabelList";
+import { Ownership } from "@/app/websites/_components/Ownership";
+import { PriceLedger } from "@/app/websites/_components/PriceLedger";
+import { ProcessSteps } from "@/app/websites/_components/ProcessSteps";
+import { Section } from "@/app/websites/_components/Section";
+import { SitesBuilt } from "@/app/websites/_components/SitesBuilt";
+import {
+  deliverables,
+  description,
+  hero,
+  upFront,
+} from "@/content/websites-coded";
 import { socialCard } from "@/lib/metadata";
-import { AGORA } from "@/lib/config";
 
 /**
- * `/websites` — the chooser.
+ * `/websites`: bespoke sites in real code, for people whose work is the thing
+ * that sells them (D-SITE-111). The order is the brief's: ownership, then
+ * price and time, then the sites built, then changes, the rest and the close
+ * (websites-coded-build.md).
  *
- * This URL used to be the local-business sales page, which now lives at
- * `/websites/platform`. The move costs every pre-warmed trades buyer one extra
- * click, and Taylor accepted that cost explicitly rather than gating the change
- * behind a redirect window: the people mid-funnel who were given this address
- * land here and click once.
+ * Every section is this page's own, in `_components/`: the components it
+ * shared with `/websites/platform` stay as they were so that page renders
+ * byte for byte as before (D-SITE-209, its golden file).
  *
- * Everything about this page is spent making that click free. Two doors, no
- * scroll on a phone, no cleverness, and no gradient. The doors name the
- * DELIVERABLE rather than the buyer, because a profession can genuinely sit in
- * both tracks. See docs/_legacy/websites/PORTFOLIO-MARKETING-EXECUTION-SCOPE.md R-1.
+ * NOT INDEXED. Until this line earns money, nobody evaluating Taylor for a
+ * senior/staff role should stumble into it. The social card still matters:
+ * this URL is DMed to a creative, and the unfurl is the first impression
+ * (D-SITE-214).
  *
- * The intake questionnaire did NOT move with the platform page. It stays at
- * `/websites/intake` so no live resume link breaks and no cookie scope shifts
- * under a client who is mid-form. A client who trims that URL back now lands
- * here rather than on the page explaining what they are filling in. That is the
- * one regression in this change and it was the cheaper of the two options.
- *
- * NOT LINKED FROM ANYWHERE, AND NOT INDEXED — same reasoning as the pages
- * behind it. Until this line earns money, nobody evaluating Taylor for a
- * senior/staff role should stumble into it. If you add a `sitemap.ts` later,
- * exclude this route and both children by hand.
- */
-const description =
-  "Two ways I build websites: a site on a managed platform you run yourself, or a site built in code that you own outright.";
-
-/**
- * `noindex` keeps this out of search. It does NOT stop a link unfurl: Slack,
- * iMessage, and WhatsApp fetch Open Graph regardless. Since handing out the URL
- * IS the distribution model here, the unfurl is the first impression rather than
- * an edge case, and without its own card this page inherits the root layout's —
- * which introduces Taylor as a senior/staff product engineer looking for work.
- * That is the wrong pitch to a client and it leaks the job search to them.
- *
- * The card title is the h1 rather than the `<title>`, per `socialCard`'s
- * contract: "Websites" alone is a fine tab label and a useless preview.
+ * `default` is the only state: the page ships with one example row, so
+ * `one-example` is `default` (D-SITE-115, 211).
  */
 export const metadata: Metadata = {
-  title: "Websites",
+  title: hero.title,
   description,
   robots: { index: false, follow: false },
-  ...socialCard({ title: "Two ways I build websites", description }),
+  ...socialCard({ title: hero.title, description }),
 };
 
-export default function WebsitesChooserPage() {
+export default function WebsitesPage() {
   return (
-    <main className="relative mx-auto max-w-[1080px] px-[22px] py-10 md:px-14 md:py-14">
-      <RootField />
-
-      {/* A signpost, not a hero. The h1 runs smaller than either sales page's
-          because nothing is being sold on this screen — the job is to get
-          someone through a door and let the page behind it do the work. Every
-          pixel this heading takes is a pixel the second door loses on a
-          375px phone. */}
-      <section className="relative">
-        <div className="mb-5 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
-          <span>{chooser.eyebrow}</span>
-          <span
-            aria-hidden
-            className="order-first h-px w-6 shrink-0 bg-(--color-rule)"
-          />
-        </div>
-
-        <h1 className="mb-4 font-display text-[clamp(27px,3.6vw,38px)] font-medium leading-[1.08] tracking-[-.03em] text-(--color-ink)">
-          {chooser.title}
-        </h1>
-
-        <p className="mb-7 max-w-[52ch] text-[15px] font-light leading-[1.6] text-(--color-body)">
-          {chooser.sub}
-        </p>
-      </section>
-
-      <TrackDoors />
-
-      {/* The overlap valve, in two escalating steps. First the picker: pick your
-          job, get the track. Collapsed, so it costs the doors above it nothing.
-          Then the phone, for the cases a fixed list was never going to settle.
-          The number is a tap-to-call target because the least-resilient reader
-          on this page is holding a phone. */}
-      <TrackPicker />
-
-      <p className="mt-4 max-w-[56ch] text-[13.5px] font-light leading-[1.64] text-(--color-dim)">
-        {chooserFallback}{" "}
-        <a
-          href={AGORA.phoneHref}
-          className="whitespace-nowrap text-(--color-c2) transition-colors duration-(--dur-fast) hover:text-(--color-c3)"
-        >
-          {AGORA.phone}
-        </a>
-      </p>
-
-      <Footer />
+    <main
+      id="main"
+      className="relative mx-auto w-full max-w-[1192px] px-[22px] pt-16 pb-16 md:px-14 md:pt-28 md:pb-24"
+    >
+      <CodedHero />
+      <Ownership />
+      <PriceLedger />
+      <SitesBuilt />
+      <Changes />
+      <Section id="what-you-get" heading="What you get">
+        <LabelList rows={deliverables} />
+      </Section>
+      <ProcessSteps />
+      <Section id="up-front" heading="Worth saying up front">
+        <LabelList rows={upFront} />
+      </Section>
+      <FaqList />
+      <CodedClose />
     </main>
   );
 }

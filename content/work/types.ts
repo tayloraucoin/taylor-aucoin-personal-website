@@ -50,6 +50,8 @@ export type BuiltCard = {
   body: string;
   /** Rare: an outbound doc link inside the card. Only set where truly needed. */
   link?: { label: string; href: string };
+  /** `rows-paired` studies only: the artifact drawn beside this card. */
+  screen?: MediaItem;
 };
 
 /** Structured shape for `built`: an intro paragraph plus a LabelCard grid. */
@@ -185,6 +187,53 @@ export type AtAGlanceRow = {
   value: string;
 };
 
+/** Shared vocabulary for `/work`, home's tabs and the website and branding rows. */
+export type WorkType =
+  "full-time" | "contract" | "business" | "passion" | "client" | "own-brand";
+
+export type Discipline = "product" | "websites" | "branding";
+
+/** One cell of the facts ledger: a fact over a meta line. Only the fourth takes an `href`. */
+export type Fact = { value: string; meta: string; href?: string };
+
+/** How What I built lays out its cards and captures. */
+export type BuiltFormat = "band" | "gallery" | "rows-after" | "rows-paired";
+
+/** Where AI sat: home's three lists. Absent on a study means it renders no-ai. */
+export type AiSat = {
+  product: string[];
+  build: string[];
+  checked: string[];
+};
+
+/** Home's story beats: Problem, Decided, Happened. */
+export type Beats = { problem: string; decided: string; happened: string };
+
+/** A website or branding row on `/work`, home's Websites and Branding tabs, and `/websites`. */
+export type WorkRow = {
+  id: string;
+  discipline: "websites" | "branding";
+  /** websites: "client"; branding: business | passion | own-brand. */
+  type: WorkType;
+  title: string;
+  tagline: string;
+  role: string;
+  period: string;
+  sortDate: string;
+  /** The story link renders only when set and published. */
+  caseStudySlug?: string;
+  liveUrl?: string;
+  gallery: MediaItem[];
+  published: boolean;
+  beats?: Beats;
+  /** Read by `/websites` only. */
+  example?: {
+    desktop: MediaItem;
+    phone?: MediaItem;
+    testimonial?: { quote: string; name: string; role?: string };
+  };
+};
+
 export type CaseStudy = {
   slug: string;
   title: string;
@@ -203,10 +252,24 @@ export type CaseStudy = {
   metaDescription: string;
   /** Short role label under the tags on the Selected Work row. Title case — rendered uppercase. */
   roleLabel: string;
+  /** The client's own mark, shown where a study or row names the client. */
+  clientMark?: { src: StaticImageData | string; alt: string };
   /** Listed on home but not clickable — case page may still exist for direct URLs. */
   inactive?: boolean;
   role: string;
   period: string;
+  type: "full-time" | "contract" | "business" | "passion";
+  /** Short role label for `/work` rows only. Title case and the en dash are applied at render. */
+  listRole: string;
+  /** "YYYY-MM", newest first within a type. */
+  sortDate: string;
+  /** The facts ledger: exactly four cells, an `href` on the fourth only. */
+  facts: [Fact, Fact, Fact, Fact];
+  builtFormat: BuiltFormat;
+  /** Conscious Connections only; absent means the study renders no-ai. */
+  aiSat?: AiSat;
+  /** Home's story beats; a story the canvas does not draw has none. */
+  beats?: Beats;
   /**
    * CASE-06 — maps the study to one of the three /services offers. Rendered
    * as a third item in the header's role · period mono row. Only the family

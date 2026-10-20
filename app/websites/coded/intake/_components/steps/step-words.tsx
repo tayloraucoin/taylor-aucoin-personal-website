@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import GradientRing from "@/components/ui/GradientRing";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor, personVoiceOptionsFor } from "@/lib/intake/tracks";
 import {
@@ -27,14 +26,11 @@ import { VoiceRecorder, type VoiceNoteFile } from "../voice-recorder";
  * written paragraph in the document and the one most likely to be "improved"
  * by accident.
  *
- * **The gradient ring appears here and nowhere else in this flow** (D-INT-3,
- * D-PORT-7). Rationing the site's signature element to one card is what gives
- * this field its weight without a word of pressure — and the skip line beneath
- * it is not a hedge. Prominence must never curdle into obligation.
- *
- * The ring holds still under `prefers-reduced-motion` (GradientRing handles
- * that itself) and does not accelerate on hover: this is a form, not a
- * portfolio card inviting a cursor.
+ * **The voice note is the one grouped card on this step** (D-INT-3, D-PORT-7,
+ * restyled by D-SITE-158: the kit's surface card with a hairline, no ring).
+ * Giving it the only card is what gives this field its weight without a word
+ * of pressure — and the skip line beneath it is not a hedge. Prominence must
+ * never curdle into obligation.
  *
  * The file inputs carry no `accept` filter, deliberately. On some mobile
  * browsers `accept` does not merely sort the picker, it hides everything else —
@@ -74,15 +70,12 @@ export function StepWords({
 
   return (
     <>
-      <GradientRing
-        hoverAccelerate={false}
-        className="mb-8 rounded-(--radius) bg-(--color-card) p-5"
-      >
-        <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      <section className="mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
+        <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
           Voice note
-        </p>
+        </h2>
 
-        <p className="mt-3 font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+        <p className="mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
           {pack.voiceNotePrompt}
         </p>
 
@@ -126,11 +119,11 @@ export function StepWords({
           />
         </div>
 
-        <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+        <p className="mt-3 text-meta leading-[1.55] text-(--color-dim)">
           Can&apos;t be bothered recording? Skip it — the call covers this too.
           {pack.voiceNoteSkipSuffix ? ` ${pack.voiceNoteSkipSuffix}` : ""}
         </p>
-      </GradientRing>
+      </section>
 
       {/* First, under the voice note and above the bio.
 

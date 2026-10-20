@@ -21,7 +21,7 @@ export function LegalSection({
 }) {
   return (
     <section className="mt-10 first:mt-0">
-      <h2 className="flex items-baseline gap-3 border-b border-(--color-faint) pb-3 font-mono text-[11px] uppercase tracking-[.24em] text-(--color-body)">
+      <h2 className="flex items-baseline gap-3 border-b border-(--color-faint) pb-3 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         <span className="text-(--color-dim)">{index}</span>
         <span>{title}</span>
       </h2>
@@ -32,7 +32,7 @@ export function LegalSection({
 
 export function P({ children }: { children: ReactNode }) {
   return (
-    <p className="font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+    <p className="font-body text-[16px] leading-[1.66] text-(--color-body)">
       {children}
     </p>
   );
@@ -49,7 +49,7 @@ export function LegalList({ items }: { items: ReactNode[] }) {
       {items.map((item, i) => (
         <li
           key={i}
-          className="flex gap-3 font-body text-[16px] font-light leading-[1.66] text-(--color-body)"
+          className="flex gap-3 font-body text-[16px] leading-[1.66] text-(--color-body)"
         >
           <span aria-hidden className="mt-[2px] select-none text-(--color-dim)">
             ·

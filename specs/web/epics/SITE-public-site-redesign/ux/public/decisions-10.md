@@ -1,6 +1,6 @@
 ---
 target: specs/web/ux/public/decisions-10.md
-status: draft
+status: approved
 promoted:
 ---
 

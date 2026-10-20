@@ -71,7 +71,7 @@ export const STRIPE_SETUP_GUIDE_URL =
  * Portrait photo (PRE-04), served from `public/`. `null` until the asset
  * exists — the bio block renders without it and closes cleanly.
  */
-export const PHOTO: string | null = "/images/me-headshot-1.png";
+export const PHOTO: string | null = "/images/me-headshot-touched-up-wider.webp";
 
 /**
  * Testimonial preview gate (TST-01). While true, entries with
@@ -118,16 +118,19 @@ export const SITE = {
   email: "hello@tayloraucoin.com",
   github: "https://github.com/tayloraucoin",
   linkedin: "https://www.linkedin.com/in/taylor-aucoin/",
+  /** The light résumé: the print and ATS version, and light mode's link. */
   resume: "/taylor-aucoin-resume.pdf",
+  /** The same résumé on carbon, dark mode's link (`ResumeLink`). */
+  resumeDark: "/taylor-aucoin-resume-dark.pdf",
   tagline:
-    "Twelve products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
+    "Thirteen products taken from zero to one — consumer marketplaces, AI platforms, healthtech, and accommodation booking.",
   /**
    * Home page `<meta name="description">`. Written to survive truncation at
    * ~160 characters in a Slack or Gmail link preview — which is why it is not
    * composed from `role` + `tagline`. Keep it 140–160 characters.
    */
   metaDescription:
-    "Senior/staff product engineer in Vancouver. Twelve products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
+    "Senior/staff product engineer in Vancouver. Thirteen products taken from zero to one: consumer marketplaces, AI platforms, healthtech, and booking.",
 } as const;
 
 /**
@@ -149,8 +152,6 @@ export const STACK_META_DESCRIPTION =
 export const OTHER_BUILDS = [
   "Social Photography Hub",
   "Artist Hivemind Hub",
-  "Crypto Alerts",
-  "GIS Drone Imagery Reporting Suite",
 ] as const;
 
 /**

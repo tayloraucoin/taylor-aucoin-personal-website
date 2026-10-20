@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 /**
  * The standalone reading shell for `/websites/terms` and `/websites/privacy`.
@@ -20,7 +20,7 @@ export default function LegalPageShell({
 }) {
   return (
     <main className="relative z-[2] mx-auto min-h-dvh max-w-[660px] px-[22px] py-12 md:py-20">
-      <div className="mb-8 flex items-center gap-3.5 font-mono text-[10px] uppercase tracking-[.30em] text-(--color-dim)">
+      <div className="mb-8 flex items-center gap-3.5 text-meta text-(--color-dim)">
         <span>Agora · Website builds</span>
         <span
           aria-hidden
@@ -30,10 +30,10 @@ export default function LegalPageShell({
 
       {children}
 
-      <nav className="mt-10 border-t border-(--color-faint) pt-6 font-body text-[14px] font-light text-(--color-dim)">
+      <nav className="mt-10 border-t border-(--color-faint) pt-6 text-meta text-(--color-dim)">
         <Link
           href={crossLink.href}
-          className="underline decoration-(--color-faint) underline-offset-4 transition-colors hover:text-(--color-ink)"
+          className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           {crossLink.label}
         </Link>

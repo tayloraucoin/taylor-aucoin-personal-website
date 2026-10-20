@@ -1,5 +1,4 @@
 import { SITE } from "@/lib/config";
-import { Eyebrow } from "./eyebrow";
 
 /**
  * A dead link — unknown, tampered, or expired.
@@ -15,13 +14,11 @@ import { Eyebrow } from "./eyebrow";
 export function LinkUnavailable({ expired = false }: { expired?: boolean }) {
   return (
     <div>
-      <Eyebrow>Agora · Website build</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         {expired ? "This link has expired." : "This link isn't working."}
       </h1>
 
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {expired
           ? "Links stop working after a while for safety. Send Taylor a note and he'll send a fresh one — everything you entered is still there."
           : "The address may be incomplete, or the link may have expired. Send Taylor a note and he'll send a fresh one — nothing you entered is lost."}
@@ -30,7 +27,7 @@ export function LinkUnavailable({ expired = false }: { expired?: boolean }) {
       <p className="mt-8">
         <a
           href={`mailto:${SITE.email}`}
-          className="font-mono text-[11px] uppercase tracking-[.10em] text-(--color-c2) underline underline-offset-4 hover:text-(--color-c3)"
+          className="text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
         >
           {SITE.email}
         </a>

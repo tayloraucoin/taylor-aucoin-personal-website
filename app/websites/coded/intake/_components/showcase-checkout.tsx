@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useIsPreview } from "@/components/intake/preview-mode";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   includedBy,
   isUnlocked,
@@ -16,7 +17,6 @@ import { LegalAgreement } from "../../../intake/_components/legal-agreement";
 import { PromoRail } from "../../../intake/_components/promo-rail";
 import { ShowcasePayButton } from "./showcase-pay-button";
 import { ShowcaseWaiveButton } from "./showcase-waive-button";
-import { NativeSelect } from "@/components/ui/native-select";
 
 type PromoState =
   | { status: "idle" }
@@ -245,14 +245,14 @@ export function ShowcaseCheckout({
                     {/* [COPY — pending Taylor] */}
                     Your build is covered
                   </span>
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                  <span className="shrink-0 text-meta text-(--color-ink)">
                     Applied
                   </span>
                 </div>
-                <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                   {/* [COPY — pending Taylor] */}
-                  Nothing to pay today. Tick the agreement below and carry on
-                  to the questionnaire.
+                  Nothing to pay today. Tick the agreement below and carry on to
+                  the questionnaire.
                 </p>
               </>
             ) : active.granted ? (
@@ -261,11 +261,11 @@ export function ShowcaseCheckout({
                   <span className="font-body text-[16px] text-(--color-ink)">
                     {active.granted.name}
                   </span>
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                  <span className="shrink-0 text-meta text-(--color-ink)">
                     Included
                   </span>
                 </div>
-                <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                   {active.granted.description} Nothing added to today&apos;s
                   total.
                 </p>
@@ -275,7 +275,7 @@ export function ShowcaseCheckout({
                 <span className="font-body text-[16px] text-(--color-ink)">
                   Your agreed price
                 </span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                <span className="shrink-0 text-meta text-(--color-ink)">
                   Applied
                 </span>
               </div>
@@ -302,7 +302,7 @@ export function ShowcaseCheckout({
             disabled={!agreed}
           />
           {!agreed ? (
-            <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+            <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
               The button unlocks once you&apos;ve ticked the agreement above.
             </p>
           ) : null}
@@ -371,9 +371,9 @@ export function ShowcaseCheckout({
                   />
                   <span
                     aria-hidden
-                    className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-c2) ${
+                    className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-focus) ${
                       isOn
-                        ? "border-(--color-c2) bg-(--color-c2)"
+                        ? "border-(--color-ink) bg-(--color-ink)"
                         : "border-(--color-faint) bg-transparent"
                     }`}
                   >
@@ -399,7 +399,7 @@ export function ShowcaseCheckout({
                         {addon.name}
                       </span>
                       <span
-                        className={`shrink-0 font-mono text-[12px] tracking-[.06em] transition-colors ${
+                        className={`shrink-0 text-small tabular-nums transition-colors ${
                           isOn ? "text-(--color-ink)" : "text-(--color-dim)"
                         }`}
                       >
@@ -408,11 +408,11 @@ export function ShowcaseCheckout({
                           : formatMoney(addon.amountCents, currency)}
                       </span>
                     </span>
-                    <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                    <span className="mt-1 block max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                       {addon.description}
                     </span>
                     {includedByName ? (
-                      <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                      <span className="mt-1 block max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                         {/* [COPY — pending Taylor] */}
                         Comes with the {includedByName.toLowerCase()} — it
                         can&apos;t run without one, so you&apos;re not paying
@@ -445,12 +445,12 @@ export function ShowcaseCheckout({
               >
                 Pages beyond the five included
               </label>
-              <span className="shrink-0 font-mono text-[12px] tracking-[.06em] text-(--color-dim)">
+              <span className="shrink-0 text-small tabular-nums text-(--color-dim)">
                 {formatMoney(extraPage.amountCents, currency)} each
               </span>
             </div>
 
-            <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+            <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
               {/* [COPY — pending Taylor] */}
               Only if you already know you need them — you&apos;ll lay out what
               every page is for inside the questionnaire, and we can always add
@@ -463,7 +463,7 @@ export function ShowcaseCheckout({
                 id="extra-pages"
                 value={pages}
                 onChange={(event) => setPages(Number(event.target.value))}
-                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)"
+                className="min-h-12 border-(--color-faint) bg-(--color-card) text-[16px] text-(--color-ink) sm:text-(length:--text-body) transition-colors hover:border-(--color-ink) focus:border-(--color-ink)"
               >
                 {Array.from({ length: EXTRA_PAGES_MAX + 1 }, (_, n) => (
                   <option key={n} value={n}>
@@ -473,7 +473,7 @@ export function ShowcaseCheckout({
               </NativeSelect>
 
               {pages > 0 ? (
-                <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
+                <span className="text-small tabular-nums text-(--color-ink)">
                   {formatMoney(pagesCents, currency)}
                 </span>
               ) : null}
@@ -500,12 +500,12 @@ export function ShowcaseCheckout({
               >
                 {seoPost.name}
               </label>
-              <span className="shrink-0 font-mono text-[12px] tracking-[.06em] text-(--color-dim)">
+              <span className="shrink-0 text-small tabular-nums text-(--color-dim)">
                 {formatMoney(seoPost.amountCents, currency)} each
               </span>
             </div>
 
-            <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+            <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
               {/* [COPY — pending Taylor] */}
               {seoPost.description} Nothing here is urgent — the blog works
               whether or not you start with posts, and you can commission them
@@ -517,7 +517,7 @@ export function ShowcaseCheckout({
                 id="seo-posts"
                 value={posts}
                 onChange={(event) => setPosts(Number(event.target.value))}
-                className="min-h-12 border-(--color-faint) bg-(--color-card) font-body text-[16px] font-light text-(--color-ink) transition-colors hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)"
+                className="min-h-12 border-(--color-faint) bg-(--color-card) text-[16px] text-(--color-ink) sm:text-(length:--text-body) transition-colors hover:border-(--color-ink) focus:border-(--color-ink)"
               >
                 {Array.from({ length: SEO_POSTS_MAX + 1 }, (_, n) => (
                   <option key={n} value={n}>
@@ -527,7 +527,7 @@ export function ShowcaseCheckout({
               </NativeSelect>
 
               {posts > 0 ? (
-                <span className="font-mono text-[12px] tracking-[.06em] text-(--color-ink)">
+                <span className="text-small tabular-nums text-(--color-ink)">
                   {formatMoney(postsCents, currency)}
                 </span>
               ) : null}
@@ -538,12 +538,15 @@ export function ShowcaseCheckout({
 
       {totalCents !== null ? (
         <div className="flex items-baseline justify-between pt-3.5">
-          <span className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <span className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             Total today
           </span>
-          <span className="font-body text-[16px] text-(--color-ink)">
+          <span
+            data-total
+            className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink) tabular-nums"
+          >
             {formatMoney(totalCents, currency)}
-            <span className="ml-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+            <span className="block text-right font-body text-meta font-normal tracking-normal text-(--color-dim)">
               + GST
             </span>
           </span>
@@ -568,11 +571,11 @@ export function ShowcaseCheckout({
           disabled={!agreed || plan === null}
         />
         {plan === null ? (
-          <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
             Pick how you&apos;d like to pay, and tick the agreement above.
           </p>
         ) : !agreed ? (
-          <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
             The button unlocks once you&apos;ve ticked the agreement above.
           </p>
         ) : null}
@@ -586,10 +589,9 @@ export function ShowcaseCheckout({
 /**
  * One payment plan, as a full-width tap-card.
  *
- * The amount carries the site's stat-number treatment — solid gold display
- * type, the one place gradient-adjacent emphasis is sanctioned on a money
- * screen (UX spec §3). Radios rather than buttons so the group is one
- * arrow-key traversal and announces as a choice, not as two actions.
+ * The choice row (plumb-proposals-2) with its amount at Heading 4 in text
+ * colour, never gold (D-SITE-157). Radios rather than buttons so the group is
+ * one arrow-key traversal and announces as a choice, not as two actions.
  */
 function PlanCard({
   selected,
@@ -606,8 +608,8 @@ function PlanCard({
     <label
       className={`flex min-h-12 cursor-pointer items-center justify-between gap-4 rounded-(--radius) border px-4 py-3.5 transition-colors duration-(--dur-fast) ease-(--ease-out) ${
         selected
-          ? "border-(--color-gold-line) bg-(--color-card-hover)"
-          : "border-(--color-faint) bg-(--color-card) hover:border-(--color-gold-line-soft) hover:bg-(--color-card-hover)"
+          ? "border-(--color-ink)"
+          : "border-(--color-border-strong) hover:border-(--color-ink)"
       }`}
     >
       <span className="flex min-w-0 items-center gap-3">
@@ -620,12 +622,14 @@ function PlanCard({
         />
         <span
           aria-hidden
-          className={`h-2 w-2 shrink-0 rounded-full transition-colors duration-(--dur-fast) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-(--color-c2) ${
-            selected ? "bg-(--color-c2)" : "bg-(--color-faint)"
-          }`}
-        />
+          className="flex size-4 shrink-0 items-center justify-center rounded-full border border-(--color-border-strong) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-(--color-focus)"
+        >
+          {selected ? (
+            <span className="size-2 rounded-full bg-(--color-mark)" />
+          ) : null}
+        </span>
         <span
-          className={`font-body text-[16px] font-light leading-[1.4] ${
+          className={`text-[16px] leading-[1.4] sm:text-(length:--text-body) ${
             selected ? "text-(--color-ink)" : "text-(--color-body)"
           }`}
         >
@@ -633,7 +637,7 @@ function PlanCard({
         </span>
       </span>
 
-      <span className="shrink-0 font-display text-[20px] font-medium tracking-[-.02em] text-(--color-c2)">
+      <span className="shrink-0 font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink) tabular-nums">
         {amount}
       </span>
     </label>

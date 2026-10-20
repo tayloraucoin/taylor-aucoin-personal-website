@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { GhostButton } from "@/components/ui/GradientButton";
 import { readIngestionRecord } from "@/lib/intake/ingestion-record";
 import { flavourFor } from "@/lib/intake/tracks";
@@ -69,15 +69,15 @@ export default async function ShowcaseIntakeReviewPage({
           key on the list: nothing below holds client state to re-seed. */}
       <RefreshIfStale renderId={randomUUID()} />
 
-      <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         Your answers
       </p>
 
-      <h1 className="mt-4 font-display text-[30px] font-medium leading-[1.15] tracking-[-.02em] text-(--color-ink)">
+      <h1 className="mt-4 font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         Everything you&rsquo;ve told us
       </h1>
 
-      <p className="mt-3 max-w-[52ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-3 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Open any section to change what&rsquo;s in it. Your answers save as you
         type, and Taylor sees the latest version — so this link is worth
         keeping.
@@ -94,13 +94,13 @@ export default async function ShowcaseIntakeReviewPage({
             >
               <div>
                 <p className="font-body text-[16px] font-medium leading-[1.4] text-(--color-ink)">
-                  <span className="mr-3 font-mono text-[11px] tracking-[.14em] text-(--color-c2)">
+                  <span className="mr-3 text-meta text-(--color-dim) tabular-nums">
                     {String(step.number).padStart(2, "0")}
                   </span>
                   {step.title}
                 </p>
 
-                <p className="mt-1 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                <p className="mt-1 text-meta leading-[1.55] text-(--color-dim)">
                   {spent
                     ? "Read once, and finished."
                     : `${step.answered} of ${step.total} answered`}
@@ -110,7 +110,7 @@ export default async function ShowcaseIntakeReviewPage({
               {spent ? null : (
                 <Link
                   href={showcaseIntakeRoutes.step(token, step.key)}
-                  className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2) underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 shrink-0 items-center text-meta text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2"
                 >
                   Open
                 </Link>

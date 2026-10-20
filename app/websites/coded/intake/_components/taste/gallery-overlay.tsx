@@ -175,7 +175,7 @@ export function GalleryOverlay({
   return createPortal(
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 overflow-y-auto bg-(--color-carbon-900)/92 px-4 py-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-(--color-ground-a)/92 px-4 py-4"
     >
       <div
         ref={panel}
@@ -188,14 +188,14 @@ export function GalleryOverlay({
       >
         {/* Where they are, and the way out. */}
         <div className="flex w-full items-center justify-between gap-4">
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             {group.title} · {index + 1} of {sites.length}
           </p>
 
           <button
             type="button"
             onClick={onClose}
-            className="min-h-11 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+            className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
           >
             {COPY.close}
           </button>
@@ -234,7 +234,7 @@ export function GalleryOverlay({
 
         <div className="w-full max-w-[560px] pb-8">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p className="font-display text-[18px] font-medium leading-[1.3] tracking-[-.012em] text-(--color-ink)">
+            <p className="text-small leading-[1.4] font-medium text-(--color-ink)">
               {site.name}
             </p>
 
@@ -244,13 +244,13 @@ export function GalleryOverlay({
               href={site.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-4 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+              className="text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
             >
               {COPY.open} · {hostOf(site.url)} ↗
             </a>
           </div>
 
-          <p className="mt-2 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+          <p className="mt-2 text-meta leading-[1.55] text-(--color-body)">
             {site.role}
           </p>
 
@@ -259,7 +259,7 @@ export function GalleryOverlay({
             {tagsFor(site).map((tag) => (
               <li
                 key={tag}
-                className="rounded-(--radius) border border-(--color-faint) px-2 py-1 font-mono text-[9px] uppercase tracking-[.2em] text-(--color-dim)"
+                className="rounded-(--radius) border border-(--color-faint) px-2 py-1 text-meta text-(--color-dim)"
               >
                 {tag}
               </li>
@@ -306,7 +306,7 @@ function PageButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-card) font-mono text-[16px] text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-gold-line-soft) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2) ${className ?? ""}`}
+      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-(--radius) border border-(--color-faint) bg-(--color-card) text-[16px] text-(--color-dim) transition-colors duration-(--dur-fast) ease-(--ease-out) hover:border-(--color-ink) hover:text-(--color-ink) disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus) ${className ?? ""}`}
     >
       <span aria-hidden>{children}</span>
     </button>

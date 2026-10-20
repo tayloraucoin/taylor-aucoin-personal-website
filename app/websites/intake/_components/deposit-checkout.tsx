@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { formatMoney } from "@/lib/intake/money";
 import {
   checkPromoCode,
@@ -10,7 +11,6 @@ import { AddonInfo } from "./addon-info";
 import { LegalAgreement } from "./legal-agreement";
 import { PayButton } from "./pay-button";
 import { PromoRail } from "./promo-rail";
-import { useIsPreview } from "@/components/intake/preview-mode";
 
 /** What the server hands this surface per product: render + total math only. */
 export type CheckoutAddonView = {
@@ -133,7 +133,7 @@ export function DepositCheckout({
     <div>
       {!isAdminTest && addons.length > 0 ? (
         <div className="mt-8">
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             Add to your build · optional
           </p>
 
@@ -153,10 +153,10 @@ export function DepositCheckout({
                   />
                   <span
                     aria-hidden
-                    className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-c2) ${
+                    className={`mt-[3px] flex h-5 w-5 shrink-0 items-center justify-center rounded-(--radius) border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-focus) ${
                       isOn
-                        ? "border-(--color-c2) bg-(--color-c2)"
-                        : "border-(--color-faint) bg-transparent"
+                        ? "border-(--color-ink) bg-(--color-ink)"
+                        : "border-(--color-border-strong) bg-transparent"
                     }`}
                   >
                     {isOn ? (
@@ -181,14 +181,14 @@ export function DepositCheckout({
                         {addon.name}
                       </span>
                       <span
-                        className={`shrink-0 font-mono text-[12px] tracking-[.06em] transition-colors ${
+                        className={`shrink-0 text-small tabular-nums transition-colors ${
                           isOn ? "text-(--color-ink)" : "text-(--color-dim)"
                         }`}
                       >
                         {formatMoney(addon.amountCents, currency)}
                       </span>
                     </span>
-                    <span className="mt-1 block max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                    <span className="mt-1 block max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                       {addon.description}
                     </span>
                     <AddonInfo productKey={addon.key} />
@@ -199,14 +199,12 @@ export function DepositCheckout({
           </div>
 
           <div className="flex items-baseline justify-between pt-3.5">
-            <span className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+            <span className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
               Total today
             </span>
             <span className="font-body text-[16px] text-(--color-ink)">
               {formatMoney(totalCents, currency)}
-              <span className="ml-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-                + GST
-              </span>
+              <span className="ml-2 text-meta text-(--color-dim)">+ GST</span>
             </span>
           </div>
         </div>
@@ -231,11 +229,11 @@ export function DepositCheckout({
                     <span className="font-body text-[16px] text-(--color-ink)">
                       {activePromo.grant.name}
                     </span>
-                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
+                    <span className="shrink-0 text-meta text-(--color-ink)">
                       Included
                     </span>
                   </div>
-                  <p className="mt-1 max-w-[44ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+                  <p className="mt-1 max-w-[44ch] text-meta leading-[1.55] text-(--color-dim)">
                     {activePromo.grant.description} Nothing added to
                     today&apos;s total.
                   </p>
@@ -260,7 +258,7 @@ export function DepositCheckout({
           disabled={!agreed}
         />
         {!agreed ? (
-          <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+          <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
             The button unlocks once you&apos;ve ticked the agreement above.
           </p>
         ) : null}

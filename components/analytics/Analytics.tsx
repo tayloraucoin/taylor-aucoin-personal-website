@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { GA_MEASUREMENT_ID } from "@/lib/config";
-import { isAdminPath, isIntakePath, isLegalPath } from "@/lib/routes";
 import {
   CONSENT_STORAGE_KEY,
   REGIME_COOKIE,
@@ -16,6 +15,7 @@ import {
   requiresPriorConsent,
   type ConsentRegime,
 } from "@/lib/consent/jurisdictions";
+import { isAdminPath, isIntakePath, isLegalPath } from "@/lib/routes";
 import ConsentBanner from "./ConsentBanner";
 import PageViews from "./PageViews";
 
@@ -70,7 +70,7 @@ function hasGpcOptOut(): boolean {
  * Google's own opt-out switch. Setting `window['ga-disable-<ID>'] = true` makes
  * gtag.js a no-op even if it has already executed.
  *
- * This matters because unmounting <GoogleAnalytics> only removes the <script>
+ * This matters because unmounting the gtag <Script> only removes the <script>
  * tag from the DOM — it does not unload the code that tag already ran. Without
  * this flag, a visitor who opted out on /privacy would keep being measured by
  * GA4's history-based page_view until they reloaded. That would make the
@@ -160,8 +160,14 @@ export default function Analytics() {
     <>
       {status === "load" && (
         <>
-          <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
-          <PageViews />
+          {/* Our own load, not @next/third-parties' GoogleAnalytics, which
+              takes no config: PageViews queues `send_page_view: false`. */}
+          <Script
+            id="gtag-js"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <PageViews gaId={GA_MEASUREMENT_ID} />
         </>
       )}
       {status === "ask" && (

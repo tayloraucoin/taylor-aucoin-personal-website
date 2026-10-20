@@ -1,8 +1,6 @@
 import { GhostButton } from "@/components/ui/GradientButton";
-import { eyebrowFor } from "@/lib/intake/tracks";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 import type { IntakeTrackKey } from "@/lib/types/intake";
-import { Eyebrow } from "../../../intake/_components/eyebrow";
 import { FeedbackBlock } from "./feedback-block";
 
 /** One step's worth of questions nobody answered. */
@@ -41,13 +39,11 @@ export function ShowcaseDone({
 }>) {
   return (
     <div>
-      <Eyebrow>{eyebrowFor(track)}</Eyebrow>
-
-      <h1 className="font-display text-[clamp(28px,6vw,38px)] font-medium leading-[1.1] tracking-[-.025em] text-(--color-ink)">
+      <h1 className="font-display text-h2 leading-[1.15] font-semibold tracking-(--tracking-h2) text-(--color-ink)">
         That&apos;s everything.
       </h1>
 
-      <p className="mt-5 max-w-[48ch] font-body text-[16px] font-light leading-[1.66] text-(--color-body)">
+      <p className="mt-5 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         Taylor reads all of it — every note, every rating, every file.
         You&apos;ll see the first look at your site within three days. If
         anything below is easy to answer by text, it all helps.
@@ -55,14 +51,14 @@ export function ShowcaseDone({
 
       {unanswered.length > 0 || shortfall ? (
         <section className="mt-12 border-t border-(--color-faint) pt-6">
-          <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+          <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
             We&apos;ll cover these on the call
           </h2>
 
           <ul className="mt-4 space-y-3">
             {unanswered.map((group) => (
               <li key={group.step}>
-                <p className="font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+                <p className="text-meta leading-[1.55] text-(--color-body)">
                   <span className="text-(--color-ink)">{group.step}</span>
                   {" — "}
                   {group.labels.join(", ").toLowerCase()}
@@ -75,7 +71,7 @@ export function ShowcaseDone({
                 Continue was never disabled over it (D-INT-4, D-PORT-16). */}
             {shortfall ? (
               <li>
-                <p className="font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+                <p className="text-meta leading-[1.55] text-(--color-body)">
                   {shortfall}
                 </p>
               </li>
@@ -89,11 +85,11 @@ export function ShowcaseDone({
           commonest thing anybody wants after sending a long form is to change
           one line of it. [COPY — draft, pending Taylor] */}
       <section className="mt-12 border-t border-(--color-faint) pt-6">
-        <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+        <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
           Changed your mind about something?
         </h2>
 
-        <p className="mt-4 max-w-[52ch] font-body text-[13.5px] font-light leading-[1.6] text-(--color-body)">
+        <p className="mt-4 max-w-[52ch] text-meta leading-[1.55] text-(--color-body)">
           Everything you answered is still here, and still yours to edit. Taylor
           reads the latest version, so keep this link.
         </p>

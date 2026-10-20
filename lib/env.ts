@@ -4,6 +4,15 @@ export function isDev(): boolean {
 }
 
 /**
+ * True on a Vercel production deployment. `VERCEL_ENV` is Vercel's own label
+ * for the deployment, not a secret, and selects nothing here: `readPageState`
+ * uses it so production pages never await `searchParams` and stay static.
+ */
+export function isProductionDeployment(): boolean {
+  return process.env.VERCEL_ENV === "production";
+}
+
+/**
  * Every server-side variable this app reads.
  *
  * These are canonical names with no tier in them, and that is deliberate: the

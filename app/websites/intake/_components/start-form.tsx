@@ -1,11 +1,11 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useIsPreview } from "@/components/intake/preview-mode";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { startIntake, type StartResult } from "../_actions/start";
 import { Field } from "./field";
 import { looksLikeEmail, TextField } from "./text-field";
-import { useIsPreview } from "@/components/intake/preview-mode";
 
 async function action(
   _previous: StartResult | null,
@@ -147,7 +147,7 @@ export function StartForm({ promo }: { promo?: string }) {
       {result && "error" in result ? (
         <p
           role="alert"
-          className="mb-5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)"
+          className="mb-5 text-meta leading-[1.55] text-(--color-ink)"
         >
           {result.error}
         </p>
@@ -159,7 +159,7 @@ export function StartForm({ promo }: { promo?: string }) {
       {result && "sent" in result ? (
         <p
           role="status"
-          className="mb-5 font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)"
+          className="mb-5 text-meta leading-[1.55] text-(--color-body)"
         >
           You already have one of these on the go. We&rsquo;ve sent the link to
           that address.

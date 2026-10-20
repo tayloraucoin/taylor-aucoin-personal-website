@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import LegalArticle from "@/components/websites/legal/LegalArticle";
 import LegalPageShell from "@/components/websites/legal/LegalPageShell";
 import { terms } from "@/content/legal";
-import { legalRoutes } from "@/lib/routes";
 import { socialCard } from "@/lib/metadata";
+import { legalRoutes } from "@/lib/routes";
 
 /**
  * `/websites/terms` — the master agreement for the website-build service.

@@ -6,6 +6,7 @@ import type { IngestionRecord } from "@/lib/intake/ingestion-record";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { parseLinks } from "@/lib/intake/source-kinds";
 import { copyPackFor } from "@/lib/intake/tracks";
+import { readSourceFile } from "../../_actions/read-source";
 import { Field } from "../../../../intake/_components/field";
 import {
   FileDrop,
@@ -14,8 +15,7 @@ import {
 import { TextArea } from "../../../../intake/_components/text-field";
 import { useReportSaveState } from "../../../../intake/_lib/save-state";
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
-import { readSourceFile } from "../../_actions/read-source";
-import { IngestRun } from "../ingest-run";
+import { IngestRun, type IngestRunState } from "../ingest-run";
 import { SourceList, type SourceRow } from "../source-list";
 
 /**
@@ -50,6 +50,7 @@ export function StepIngest({
   files,
   record = null,
   sources,
+  runState,
 }: {
   token: string;
   initial: Record<string, unknown>;
@@ -60,6 +61,8 @@ export function StepIngest({
   record?: IngestionRecord | null;
   /** Every document and fetched page, with what we made of each (PORT-21). */
   sources?: { documents: readonly SourceRow[]; links: readonly SourceRow[] };
+  /** Where the run starts: idle for a client, set by the intake fixtures. */
+  runState?: IngestRunState;
 }) {
   const copy = copyPackFor(flavour).ingestion;
   const form = useStepAutosave({ token, stepKey: "ingest", initial });
@@ -88,11 +91,11 @@ export function StepIngest({
         <Ran copy={copy.done} record={record} />
       ) : (
         <>
-          <p className="mb-7 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="mb-7 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {copy.what}
           </p>
 
-          <p className="mb-7 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+          <p className="mb-7 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
             {copy.ceiling}
           </p>
 
@@ -104,15 +107,15 @@ export function StepIngest({
             In document mode it reads as plain copy, which is what it is.
           */}
           {document ? (
-            <p className="mb-7 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">
+            <p className="mb-7 max-w-[68ch] text-meta leading-[1.55] text-(--color-dim)">
               {copy.media.label} — {copy.media.help}
             </p>
           ) : (
             <div className="mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) px-4 py-4">
-              <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+              <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
                 {copy.media.label}
               </p>
-              <p className="mt-2 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-ink)">
+              <p className="mt-2 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)">
                 {copy.media.help}
               </p>
             </div>
@@ -210,6 +213,7 @@ export function StepIngest({
         <IngestRun
           token={token}
           flavour={flavour}
+          initialState={runState}
           hasSource={dump.trim().length > 0 || readyFiles > 0}
           manifest={{
             hasPaste: dump.trim().length > 0,
@@ -255,23 +259,23 @@ function Ran({
 
   return (
     <div className="mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5">
-      <p className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)">
+      <p className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         {copy.title}
       </p>
 
-      <p className="mt-3 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {outcome}
       </p>
 
       {/* Named rather than counted: a client who sent four things and had one
           arrive late should see which one, not a number. */}
       {record.notReady?.length ? (
-        <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-body)">
+        <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-body)">
           {copy.notReady} {record.notReady.join(", ")}
         </p>
       ) : null}
 
-      <p className="mt-3 max-w-[48ch] font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
+      <p className="mt-3 max-w-[48ch] text-meta leading-[1.55] text-(--color-dim)">
         {copy.again}
       </p>
     </div>

@@ -35,11 +35,11 @@ export function YourPicks({
 }) {
   return (
     <section className="mb-10 border-t border-(--color-faint) pt-7">
-      <h2 className="font-mono text-[10px] uppercase tracking-[.28em] text-(--color-dim)">
+      <h2 className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)">
         Your picks
       </h2>
 
-      <p className="mt-4 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] text-(--color-body)">
+      <p className="mt-4 max-w-[48ch] text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)">
         {INTRO}
       </p>
 
@@ -53,37 +53,37 @@ export function YourPicks({
               className="rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-4"
             >
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                <span className="font-mono text-[10px] tracking-[.18em] text-(--color-c2)">
+                <span className="text-meta text-(--color-dim) tabular-nums">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <span className="min-w-0 grow font-body text-[16px] font-light text-(--color-ink)">
+                <span className="min-w-0 grow text-[16px] text-(--color-ink) sm:text-(length:--text-body)">
                   {site?.name ?? pick.siteKey}
                   {/* A site that has left the gallery keeps its place. Dropping
                       it would be the form editing an answer because our
                       curation changed. */}
                   {site ? null : (
-                    <span className="ml-2 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
+                    <span className="ml-2 text-meta text-(--color-dim)">
                       no longer in the gallery
                     </span>
                   )}
                 </span>
 
-                <span className="shrink-0 font-mono text-[10px] tracking-[.18em] text-(--color-c2)">
+                <span className="shrink-0 text-meta text-(--color-dim) tabular-nums">
                   {pick.score === undefined ? "—" : pick.score} / 7
                 </span>
 
                 <button
                   type="button"
                   onClick={() => onEdit(pick.siteKey)}
-                  className="min-h-11 shrink-0 font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim) underline underline-offset-2 transition-colors hover:text-(--color-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-c2)"
+                  className="min-h-11 shrink-0 text-meta inline-flex min-h-11 items-center text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
                 >
                   Edit
                 </button>
               </div>
 
               {pick.note?.trim() ? (
-                <p className="mt-2 line-clamp-2 font-body text-[13.5px] font-light leading-[1.6] text-(--color-dim)">
+                <p className="mt-2 line-clamp-2 text-meta leading-[1.55] text-(--color-dim)">
                   {pick.note}
                 </p>
               ) : null}

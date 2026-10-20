@@ -7,8 +7,8 @@ import { useStepAutosave } from "../../_lib/use-step-autosave";
 import { ChoiceAnswer, LongAnswer, TextAnswer } from "../answer-inputs";
 import { Field } from "../field";
 import { RepeatableBlock } from "../repeatable-block";
-import { TextField } from "../text-field";
 import { Reveal } from "../reveal";
+import { TextField } from "../text-field";
 
 const YES_NO_UNSURE = [
   { value: "yes", label: "Yes" },
@@ -45,11 +45,11 @@ const CONTACT_METHODS = [
 const CALLOUT_CLASS =
   "mb-8 rounded-(--radius) border border-(--color-faint) bg-(--color-card) p-5";
 const CALLOUT_EYEBROW_CLASS =
-  "font-mono text-[10px] uppercase tracking-[.28em] text-(--color-c2)";
+  "font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)";
 const CALLOUT_BODY_CLASS =
-  "mt-3 font-body text-[16px] font-light leading-[1.6] text-(--color-body)";
+  "mt-3 text-[16px] leading-[1.6] text-(--color-body) sm:text-(length:--text-body)";
 const CALLOUT_LINK_CLASS =
-  "font-mono text-[11px] uppercase tracking-[.10em] text-(--color-c2) underline underline-offset-4 hover:text-(--color-c3)";
+  "text-(--color-ink) underline decoration-(--color-mark) decoration-1 underline-offset-4 hover:decoration-2";
 
 function asSocials(value: unknown): SocialAccountAnswer[] {
   return Array.isArray(value) ? (value as SocialAccountAnswer[]) : [];
@@ -118,7 +118,10 @@ export function StepAccess({
         options={YES_NO_UNSURE}
       />
 
-      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "yes" }}>
+      <Reveal
+        values={form.values}
+        dependsOn={{ field: "ownsDomain", equals: "yes" }}
+      >
         <>
           <TextAnswer
             form={form}
@@ -143,7 +146,10 @@ export function StepAccess({
         </>
       </Reveal>
 
-      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "unsure" }}>
+      <Reveal
+        values={form.values}
+        dependsOn={{ field: "ownsDomain", equals: "unsure" }}
+      >
         <TextAnswer
           form={form}
           name="domainName"
@@ -153,7 +159,10 @@ export function StepAccess({
         />
       </Reveal>
 
-      <Reveal values={form.values} dependsOn={{ field: "ownsDomain", equals: "no" }}>
+      <Reveal
+        values={form.values}
+        dependsOn={{ field: "ownsDomain", equals: "no" }}
+      >
         <TextAnswer
           form={form}
           name="domainName"
@@ -302,7 +311,7 @@ export function StepAccess({
               values={form.values}
               dependsOn={{ field: "hasStripe", equals: "yes" }}
             >
-              <p className="mt-3 font-body text-[13.5px] font-light leading-[1.5] text-(--color-c2)">
+              <p className="mt-3 text-meta leading-[1.55] text-(--color-ink)">
                 You said you already have a Stripe account — tell me before you
                 make a second one. Depending on what it was for, we may be able
                 to use it.

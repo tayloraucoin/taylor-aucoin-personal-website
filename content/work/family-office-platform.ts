@@ -1,9 +1,14 @@
-import type { CaseStudy } from "./types";
+import futureOfCitiesLogo from "@/public/images/future-of-cities-logo.jpg";
+import crmEventRules from "@/public/images/work/family-office-platform/crm-event-rules.webp";
+import crmPipelineBoard from "@/public/images/work/family-office-platform/crm-pipeline-board.webp";
+import membershipTiers from "@/public/images/work/family-office-platform/membership-tiers.webp";
 import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
+import type { CaseStudy } from "./types";
 
 export const familyOfficePlatform = {
   slug: "family-office-platform",
-  title: "Multi-Entity Family Office Platform",
+  title: "Future of Cities",
+  clientMark: { src: futureOfCitiesLogo, alt: "Future of Cities logo" },
   meta: "Platform · CRM",
   tagline:
     "Unified five separately built business systems into one monorepo and database: an operational HQ with a custom CRM, plus the booking and sales engine for the group's retreat centre.",
@@ -12,6 +17,23 @@ export const familyOfficePlatform = {
   roleLabel: "Fractional CTO",
   role: "Fractional CTO",
   period: "2026",
+  type: "contract",
+  listRole: "Fractional CTO",
+  sortDate: "2026-01",
+  facts: [
+    { value: "Fractional CTO", meta: "Fractional CTO" },
+    { value: "2026", meta: "contract · platform · crm" },
+    { value: "Five apps", meta: "in six weeks · one database, one login" },
+    { value: "200+ models", meta: "row-level security on 150+ tables" },
+  ],
+  builtFormat: "rows-paired",
+  beats: {
+    problem: "Ten disconnected legacy databases across five business entities.",
+    decided:
+      "Unify the data first, and let the technical debt stand. Two of six weeks went to migration and reconciliation before any visible feature shipped.",
+    happened:
+      "Ten legacy systems now run as one platform, and the team maintains and extends it without dedicated engineering staff.",
+  },
   engagementType: "Fractional CTO engagement",
   mediaPreview: true,
   stack: [
@@ -33,8 +55,7 @@ export const familyOfficePlatform = {
     },
     {
       label: "Starting point",
-      value:
-        "Ten disconnected legacy databases across five business entities",
+      value: "Ten disconnected legacy databases across five business entities",
     },
     {
       label: "Delivered",
@@ -43,8 +64,7 @@ export const familyOfficePlatform = {
     },
     {
       label: "Core system",
-      value:
-        "Custom CRM replacing scattered spreadsheets and siloed tools",
+      value: "Custom CRM replacing scattered spreadsheets and siloed tools",
     },
     {
       label: "Booking & subscription systems",
@@ -59,7 +79,7 @@ export const familyOfficePlatform = {
   ],
   brief: {
     intro:
-      "The client was a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
+      "The client was Future of Cities, a family office operating five business entities — a retreat center, a foundation, an events operation, a personal brand, and the headquarters tying them together.",
     groups: [
       {
         header: "EXISTING CONDITIONS",
@@ -173,6 +193,13 @@ export const familyOfficePlatform = {
     cards: [
       {
         label: "UNIFIED DATA LAYER",
+        screen: {
+          src: architecture,
+          alt: "architecture diagram of the Future of Cities platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          caption:
+            "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
+          frame: "panel",
+        },
         body: "200+ Prisma/Supabase models with row-level security across 150+ tables, and an import system with verification and reconciliation pipelines.",
       },
       {
@@ -189,8 +216,7 @@ export const familyOfficePlatform = {
       },
       {
         label: "NOTION WORKSPACE",
-        body:
-          "A designed folder schema, naming conventions, and a Claude-assisted migration SOP — moving the team from an unstructured Google Drive to Notion as the operational workspace.",
+        body: "A designed folder schema, naming conventions, and a Claude-assisted migration SOP — moving the team from an unstructured Google Drive to Notion as the operational workspace.",
       },
       {
         label: "DOCUMENTATION SUITE",
@@ -209,7 +235,8 @@ export const familyOfficePlatform = {
     },
     {
       chip: "BOOKING ENGINE",
-      decision: "Build both payment processors, fully working, behind a toggle.",
+      decision:
+        "Build both payment processors, fully working, behind a toggle.",
       alternative:
         "Pick one and win the argument. The client wanted to stay on their existing processor for retreat bookings; my analysis said switch.",
       why: "I could have argued it in a memo, but the client deciding with evidence beats the client deferring to authority. So I built the booking flow complete on both Stripe and Square, toggleable, and advised the split I believed in: Stripe for bookings, the existing processor for on-site purchases. The cost is permanent — double the integration surface (two webhook systems, two catalog syncs), kept so a business decision could be made by demonstration.",
@@ -218,7 +245,8 @@ export const familyOfficePlatform = {
       chip: "HANDOFF",
       decision:
         "Govern AI-assisted development instead of gatekeeping it. The client's team members — non-engineers — keep building in the monorepo through Claude Code, contained by written conventions, schema standards, and implementation SOPs.",
-      alternative: "Route all changes through an engineer, or hand off a frozen system.",
+      alternative:
+        "Route all changes through an engineer, or hand off a frozen system.",
       why: "This client was never going to staff an engineering team, and a platform only an engineer can touch is a platform that stops evolving at handoff. So the deliverable included the guardrails themselves: conventions the AI is pointed at, standards that keep output on-architecture, docs written to be machine-readable context. The accepted risk is obvious — non-engineers shipping code, with process rather than personnel as the safety layer. I'd rather own that risk explicitly than pretend the client wouldn't do it anyway.",
     },
   ],
@@ -258,12 +286,34 @@ export const familyOfficePlatform = {
       items: [
         {
           src: architecture,
-          alt: "Architecture diagram of the family office platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
+          alt: "architecture diagram of the Future of Cities platform — five production apps in one Turborepo monorepo behind a shared Supabase login, every app reading and writing one Supabase/PostgreSQL database via Prisma, with ten legacy databases migrated and reconciled into it",
           caption:
             "Five apps, one database, one login: ten legacy systems collapsed into a single source of truth.",
           // A light-background diagram, so it is inset on a dark field rather
           // than butting against the page gradient.
           frame: "panel",
+        },
+      ],
+    },
+    {
+      label: "ONE CRM",
+      items: [
+        {
+          src: crmPipelineBoard,
+          alt: "The CRM's deal board for one pipeline, with leads in columns from lead identified through proposal presented.",
+        },
+        {
+          src: crmEventRules,
+          alt: "CRM settings for inbound email: a rule that scores each message against a written rubric before it reaches the pipeline.",
+        },
+      ],
+    },
+    {
+      label: "MEMBERSHIP SITE",
+      items: [
+        {
+          src: membershipTiers,
+          alt: "A retreat centre's membership page: six tiers from free to a corporate plan, with monthly and annual billing.",
         },
       ],
     },

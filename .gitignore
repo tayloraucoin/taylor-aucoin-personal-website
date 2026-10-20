@@ -47,7 +47,12 @@ next-env.d.ts
 
 # Screenshots shot by `yarn capture:example`, for uploading to the admin.
 # Never served, never committed.
-captures/
+/captures/
 
 # Claude Code: the operator's own settings (migrate step 5)
 .claude/settings.local.json
+
+# Playwright: captures from `yarn capture`, and the runner's own output.
+/tests/.captures/
+/test-results/
+/playwright-report/

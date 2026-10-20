@@ -12,22 +12,23 @@ import { DocHint, DocTag } from "./document";
  * Height is 48px, above the 44px floor: the hands using this are often thick,
  * gloved, or cold.
  *
- * Focus is the site's gold ring, inherited from the global `:focus-visible`
- * rule, plus a border warm-up so a touch user (who gets no ring) still sees
- * which field is live.
+ * Focus is the site's focus ring, inherited from the global `:focus-visible`
+ * rule, plus the border going to text colour so a touch user (who gets no
+ * ring) still sees which field is live. Strong border at rest (D-SITE-153).
  */
 const CONTROL_CLASS =
-  "w-full rounded-(--radius) border bg-(--color-card) px-3.5 font-body text-[16px] font-light text-(--color-ink) transition-colors duration-(--dur-fast) ease-(--ease-out) placeholder:text-(--color-dim) disabled:cursor-not-allowed disabled:opacity-60";
+  "w-full rounded-(--radius) bg-(--color-card) text-[16px] text-(--color-ink) sm:text-(length:--text-body) transition-colors duration-(--dur-fast) ease-(--ease-out) placeholder:text-(--color-dim) disabled:cursor-not-allowed disabled:opacity-60";
 
 const BORDER_DEFAULT =
-  "border-(--color-faint) hover:border-(--color-gold-line-soft) focus:border-(--color-gold-line)";
+  "border px-3.5 border-(--color-border-strong) hover:border-(--color-ink) focus:border-(--color-ink)";
 
 /**
- * An invalid field warms toward gold rather than turning red. The palette has
- * no red, and a form whose whole promise is "nothing you write here is wrong"
- * should not shout at someone for a typo in their own email address.
+ * The invalid input: a 2px text-colour border, never red (D-SITE-154). The
+ * palette has no red, and a form whose whole promise is "nothing you write
+ * here is wrong" should not shout at someone for a typo in their own email
+ * address. Padding gives back the second pixel so the text does not shift.
  */
-const BORDER_INVALID = "border-(--color-gold-line-strong)";
+const BORDER_INVALID = "border-2 border-(--color-ink) px-[13px]";
 
 /**
  * Per-mode input attributes, following the Conscious Connections `Input`
@@ -104,7 +105,9 @@ export function TextField({
   if (useIsDocument()) {
     return (
       <>
-        <DocTag>{mode === "text" ? "Short text" : `Short text · ${mode}`}</DocTag>
+        <DocTag>
+          {mode === "text" ? "Short text" : `Short text · ${mode}`}
+        </DocTag>
         {typeof rest.placeholder === "string" && rest.placeholder ? (
           <DocHint>e.g. {rest.placeholder}</DocHint>
         ) : null}

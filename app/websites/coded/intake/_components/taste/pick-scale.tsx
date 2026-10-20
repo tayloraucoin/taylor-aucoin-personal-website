@@ -120,7 +120,7 @@ export function PickScale({
         <label
           id={labelId}
           htmlFor={inputId}
-          className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)"
+          className="text-meta text-(--color-dim)"
         >
           {label}
         </label>
@@ -129,8 +129,8 @@ export function PickScale({
             alone would leave someone counting ticks. */}
         <span
           aria-hidden
-          className={`font-mono text-[12px] tracking-[.14em] ${
-            value === undefined ? "text-(--color-dim)" : "text-(--color-c2)"
+          className={`text-meta tabular-nums ${
+            value === undefined ? "text-(--color-dim)" : "text-(--color-ink)"
           }`}
         >
           {value === undefined ? "—" : `${value} / ${MAX}`}
@@ -160,13 +160,13 @@ export function PickScale({
           that selects it. */}
       <div
         aria-hidden
-        className="relative mt-2 h-3 font-mono text-[10px] text-(--color-dim)"
+        className="relative mt-2 h-3 text-meta text-(--color-dim)"
       >
         {Array.from({ length: MAX }, (_, index) => index + 1).map((stop) => (
           <span
             key={stop}
             className={`absolute top-0 -translate-x-1/2 ${
-              value !== undefined && stop <= value ? "text-(--color-c2)" : ""
+              value !== undefined && stop <= value ? "text-(--color-ink)" : ""
             }`}
             style={{ left: stopOffset(stop) }}
           >
@@ -177,7 +177,7 @@ export function PickScale({
 
       {/* The ends, named. A number with nothing at either end of it is a number
           someone has to guess the meaning of. */}
-      <div className="mt-2 flex justify-between gap-4 font-body text-[13.5px] font-light leading-[1.4] text-(--color-dim)">
+      <div className="mt-2 flex justify-between gap-4 text-meta leading-[1.4] text-(--color-dim)">
         <span>1 · {low}</span>
         <span>7 · {high}</span>
       </div>

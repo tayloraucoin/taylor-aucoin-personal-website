@@ -8,7 +8,7 @@ import type { Choice } from "./choice-group";
  *
  * Extracted rather than repeated in eight files: the tag, the hint, and the
  * option list are the same three shapes everywhere, and eight copies of a
- * `font-mono text-[10px]` string is how a register drifts. The visual law is
+ * meta class string is how a register drifts. The visual law is
  * `docs/_legacy/admin/ADMIN-UX-SPEC.md` §6.1, which is where these values are decided.
  *
  * **Nothing here holds a question's words.** Every string these render is
@@ -25,10 +25,7 @@ import type { Choice } from "./choice-group";
  */
 export function DocTag({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <p
-      data-md="tag"
-      className="font-mono text-[10px] tracking-[.12em] text-(--color-dim)"
-    >
+    <p data-md="tag" className="text-meta text-(--color-dim)">
       [{children}]
     </p>
   );
@@ -44,7 +41,7 @@ export function DocHint({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <p
       data-md="hint"
-      className="mt-1 font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)"
+      className="mt-1 text-meta leading-[1.55] text-(--color-dim)"
     >
       {children}
     </p>
@@ -70,7 +67,7 @@ export function DocOptions({
       {options.map((option) => (
         <li
           key={option.value}
-          className="font-body text-[16px] font-light leading-[1.5] text-(--color-body)"
+          className="text-[16px] leading-[1.5] text-(--color-body) sm:text-(length:--text-body)"
         >
           {/* On-screen bullet only — a Markdown list draws its own. */}
           <span aria-hidden data-md="skip" className="mr-2 text-(--color-dim)">
@@ -78,12 +75,12 @@ export function DocOptions({
           </span>
           {option.label}
           {option.value === exclusiveValue ? (
-            <span className="ml-2 font-mono text-[10px] tracking-[.12em] text-(--color-dim)">
+            <span className="ml-2 text-meta text-(--color-dim)">
               (clears the others)
             </span>
           ) : null}
           {option.disabled ? (
-            <span className="ml-2 font-mono text-[10px] tracking-[.12em] text-(--color-dim)">
+            <span className="ml-2 text-meta text-(--color-dim)">
               (not offered yet)
             </span>
           ) : null}

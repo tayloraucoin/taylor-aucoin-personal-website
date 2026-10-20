@@ -1,3 +1,6 @@
+import calculatorList from "@/public/images/work/calculate-qxmd/calculator-list.webp";
+import calculatorTnm from "@/public/images/work/calculate-qxmd/calculator-tnm-staging.webp";
+import medscapeCalculators from "@/public/images/work/calculate-qxmd/medscape-calculators.webp";
 import type { CaseStudy } from "./types";
 
 export const calculateQxmd = {
@@ -11,6 +14,20 @@ export const calculateQxmd = {
   roleLabel: "Frontend Software Engineer",
   role: "Frontend software engineer",
   period: "2019 — 2021",
+  type: "full-time",
+  listRole: "Frontend software engineer",
+  sortDate: "2021-01",
+  facts: [
+    { value: "Frontend Software Engineer", meta: "Frontend software engineer" },
+    { value: "2019 to 2021", meta: "full-time · healthtech · clinical tools" },
+    { value: "Zero bugs", meta: "reported through Medscape or production" },
+    {
+      value: "qxmd.com/calculate",
+      meta: "live site",
+      href: "https://qxmd.com/calculate",
+    },
+  ],
+  builtFormat: "rows-after",
   engagementType: "Maps to · Contract",
   stack: [
     "React",
@@ -54,7 +71,7 @@ export const calculateQxmd = {
   ],
   brief: {
     intro:
-      "Calculate is a clinical calculator suite — risk scores, dosing, decision tools — used by physicians at the point of care. The formulas were authored and validated by doctors; my job was to guarantee the implementation matched them exactly, every time, because the gap between \"mostly correct\" and \"correct\" is a patient-care decision.",
+      'Calculate is a clinical calculator suite — risk scores, dosing, decision tools — used by physicians at the point of care. The formulas were authored and validated by doctors; my job was to guarantee the implementation matched them exactly, every time, because the gap between "mostly correct" and "correct" is a patient-care decision.',
     groups: [
       {
         header: "EXISTING CONDITIONS",
@@ -82,7 +99,8 @@ export const calculateQxmd = {
     sections: [
       {
         header: "Onboarding & Learn",
-        intro: "I joined onto QxMD's Learn product before Calculate existed as a project.",
+        intro:
+          "I joined onto QxMD's Learn product before Calculate existed as a project.",
         bullets: [
           "Owned and extended the Learn frontend, my proving ground in the codebase and the review culture",
           "Active in Agile sprints and design meetings from the start",
@@ -90,7 +108,8 @@ export const calculateQxmd = {
       },
       {
         header: "The rebuild",
-        intro: "Calculate-next: the legacy app rebuilt from zero, to a pixel-accurate spec.",
+        intro:
+          "Calculate-next: the legacy app rebuilt from zero, to a pixel-accurate spec.",
         bullets: [
           "Translated design specifications into a pixel-perfect, functionally accurate product",
           "Reusable React components and utility modules, each carrying its own unit tests",
@@ -99,16 +118,18 @@ export const calculateQxmd = {
       },
       {
         header: "Testing strategy",
-        intro: "Coverage far past what the project required, because the failure mode isn't a bug report.",
+        intro:
+          "Coverage far past what the project required, because the failure mode isn't a bug report.",
         bullets: [
           "Unit and integration tests across the calculation logic and shared components",
           "Cypress end-to-end coverage over the product's real flows",
-          "The standard: all of the calculators working all of the time. \"Works in the demo\" doesn't exist in medicine",
+          'The standard: all of the calculators working all of the time. "Works in the demo" doesn\'t exist in medicine',
         ],
       },
       {
         header: "Compatibility",
-        intro: "Built for the devices hospitals actually have, not the ones analytics dashboards show.",
+        intro:
+          "Built for the devices hospitals actually have, not the ones analytics dashboards show.",
         bullets: [
           "Legacy browser and device support long past a 2020 baseline: polyfills, constrained features, and device-by-device verification",
           "A tight loop with a dedicated QA agent through launch, working the flagged-issue list until the matrix was actually clean, not just modern-browser clean",
@@ -205,6 +226,29 @@ export const calculateQxmd = {
       "A formal rebuild blueprint for Read delivered before departure",
     ],
   },
-  media: [],
+  media: [
+    {
+      label: "THE PRODUCT",
+      items: [
+        {
+          src: calculatorList,
+          alt: "Calculate by QxMD, the list of calculators: an A to Z index, a search box, and each calculator with a one-line use.",
+        },
+        {
+          src: calculatorTnm,
+          alt: "A calculator in use: Breast Cancer TNM staging, with its seven questions listed on the left and the answers to pick from on the right.",
+        },
+      ],
+    },
+    {
+      label: "INSIDE MEDSCAPE",
+      items: [
+        {
+          src: medscapeCalculators,
+          alt: "Medscape's Tools and Reference page, Calculators, listed by medical specialty.",
+        },
+      ],
+    },
+  ],
   links: [{ label: "Site", href: "https://qxmd.com/calculate" }],
 } satisfies CaseStudy;

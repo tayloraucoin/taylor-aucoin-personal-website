@@ -1,0 +1,60 @@
+---
+target: specs/web/ux/public/intake-coded-build.md
+status: approved
+promoted:
+---
+
+# Coded-site intake — build
+
+Part of `intake-coded.md` (job, states, token rules). Bold names are Plumb proposals (`plumb-proposals-2.md`); the rest is Components or a kit role.
+
+## Layout and components
+
+**Frame, every screen.** One column, `INTAKE_COLUMN` (560 centred at 1440; 22px gutters under 768, 32 above), on the ground with its lamplight glow. No chrome; the theme group sits top right of the column: today's Light, Dark, System, restyled (D-SITE-219). 390 and 1440 share one layout.
+
+| Screen      | Top to bottom                                                                                                                                                                                                                                                                                                                                                                                                                          | Primary                                     |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Start       | h1; lede; the resume offer when the cookie matches (surface card, hairline, body line and a text link; D-SITE-155); Components 44px inputs with Small 15 labels; site kind as **the choice row**; **the error line** and **the invalid input** on email; primary; hairline; footnote with a Privacy text link                                                                                                                          | "Start", auto width at both widths          |
+| Welcome     | h1; the welcome line at Heading 3 weight 500; two body paragraphs; primary and the "Send me my link" ghost side by side; "What we'll ask" at Heading 4; **the numbered step row** ×10, no dots; footnote                                                                                                                                                                                                                               | "Start"                                     |
+| Resume      | h1; body; primary; **the numbered step row** ×10 with the leading dot (mark visited, strong ring not), titles as text links, the current one at 500 (D-SITE-159)                                                                                                                                                                                                                                                                       | "Continue — step n"                         |
+| Step (×10)  | "Step n of 10" meta; h1; intro if any; **the progress hairline** closing the head, fill (n − 1)/10 (D-SITE-159); **the read-only known fact**; inputs and **the choice row**; **the step footer bar**, fixed: Back ghost left, Continue right (min 176; fills the rest of the row at 390), meta row under it with **the saved line** or **the error line** left and "Next · step" right, which drops when the save line needs the room | Continue (Finish on step 10)                |
+| Taste       | step head; **the accordion group head** per group; **the example row card** inside the open group (capture, "1 / n", title, host link, role line, Components topic tags, pick block: score readout meta, Edit, Remove, See more as text links, the note in body); "Picked · n of 5" in the footer's end slot (D-SITE-156)                                                                                                              | Continue                                    |
+| Import      | step 1 behind; **the result modal** (420 at 1440, column width at 390) with its title at Heading 4, body, meta line for unread files, primary                                                                                                                                                                                                                                                                                          | "Continue →"                                |
+| Import mark | on any filled field, under the input: **the machine-filled mark**, the quote upright (D-SITE-159; the proposal text still says italic)                                                                                                                                                                                                                                                                                                 | —                                           |
+| Pay         | h1 with the price; lede; plans as **the choice row** with amounts at Heading 4; add-ons as **the checkbox** rows (title, meta line, "How it works" text link, price right); extra pages: label, "$150 each" meta right, help, **the select**; hairline; total as a ledger row at Heading 4, tabular, "+ GST" under it; promo text link; agreement **checkbox** with two text links; primary; three trust lines (D-SITE-157, 159)       | "Pay today — $n", full width at both widths |
+| Confirming  | h1; body. Nothing moves                                                                                                                                                                                                                                                                                                                                                                                                                | —                                           |
+| Unavailable | h1; body; the email as a text link                                                                                                                                                                                                                                                                                                                                                                                                     | —                                           |
+| Done        | h1; body; hairline; "We'll cover these on the call" at Heading 4 with meta lines; hairline; Heading 4, body, "Review my answers" ghost. The feedback block restyles by the token rules                                                                                                                                                                                                                                                 | none                                        |
+
+## Access
+
+- **Landmarks and headings.** Every screen gets one `main` (today only the step shell has one, `step-shell.tsx:135`) and one h1. Heading levels never skip; "What we'll ask" and done's sections are h2.
+- **Keyboard path.** Theme group (arrows move within it, one tab stop), then the page top to bottom, then the footer bar: Back, Continue, Try again when present. Choice rows are one radio group each; the checkbox rows and agreement are native checkboxes; the accordion head is a button with `aria-expanded`.
+- **Focus on change.** A step's h1 takes focus on arrival (`step-heading.tsx`). The import result modal is a dialog: focus moves into it and stays there until its primary (today `DoneOverlay` in `ingest-run.tsx` moves no focus). The taste gallery keeps its trap and returns focus to its opener.
+- **Announced.** The save line once, politely (`save-indicator.tsx`); the email error as an alert; "Picked" once when the ask is met; the confirming body when it swaps at 40s; "Sent" on the link button.
+- **Names.** The theme group "Theme" with Light, Dark, System; the resume rows carry `aria-current="step"` on the current row and a hidden "done" on visited ones, since the dot is hidden and the weight alone marks the current one (Assay round 3 Consider).
+- **Contrast** (the audit is WEB-013, not redone here). Pairs to read there: muted meta on the footer bar's surface in both schemes; the mark dot and the mark underline on the light ground (non-text, 3:1); the strong-border ring of an unvisited dot; text on the dimmed backdrop's 86% ground.
+- **Reduced motion.** Every transition is 0ms (D-SITE-178); the working line shows its first line only.
+- **Touch at 390.** Theme buttons 48; Back, Continue and Pay 44 high; every meta-size text link gets a 44px hit area, look unchanged.
+
+## Instrumentation
+
+N/A. The intake fires no events: no analytics and no consent banner by design, because the answers are business-confidential (M-INT-10; verified both layouts). `recordStepReached` is a first-party progress write. Intakes are watched from the engagement rows (brief, Metric). None of D-SITE-176's events (`book_call_click`, `screening_outcome`, `contact_note_sent`) fires here: the intake has no booking button, screening or contact form.
+
+## Criteria
+
+| ID                     | When                                           | Then                                                                                                   | Evidence |
+| ---------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------- |
+| C-SITE-intake-coded-1  | Any drawn state, both widths and schemes       | It matches its capture in `captures/intake-coded/`                                                     | capture  |
+| C-SITE-intake-coded-2  | Grep over both intake trees                    | No `font-mono` uppercase, `Eyebrow`, `GradientRing`, `font-light` or `--color-c2`/`c3` as text remains | check    |
+| C-SITE-intake-coded-3  | Any intake screen                              | At most one solid primary is visible                                                                   | capture  |
+| C-SITE-intake-coded-4  | `/websites/coded/intake` and a token route     | No header, footer, analytics request or consent banner                                                 | test     |
+| C-SITE-intake-coded-5  | `/websites/coded` and `/websites/coded/intake` | The first redirects to `/websites`; the second renders the start page                                  | test     |
+| C-SITE-intake-coded-6  | An email that fails the check, on blur         | The error line shows and is announced; the input takes the invalid border                              | test     |
+| C-SITE-intake-coded-7  | Save goes saving, saved, offline, error        | Each line shows as drawn and is announced once; error offers Try again                                 | test     |
+| C-SITE-intake-coded-8  | The import result opens                        | Focus is inside the dialog and Tab cannot leave it                                                     | test     |
+| C-SITE-intake-coded-9  | Resume list                                    | The current row has `aria-current="step"`                                                              | test     |
+| C-SITE-intake-coded-10 | Every intake screen                            | Exactly one `main` and one h1                                                                          | test     |
+| C-SITE-intake-coded-11 | Step n                                         | The progress fill is (n − 1)/10                                                                        | test     |
+| C-SITE-intake-coded-12 | Pay, checkout, Stripe return, autosave         | Behaviour matches `main`: no change to amounts, sessions or saves                                      | test     |
+| C-SITE-intake-coded-13 | Reduced motion on                              | Every transition is 0ms; the working line is static                                                    | manual   |

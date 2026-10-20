@@ -11,6 +11,18 @@ load_when:
 
 # Changelog
 
+## 2026-10-19 — SITE: D-SITE-185's marks cleared
+
+- Taylor cleared D-SITE-185's marks on 2026-10-19: every `[draft]` mark and bracketed placeholder in `content/`, `app/` and `components/` is gone, filled by feedback round 1's copy lane. The strings are listed in `specs/web/epics/SITE-public-site-redesign/feedback/2026-10-19/copy-review.md`. Taylor's own pass on the words is still to come.
+
+## 2026-10-16 — SITE: the metric definitions file lives at the template's path
+
+- `docs/measurement/metrics/definitions.md` is filled in place, as `definitions.template.md` names for a product repo: an exception to `.claude/rules/docs.md`'s "never inside `docs/`", because `specs/` has no folder for a definition that outlives its epic. SITE-3 writes SITE-M1 v1 there. Taylor, SITE Tickets gate.
+
+## 2026-10-15 — TAY: the design law allows the home notes signup block
+
+- `.claude/rules/house-design.md` amended (plan mode, Taylor approved): the "Do not" line now permits one notes signup block on home (the SITE brief, Home §8). It promises no cadence (voice file), and `/notes` stays unbuilt until a first post exists. The blog, `/notes` and "now" routes stay reserved. This resolves D-SITE-20.
+
 ## 2026-10-15 — TAY: the rebrand's brand layer (Carbon, Gold, Patina)
 
 - `.claude/rules/house-design.md` amended (plan mode, Taylor approved): the brand kit in `docs/product/brand/` (the seven brand-thread files, filed byte for byte) replaces Palette D as the design source; light mode is lifted to the whole site; gradients are rationed to the ring and the atmosphere; the root field is retired behind `FIELD.ENABLED`. Both colour directions run until Taylor chooses on the real site.

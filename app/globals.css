@@ -137,6 +137,7 @@
   /* Motion (kit §5) */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 200ms;
+  --dur-exit: 160ms; /* an exit at 80% of --dur-fast (canon C-P11) */
   --dur-base: 400ms;
   --dur-slow: 600ms;
 

@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import type { ReactNode } from "react";
 import { GhostButton, GradientButton } from "@/components/ui/GradientButton";
-import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
+import { nextStep, previousStep, stepCountFor } from "@/lib/intake/tracks";
 import { intakeRoutesFor } from "@/lib/routes";
 import type {
   AnyIntakeStepKey,
@@ -11,7 +11,7 @@ import type {
 } from "@/lib/types/intake";
 import { INTAKE_COLUMN } from "../_lib/column";
 import { FooterEnd } from "../_lib/save-state";
-import { Eyebrow } from "./eyebrow";
+import { META } from "../_lib/type";
 import { RefreshIfStale } from "./refresh-if-stale";
 import { StepHeading } from "./step-heading";
 import { StepProgress } from "./step-progress";
@@ -39,12 +39,12 @@ import { StepProgress } from "./step-progress";
  * class string: the moment the two copies disagree, the buttons stop landing
  * on the field edges and nothing errors.
  *
- * Fixed takes the bar out of flow, so `main` carries the clearance instead.
+ * Fixed takes the bar out of flow, so the body carries the clearance instead.
  * The bar measures roughly 102px (16 + a 44px control + 10 + 16 + 16); `pb-32`
  * is the next value up the scale and leaves the last field a comfortable
  * margin rather than tucking it under glass.
  *
- * Every render is stamped with an id, and `main` is keyed by it. Two things
+ * Every render is stamped with an id, and the body is keyed by it. Two things
  * depend on that. `RefreshIfStale` uses the id to tell a fresh render from one
  * the client router replayed from its cache — see that file for the Next
  * behaviour it guards against. And because a `router.refresh()` preserves
@@ -113,13 +113,15 @@ export function StepShell({
       <RefreshIfStale renderId={renderId} />
 
       <header className="mb-8">
-        <Eyebrow>{`Step ${step.number} of ${stepCount}`}</Eyebrow>
+        <p className={`mb-3 ${META}`}>
+          Step {step.number} of {stepCount}
+        </p>
 
         <StepHeading>{step.title}</StepHeading>
 
         {step.intro ? (
           <p
-            className={`mt-3 max-w-[48ch] font-body text-[16px] font-light leading-[1.6] ${
+            className={`mt-3 max-w-[48ch] text-[16px] leading-[1.6] sm:text-(length:--text-body) ${
               step.emphasis === "ink"
                 ? "text-(--color-ink)"
                 : "text-(--color-body)"
@@ -132,11 +134,11 @@ export function StepShell({
         <StepProgress track={track} current={step.number} />
       </header>
 
-      <main key={renderId} className="flex-1 pb-32">
+      <div key={renderId} className="flex-1 pb-32">
         {children}
-      </main>
+      </div>
 
-      <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-(--color-faint) bg-(--color-card) backdrop-blur-[6px]">
+      <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-(--color-faint) bg-(--color-card)">
         <div className={`py-4 ${INTAKE_COLUMN}`}>
           <div className="flex items-center justify-between gap-3">
             {/* Back is present on the first step too, disabled rather than
@@ -151,13 +153,13 @@ export function StepShell({
 
             <GradientButton
               href={next ? go.step(next.key) : go.done}
-              className="min-w-[11rem] justify-center"
+              className="min-w-[11rem] flex-1 justify-center sm:flex-none"
             >
               {next ? "Continue" : "Finish"}
             </GradientButton>
           </div>
 
-          <div className="mt-2.5 flex min-h-4 items-center justify-between gap-3">
+          <div className="mt-2.5 flex min-h-5 items-center justify-between gap-3">
             <div>{saveSlot}</div>
 
             {/* A step may take this slot for a line of its own — the taste
@@ -166,9 +168,7 @@ export function StepShell({
             <FooterEnd
               fallback={
                 next ? (
-                  <p className="font-mono text-[10px] uppercase tracking-[.18em] text-(--color-dim)">
-                    Next · {next.title}
-                  </p>
+                  <p className={`text-right ${META}`}>Next · {next.title}</p>
                 ) : null
               }
             />

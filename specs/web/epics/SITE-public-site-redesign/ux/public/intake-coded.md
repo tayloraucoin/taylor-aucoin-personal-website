@@ -1,6 +1,6 @@
 ---
 target: specs/web/ux/public/intake-coded.md
-status: draft
+status: approved
 promoted:
 design:
   file: Taylor Aucoin (Paper)
@@ -12,7 +12,9 @@ design:
 
 # Coded-site intake — public
 
-Intent pass, 2026-10-16, Vesper with Hearth. A restyle under the new brand, not a redesign: the flow, steps and questions stay as they are (verified `app/websites/coded/intake/`). Amends the brief's "The intake flows get tokens only": a few screens are drawn, the rest restyle by the token rules below. Decisions are `D-SITE-n` in the decision logs.
+Intent pass, then handoff pass, 2026-10-16. A restyle under the new brand, not a redesign: the flow, steps and questions stay as they are (verified `app/websites/coded/intake/`). Amends the brief's "The intake flows get tokens only": a few screens are drawn, the rest restyle by the token rules below. Decisions are `D-SITE-n` in the decision logs.
+
+Parts: layout, access, instrumentation and criteria in `intake-coded-build.md`; words in `intake-coded-words.md`; the copy change list in `intake-coded-copy.md`.
 
 ## Job
 
@@ -25,40 +27,47 @@ A client who has decided to buy a coded site gets set up, answers the questionna
 ## Entry and exit
 
 - **Entry:** the coded page's start (`websites-coded.md`); an emailed resume link; the start page's resume offer (cookie scoped to the intake path, verified `_actions/start.ts`); Stripe's return (`?paid=1`, `?canceled=1`; verified `server/services/deposit.ts`).
+- **Order** (verified `[token]/page.tsx`): start → pay gate while a deposit is owed → confirming until the webhook lands → welcome on a first visit, resume list after → ten steps → done.
 - **Exit:** the done screen; `/websites/privacy` and `/websites/terms`.
 
 ## Chrome
 
-None: no header, footer, analytics or consent banner (verified `app/websites/intake/layout.tsx`). The theme toggle stays (`intake-theme.tsx`). Shared components (`app/websites/intake/_components/`) take the new brand everywhere, so the platform intake changes too, with no screens or copy work (D-SITE-112).
+None: no header, footer, analytics or consent banner (verified `app/websites/intake/layout.tsx`; hidden by `components/ui/SiteChrome.tsx`). The theme toggle stays (`intake-theme.tsx`). Shared components (`app/websites/intake/_components/`) take the new brand everywhere, so the platform intake changes too, with no screens or copy work (D-SITE-112).
 
 ## States
 
-Drawn at 390 and 1440, dark then light (D-SITE-60, D-SITE-61); states other than default as region crops (D-SITE-35). D-SITE-161, amended by D-SITE-156.
+Drawn at 390 and 1440, dark then light (D-SITE-60, D-SITE-61); states other than default as region crops (D-SITE-35). D-SITE-161, amended by D-SITE-156. Canvas: `captures/intake-coded/<key>-*.png` is the four files `-390`, `-1440`, `-390-dark`, `-1440-dark`. Rows found in code, not in the intent pass: D-SITE-216. States are reached by the admin client preview, never a public `?state=` (D-SITE-218).
 
-| Screen         | State                                        | Key            | Canvas                                               |
-| -------------- | -------------------------------------------- | -------------- | ---------------------------------------------------- |
-| Start          | default                                      | `start`        | drawn                                                |
-| Start          | resume offer ("already started")             | `start-resume` | crop                                                 |
-| Start          | email invalid (the one validated field)      | `invalid`      | crop                                                 |
-| Welcome        | default                                      | `welcome`      | drawn                                                |
-| Resume list    | returning client, step 4 of 10               | `resume`       | drawn                                                |
-| Question step  | default (idle save), the pattern for all ten | `step`         | drawn                                                |
-| Question step  | saving, saved, offline, error with retry     | `save`         | crop (four rows)                                     |
-| Taste gallery  | one group open, one pick saved               | `taste`        | drawn                                                |
-| Credits import | "Read it through" card over step 1           | `import`       | drawn                                                |
-| Credits import | a filled-in field on a later step            | `import-mark`  | crop                                                 |
-| Pay gate       | plan chosen, one add-on, agreement ticked    | `pay`          | drawn                                                |
-| Pay gate       | canceled                                     | —              | N/A: default plus one line                           |
-| Payment        | confirming (`?paid=1`)                       | `confirming`   | drawn                                                |
-| Payment        | confirming after 40s                         | —              | N/A: body swap plus the email link, as `unavailable` |
-| Link           | unavailable, expired                         | `unavailable`  | drawn                                                |
-| Link           | unavailable, invalid                         | —              | N/A: same layout, h1 and body differ                 |
-| Done           | default, two skipped answers                 | `done`         | drawn                                                |
-| Done           | loading                                      | —              | N/A: server-rendered                                 |
+| Screen         | State                                        | Key            | Canvas                                                          |
+| -------------- | -------------------------------------------- | -------------- | --------------------------------------------------------------- |
+| Start          | default                                      | `start`        | `start-*.png`                                                   |
+| Start          | resume offer ("already started")             | `start-resume` | `start-resume-*.png` (crop)                                     |
+| Start          | email invalid (the one validated field)      | `invalid`      | `invalid-*.png` (crop)                                          |
+| Start          | submitting                                   | —              | N/A: the primary's label swaps to "Starting…"                   |
+| Start          | an intake already open for that email        | —              | N/A: default plus one status line above Start                   |
+| Start          | server error                                 | —              | N/A: the error line of `invalid`, above Start                   |
+| Welcome        | default                                      | `welcome`      | `welcome-*.png`                                                 |
+| Welcome        | after payment                                | —              | N/A: same layout, h1 differs (`showcase-welcome.tsx:60`)        |
+| Welcome        | link sent                                    | —              | N/A: the ghost's label swaps to the sent line                   |
+| Resume list    | returning client, step 4 of 10               | `resume`       | `resume-*.png`                                                  |
+| Question step  | default (idle save), the pattern for all ten | `step`         | `step-*.png`                                                    |
+| Question step  | saving, saved, offline, error with retry     | `save`         | `save-*.png` (crop, four rows)                                  |
+| Taste gallery  | one group open, one pick saved               | `taste`        | `taste-*.png`                                                   |
+| Credits import | reading (in progress)                        | —              | N/A: the result modal with the working line, by the token rules |
+| Credits import | "Read it through" card over step 1           | `import`       | `import-*.png`                                                  |
+| Credits import | a filled-in field on a later step            | `import-mark`  | `import-mark-*.png` (crop)                                      |
+| Pay gate       | plan chosen, one add-on, agreement ticked    | `pay`          | `pay-*.png`                                                     |
+| Pay gate       | canceled                                     | —              | N/A: default plus one line                                      |
+| Payment        | confirming (`?paid=1`)                       | `confirming`   | `confirming-*.png`                                              |
+| Payment        | confirming after 40s                         | —              | N/A: body swap plus the email link, as `unavailable`            |
+| Link           | unavailable, expired                         | `unavailable`  | `unavailable-*.png`                                             |
+| Link           | unavailable, invalid                         | —              | N/A: same layout, h1 and body differ                            |
+| Done           | default, two skipped answers                 | `done`         | `done-*.png`                                                    |
+| Done           | loading                                      | —              | N/A: server-rendered                                            |
 
 ## Primary action
 
-One per view (A-17): Start; Begin; Continue; Pay the deposit. The save indicator is status, never an action.
+One per view (A-17): Start; Begin; Continue; Pay the deposit. The save indicator is status, never an action. Done has none; "Review my answers" stays a ghost (D-SITE-157).
 
 ## Token rules
 
@@ -79,18 +88,10 @@ For every screen not drawn, in both intake trees (D-SITE-158). Counts verified b
 | Backdrop `carbon-900/86`                               | The theme's ground at 86%, so light gets a light backdrop                                                                                                            | kit §1                      |
 | `WorkingIndicator` cycling lines                       | No spinner; reduced motion shows the first line only [PROPOSED]                                                                                                      | house law 7; kit §5         |
 
-## Layout and components
+## Settled at handoff
 
-[FILL] handoff pass.
+- Theme: today's Light, Dark, System group stays, restyled; not the canvas's single icon button (D-SITE-219).
+- Voice first person throughout; the Agora eyebrow is replaced by nothing; Taylor rewrites the flagged lines with the copy list (D-SITE-220).
+- Done stays as drawn: the Stripe receipt carries the amount (D-SITE-220).
 
-## Words
-
-[FILL] Taylor; Gloss, handoff pass. The change list is `intake-coded-copy.md`.
-
-## Access
-
-[FILL] Threshold, handoff pass. The open contrast audit is WEB-013 (not redone here).
-
-## Criteria
-
-[FILL] as `C-SITE-intake-coded-n`.
+No open decisions.

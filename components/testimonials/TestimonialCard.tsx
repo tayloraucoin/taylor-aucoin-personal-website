@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Testimonial } from "@/content/testimonials";
+import { Portrait } from "./Portrait";
 
 /** Bespoke avatar — image when the asset exists, initials placeholder until
  *  then. Square at the site radius (3px), not a circle: sharp is the house
@@ -69,7 +70,10 @@ export default function TestimonialCard({
         {expanded ? (
           <div className="space-y-3">
             {t.full.map((p, i) => (
-              <p key={i}>{i === 0 ? <>“{p}</> : p}{i === t.full.length - 1 && "”"}</p>
+              <p key={i}>
+                {i === 0 ? <>“{p}</> : p}
+                {i === t.full.length - 1 && "”"}
+              </p>
             ))}
           </div>
         ) : (
@@ -126,6 +130,77 @@ export default function TestimonialCard({
           </>
         )}
       </figcaption>
+    </figure>
+  );
+}
+
+/**
+ * Home's card (D-SITE-56, 62): one contiguous span of the recommendation,
+ * the name and title under it, the round photo beside them. With `onOpen`
+ * (feedback round 2) the whole card is a button, named for the person, that
+ * opens the full testimonial; a small mark-coloured expand mark sits in its
+ * corner. `span` defaults to the lead quote.
+ */
+export function TestimonialQuoteCard({
+  t,
+  span = t.quote,
+  onOpen,
+  buttonRef,
+}: {
+  t: Testimonial;
+  span?: string;
+  onOpen?: (keyboard: boolean) => void;
+  buttonRef?: (el: HTMLButtonElement | null) => void;
+}) {
+  return (
+    <figure
+      className={`relative flex flex-col gap-6 rounded-(--radius) border border-(--color-line-soft) bg-(--color-card) p-6 md:p-8 ${
+        onOpen
+          ? "transition-colors duration-(--dur-fast) hover:border-(--color-line-strong) hover:bg-(--color-card-hover)"
+          : ""
+      }`}
+    >
+      <blockquote className="text-[20px] leading-[1.55] text-(--color-ink) md:max-w-[440px]">
+        <p>“{span}”</p>
+      </blockquote>
+      <figcaption className="flex items-center gap-3">
+        <Portrait name={t.name} src={t.avatar} />
+        <div>
+          <span className="block text-(length:--text-small) font-medium text-(--color-ink)">
+            {t.name}
+          </span>
+          <span className="mt-0.5 block text-(length:--text-meta) text-(--color-dim)">
+            {t.title}
+          </span>
+        </div>
+      </figcaption>
+      {onOpen && (
+        <button
+          ref={buttonRef}
+          type="button"
+          aria-label={`Read ${t.name}'s testimonial in full`}
+          aria-haspopup="dialog"
+          // A keyboard press arrives as a click with detail 0: it opens at
+          // once (canon C-P11, A-15).
+          onClick={(e) => onOpen(e.detail === 0)}
+          className="absolute inset-0 cursor-pointer rounded-(--radius) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-focus)"
+        >
+          <svg
+            aria-hidden
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            className="absolute top-5 right-5 stroke-(--color-mark)"
+          >
+            <path
+              d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9"
+              strokeWidth="1.25"
+              strokeLinecap="square"
+            />
+          </svg>
+        </button>
+      )}
     </figure>
   );
 }
