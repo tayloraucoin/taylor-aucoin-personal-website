@@ -310,6 +310,11 @@ export const everbook = {
           alt: "Life Story interview — prompt screen with write, audio, video, and AI interview capture modes",
         },
         {
+          src: interviewOpening,
+          alt: "Life Story interview, screen recording of a quick interview demo.",
+          video: { src: "/images/work/everbook/interview-quick-demo.mp4" },
+        },
+        {
           src: lifeStoryDashboard,
           alt: "Life Story author dashboard — prompts, stories, and book settings",
         },
