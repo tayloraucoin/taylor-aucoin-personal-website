@@ -115,6 +115,9 @@ test("C5 rows.ts holds six rows and every caseStudySlug names a study", () => {
   assert.equal(row("taylor-aucoin-kit").caseStudySlug, undefined);
 
   assert.equal(row("kryshan-randel").published, true);
+  assert.equal(row("kryshan-randel").liveUrl, "https://kryshanrandel.com/");
+  assert.ok(row("kryshan-randel").gallery.length >= 5, "Kryshan has captures");
+  assert.ok(row("kryshan-randel").example?.desktop, "/websites shows them");
   assert.equal(row("holistica").published, false);
   assert.equal(row("clean-coast-detailing").published, false);
   assert.equal(row("clean-coast-detailing").title, "Clean Coast Detailing");
