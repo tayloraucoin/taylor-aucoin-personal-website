@@ -3,7 +3,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { intakeFiles } from "@/db/schema";
 import { ingestionFieldsFor } from "@/lib/intake/showcase-primer-fields";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type {
   EntryBatch,
   IngestedSource,
@@ -202,6 +202,9 @@ function attribute(
 export async function ingestFromText(
   kind: ShowcaseKind,
   source: string | readonly IngestionSource[],
+  // Null reads as plain venture, so a caller that forgets it gets no place key
+  // (VEN C3). `runIngestion` always passes it.
+  ventureType: VentureType | null = null,
 ): Promise<IngestionOutcome> {
   // A bare string is the client's paste and nothing else, which is what the
   // eval and every caller before PORT-21 hand in.
@@ -227,7 +230,7 @@ export async function ingestFromText(
   const { kept, omitted } = fitSources(nonEmpty);
   const text = combine(kept);
 
-  const fields = ingestionFieldsFor(kind);
+  const fields = ingestionFieldsFor(kind, ventureType);
   const entryStages = entryStagesFor(kind);
 
   // Counts and durations only — never a quote, a field value, or a line of
@@ -324,6 +327,7 @@ function isEmptyRefusal(reason: unknown): boolean {
 export async function runIngestion(
   engagementId: string,
   kind: ShowcaseKind,
+  ventureType: VentureType | null,
   paste: string,
 ): Promise<IngestionOutcome> {
   const text = paste.trim();
@@ -343,7 +347,7 @@ export async function runIngestion(
     throw new IngestionUnavailableError("rate_limited");
   }
 
-  const outcome = await ingestFromText(kind, sources);
+  const outcome = await ingestFromText(kind, sources, ventureType);
   return notReady.length > 0 ? { ...outcome, notReady } : outcome;
 }
 

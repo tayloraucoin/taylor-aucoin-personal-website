@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
 import { INCLUDED_PAGES } from "@/lib/validators/showcase-intake";
@@ -101,6 +101,7 @@ export function StepSite({
   initial,
   flavour,
   kind,
+  ventureType,
   paidExtraPages = 0,
   purchasedExtras = [],
   homeVideos = [],
@@ -110,6 +111,8 @@ export function StepSite({
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /**
    * Everything the client has already given us, offered back for the home
    * page (PORT-19).
@@ -136,7 +139,7 @@ export function StepSite({
    */
   purchasedExtras?: readonly string[];
 }) {
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
 
   const form = useStepAutosave({ token, stepKey: "site", initial });
   useReportSaveState(form.state, form.retry);
@@ -318,6 +321,7 @@ export function StepSite({
           kind-specific rather than missing. */}
       <ForKinds
         kind={kind}
+        ventureType={ventureType}
         test={hasGroup("ask")}
         otherwise={
           <HowToReach form={form} pack={pack} options={HOW_TO_REACH} />

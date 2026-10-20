@@ -1,5 +1,10 @@
-import { copyPackFor, showcaseFlavours } from "@/lib/intake/tracks";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
+import type { VentureType } from "@/lib/intake/showcase-kinds";
+import {
+  copyPackFor,
+  showcaseFlavours,
+  showcaseSubtypeOverlayKeys,
+} from "@/lib/intake/tracks";
 
 /**
  * What one copy pack says differently from the generic floor.
@@ -32,6 +37,12 @@ export type PackDifference = {
 /** Every difference between one pack and generic, in pack-declaration order. */
 export type PackDiff = {
   flavour: ShowcaseFlavour;
+  /**
+   * A sub-type overlay (VEN), diffed against its own flavour's pack rather
+   * than the floor: what a place venture reads differently from plain venture.
+   * Its `generic` side is then that pack's words.
+   */
+  overlay?: string;
   differences: readonly PackDifference[];
 };
 
@@ -102,9 +113,36 @@ export function diffPack(flavour: ShowcaseFlavour): PackDiff {
   return { flavour, differences };
 }
 
-/** Every non-generic pack, for the all-kinds overview. */
+/** Every non-generic pack, for the all-kinds overview, then every overlay. */
 export function diffEveryPack(): readonly PackDiff[] {
-  return showcaseFlavours
-    .filter((flavour) => flavour !== "generic")
-    .map(diffPack);
+  return [
+    ...showcaseFlavours
+      .filter((flavour) => flavour !== "generic")
+      .map(diffPack),
+    ...showcaseFlavours.flatMap((flavour) =>
+      (showcaseSubtypeOverlayKeys[flavour] ?? []).map((key) =>
+        diffOverlay(flavour, key as VentureType),
+      ),
+    ),
+  ];
+}
+
+/**
+ * One sub-type overlay against the pack it lays over (VEN). Empty when the
+ * sub-type has no overlay, because then the pack is the same reference.
+ */
+export function diffOverlay(
+  flavour: ShowcaseFlavour,
+  ventureType: VentureType,
+): PackDiff {
+  const base = copyPackFor(flavour) as unknown as Record<string, unknown>;
+  const pack = copyPackFor(flavour, ventureType) as unknown as Record<
+    string,
+    unknown
+  >;
+
+  const differences: PackDifference[] = [];
+  if (pack !== base) walk(base, pack, "", differences);
+
+  return { flavour, overlay: ventureType, differences };
 }

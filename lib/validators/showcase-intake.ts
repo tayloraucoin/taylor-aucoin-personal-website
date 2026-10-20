@@ -185,6 +185,14 @@ export const stepAboutSchema = z.object({
   siteKind: text,
 
   /**
+   * What kind of venture it is, asked only while `siteKind` is venture (VEN,
+   * D-VEN-3). Bounds only: `VENTURE_TYPES` in `showcase-kinds.ts` decides
+   * which values mean something, and a value outside it reads as absent.
+   * Kept when the kind changes (D-VEN-4), and ignored on any other kind.
+   */
+  ventureType: text,
+
+  /**
    * Superseded by `kind` at PORT-11 (2026-09-01). The multi-select this held
    * was collected on the start form and read by nothing; `kindFor` now derives
    * a kind from it for engagements answered before the change.
@@ -907,6 +915,12 @@ export const startShowcaseIntakeInput = z.object({
 
   /** The kind picker. Bounds only; `showcase-kinds.ts` decides what each means. */
   siteKind: z.string().trim().optional(),
+
+  /**
+   * The venture sub-type, revealed under `siteKind = venture` (VEN). Bounds
+   * only; the action seeds it only on a venture (C-VEN-kind-2).
+   */
+  ventureType: z.string().trim().optional(),
 
   /**
    * What the thing is called, asked of every kind but a portfolio.

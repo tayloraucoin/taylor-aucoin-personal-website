@@ -11,6 +11,7 @@ import {
   findResumableByEmail,
 } from "@/server/services/engagement";
 import { saveStepAnswers } from "@/server/services/submission";
+import { startAboutSeed } from "./start-seed";
 
 export type StartResult = { error: string } | { sent: true } | never;
 
@@ -47,6 +48,7 @@ export async function startShowcaseIntake(
     contactPhone: formData.get("contactPhone") || undefined,
     whatYouDo: formData.get("whatYouDo") || undefined,
     siteKind: formData.get("siteKind") || undefined,
+    ventureType: formData.get("ventureType") || undefined,
     entityName: formData.get("entityName") || undefined,
     disciplines: formData.getAll("disciplines").map(String),
     disciplinesOther: formData.get("disciplinesOther") || undefined,
@@ -114,21 +116,8 @@ export async function startShowcaseIntake(
   });
 
   // What they typed is already an answer — seeding it means step 1 opens
-  // filled in rather than asking again. Contact identity is not seeded: it
-  // lives on the engagement's own columns and step 1 renders it from there.
-  await saveStepAnswers(token, "about", {
-    whatYouDo: parsed.data.whatYouDo,
-    siteKind: parsed.data.siteKind,
-    disciplines: parsed.data.disciplines,
-    disciplinesOther: parsed.data.disciplinesOther,
-    currentWebsite: parsed.data.currentWebsite,
-
-    // Seeded only when the thing has a name of its own, so step 1 opens with
-    // it filled rather than asking a second time. A portfolio's display name
-    // stays blank here: step 1 asks it properly, and pre-filling it with the
-    // contact's name would put a decision in their mouth.
-    ...(entityName ? { displayName: entityName } : {}),
-  });
+  // filled in rather than asking again.
+  await saveStepAnswers(token, "about", startAboutSeed(parsed.data));
 
   await setResumeCookie(token);
 

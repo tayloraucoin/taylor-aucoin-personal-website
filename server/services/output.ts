@@ -21,7 +21,15 @@ import {
 import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
 import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { copyPackFor, fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
+import { askedOf } from "@/lib/intake/showcase-primer-fields";
+import {
+  copyPackFor,
+  fieldKeysFor,
+  kindOf,
+  labelFor,
+  stepsFor,
+  ventureTypeOf,
+} from "@/lib/intake/tracks";
 import type { ExampleSet } from "@/content/intake-examples";
 import { BUILD_LEVELS, EXAMPLE_GROUPS } from "@/content/intake-examples/taxonomy";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
@@ -746,10 +754,27 @@ export function collectUnconfirmed(
   return [...byStep].map(([step, labels]) => ({ step, labels }));
 }
 
+/**
+ * Whether this engagement was ever asked a key (VEN C10).
+ *
+ * A question a kind never meets is not an unanswered one: without this a
+ * portfolio's done screen listed a venture's `stage`, the claims keys, and the
+ * tools keys as "we'll cover these on the call". Reads `askedOf`, the one
+ * predicate the ingestion run reads too. The durable track has no kinds, so
+ * every key there is asked.
+ */
+function askedBy(engagement: Engagement): (key: string) => boolean {
+  if (engagement.track !== "showcase") return () => true;
+  const kind = kindOf(engagement.answers);
+  const ventureType = ventureTypeOf(engagement.answers);
+  return (key) => askedOf(key, kind, ventureType);
+}
+
 /** Every known field with no answer, grouped by the step that asked it. */
 export function collectUnanswered(
   engagement: Engagement,
 ): Array<{ step: string; labels: string[] }> {
+  const asked = askedBy(engagement);
   return stepsFor(engagement.track)
     .map((step) => {
       const stored = readStepAnswers(
@@ -780,6 +805,7 @@ export function collectUnanswered(
               RETIRED_TASTE_KEYS.has(key)
             ),
         )
+        .filter(asked)
         .map((key) => labelFor(engagement.track, key));
 
       return { step: step.title, labels };
@@ -795,9 +821,10 @@ export function collectUnanswered(
  * page that reprinted all of them would be a worse version of each step —
  * longer, not editable, and a second place for the same words to drift.
  *
- * Shares `collectUnanswered`'s two rules so the two screens can never disagree
- * about what counts as a question: a retired key is not an unanswered one, and
- * a step's fields are its schema's keys.
+ * Shares `collectUnanswered`'s three rules so the two screens can never
+ * disagree about what counts as a question: a retired key is not an unanswered
+ * one, a key the kind is never asked is not one either, and a step's fields
+ * are its schema's keys.
  */
 export function answerTally(
   engagement: Engagement,
@@ -809,6 +836,7 @@ export function answerTally(
   answered: number;
   total: number;
 }> {
+  const asked = askedBy(engagement);
   return stepsFor(engagement.track, flavour).map((step) => {
     const stored = readStepAnswers(
       engagement.track,
@@ -816,14 +844,16 @@ export function answerTally(
       step.key,
     );
 
-    const keys = fieldKeysFor(engagement.track, step.key).filter(
-      (key) =>
-        !(
-          engagement.track === "showcase" &&
-          step.key === "taste" &&
-          RETIRED_TASTE_KEYS.has(key)
-        ),
-    );
+    const keys = fieldKeysFor(engagement.track, step.key)
+      .filter(
+        (key) =>
+          !(
+            engagement.track === "showcase" &&
+            step.key === "taste" &&
+            RETIRED_TASTE_KEYS.has(key)
+          ),
+      )
+      .filter(asked);
 
     return {
       key: step.key,
@@ -1162,7 +1192,12 @@ function resolveShowcaseKeys(
      */
     const spectrumAnswers = spectrumsOf(stored);
     if (Object.keys(spectrumAnswers).length > 0) {
-      const pack = copyPackFor(galleryFlavourOf(engagement.answers));
+      // With the sub-type, so a place venture's forks print with the labels
+      // it answered them under (VEN rabbit hole 3).
+      const pack = copyPackFor(
+        galleryFlavourOf(engagement.answers),
+        ventureTypeOf(engagement.answers),
+      );
       const lines = tasteSpectrumLines(
         pack.tasteSpectrums ?? [],
         spectrumAnswers,

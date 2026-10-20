@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { accountsFromLinks } from "@/lib/intake/accounts-from-links";
 import { readIngestionRecord } from "@/lib/intake/ingestion-record";
-import { kindOf } from "@/lib/intake/tracks";
+import { kindOf, ventureTypeOf } from "@/lib/intake/tracks";
 import { requireEngagement } from "@/server/services/engagement";
 import { readLinks } from "@/server/services/document-reading";
 import {
@@ -115,6 +115,7 @@ export async function runIngestionForToken(
     const outcome = await runIngestion(
       engagement.id,
       kindOf(engagement.answers),
+      ventureTypeOf(engagement.answers),
       source,
     );
 

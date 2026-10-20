@@ -16,6 +16,7 @@ import {
   kindOf,
   nextStep,
   previousStep,
+  ventureTypeOf,
 } from "@/lib/intake/tracks";
 import { showcaseIntakeRoutes } from "@/lib/routes";
 import type {
@@ -146,6 +147,7 @@ export default async function ShowcaseIntakeStepPage({
   // value — including the legacy derivation for engagements answered before
   // the question existed (M-PORT-21).
   const kind = kindOf(engagement.answers);
+  const ventureType = ventureTypeOf(engagement.answers);
 
   // What the business primer suggested for *this* step, minus anything the
   // client has since answered themselves or waved off. Met here, beside the
@@ -323,6 +325,7 @@ export default async function ShowcaseIntakeStepPage({
             initial={initial}
             flavour={flavour}
             kind={kind}
+            ventureType={ventureType}
             // One query for every project image, grouped client-side by the
             // entry each belongs to — rather than one query per project, which
             // on a forty-project catalogue is forty round trips to render one
@@ -386,6 +389,7 @@ export default async function ShowcaseIntakeStepPage({
             initial={initial}
             flavour={flavour}
             kind={kind}
+            ventureType={ventureType}
             files={{
               portrait: await uploadsFor("portrait"),
               behindScenes: await uploadsFor("behind_scenes"),
@@ -405,6 +409,7 @@ export default async function ShowcaseIntakeStepPage({
             initial={initial}
             flavour={flavour}
             kind={kind}
+            ventureType={ventureType}
             purchasedExtras={purchasedExtras}
           />
         );
@@ -417,6 +422,7 @@ export default async function ShowcaseIntakeStepPage({
             initial={initial}
             flavour={flavour}
             kind={kind}
+            ventureType={ventureType}
             homeVideos={shortlist.videos}
             homeFiles={shortlist.files}
             // What they bought on the pay screen, so the page allowance and

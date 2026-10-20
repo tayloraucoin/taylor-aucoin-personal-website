@@ -1,6 +1,6 @@
 "use client";
 
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
 import type { ProjectVideo } from "@/lib/validators/showcase-intake";
@@ -55,6 +55,7 @@ export function StepMedia({
   initial,
   flavour,
   kind,
+  ventureType,
   files,
   purchasedExtras = [],
 }: {
@@ -62,6 +63,8 @@ export function StepMedia({
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /**
    * What this engagement paid for on the pay screen, in the extras vocabulary.
    *
@@ -80,7 +83,7 @@ export function StepMedia({
     documents: readonly ExistingFile[];
   };
 }) {
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
 
   const form = useStepAutosave({ token, stepKey: "media", initial });
   useReportSaveState(form.state, form.retry);
@@ -89,6 +92,7 @@ export function StepMedia({
     <>
       <ForKinds
         kind={kind}
+        ventureType={ventureType}
         test={asks("portrait")}
         otherwise={
           <Field id="f-place" label={pack.place.label} help={pack.place.help}>
@@ -223,7 +227,11 @@ export function StepMedia({
       {/* Decks, one-pagers, floor plans, price sheets. The kinds that have
           documents worth reading are the ones whose site is about an
           organisation rather than a body of work. */}
-      <ForKinds kind={kind} test={hasGroup("documents")}>
+      <ForKinds
+        kind={kind}
+        ventureType={ventureType}
+        test={hasGroup("documents")}
+      >
         <DocumentDrop
           token={token}
           label={pack.documents.label}

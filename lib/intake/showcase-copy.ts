@@ -448,6 +448,17 @@ export type ShowcaseCopyPack = {
     options: readonly CopyChoice[];
     detail: CopyField;
   };
+
+  /**
+   * "What kind of venture is it?", the venture pack's alone (VEN, D-VEN-3).
+   *
+   * Labels are keyed by the sub-type's stored value and hold no order: the
+   * values and their order live in `VENTURE_TYPES`, and `ventureTypeChoices`
+   * in `tracks.ts` joins the two, so this file never imports the registry and
+   * the registry never holds a word (C-VEN-kind-5). A venture-pack extra, not
+   * a floor slot: no other pack asks it.
+   */
+  ventureType?: CopyField & { labels: Readonly<Record<string, string>> };
 };
 
 /**
@@ -1531,6 +1542,20 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
   /* Every string below: [COPY — pending Taylor] */
 
   venture: {
+    // [COPY — pending Taylor] (Gloss, `kind-picker.md`)
+    ventureType: {
+      label: "What kind of venture is it?",
+      help: "Pick the closest one. If nothing fits, the questions stay general.",
+      labels: {
+        place:
+          "A place or community: a property, a retreat centre, an ecovillage",
+        company: "A company or startup",
+        fund: "A fund",
+        cause: "A cause or nonprofit",
+        launch: "A product launch",
+        other: "Something else",
+      },
+    },
     whatYouDoLabel: "What it is, in one line",
     whatYouDoHelp:
       'The line that sits under the name. "A design studio in Halifax" counts. So does "A community-owned sanctuary in the hills of Umbria." We\'ll sharpen it together.',
@@ -1812,10 +1837,67 @@ const RESOLVED = Object.fromEntries(
   ]),
 ) as Record<ShowcaseFlavour, ShowcaseCopyPack>;
 
-/** One pack, whole. Never a partial, never a missing slot. */
-export function resolvePack(flavour: ShowcaseFlavour): ShowcaseCopyPack {
-  return RESOLVED[flavour];
+/**
+ * What a venture whose sub-type is `place` reads differently (VEN, D-VEN-24).
+ *
+ * Laid over the resolved venture pack, never over the floor, so a slot absent
+ * here reads exactly as plain venture does. The mechanism lands at VEN-1 with
+ * nothing in it; VEN-2 to VEN-5 fill its slots. `[COPY — pending Taylor]` on
+ * every string added here.
+ */
+const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {};
+
+/**
+ * The sub-type overlays, by flavour and then by sub-type key.
+ *
+ * Keyed by plain strings, so this file never imports the kind registry: the
+ * cartridge verifier asserts every key here is a listed sub-type. A key with
+ * no entry, or no key at all, is no overlay.
+ */
+const SUBTYPE_OVERLAYS: Partial<
+  Record<ShowcaseFlavour, Readonly<Record<string, Partial<ShowcaseCopyPack>>>>
+> = {
+  venture: { place: VENTURE_PLACE },
+};
+
+/**
+ * Every overlaid pack, precomputed at module load, for the reason `RESOLVED`
+ * is: a pack is a stable reference.
+ */
+const OVERLAID = new Map<string, ShowcaseCopyPack>(
+  Object.entries(SUBTYPE_OVERLAYS).flatMap(([flavour, byKey]) =>
+    Object.entries(byKey ?? {}).map(([key, overlay]) => [
+      `${flavour}:${key}`,
+      { ...RESOLVED[flavour as ShowcaseFlavour], ...overlay },
+    ]),
+  ),
+);
+
+/**
+ * One pack, whole. Never a partial, never a missing slot.
+ *
+ * With an overlay key that has an overlay, the overlaid pack; with any other
+ * key, or none, `RESOLVED[flavour]` itself, the same reference. That identity
+ * is what "plain venture reads exactly as today" means, checked rather than
+ * compared (C-VEN-kind-3).
+ */
+export function resolvePack(
+  flavour: ShowcaseFlavour,
+  overlay?: string | null,
+): ShowcaseCopyPack {
+  if (!overlay) return RESOLVED[flavour];
+  return OVERLAID.get(`${flavour}:${overlay}`) ?? RESOLVED[flavour];
 }
+
+/** Every overlay key, by flavour, for the cartridge verifier. */
+export const SUBTYPE_OVERLAY_KEYS: Readonly<
+  Partial<Record<ShowcaseFlavour, readonly string[]>>
+> = Object.fromEntries(
+  Object.entries(SUBTYPE_OVERLAYS).map(([flavour, byKey]) => [
+    flavour,
+    Object.keys(byKey ?? {}),
+  ]),
+);
 
 /**
  * Every required slot name, for the cartridge verifier's fall-through check.

@@ -37,6 +37,8 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
    * replaced, and it is still read for engagements that answered it.
    */
   siteKind: "What the site is for",
+  /** The venture sub-type (VEN, D-VEN-3). */
+  ventureType: "Kind of venture",
   /** @deprecated Kept so pre-2026-09-01 answers still read as words. */
   siteKinds: "Kind of site",
   /** @deprecated Kept so pre-2026-09-01 answers still read as words. */

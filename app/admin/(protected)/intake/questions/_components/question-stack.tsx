@@ -18,7 +18,7 @@ import { StepReviews } from "@/app/websites/intake/_components/steps/step-review
 import { StepTeam } from "@/app/websites/intake/_components/steps/step-team";
 import { StepVoice } from "@/app/websites/intake/_components/steps/step-voice";
 import type { ExampleSet } from "@/content/intake-examples";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { stepsFor } from "@/lib/intake/tracks";
 import type { IntakeTrackKey } from "@/lib/types/intake";
@@ -62,11 +62,20 @@ export function QuestionStack({
   track,
   flavour,
   kind,
+  ventureType,
   gallery,
   previewQuery,
   extras,
+  seed,
 }: Readonly<{
   track: IntakeTrackKey;
+  /** The venture sub-type under review, or null (VEN, `&subtype=`). */
+  ventureType: VentureType | null;
+  /**
+   * A `?state=` fixture's answers per step (VEN, D-VEN-2), or none. Outside
+   * production only: the page reads the key through `readPageState`.
+   */
+  seed?: StackSeed;
   /**
    * What the rail is pretending this client bought.
    *
@@ -159,8 +168,10 @@ export function QuestionStack({
                   stepKey={step.key}
                   flavour={flavour}
                   kind={kind}
+                  ventureType={ventureType}
                   gallery={gallery}
                   extras={extras}
+                  seed={seed}
                 />
               </div>
             </AccordionSection>
@@ -173,6 +184,12 @@ export function QuestionStack({
 
 const NO_TOKEN = "";
 const NO_ANSWERS: Record<string, unknown> = {};
+
+/** What a `?state=` fixture seeds: answers per step, and About's picker. */
+export type StackSeed = {
+  answers: Readonly<Partial<Record<string, Record<string, unknown>>>>;
+  picking?: boolean;
+};
 const NO_FILES = [] as const;
 
 /**
@@ -188,18 +205,26 @@ export function StepBody({
   stepKey,
   flavour,
   kind,
+  ventureType,
   gallery,
   extras = [],
+  seed,
 }: Readonly<{
   track: IntakeTrackKey;
   stepKey: string;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  ventureType: VentureType | null;
   gallery: ExampleSet;
+  /** See `QuestionStack`. Absent is every prop empty, the default. */
+  seed?: StackSeed;
   /** See `QuestionStack`. Empty is the ordinary screen and the default. */
   extras?: readonly string[];
 }>) {
-  const shared = { token: NO_TOKEN, initial: NO_ANSWERS };
+  const shared = {
+    token: NO_TOKEN,
+    initial: seed?.answers[stepKey] ?? NO_ANSWERS,
+  };
 
   if (track === "durable") {
     switch (stepKey) {
@@ -268,6 +293,7 @@ export function StepBody({
         <StepAbout
           {...shared}
           initialKind={kind}
+          initialPicking={seed?.picking}
           prefill={{ contactName: "", contactEmail: "", contactPhone: null }}
           headshots={NO_FILES}
         />
@@ -286,6 +312,7 @@ export function StepBody({
           {...shared}
           flavour={flavour}
           kind={kind}
+          ventureType={ventureType}
           projectFiles={NO_FILES}
           pieceFiles={NO_FILES}
         />
@@ -324,6 +351,7 @@ export function StepBody({
           {...shared}
           flavour={flavour}
           kind={kind}
+          ventureType={ventureType}
           purchasedExtras={extras}
           files={{
             portrait: NO_FILES,
@@ -342,6 +370,7 @@ export function StepBody({
           {...shared}
           flavour={flavour}
           kind={kind}
+          ventureType={ventureType}
           purchasedExtras={extras}
         />
       );
@@ -351,6 +380,7 @@ export function StepBody({
           {...shared}
           flavour={flavour}
           kind={kind}
+          ventureType={ventureType}
           purchasedExtras={extras}
         />
       );

@@ -24,6 +24,8 @@ import type { Engagement } from "@/server/services/engagement";
 import type { SellableProduct } from "@/server/services/products";
 import { PreviewModeProvider } from "./preview-mode";
 import { SaveLineDriver } from "./save-line-driver";
+import { isVenStateKey, VEN_STATE_KEYS } from "./venture-fixtures";
+import { VentureStateView } from "./venture-state-view";
 
 /**
  * The intake's drawn states on synthetic engagements held in memory
@@ -62,6 +64,8 @@ export const INTAKE_STATE_KEYS = [
   "import-reading",
   "import-mark",
   "words",
+  // VEN: the venture places epic, drawn from `venture-fixtures.ts`.
+  ...VEN_STATE_KEYS,
 ] as const;
 
 export type IntakeStateKey = (typeof INTAKE_STATE_KEYS)[number];
@@ -205,6 +209,17 @@ function body(
   navigate:
     { step: (stepKey: AnyIntakeStepKey) => string; done: string } | undefined,
 ): ReactNode {
+  if (isVenStateKey(stateKey)) {
+    return (
+      <VentureStateView
+        stateKey={stateKey}
+        token={SYNTHETIC_TOKEN}
+        save={save}
+        navigate={navigate}
+      />
+    );
+  }
+
   switch (stateKey) {
     case "save": {
       const engagement = syntheticEngagement("showcase", {

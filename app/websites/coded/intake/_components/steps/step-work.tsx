@@ -6,7 +6,7 @@ import {
   mergeIncomingEntries,
   standardListActions,
 } from "@/lib/intake/entry-merge";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor, workShapeFor } from "@/lib/intake/tracks";
 import type {
@@ -68,6 +68,7 @@ export function StepWork({
   initial,
   flavour,
   kind,
+  ventureType,
   projectFiles,
   pieceFiles,
 }: {
@@ -75,6 +76,8 @@ export function StepWork({
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /** Every delivered project image, to be grouped by the entry it belongs to. */
   projectFiles: readonly (ExistingFile & { entryKey: string | null })[];
   /** The same, for a venture's pieces. */
@@ -83,7 +86,7 @@ export function StepWork({
   const form = useStepAutosave({ token, stepKey: "work", initial });
   useReportSaveState(form.state, form.retry);
 
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
   // Which array this kind fills — four keys, never one polymorphic array
   // (M-PORT-23). The map lived here until ADM-4; it is a fact about the kind,
   // so it lives on the kind (M-ADM-7).
@@ -146,7 +149,7 @@ export function StepWork({
         }}
       />
 
-      <ForKinds kind={kind} test={fills("projects")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("projects")}>
         <Field id="f-projects" label={pack.workBlockLabel}>
           <RepeatableBlock<ProjectEntry>
             items={projects}
@@ -180,7 +183,7 @@ export function StepWork({
 
       {/* The three kind-shaped shapes. Each is its own array key, so a kind
           change never re-reads one shape as another (M-PORT-23). */}
-      <ForKinds kind={kind} test={fills("offerings")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("offerings")}>
         <Field id="f-offerings" label={pack.workBlockLabel}>
           <RepeatableBlock<OfferingEntry>
             items={asEntries<OfferingEntry>(form.values.offerings)}
@@ -207,7 +210,7 @@ export function StepWork({
         </Field>
       </ForKinds>
 
-      <ForKinds kind={kind} test={fills("pieces")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("pieces")}>
         <Field id="f-pieces" label={pack.workBlockLabel}>
           <RepeatableBlock<PieceEntry>
             items={asEntries<PieceEntry>(form.values.pieces)}
@@ -236,7 +239,7 @@ export function StepWork({
         </Field>
       </ForKinds>
 
-      <ForKinds kind={kind} test={fills("services")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("services")}>
         <Field id="f-services" label={pack.workBlockLabel}>
           <RepeatableBlock<ServiceEntry>
             items={asEntries<ServiceEntry>(form.values.services)}
@@ -265,7 +268,7 @@ export function StepWork({
 
       {/* What the site is asking people to do — the gap the audit named (B4).
           Never for a portfolio: its ask is "hire me" and step 8 carries it. */}
-      <ForKinds kind={kind} test={hasGroup("ask")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("ask")}>
         <Field
           id="f-asks"
           label={pack.ask.blockLabel}
@@ -296,7 +299,7 @@ export function StepWork({
 
       {/* The track's one ink treatment (D-PORT-10). Three questions, and "not
           sure" is a fine answer to all three. */}
-      <ForKinds kind={kind} test={hasGroup("claims")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("claims")}>
         <InkCluster mono={pack.claims.mono} intro={pack.claims.intro}>
           <TextAnswer
             form={form}
@@ -327,7 +330,7 @@ export function StepWork({
 
           The five stopped being a paragraph at the same time — the rows are
           right there, so they are what gets ticked. [COPY — pending Taylor] */}
-      <ForKinds kind={kind} test={fills("projects")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("projects")}>
         <Field
           id="f-topFivePicks"
           label="If you could only show five"

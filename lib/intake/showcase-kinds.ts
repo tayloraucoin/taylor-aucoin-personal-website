@@ -40,7 +40,16 @@ export type ShowcaseKind = (typeof SHOWCASE_KIND_KEYS)[number];
  * hands and nothing needs an eased reveal. The §6.5 reveal law still governs
  * conditionals *inside* a group.
  */
-export type ShowcaseGroup = "roster" | "ask" | "claims" | "documents" | "stage";
+export type ShowcaseGroup =
+  | "roster"
+  | "ask"
+  | "claims"
+  | "documents"
+  | "stage"
+  /** Every venture: the issuer, the jurisdictions, the image facts (VEN). */
+  | "raise"
+  /** A venture whose sub-type is `place`, and nothing else (VEN). */
+  | "place";
 
 /**
  * Which array a kind's step 4 fills, and therefore which entry card it renders.
@@ -182,7 +191,7 @@ export const SHOWCASE_KINDS: readonly KindEntry[] = [
     label:
       "A venture or project — raising money, finding members, launching something",
     pack: "venture",
-    groups: ["roster", "ask", "claims", "documents", "stage"],
+    groups: ["roster", "ask", "claims", "documents", "stage", "raise"],
     asksDisciplines: false,
     asksName: true,
     asksRoles: false,
@@ -286,9 +295,82 @@ export function kindEntry(kind: ShowcaseKind): KindEntry {
   return BY_KEY.get(kind)!;
 }
 
-/** Which field groups this kind's questionnaire carries. */
-export function groupsFor(kind: ShowcaseKind): ReadonlySet<ShowcaseGroup> {
-  return new Set(kindEntry(kind).groups);
+/**
+ * What kind of venture it is, asked only of a venture (VEN, D-VEN-3).
+ *
+ * Optional: a venture that skips it is plain venture and reads exactly the
+ * questionnaire it read before the sub-type existed. Each entry names the
+ * groups it adds on top of venture's own, and only `place` adds any yet; the
+ * other five are listed so the founder can say what they are, and so their
+ * own questions have a home when someone designs them (rabbit hole 13).
+ *
+ * Values are storage (M-PORT-35): `about.ventureType` holds one of these keys
+ * from the first save, so a key is never renamed. Labels live in the venture
+ * copy pack, joined by `ventureTypeChoices` in `tracks.ts`, so values have one
+ * home and words another (C-VEN-kind-5).
+ */
+export const VENTURE_TYPES = [
+  { key: "place", groups: ["place"] },
+  { key: "company", groups: [] },
+  { key: "fund", groups: [] },
+  { key: "cause", groups: [] },
+  { key: "launch", groups: [] },
+  { key: "other", groups: [] },
+] as const satisfies ReadonlyArray<{
+  key: string;
+  groups: readonly ShowcaseGroup[];
+}>;
+
+export type VentureType = (typeof VENTURE_TYPES)[number]["key"];
+
+const VENTURE_TYPE_BY_KEY = new Map<string, readonly ShowcaseGroup[]>(
+  VENTURE_TYPES.map((entry) => [entry.key, entry.groups]),
+);
+
+function isVentureType(value: unknown): value is VentureType {
+  return typeof value === "string" && VENTURE_TYPE_BY_KEY.has(value);
+}
+
+/**
+ * A sub-type, given a kind and a raw stored value. Null unless both hold.
+ *
+ * The one rule both readers share. A `place` left stored on an engagement whose
+ * kind was later changed to a studio reads as nothing (rabbit hole 8): the
+ * answer is kept (D-VEN-4), and no place group can reach a kind that is not a
+ * venture. An unknown value reads as absent, as `kindFor` treats an unknown
+ * kind.
+ */
+export function ventureTypeFrom(
+  kind: ShowcaseKind,
+  raw: unknown,
+): VentureType | null {
+  return kind === "venture" && isVentureType(raw) ? raw : null;
+}
+
+/** This engagement's sub-type, derived from its answers, never stored twice. */
+export function ventureTypeFor(answers: unknown): VentureType | null {
+  const about = (answers as { about?: Record<string, unknown> } | undefined)
+    ?.about;
+  return ventureTypeFrom(kindFor(answers), about?.ventureType);
+}
+
+/**
+ * Which field groups this kind's questionnaire carries.
+ *
+ * The sub-type's groups are added only on a venture, so a stale sub-type on
+ * any other kind changes nothing. Without a sub-type this is exactly the kind's
+ * own groups, which is what every caller before VEN read.
+ */
+export function groupsFor(
+  kind: ShowcaseKind,
+  ventureType: VentureType | null = null,
+): ReadonlySet<ShowcaseGroup> {
+  const own = kindEntry(kind).groups;
+  const extra =
+    kind === "venture" && ventureType
+      ? (VENTURE_TYPE_BY_KEY.get(ventureType) ?? [])
+      : [];
+  return new Set([...own, ...extra]);
 }
 
 /**

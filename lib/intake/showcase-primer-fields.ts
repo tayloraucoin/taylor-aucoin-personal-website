@@ -1,4 +1,4 @@
-import type { ShowcaseKind } from "./showcase-kinds";
+import type { ShowcaseKind, VentureType } from "./showcase-kinds";
 import {
   groupsFor,
   kindAsks,
@@ -71,7 +71,6 @@ const EXCLUDED_FIELDS = new Map<string, string>([
   ["audiencesOther", "Conditional on the audiences checkbox group."],
   ["disciplinesOther", "Conditional on the disciplines checkbox group."],
   ["organizationOther", "Conditional on the organisation checkbox group."],
-  ["pagesOther", "Conditional on the pages checkbox group."],
   // Retired at PORT-19 and still in their schemas so stored answers survive.
   // A proposal into one would land in a field no screen renders.
   ["reel", "Retired at PORT-19; nothing renders it."],
@@ -271,8 +270,11 @@ export function staleInventoryKeys(): string[] {
  * components, not in the schemas, and typing them here would be the second
  * home this file exists to prevent.
  */
-const CHOICE_BACKED = new Set([
+const CHOICE_BACKED: ReadonlySet<string> = new Set([
   "siteKind",
+  // The venture sub-type (VEN). A radio, and the run must never choose it:
+  // which questions a venture is asked is the founder's to say.
+  "ventureType",
   "justYou",
   "showTeam",
   "leadPerson",
@@ -298,7 +300,7 @@ const CHOICE_BACKED = new Set([
  * A value written behind a closed reveal is the PORT-14 failure: stored,
  * printed in the document, invisible on the screen the client is looking at.
  */
-const REVEAL_GATED = new Set([
+const REVEAL_GATED: ReadonlySet<string> = new Set([
   "availabilityDetail",
   "registrar",
   "domainAccess",
@@ -349,8 +351,17 @@ const INPUT_FIELDS = new Set(["peoplePaste"]);
  * Read through the same registry accessors the step components use, so the
  * inventory and the screen cannot disagree about who is asked what. A key
  * absent from this map is asked of every kind.
+ *
+ * Each test takes the sub-type too (VEN, C3). It is null for every kind but a
+ * venture, and `groupsFor` ignores it off venture, so a test written against
+ * groups never needs to know which kinds have sub-types.
  */
-const KIND_GATED: Readonly<Record<string, (kind: ShowcaseKind) => boolean>> = {
+type KindGate = (
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+) => boolean;
+
+const KIND_GATED: Readonly<Record<string, KindGate>> = {
   stage: (kind) => groupsFor(kind).has("stage"),
   stageDetail: (kind) => groupsFor(kind).has("stage"),
   // Asked instead of `stage`, so it is the venture kind's one absence.
@@ -360,7 +371,29 @@ const KIND_GATED: Readonly<Record<string, (kind: ShowcaseKind) => boolean>> = {
   requiredWording: (kind) => groupsFor(kind).has("claims"),
   toolsDetail: (kind) => !kindAsks(kind, "video"),
   toolsOther: (kind) => !kindAsks(kind, "video"),
+  // VEN: every venture is asked its sub-type. VEN-2 to VEN-4 add the `raise`
+  // and `place` keys here, each through `groupsFor(kind, ventureType)`.
+  ventureType: (kind, ventureType) => groupsFor(kind, ventureType).has("raise"),
 };
+
+/**
+ * Whether a kind, with its sub-type, is asked a key at all.
+ *
+ * The one predicate the ingestion run and the document's Not-answered list
+ * share (VEN C10), so the two cannot disagree about who was asked what. A key
+ * with no gate is asked of every kind.
+ */
+export function askedOf(
+  key: string,
+  kind: ShowcaseKind,
+  ventureType: VentureType | null = null,
+): boolean {
+  return KIND_GATED[key]?.(kind, ventureType) ?? true;
+}
+
+/** The keys behind a radio, and behind a reveal, for the generated tests. */
+export const choiceBackedKeys: ReadonlySet<string> = CHOICE_BACKED;
+export const revealGatedKeys: ReadonlySet<string> = REVEAL_GATED;
 
 /**
  * Every hand-written key in this file's second half, for the drift guard.
@@ -381,14 +414,19 @@ const INGESTION_HAND_WRITTEN: readonly string[] = [
  * the run can fill, and one removed cannot linger. Order is step order, then
  * schema order — the order the client meets the questions in.
  */
-export function ingestionFieldsFor(kind: ShowcaseKind): readonly PrimerField[] {
+export function ingestionFieldsFor(
+  kind: ShowcaseKind,
+  // Null by default, which reads as plain venture: a caller that forgets the
+  // sub-type gets no place key, never an extra one (VEN C3, fails closed).
+  ventureType: VentureType | null = null,
+): readonly PrimerField[] {
   return PRIMER_FIELDS.filter(
     (field) =>
       !CHOICE_BACKED.has(field.key) &&
       !REVEAL_GATED.has(field.key) &&
       !EXTRA_GATED.has(field.key) &&
       !INPUT_FIELDS.has(field.key) &&
-      (KIND_GATED[field.key]?.(kind) ?? true),
+      askedOf(field.key, kind, ventureType),
   );
 }
 

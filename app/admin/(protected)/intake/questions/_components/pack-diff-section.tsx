@@ -1,5 +1,11 @@
-import { diffEveryPack, diffPack, type PackDiff } from "./pack-diff";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
+import type { VentureType } from "@/lib/intake/showcase-kinds";
+import {
+  diffEveryPack,
+  diffOverlay,
+  diffPack,
+  type PackDiff,
+} from "./pack-diff";
 
 /**
  * Named `pack-diff-section.tsx` rather than `pack-diff.tsx` because the pure
@@ -20,14 +26,22 @@ import type { ShowcaseFlavour } from "@/lib/intake/showcase-copy";
  */
 export function PackDiffSection({
   flavour,
+  ventureType = null,
   everyPack,
 }: Readonly<{
   /** The pack this view is reading. Ignored when `everyPack` is set. */
   flavour: ShowcaseFlavour;
+  /** The view's sub-type (VEN): its overlay gets its own block. */
+  ventureType?: VentureType | null;
   /** The all-kinds overview shows all five non-generic packs. */
   everyPack?: boolean;
 }>) {
-  const diffs = everyPack ? diffEveryPack() : [diffPack(flavour)];
+  const diffs = everyPack
+    ? diffEveryPack()
+    : [
+        diffPack(flavour),
+        ...(ventureType ? [diffOverlay(flavour, ventureType)] : []),
+      ];
   const anything = diffs.some((diff) => diff.differences.length > 0);
 
   return (
@@ -46,7 +60,12 @@ export function PackDiffSection({
       </p>
 
       {anything ? (
-        diffs.map((diff) => <PackBlock key={diff.flavour} diff={diff} />)
+        diffs.map((diff) => (
+          <PackBlock
+            key={`${diff.flavour}:${diff.overlay ?? ""}`}
+            diff={diff}
+          />
+        ))
       ) : (
         <p className="mt-8 max-w-[68ch] font-body text-[15px] font-light leading-[1.5] text-(--color-dim)">
           This pack says everything the generic floor says. Nothing is reworded
@@ -63,7 +82,9 @@ function PackBlock({ diff }: Readonly<{ diff: PackDiff }>) {
   return (
     <div className="mt-10">
       <h3 className="font-(family-name:--font-mono) text-[10px] uppercase tracking-[.18em] text-(--color-c2)">
-        {diff.flavour} · {diff.differences.length} slot
+        {diff.flavour}
+        {diff.overlay ? ` · ${diff.overlay} overlay` : ""} ·{" "}
+        {diff.differences.length} slot
         {diff.differences.length === 1 ? "" : "s"}
       </h3>
 
@@ -76,7 +97,9 @@ function PackBlock({ diff }: Readonly<{ diff: PackDiff }>) {
             <dd className="mt-1.5 max-w-[68ch]">
               {difference.generic === null ? (
                 <p className="font-body text-[13.5px] font-light leading-[1.5] text-(--color-dim)">
-                  No generic floor — this slot exists only on this pack.
+                  {diff.overlay
+                    ? `Not in the ${diff.flavour} pack — this slot exists only on this overlay.`
+                    : "No generic floor — this slot exists only on this pack."}
                 </p>
               ) : (
                 <p className="font-body text-[15px] font-light leading-[1.5] text-(--color-dim) line-through decoration-(--color-faint)">
