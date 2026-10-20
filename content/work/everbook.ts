@@ -1,3 +1,4 @@
+import bookThemeMenu from "@/public/images/work/everbook/book-theme-menu.webp";
 import ecomHome from "@/public/work/everbook/everbook-ecom-home.png";
 import coverPreview from "@/public/work/everbook/everbook-life-story-cover-preview.png";
 import lifeStoryDashboard from "@/public/work/everbook/everbook-life-story-dashboard.png";
@@ -326,6 +327,15 @@ export const everbook = {
           src: pagesPreview,
           alt: "Paginated book preview — interior spread at print dimensions",
           size: "half",
+        },
+      ],
+    },
+    {
+      label: "COVER AND THEME",
+      items: [
+        {
+          src: bookThemeMenu,
+          alt: "The theme menu beside a live cover preview: cover colour swatches, a cover photo, and a choice of typefaces.",
         },
       ],
     },

@@ -1,4 +1,7 @@
 import futureOfCitiesLogo from "@/public/images/future-of-cities-logo.jpg";
+import crmEventRules from "@/public/images/work/family-office-platform/crm-event-rules.webp";
+import crmPipelineBoard from "@/public/images/work/family-office-platform/crm-pipeline-board.webp";
+import membershipTiers from "@/public/images/work/family-office-platform/membership-tiers.webp";
 import architecture from "@/public/work/family-office-platform/family-office-architecture.webp";
 import type { CaseStudy } from "./types";
 
@@ -289,6 +292,28 @@ export const familyOfficePlatform = {
           // A light-background diagram, so it is inset on a dark field rather
           // than butting against the page gradient.
           frame: "panel",
+        },
+      ],
+    },
+    {
+      label: "ONE CRM",
+      items: [
+        {
+          src: crmPipelineBoard,
+          alt: "The CRM's deal board for one pipeline, with leads in columns from lead identified through proposal presented.",
+        },
+        {
+          src: crmEventRules,
+          alt: "CRM settings for inbound email: a rule that scores each message against a written rubric before it reaches the pipeline.",
+        },
+      ],
+    },
+    {
+      label: "MEMBERSHIP SITE",
+      items: [
+        {
+          src: membershipTiers,
+          alt: "A retreat centre's membership page: six tiers from free to a corporate plan, with monthly and annual billing.",
         },
       ],
     },
