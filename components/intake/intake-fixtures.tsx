@@ -6,6 +6,7 @@ import { ShowcaseWelcome } from "@/app/websites/coded/intake/_components/showcas
 import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
 import { StepAudience } from "@/app/websites/coded/intake/_components/steps/step-audience";
 import { StepIngest } from "@/app/websites/coded/intake/_components/steps/step-ingest";
+import { StepSite } from "@/app/websites/coded/intake/_components/steps/step-site";
 import { StepTaste } from "@/app/websites/coded/intake/_components/steps/step-taste";
 import { StepWords } from "@/app/websites/coded/intake/_components/steps/step-words";
 import { KnownFact } from "@/app/websites/intake/_components/known-fact";
@@ -18,12 +19,17 @@ import { StepShell } from "@/app/websites/intake/_components/step-shell";
 import { WorkingIndicator } from "@/app/websites/intake/_components/working-indicator";
 import type { ExampleSet, ExampleSite } from "@/content/intake-examples";
 import { SITE } from "@/lib/config";
-import { stepByNumber, stepsFor } from "@/lib/intake/tracks";
+import { flavourForKind, stepByNumber, stepsFor } from "@/lib/intake/tracks";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
 import type { SellableProduct } from "@/server/services/products";
 import { PreviewModeProvider } from "./preview-mode";
 import { SaveLineDriver } from "./save-line-driver";
+import {
+  isSitePagesStateKey,
+  SITE_PAGES_STATE_KEYS,
+  sitePagesFixture,
+} from "./site-pages-fixtures";
 import { isVenStateKey, VEN_STATE_KEYS } from "./venture-fixtures";
 import { VentureStateView } from "./venture-state-view";
 
@@ -66,6 +72,8 @@ export const INTAKE_STATE_KEYS = [
   "words",
   // VEN: the venture places epic, drawn from `venture-fixtures.ts`.
   ...VEN_STATE_KEYS,
+  // WEB-22: a box per page on step 8, drawn from `site-pages-fixtures.ts`.
+  ...SITE_PAGES_STATE_KEYS,
 ] as const;
 
 export type IntakeStateKey = (typeof INTAKE_STATE_KEYS)[number];
@@ -217,6 +225,31 @@ function body(
         save={save}
         navigate={navigate}
       />
+    );
+  }
+
+  // WEB-22: the site step alone, with what was ticked, typed and bought.
+  if (isSitePagesStateKey(stateKey)) {
+    const fixture = sitePagesFixture(stateKey);
+    const flavour = flavourForKind(fixture.kind, undefined);
+    return (
+      <StepShell
+        track="showcase"
+        token={SYNTHETIC_TOKEN}
+        step={stepsFor("showcase", flavour).find((s) => s.key === "site")!}
+        flavour={flavour}
+        navigate={navigate}
+        saveSlot={<SaveLineDriver initial={save} />}
+      >
+        <StepSite
+          token={SYNTHETIC_TOKEN}
+          initial={fixture.site}
+          flavour={flavour}
+          kind={fixture.kind}
+          ventureType={fixture.ventureType}
+          paidExtraPages={fixture.paidExtraPages}
+        />
+      </StepShell>
     );
   }
 

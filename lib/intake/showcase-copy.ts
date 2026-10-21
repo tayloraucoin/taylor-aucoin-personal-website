@@ -1798,6 +1798,10 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
       "Most organisations have one. If it's fine, send the original. If it isn't, there's an add-on for that; say so and we'll talk about it.",
     pages: [
       { value: "home", label: "Home" },
+      // WEB-22: every venture has a page about who is behind it, and the
+      // list had nowhere to tick it. Inherited by the place overlay.
+      // [COPY — pending Taylor]
+      { value: "about", label: "About" },
       { value: "vision", label: "The vision" },
       { value: "place", label: "The place" },
       { value: "team", label: "Team" },

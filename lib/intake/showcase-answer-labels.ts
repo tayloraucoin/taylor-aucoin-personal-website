@@ -1,3 +1,5 @@
+import { PAGE_NAMES, pageBrainDumpKey } from "./site-page-notes";
+
 /**
  * Human labels for every showcase answer key, for the intake document.
  *
@@ -231,6 +233,19 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   /** A place venture's raise (VEN-3, D-VEN-8). */
   raiseProgress: "Whether counsel approved showing how much is raised",
   homeBrainDump: "What should be on the home page",
+  // WEB-22: one per page past Home, and the typed pages' list. The document
+  // prints these under the page's own name; this is the fallback and the
+  // import's description. [COPY — pending Taylor]
+  ...Object.fromEntries(
+    Object.entries(PAGE_NAMES).map(([value, name]) => [
+      pageBrainDumpKey(value),
+      `What should be on the ${name} page`,
+    ]),
+  ),
+  pagesCustomBrainDump: "What should be on the pages they added",
+  // Read-only keys the document prints in place of the page keys above.
+  pageBrainDumps: "What each page should hold",
+  droppedPageBrainDumps: "Notes for pages no longer in their sitemap",
   homeMedia: "Shortlisted for home — files",
   homeVideos: "Shortlisted for home — videos",
   oldSiteSurvives: "What must survive from the old site",

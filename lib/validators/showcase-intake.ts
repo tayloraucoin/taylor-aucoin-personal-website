@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  PAGE_BRAIN_DUMP_VALUES,
+  pageBrainDumpKey,
+} from "@/lib/intake/site-page-notes";
 import { SHOWCASE_STEP_KEYS, type ShowcaseStepKey } from "@/lib/types/intake";
 
 /**
@@ -780,6 +784,11 @@ export const stepMediaSchema = z.object({
   logoDirections: text,
 });
 
+/** One optional text answer per checklist page (WEB-22). */
+const PAGE_BRAIN_DUMPS = Object.fromEntries(
+  PAGE_BRAIN_DUMP_VALUES.map((value) => [pageBrainDumpKey(value), text]),
+) as Record<`${(typeof PAGE_BRAIN_DUMP_VALUES)[number]}BrainDump`, typeof text>;
+
 /** Step 8 — The site itself. */
 export const stepSiteSchema = z.object({
   pages: choice,
@@ -838,6 +847,16 @@ export const stepSiteSchema = z.object({
   homeBrainDump: text,
   homeMedia: choice,
   homeVideos: choice,
+
+  /**
+   * A brain dump per page past Home (WEB-22), one text key per checklist
+   * value, `<value>BrainDump`, so each joins the import and the document the
+   * way `homeBrainDump` does. A typed page's is its position in
+   * `pagesCustomBrainDump`, kept in step with `pagesCustom`. See
+   * `site-page-notes.ts` for why the value is the key and never the label.
+   */
+  ...PAGE_BRAIN_DUMPS,
+  pagesCustomBrainDump: choice,
 
   oldSiteSurvives: text,
   linksOutThere: text,

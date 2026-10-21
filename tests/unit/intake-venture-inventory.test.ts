@@ -15,6 +15,7 @@ import {
   primerField,
   revealGatedKeys,
 } from "@/lib/intake/showcase-primer-fields";
+import { PAGE_BOX_KEYS } from "@/lib/intake/site-page-notes";
 import { fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
 import type { Engagement } from "@/server/services/engagement";
 import { answerTally, collectUnanswered } from "@/server/services/output";
@@ -125,6 +126,8 @@ function expectedLabels(kind: ShowcaseKind, answered: Set<string>): string[] {
     fieldKeysFor("showcase", step.key)
       .filter((key) => !answered.has(key))
       .filter((key) => !(step.key === "taste" && RETIRED_TASTE_KEYS.has(key)))
+      // WEB-22: the page boxes past Home are not on the client's lists.
+      .filter((key) => !(step.key === "site" && PAGE_BOX_KEYS.has(key)))
       .filter((key) => askedOf(key, kind, null))
       .map((key) => labelFor("showcase", key)),
   );
@@ -154,6 +157,7 @@ test("VEN-1 C7 a portfolio's review tally counts only what it was asked", () => 
   for (const row of answerTally(portfolio)) {
     const asked = fieldKeysFor("showcase", row.key)
       .filter((key) => !(row.key === "taste" && RETIRED_TASTE_KEYS.has(key)))
+      .filter((key) => !(row.key === "site" && PAGE_BOX_KEYS.has(key)))
       .filter((key) => askedOf(key, "portfolio", null));
     assert.equal(row.total, asked.length, row.key);
   }

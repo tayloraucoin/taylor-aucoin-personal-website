@@ -1,8 +1,16 @@
 import type { ShowcaseKind, VentureType } from "./showcase-kinds";
 import {
+  PAGE_BRAIN_DUMP_VALUES,
+  PAGE_NAMES,
+  pageBrainDumpKey,
+} from "./site-page-notes";
+import {
+  copyPackFor,
+  flavourForKind,
   groupsFor,
   kindAsks,
   labelFor,
+  showcaseDisciplines,
   stepsFor,
   textFieldKeysFor,
 } from "./tracks";
@@ -150,6 +158,16 @@ const DESCRIPTIONS: Record<string, string> = {
    */
   homeBrainDump:
     "Only if the text explicitly plans the website's home page — what it says should lead, or be featured first. Leave empty unless the source is talking about the home page itself.",
+  /**
+   * Every other page's box, on Home's rule (WEB-22): a stated plan for that
+   * page, quoted, or nothing. A bio is not a plan for an About page.
+   */
+  ...Object.fromEntries(
+    PAGE_BRAIN_DUMP_VALUES.map((value) => [
+      pageBrainDumpKey(value),
+      `Only if the text explicitly plans the website's ${PAGE_NAMES[value]} page — what it says should go on that page. Leave empty unless the source is talking about that page itself.`,
+    ]),
+  ),
   currentBio: "An existing bio or About text written in their own voice.",
   personVoice: "Whether the site speaks as I or as they.",
   writtenNotes: "Notes on how they want the writing to sound.",
@@ -384,6 +402,28 @@ type KindGate = (
   ventureType: VentureType | null,
 ) => boolean;
 
+/**
+ * Whether any pack this kind can be read in lists a page (WEB-22).
+ *
+ * A portfolio's pack follows its discipline, which the gate is not told, so
+ * every pack a discipline can earn is asked, and the no-discipline floor.
+ */
+function packsListPage(
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+  value: string,
+): boolean {
+  const flavours = new Set([
+    flavourForKind(kind, undefined),
+    ...showcaseDisciplines().map((d) => flavourForKind(kind, [d.key])),
+  ]);
+  return [...flavours].some((flavour) =>
+    copyPackFor(flavour, ventureType).pages.some(
+      (option) => option.value === value,
+    ),
+  );
+}
+
 const KIND_GATED: Readonly<Record<string, KindGate>> = {
   stage: (kind) => groupsFor(kind).has("stage"),
   stageDetail: (kind) => groupsFor(kind).has("stage"),
@@ -415,6 +455,14 @@ const KIND_GATED: Readonly<Record<string, KindGate>> = {
     ].map((key): [string, KindGate] => [
       key,
       (kind, ventureType) => groupsFor(kind, ventureType).has("place"),
+    ]),
+  ),
+  // WEB-22: a page's box, only for a kind whose packs list that page, so a
+  // portfolio's run is never offered a venture's Apply page.
+  ...Object.fromEntries(
+    PAGE_BRAIN_DUMP_VALUES.map((value): [string, KindGate] => [
+      pageBrainDumpKey(value),
+      (kind, ventureType) => packsListPage(kind, ventureType, value),
     ]),
   ),
   // VEN-3: the investor ask. `raise` is every venture; `place` adds the
