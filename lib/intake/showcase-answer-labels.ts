@@ -147,12 +147,25 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   mechanism: "How it happens",
   destination: "Where it lands",
   visibility: "Shown on the site",
+  // An Invest card's rows (VEN-3).
+  currency: "Currency",
+  sameMinimum: "Same minimum in every country",
+  eligibility: "Who may see the numbers",
 
   // Step 4 — the claims cluster. The three answers that stop a false claim
   // reaching a live site (D-PORT-10).
   signOff: "Who signs off on the words",
   cantSay: "What they can't say",
   requiredWording: "Required wording",
+  // The investor ask, in the same cluster (VEN-3).
+  issuerEntity: "Legal entity investors pay into",
+  investorReceives: "What an investor receives, in counsel's words",
+  coOwnerDiffers: "Whether a co-owner differs from an investor",
+  coOwnerLines: "Co-owner and investor lines, as counsel approved them",
+  jurisdictions: "Where people may invest from",
+  returnWording: "Whether the site may mention returns",
+  returnWordingQuote: "Approved return wording",
+  perks: "Perks or stays tied to the amount invested",
   // A place venture's Work rows (VEN-2).
   placeSize: "Size and capacity",
   permits: "Permits",
@@ -215,6 +228,8 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   embedFormNotes: "Where the form goes, and what it's for",
   showAvailability: "Show availability on the site",
   availabilityDetail: "What the availability line should say",
+  /** A place venture's raise (VEN-3, D-VEN-8). */
+  raiseProgress: "Whether counsel approved showing how much is raised",
   homeBrainDump: "What should be on the home page",
   homeMedia: "Shortlisted for home — files",
   homeVideos: "Shortlisted for home — videos",
@@ -327,4 +342,30 @@ export const PIECE_FUNDED_LABELS: Readonly<Record<string, string>> = {
   partly: "Partly funded",
   notYet: "Not yet funded",
   unsure: "Not sure yet",
+};
+
+/**
+ * The investor ask's radios as the document prints them (VEN-3,
+ * `investor-ask.md`), keyed by field and then by stored value. Blank is
+ * printed under "Not answered", never as any of these (D-VEN-10).
+ */
+export const RAISE_CHOICE_LABELS: Readonly<
+  Record<string, Readonly<Record<string, string>>>
+> = {
+  coOwnerDiffers: {
+    same: "The same",
+    different: "Different",
+    unsure: "Not sure yet",
+  },
+  returnWording: {
+    none: "No",
+    approved: "Yes, counsel approved the wording",
+    unsure: "Not sure yet",
+  },
+  raiseProgress: {
+    approved: "Yes, approved",
+    no: "No",
+    unsure: "Not sure yet",
+  },
+  sameMinimum: { yes: "Yes", no: "No", unsure: "Not sure yet" },
 };

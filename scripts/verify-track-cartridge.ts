@@ -698,6 +698,115 @@ function checkPlaceQuestions(): void {
   );
 }
 
+/* ── VEN-3 — the claims boundary (C-VEN-ask-7) ──────────────────────────── */
+
+/**
+ * Words that model share wording or press a visitor: returns, yield, income,
+ * appreciation, a percentage, "only … left" and scarcity. The form collects
+ * counsel's words and suggests none of its own.
+ */
+const CLAIMS_BOUNDARY =
+  /\b(returns?|yields?|income|apprecia\w*|dividends?|roi)\b|\d\s*%|\bonly\b[^.]*?\bleft\b|\b(limited|scarce|scarcity|last chance|selling fast|spots? (left|remaining)|exclusive|hurry)\b/i;
+
+/** The two strings that ask about exactly those words, and so may hold them. */
+const ASKS_ABOUT_RETURNS = new Set(["returnWording", "returnWordingQuote"]);
+
+/** Every string in a value, with its path; option `value`s are storage. */
+function stringsIn(value: unknown, at: string): Array<[string, string]> {
+  if (typeof value === "string") return [[at, value]];
+  if (Array.isArray(value))
+    return value.flatMap((item, i) => stringsIn(item, `${at}[${i}]`));
+  if (value && typeof value === "object")
+    return Object.entries(value).flatMap(([key, item]) =>
+      key === "value" ? [] : stringsIn(item, `${at}.${key}`),
+    );
+  return [];
+}
+
+/** The paths whose words cross the boundary, outside the two that ask. */
+function crossesClaimsBoundary(
+  strings: ReadonlyArray<[string, string]>,
+): string[] {
+  return strings
+    .filter(
+      ([at]) => !at.split(/[.[]/).some((part) => ASKS_ABOUT_RETURNS.has(part)),
+    )
+    .filter(([, text]) => CLAIMS_BOUNDARY.test(text))
+    .map(([at]) => at);
+}
+
+/**
+ * Every client's name, read from the work rows' source: the rows import
+ * images, which this script cannot load (D-PORT-14).
+ */
+const CLIENT_NAMES = [
+  ...readFileSync("content/work/rows.ts", "utf8").matchAll(
+    /type: "client",\s*title: "([^"]+)"/g,
+  ),
+].map((match) => match[1]!.toLowerCase());
+
+/** The paths whose words hold a client's name. */
+function namesAClient(strings: ReadonlyArray<[string, string]>): string[] {
+  return strings
+    .filter(([, text]) =>
+      CLIENT_NAMES.some((name) => text.toLowerCase().includes(name)),
+    )
+    .map(([at]) => at);
+}
+
+function checkClaimsBoundary(): void {
+  const floor = copyPackFor("generic").claims;
+  const venture = copyPackFor("venture");
+  const place = copyPackFor("venture", "place");
+  // The place claims overlay: only the strings it changes; the rest are the
+  // floor's, which ask about returns as things a client can't say.
+  const placeClaims = Object.fromEntries(
+    Object.entries(place.claims).filter(
+      ([key, value]) =>
+        JSON.stringify(value) !==
+        JSON.stringify(floor[key as keyof typeof floor]),
+    ),
+  );
+  const strings = [
+    ...stringsIn(venture.raise, "raise"),
+    ...stringsIn(venture.claims.intro, "claims.intro"),
+    ...stringsIn(place.placeVenture, "placeVenture"),
+    ...stringsIn(placeClaims, "placeClaims"),
+  ];
+
+  check("the investor ask carries its strings", strings.length > 20, true);
+  check(
+    "no investor ask string models returns or scarcity",
+    crossesClaimsBoundary(strings),
+    [],
+  );
+  check(
+    "the two return questions are the ones that name returns",
+    stringsIn(venture.raise?.returnWording, "returnWording").some(([, text]) =>
+      CLAIMS_BOUNDARY.test(text),
+    ),
+    true,
+  );
+  check("no investor ask string names a client", namesAClient(strings), []);
+
+  // The scan's own proof: a yield figure, and scarcity, in a fixture string.
+  check(
+    "the scan catches a yield figure and a scarcity line",
+    crossesClaimsBoundary([
+      ["fixture.yield", "Investors earn an 8% yield from year two."],
+      ["fixture.scarce", "Only three founding shares left."],
+      ["returnWordingQuote", "An 8% yield, approved by counsel."],
+    ]),
+    ["fixture.yield", "fixture.scarce"],
+  );
+  check("the client-name guard reads the clients", CLIENT_NAMES.length > 0, true);
+  check(
+    "the client-name guard catches a client's name",
+    namesAClient([["fixture", `Built like ${CLIENT_NAMES[0]}`]]),
+    ["fixture"],
+  );
+}
+
 /* ── PORT-13 — changing the kind changes questions, never answers ────────── */
 
 /**
@@ -1765,6 +1874,7 @@ function main(): void {
   checkKinds();
   checkVentureTypes();
   checkPlaceQuestions();
+  checkClaimsBoundary();
   checkLabels();
   checkGallery();
   checkTasteContract();

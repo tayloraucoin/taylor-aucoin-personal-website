@@ -71,6 +71,7 @@ export function StepWork({
   ventureType,
   projectFiles,
   pieceFiles,
+  openEntries = false,
 }: {
   token: string;
   initial: Record<string, unknown>;
@@ -82,6 +83,11 @@ export function StepWork({
   projectFiles: readonly (ExistingFile & { entryKey: string | null })[];
   /** The same, for a venture's pieces. */
   pieceFiles: readonly (ExistingFile & { entryKey: string | null })[];
+  /**
+   * Harness only: draw each ask card open, so a capture, which cannot
+   * click, shows a chosen card's rows (VEN-3 `ask-invest-card`).
+   */
+  openEntries?: boolean;
 }) {
   const form = useStepAutosave({ token, stepKey: "work", initial });
   useReportSaveState(form.state, form.retry);
@@ -320,6 +326,10 @@ export function StepWork({
                 index={index}
                 entry={item}
                 pack={pack}
+                kind={kind}
+                ventureType={ventureType}
+                investTest={hasGroup("raise")}
+                initialOpen={openEntries}
                 onChange={update}
                 onBlur={form.flush}
               />
@@ -385,8 +395,10 @@ export function StepWork({
         />
       )}
 
-      {/* The track's one ink treatment (D-PORT-10). Three questions, and "not
-          sure" is a fine answer to all three. */}
+      {/* The track's one ink treatment (D-PORT-10). The three claims
+          questions, and for a venture the investor ask between them (VEN-3,
+          D-VEN-5, `investor-ask.md`): counsel's words, collected, never
+          drafted. Rows in the surface's order, each asked by the registry. */}
       <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("claims")}>
         <InkCluster mono={pack.claims.mono} intro={pack.claims.intro}>
           <TextAnswer
@@ -395,12 +407,114 @@ export function StepWork({
             label={pack.claims.signOff.label}
             help={pack.claims.signOff.help}
           />
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <LongAnswer
+                form={form}
+                name="issuerEntity"
+                label={pack.raise.issuerEntity.label}
+                help={pack.raise.issuerEntity.help}
+              />
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("raise")}
+              note="Asked here: the legal entity investors pay into. The words are the venture pack's."
+            />
+          )}
+          {pack.placeVenture ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+              <>
+                <LongAnswer
+                  form={form}
+                  name="investorReceives"
+                  label={pack.placeVenture.investorReceives.label}
+                  help={pack.placeVenture.investorReceives.help}
+                />
+                <ChoiceAnswer
+                  form={form}
+                  name="coOwnerDiffers"
+                  label={pack.placeVenture.coOwnerDiffers.label}
+                  options={pack.placeVenture.coOwnerDiffers.options}
+                />
+                <Reveal
+                  values={form.values}
+                  dependsOn={{ field: "coOwnerDiffers", equals: "different" }}
+                >
+                  <LongAnswer
+                    form={form}
+                    name="coOwnerLines"
+                    label={pack.placeVenture.coOwnerLines.label}
+                  />
+                </Reveal>
+              </>
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("place")}
+              note="Asked here: what an investor receives, whether a co-owner differs, and if so the two lines. The words are the place overlay's."
+            />
+          )}
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <LongAnswer
+                form={form}
+                name="jurisdictions"
+                label={pack.raise.jurisdictions.label}
+                help={pack.raise.jurisdictions.help}
+              />
+            </ForKinds>
+          ) : null}
           <LongAnswer
             form={form}
             name="cantSay"
             label={pack.claims.cantSay.label}
             help={pack.claims.cantSay.help}
           />
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <>
+                {/* Nothing preselected; unanswered is built as "No"
+                    (D-VEN-10). */}
+                <ChoiceAnswer
+                  form={form}
+                  name="returnWording"
+                  label={pack.raise.returnWording.label}
+                  help={pack.raise.returnWording.help}
+                  options={pack.raise.returnWording.options}
+                />
+                <Reveal
+                  values={form.values}
+                  dependsOn={{ field: "returnWording", equals: "approved" }}
+                >
+                  <LongAnswer
+                    form={form}
+                    name="returnWordingQuote"
+                    label={pack.raise.returnWordingQuote.label}
+                    help={pack.raise.returnWordingQuote.help}
+                  />
+                </Reveal>
+              </>
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("raise")}
+              note="Asked here: where people may invest from, whether the site may mention returns, and if so the approved wording."
+            />
+          )}
+          {pack.placeVenture ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+              <LongAnswer
+                form={form}
+                name="perks"
+                label={pack.placeVenture.perks.label}
+                help={pack.placeVenture.perks.help}
+              />
+            </ForKinds>
+          ) : null}
           <LongAnswer
             form={form}
             name="requiredWording"

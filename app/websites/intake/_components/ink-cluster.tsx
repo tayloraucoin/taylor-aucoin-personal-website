@@ -32,10 +32,13 @@ export function InkCluster({
   children: ReactNode;
 }) {
   const id = "ink-cluster-label";
+  // Read with the region's name on entering it (C-VEN-ask-9).
+  const introId = "ink-cluster-intro";
 
   return (
     <section
       aria-labelledby={id}
+      aria-describedby={introId}
       className="mb-7 border-t border-(--color-faint) pt-7"
     >
       <h2
@@ -45,7 +48,10 @@ export function InkCluster({
         {mono}
       </h2>
 
-      <p className="mt-3 mb-6 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)">
+      <p
+        id={introId}
+        className="mt-3 mb-6 max-w-[52ch] text-[16px] leading-[1.6] text-(--color-ink) sm:text-(length:--text-body)"
+      >
         {intro}
       </p>
 

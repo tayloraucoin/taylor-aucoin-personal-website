@@ -461,6 +461,28 @@ export type ShowcaseCopyPack = {
   ventureType?: CopyField & { labels: Readonly<Record<string, string>> };
 
   /**
+   * What every venture is asked about the raise (VEN-3, `investor-ask.md`):
+   * claims cluster rows 2, 6, 8 and 9, and the three rows an Invest card
+   * gains. The venture pack's alone, so the place overlay inherits it and no
+   * other pack holds it (C-VEN-ask-2). Nothing here models share wording or
+   * suggests investment wording; only `returnWording` and `returnWordingQuote`
+   * name returns, because that is what they ask (C-VEN-ask-7). Option
+   * `value`s are storage and never change.
+   */
+  raise?: {
+    issuerEntity: CopyField;
+    jurisdictions: CopyField;
+    returnWording: CopyField & { options: readonly CopyChoice[] };
+    returnWordingQuote: CopyField;
+    /** Rows on an ask card whose ask is `invest`; entry keys, not fields. */
+    invest: {
+      currency: { label: string };
+      sameMinimum: { label: string; options: readonly CopyChoice[] };
+      eligibility: CopyField;
+    };
+  };
+
+  /**
    * The piece card's "What kind of thing it is" placeholder (VEN-2). A floor
    * slot so the place overlay can name a building and the land.
    */
@@ -490,6 +512,17 @@ export type ShowcaseCopyPack = {
     funded: { label: string; options: readonly CopyChoice[] };
     placeSize: CopyField;
     permits: CopyField;
+    /**
+     * The claims cluster's place rows (VEN-3, `investor-ask.md`): rows 3, 4,
+     * 5 and 10. Counsel's words, collected and never drafted.
+     */
+    investorReceives: CopyField;
+    coOwnerDiffers: { label: string; options: readonly CopyChoice[] };
+    /** Opens on `coOwnerDiffers = different`; label-only. */
+    coOwnerLines: { label: string };
+    perks: CopyField;
+    /** Site's availability reveal, after the detail (D-VEN-8). */
+    raiseProgress: CopyField & { options: readonly CopyChoice[] };
     /** The Applying group, after the asks; cut first if the epic runs over. */
     apply: CopyField & {
       who: { label: string };
@@ -1597,6 +1630,52 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
         other: "Something else",
       },
     },
+    // [COPY — pending Taylor] (Gloss, `investor-ask.md`). Every venture.
+    raise: {
+      issuerEntity: {
+        label: "The legal entity investors pay into",
+        help: "Its exact legal name, the country it is registered in, and its registration number. It goes in the footer and the disclaimer.",
+      },
+      jurisdictions: {
+        label: "Where people may invest from",
+        help: "The countries, provinces or states that are open, and any that are excluded.",
+      },
+      returnWording: {
+        label: "May the site mention returns?",
+        help: 'Income, appreciation, or lines like "only a few left". Unless counsel approved the exact words, the answer is no.',
+        options: [
+          { value: "none", label: "No" },
+          { value: "approved", label: "Yes, counsel approved the wording" },
+          { value: "unsure", label: "Not sure yet" },
+        ],
+      },
+      returnWordingQuote: {
+        label: "Paste the approved wording",
+        help: "Exactly as approved, and who approved it.",
+      },
+      invest: {
+        currency: { label: "Currency" },
+        sameMinimum: {
+          label: "Is the minimum the same in every country?",
+          options: [
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
+            { value: "unsure", label: "Not sure yet" },
+          ],
+        },
+        eligibility: {
+          label: "Who may see the numbers?",
+          help: "Anyone who asks, people after a call, or only some investors. Say who checks.",
+        },
+      },
+    },
+    // [COPY — pending Taylor] One of plain venture's two changed strings
+    // (D-VEN-13): the cluster now holds more than three questions.
+    claims: {
+      ...GENERIC.claims,
+      intro:
+        'These questions stop us putting something on your site that isn\'t true. "Not sure" is a fine answer to any of them.',
+    },
     whatYouDoLabel: "What it is, in one line",
     whatYouDoHelp:
       'The line that sits under the name. "A design studio in Halifax" counts. So does "A community-owned sanctuary in the hills of Umbria." We\'ll sharpen it together.',
@@ -1969,6 +2048,32 @@ const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {
       label: "Permits",
       help: "Which you need, which are granted and which are pending, with dates where you have them. The site mentions them only as your counsel allows.",
     },
+    investorReceives: {
+      label: "What an investor receives",
+      help: "Paste your counsel's description. The model page uses their words as written.",
+    },
+    coOwnerDiffers: {
+      label: "Is a co-owner the same as an investor here?",
+      options: [
+        { value: "same", label: "The same" },
+        { value: "different", label: "Different" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    coOwnerLines: { label: "One line for each, as counsel approved them" },
+    perks: {
+      label: "Perks or stays tied to the amount invested",
+      help: "Exactly as counsel approved them. Leave it empty if there are none.",
+    },
+    raiseProgress: {
+      label: "Has your counsel approved showing how much has been raised?",
+      help: "Until they have, the site won't show it.",
+      options: [
+        { value: "approved", label: "Yes, approved" },
+        { value: "no", label: "No" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
     apply: {
       label: "Applying",
       help: "Skip this if nobody applies.",
@@ -1988,6 +2093,20 @@ const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {
     },
   },
   rosterLeadHelpSuffix: "Their headshot is the founder portrait on the site.",
+  // The investor ask, worded for a place (VEN-3, `investor-ask.md`).
+  claims: {
+    ...VENTURE.claims,
+    intro:
+      'Your counsel decides what the site may say about the raise. We only collect what they have said, so "not sure" or "counsel pending" is a fine answer to anything here.',
+    signOff: {
+      ...VENTURE.claims.signOff,
+      help: "Who approves the investor wording in each country, and have they seen the exact page text?",
+    },
+    requiredWording: {
+      ...VENTURE.claims.requiredWording,
+      help: "Each country's disclaimer, pasted exactly, and who approved it.",
+    },
+  },
   pieceKindPlaceholder: "A building, a phase, the land, a programme",
   representation: {
     ...VENTURE.representation,

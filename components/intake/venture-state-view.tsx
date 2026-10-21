@@ -102,6 +102,7 @@ export function VentureStateView({
             ventureType={fixture.ventureType}
             projectFiles={[]}
             pieceFiles={[]}
+            openEntries={fixture.openEntries}
           />
         );
       case "site":

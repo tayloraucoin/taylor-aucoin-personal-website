@@ -301,3 +301,176 @@ test.describe("VEN-2 C2 plain venture meets none of it", () => {
     });
   }
 });
+
+/* ── VEN-3: the investor ask (`investor-ask.md`) ─────────────────────────── */
+
+const ASK_KEYS = [
+  "ask-plain",
+  "ask-place-empty",
+  "ask-coowner",
+  "ask-returns",
+  "ask-invest-card",
+  "ask-raise-progress",
+] as const;
+
+const PLACE_INTRO =
+  'Your counsel decides what the site may say about the raise. We only collect what they have said, so "not sure" or "counsel pending" is a fine answer to anything here.';
+const VENTURE_INTRO =
+  'These questions stop us putting something on your site that isn\'t true. "Not sure" is a fine answer to any of them.';
+
+/** The keys of the labelled rows inside a container, in document order. */
+async function rowKeys(page: Page, container: string, prefix = "f-") {
+  return page
+    .locator(`${container} label[for^="${prefix}"]`)
+    .evaluateAll(
+      (labels, p) =>
+        labels.map((label) => label.getAttribute("for")!.slice(p.length)),
+      prefix,
+    );
+}
+
+const CLUSTER = 'section[aria-labelledby="ink-cluster-label"]';
+
+test.describe("VEN-3 C1, C2 the claims cluster's rows", () => {
+  test("ask-place-empty: the place intro and all eleven rows in order, no reveal open", async ({
+    page,
+  }) => {
+    await page.goto(at("ask-place-empty"));
+    const cluster = page.locator(CLUSTER);
+    await expect(cluster.getByText(PLACE_INTRO)).toBeVisible();
+    expect(await rowKeys(page, CLUSTER)).toEqual([
+      "signOff",
+      "issuerEntity",
+      "investorReceives",
+      "coOwnerDiffers",
+      "jurisdictions",
+      "cantSay",
+      "returnWording",
+      "perks",
+      "requiredWording",
+    ]);
+    for (const name of ["coOwnerDiffers", "returnWording"]) {
+      expect(await radios(page, name)).toMatchObject({ checked: 0 });
+    }
+  });
+
+  test("ask-plain: the all-venture intro and only the venture rows", async ({
+    page,
+  }) => {
+    await page.goto(at("ask-plain"));
+    await expect(page.locator(CLUSTER).getByText(VENTURE_INTRO)).toBeVisible();
+    expect(await rowKeys(page, CLUSTER)).toEqual([
+      "signOff",
+      "issuerEntity",
+      "jurisdictions",
+      "cantSay",
+      "returnWording",
+      "requiredWording",
+    ]);
+  });
+
+  for (const key of ASK_KEYS) {
+    test(`axe: no serious or critical violation on ${key}`, async ({
+      page,
+    }) => {
+      await page.goto(at(key));
+      await expectNoSeriousA11y(page);
+    });
+  }
+});
+
+test.describe("VEN-3 C4 each reveal opens on its one answer, right after it", () => {
+  for (const [field, opens, revealed, other] of [
+    ["coOwnerDiffers", "Different", "coOwnerLines", "The same"],
+    [
+      "returnWording",
+      "Yes, counsel approved the wording",
+      "returnWordingQuote",
+      "No",
+    ],
+  ] as const) {
+    test(`${field} opens ${revealed}, and closing keeps the text`, async ({
+      page,
+    }) => {
+      await page.goto(at("ask-place-empty"));
+      const group = page.locator(`fieldset:has(input[name="${field}"])`);
+      const reveal = page.locator(`#f-${revealed}`);
+      await expect(reveal).toHaveCount(0);
+
+      await group.getByRole("radio", { name: other, exact: true }).check();
+      await expect(reveal).toHaveCount(0);
+      await group.getByRole("radio", { name: "Not sure yet" }).check();
+      await expect(reveal).toHaveCount(0);
+
+      await group.getByRole("radio", { name: opens, exact: true }).check();
+      await expect(reveal).toBeVisible();
+      const keys = await rowKeys(page, CLUSTER);
+      expect(keys[keys.indexOf(field) + 1]).toBe(revealed);
+
+      await reveal.fill("[Fixture: typed text]");
+      await group.getByRole("radio", { name: other, exact: true }).check();
+      await expect(reveal).toHaveCount(0);
+      await group.getByRole("radio", { name: opens, exact: true }).check();
+      await expect(reveal).toHaveValue("[Fixture: typed text]");
+    });
+  }
+
+  test("ask-coowner and ask-returns draw their reveal open", async ({
+    page,
+  }) => {
+    await page.goto(at("ask-coowner"));
+    await expect(page.locator("#f-coOwnerLines")).toBeVisible();
+    await page.goto(at("ask-returns"));
+    await expect(page.locator("#f-returnWordingQuote")).toBeVisible();
+    // A plain venture: no place row in the cluster.
+    await expect(page.locator("#f-investorReceives")).toHaveCount(0);
+  });
+});
+
+test.describe("VEN-3 C5 the Invest card's rows and Site's raise progress", () => {
+  test("ask-invest-card: three rows at their places on Invest, none on Apply", async ({
+    page,
+  }) => {
+    await page.goto(at("ask-invest-card"));
+    expect(await rowKeys(page, "main", "f-ask-")).toEqual([
+      "ask-0",
+      "forWhom-0",
+      "getWhat-0",
+      "number-0",
+      "currency-0",
+      "sameMinimum-0",
+      "mechanism-0",
+      "visibility-0",
+      "eligibility-0",
+      "ask-1",
+      "forWhom-1",
+      "getWhat-1",
+      "number-1",
+      "mechanism-1",
+      "visibility-1",
+    ]);
+    await expect(
+      page.locator("input[name=ask-sameMinimum-0][value=no]"),
+    ).toBeChecked();
+    expect(await radios(page, "ask-sameMinimum-0")).toMatchObject({
+      values: ["yes", "no", "unsure"],
+    });
+  });
+
+  test("ask-raise-progress: inside the availability reveal, after the detail", async ({
+    page,
+  }) => {
+    await page.goto(at("ask-raise-progress"));
+    const keys = await rowKeys(page, "main");
+    expect(keys[keys.indexOf("availabilityDetail") + 1]).toBe("raiseProgress");
+    expect(await radios(page, "raiseProgress")).toEqual({
+      values: ["approved", "no", "unsure"],
+      checked: 0,
+    });
+    await page
+      .locator('fieldset:has(input[name="showAvailability"])')
+      .getByRole("radio", { name: "No" })
+      .check();
+    await expect(page.locator("input[name=raiseProgress]")).toHaveCount(0);
+  });
+});

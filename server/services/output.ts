@@ -20,6 +20,7 @@ import {
 } from "@/lib/intake/taste-picks";
 import {
   PIECE_FUNDED_LABELS,
+  RAISE_CHOICE_LABELS,
   RETIRED_TASTE_KEYS,
 } from "@/lib/intake/showcase-answer-labels";
 import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
@@ -706,11 +707,16 @@ function renderWorkEntries(
         ["forWhom", "Who it's for"],
         ["getWhat", "What they get"],
         ["number", "The number"],
+        // An Invest card's rows (VEN-3, D-VEN-7). Printed whenever stored.
+        ["currency", "Currency"],
+        ["sameMinimum", "Same minimum in every country"],
         ["mechanism", "How it happens"],
         ["destination", "Where it lands"],
         ["visibility", "Shown on the site"],
+        ["eligibility", "Who may see the numbers"],
       ],
       enums: {
+        sameMinimum: RAISE_CHOICE_LABELS.sameMinimum!,
         mechanism: {
           form: "A form on the site",
           request: "Request a document",
@@ -1383,7 +1389,13 @@ export function renderIntakeMarkdown(input: {
 
     lines.push("", `## ${step.title}`);
     for (const [key, value] of answered) {
-      const rendered = renderValue(engagement.track, value);
+      // The investor ask's radios print as words (VEN-3); a value with no
+      // label prints as stored.
+      const word =
+        typeof value === "string"
+          ? RAISE_CHOICE_LABELS[key]?.[value]
+          : undefined;
+      const rendered = word ?? renderValue(engagement.track, value);
       const label = labelFor(engagement.track, key);
       lines.push(
         rendered.startsWith("\n")

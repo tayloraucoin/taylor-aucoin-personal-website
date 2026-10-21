@@ -83,6 +83,15 @@ const EXCLUDED_FIELDS = new Map<string, string>([
     "availabilityDetail",
     "Conditional on the availability question, and a claim about when they are free — theirs to write.",
   ],
+  // The investor ask (VEN-3, C9). Both are counsel's words.
+  [
+    "investorReceives",
+    "Counsel's words, and a sentence from a deck is not counsel's approval.",
+  ],
+  [
+    "perks",
+    "Counsel's words, and a sentence from a deck is not counsel's approval.",
+  ],
 ]);
 
 /**
@@ -279,6 +288,12 @@ const CHOICE_BACKED: ReadonlySet<string> = new Set([
   // exactly the site names its location are the founder's to choose.
   "propertyStatus",
   "locationPrecision",
+  // The investor ask's three radios (VEN-3). Whether a co-owner differs,
+  // whether returns may be named and whether progress may be shown are
+  // counsel's to say, never a run's.
+  "coOwnerDiffers",
+  "returnWording",
+  "raiseProgress",
   "justYou",
   "showTeam",
   "leadPerson",
@@ -306,6 +321,10 @@ const CHOICE_BACKED: ReadonlySet<string> = new Set([
  */
 const REVEAL_GATED: ReadonlySet<string> = new Set([
   "availabilityDetail",
+  // VEN-3: each opens on one answer above it (`investor-ask.md`).
+  "coOwnerLines",
+  "returnWordingQuote",
+  "raiseProgress",
   "registrar",
   "domainAccess",
   "embedFormLink",
@@ -396,6 +415,25 @@ const KIND_GATED: Readonly<Record<string, KindGate>> = {
     ].map((key): [string, KindGate] => [
       key,
       (kind, ventureType) => groupsFor(kind, ventureType).has("place"),
+    ]),
+  ),
+  // VEN-3: the investor ask. `raise` is every venture; `place` adds the
+  // place rows and raise progress. Through the registry, never a comparison.
+  ...Object.fromEntries(
+    [
+      ["issuerEntity", "raise"],
+      ["jurisdictions", "raise"],
+      ["returnWording", "raise"],
+      ["returnWordingQuote", "raise"],
+      ["investorReceives", "place"],
+      ["coOwnerDiffers", "place"],
+      ["coOwnerLines", "place"],
+      ["perks", "place"],
+      ["raiseProgress", "place"],
+    ].map(([key, group]): [string, KindGate] => [
+      key!,
+      (kind, ventureType) =>
+        groupsFor(kind, ventureType).has(group as "raise" | "place"),
     ]),
   ),
 };

@@ -464,6 +464,15 @@ export const askEntrySchema = z.object({
   mechanism: text,
   destination: text,
   visibility: text,
+  /**
+   * An Invest card's three rows, asked of every venture (VEN-3, D-VEN-7).
+   * Entry keys, outside the primer inventory; bounds only, and
+   * `sameMinimum`'s values (`yes`, `no`, `unsure`) live in the venture
+   * pack's `raise.invest`.
+   */
+  currency: text,
+  sameMinimum: text,
+  eligibility: text,
 });
 
 export type OfferingEntry = z.infer<typeof offeringEntrySchema>;
@@ -522,7 +531,25 @@ export const stepWorkSchema = z.object({
    * rule: anything touching money, legal status, or claims about results.
    */
   signOff: text,
+  /**
+   * The investor ask, inside the claims cluster (VEN-3, D-VEN-5,
+   * `investor-ask.md`). Counsel's words, collected and never drafted: every
+   * one is critical and quote-or-nothing to the run, and the radios and the
+   * reveals are never written by it (`showcase-primer-fields.ts`). Bounds
+   * only; the radios' values live in the packs. Schema order is the
+   * cluster's row order.
+   */
+  issuerEntity: text,
+  investorReceives: text,
+  /** `same`, `different`, `unsure`. */
+  coOwnerDiffers: text,
+  coOwnerLines: text,
+  jurisdictions: text,
   cantSay: text,
+  /** `none`, `approved`, `unsure`; unanswered is built as `none` (D-VEN-10). */
+  returnWording: text,
+  returnWordingQuote: text,
+  perks: text,
   requiredWording: text,
 
   /**
@@ -789,6 +816,12 @@ export const stepSiteSchema = z.object({
   showAvailability: text,
   /** What it should say, and when it stops being true (PORT-19 note 12). */
   availabilityDetail: text,
+  /**
+   * Whether counsel approved showing how much is raised, asked of a place
+   * venture inside the availability reveal (VEN-3, D-VEN-8): `approved`,
+   * `no`, `unsure`. Critical, unlike `showAvailability`.
+   */
+  raiseProgress: text,
 
   /**
    * The home page: the braindump, and the shortlist it is read beside.

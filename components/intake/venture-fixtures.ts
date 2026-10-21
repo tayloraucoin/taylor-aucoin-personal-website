@@ -31,6 +31,14 @@ export const VEN_STATE_KEYS = [
   "place-empty",
   "place-filled",
   "place-searching",
+  // VEN-3: the investor ask in the claims cluster, the Invest card and
+  // Site's raise progress (`investor-ask.md`).
+  "ask-plain",
+  "ask-place-empty",
+  "ask-coowner",
+  "ask-returns",
+  "ask-invest-card",
+  "ask-raise-progress",
 ] as const;
 
 export type VenStateKey = (typeof VEN_STATE_KEYS)[number];
@@ -62,6 +70,8 @@ export type VentureFixture = {
   startSeed?: StartFormSeed;
   /** About's kind picker drawn open. */
   picking?: boolean;
+  /** Work's ask cards drawn open, chosen or not (VEN-3). */
+  openEntries?: boolean;
 };
 
 /** The one synthetic address every VEN fixture carries. */
@@ -177,6 +187,88 @@ const VEN_2_FIXTURES = {
   },
 } satisfies Record<string, VentureFixture>;
 
+/* ── VEN-3: the investor ask ────────────────────────────────────────────── */
+
+/** An Invest card with its three rows answered, and an Apply card beside it. */
+const INVEST_ASK = {
+  entryKey: "fixture-ask-invest",
+  ask: "invest",
+  forWhom: "[Fixture: who may invest]",
+  number: "[Fixture: a minimum]",
+  currency: "[Fixture: a currency]",
+  sameMinimum: "no",
+  visibility: "request",
+  eligibility: "[Fixture: who may see the numbers, and who checks]",
+} as const;
+
+const VEN_3_FIXTURES = {
+  // Every venture's rows, with the all-venture intro; no place row.
+  "ask-plain": {
+    kind: "venture",
+    ventureType: null,
+    surface: "work",
+    answers: { about: VENTURE_ABOUT, work: {} },
+  },
+  // Every row, nothing answered, no reveal open.
+  "ask-place-empty": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "work",
+    answers: { about: PLACE_ABOUT, work: {} },
+  },
+  "ask-coowner": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "work",
+    answers: {
+      about: PLACE_ABOUT,
+      work: {
+        coOwnerDiffers: "different",
+        coOwnerLines: "[Fixture: one line for a co-owner, one for an investor]",
+      },
+    },
+  },
+  "ask-returns": {
+    kind: "venture",
+    ventureType: null,
+    surface: "work",
+    answers: {
+      about: VENTURE_ABOUT,
+      work: {
+        returnWording: "approved",
+        returnWordingQuote: "[Fixture: the approved line, and who approved it]",
+      },
+    },
+  },
+  "ask-invest-card": {
+    kind: "venture",
+    ventureType: null,
+    surface: "work",
+    openEntries: true,
+    answers: {
+      about: VENTURE_ABOUT,
+      work: {
+        asks: [INVEST_ASK, { ...FIXTURE_ASK, entryKey: "fixture-ask-2" }],
+      },
+    },
+  },
+  "ask-raise-progress": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "site",
+    answers: {
+      about: PLACE_ABOUT,
+      site: {
+        showAvailability: "yes",
+        availabilityDetail: "[Fixture: the line, and when it stops being true]",
+      },
+    },
+  },
+} satisfies Record<string, VentureFixture>;
+
+/** The invest card's answers, for the document test (VEN-3 C6). */
+export const INVEST_ASK_ANSWERS = INVEST_ASK;
+
 /** The filled place answers, for the document test (VEN-2 C8). */
 export const PLACE_FILLED_ANSWERS = PLACE_ANSWERS_FILLED;
 
@@ -220,6 +312,7 @@ export const VEN_FIXTURES: Readonly<Record<VenStateKey, VentureFixture>> = {
     picking: true,
   },
   ...VEN_2_FIXTURES,
+  ...VEN_3_FIXTURES,
 };
 
 /** One fixture by key. */

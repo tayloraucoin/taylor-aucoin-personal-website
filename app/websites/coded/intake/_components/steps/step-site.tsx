@@ -381,12 +381,32 @@ export function StepSite({
         values={form.values}
         dependsOn={{ field: "showAvailability", in: ["yes", "unsure"] }}
       >
-        <TextAnswer
-          form={form}
-          name="availabilityDetail"
-          label="What should it say?"
-          help={`"Booking for fall 2026", "Taking two projects this quarter", "Currently on a feature until March" — and tell us when it stops being true.`}
-        />
+        <>
+          <TextAnswer
+            form={form}
+            name="availabilityDetail"
+            label="What should it say?"
+            help={`"Booking for fall 2026", "Taking two projects this quarter", "Currently on a feature until March" — and tell us when it stops being true.`}
+          />
+          {/* A place venture's raise progress, after the line it would sit
+              in (VEN-3, D-VEN-8). Critical, though the question above it is
+              not: a total raised is counsel's to approve. */}
+          {pack.placeVenture ? (
+            <ForKinds
+              kind={kind}
+              ventureType={ventureType}
+              test={hasGroup("place")}
+            >
+              <ChoiceAnswer
+                form={form}
+                name="raiseProgress"
+                label={pack.placeVenture.raiseProgress.label}
+                help={pack.placeVenture.raiseProgress.help}
+                options={pack.placeVenture.raiseProgress.options}
+              />
+            </ForKinds>
+          ) : null}
+        </>
       </Reveal>
 
       {/* Both of these change the *shape* of the site rather than its look,
