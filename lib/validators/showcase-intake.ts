@@ -193,6 +193,19 @@ export const stepAboutSchema = z.object({
   ventureType: text,
 
   /**
+   * What the place is today, asked only of a venture whose sub-type is
+   * `place` (VEN-2, `venture-place.md`). Bounds only: the two radios' option
+   * values live in the place overlay's `placeVenture` slot, never here as an
+   * enum. Every one is critical to the run, and the two radios are never
+   * written by it (`showcase-primer-fields.ts`).
+   */
+  propertyStatus: text,
+  propertyTitle: text,
+  locationPrecision: text,
+  locationWhy: text,
+  visitsNow: text,
+
+  /**
    * Superseded by `kind` at PORT-11 (2026-09-01). The multi-select this held
    * was collected on the start form and read by nothing; `kindFor` now derives
    * a kind from it for engagements answered before the change.
@@ -409,6 +422,13 @@ export const pieceEntrySchema = z.object({
   when: text,
   story: text,
   placement: text,
+  /**
+   * Whether this phase is paid for, asked only of a place venture (VEN-2,
+   * D-VEN-9). Bounds only; the values `funded`, `partly`, `notYet`, `unsure`
+   * live in the place overlay. Money, and the client's to state: the piece
+   * extractor never asks a model for it (`server/services/extract.ts`).
+   */
+  funded: text,
 });
 
 /** One service a business sells. The durable track's shape, entry-keyed. */
@@ -504,6 +524,18 @@ export const stepWorkSchema = z.object({
   signOff: text,
   cantSay: text,
   requiredWording: text,
+
+  /**
+   * The place's size and permits, and how people apply (VEN-2,
+   * `venture-place.md`). Asked only of a place venture, after the pieces and
+   * after the asks; every one is quote-or-nothing to the run.
+   */
+  placeSize: text,
+  permits: text,
+  applyWho: text,
+  applyAfter: text,
+  applyFee: text,
+  applyQuestions: text,
 });
 
 export type ExperienceEntry = z.infer<typeof experienceEntrySchema>;

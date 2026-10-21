@@ -26,6 +26,11 @@ export const VEN_STATE_KEYS = [
   "venture-chosen",
   "place-chosen",
   "subtype-changed",
+  // VEN-2: the place questions on About and Work (`venture-place.md`).
+  "plain-venture",
+  "place-empty",
+  "place-filled",
+  "place-searching",
 ] as const;
 
 export type VenStateKey = (typeof VEN_STATE_KEYS)[number];
@@ -42,6 +47,11 @@ export type VentureFixture = {
   ventureType: VentureType | null;
   /** The surface the harness draws: the start form, or one step. */
   surface: "start" | ShowcaseStepKey;
+  /**
+   * Further steps the harness draws under `surface`, in order, so one state
+   * key shows a question set that spans steps (VEN-2: About and Work).
+   */
+  alsoSteps?: readonly ShowcaseStepKey[];
   /** Answers per step, as the engagement would hold them. */
   answers: Partial<Record<ShowcaseStepKey, Record<string, unknown>>>;
   /** Files per field key. */
@@ -62,6 +72,113 @@ const ABOUT_BASE = {
   whatYouDo: "[Fixture: a one-line description]",
   currentWebsite: FIXTURE_SITE,
 } as const;
+
+/* ── VEN-2: the place questions ─────────────────────────────────────────── */
+
+const VENTURE_ABOUT = {
+  ...ABOUT_BASE,
+  siteKind: "venture",
+  stage: "underway",
+  stageDetail: "[Fixture: what is built, what is signed, what is next]",
+  basedIn: "[Fixture: a region]",
+} as const;
+
+const PLACE_ABOUT = { ...VENTURE_ABOUT, ventureType: "place" } as const;
+
+/** One synthetic ask, so the asks block sits above Applying as it will. */
+const FIXTURE_ASK = {
+  entryKey: "fixture-ask-1",
+  ask: "apply",
+  forWhom: "[Fixture: who it is for]",
+} as const;
+
+const PLACE_ANSWERS_FILLED = {
+  about: {
+    ...PLACE_ABOUT,
+    propertyStatus: "underContract",
+    propertyTitle: "[Fixture: Example Land Co-op, since 2024]",
+    locationPrecision: "region",
+    locationWhy: "[Fixture: the sale has not closed]",
+    visitsNow: "[Fixture: by arrangement with the site lead]",
+  },
+  work: {
+    pieces: [
+      {
+        entryKey: "fixture-piece-1",
+        title: "[Fixture: the main house]",
+        kind: "[Fixture: a building]",
+        status: "underway",
+        when: "[Fixture: next spring]",
+        funded: "partly",
+        story: "[Fixture: a sentence about the house]",
+        placement: "front",
+      },
+    ],
+    placeSize: "[Fixture: hectares, rooms and beds, now and per phase]",
+    permits: "[Fixture: which permits, granted or pending, with dates]",
+    asks: [FIXTURE_ASK],
+    applyWho: "[Fixture: who can apply, and for what]",
+    applyAfter: "[Fixture: the steps after applying]",
+    applyFee: "[Fixture: a deposit, and when it is refunded]",
+    applyQuestions: "[Fixture: the current application questions]",
+  },
+} as const;
+
+const VEN_2_FIXTURES = {
+  // A venture with no sub-type: none of the place rows, today's labels.
+  "plain-venture": {
+    kind: "venture",
+    ventureType: null,
+    surface: "about",
+    alsoSteps: ["audience", "work", "site"],
+    answers: {
+      about: VENTURE_ABOUT,
+      work: {
+        pieces: [{ entryKey: "fixture-piece-1" }],
+        asks: [FIXTURE_ASK],
+      },
+    },
+  },
+  // Every place row in place and unanswered; one blank piece shows the
+  // funded row, nothing checked.
+  "place-empty": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "about",
+    alsoSteps: ["work"],
+    answers: {
+      about: PLACE_ABOUT,
+      work: {
+        pieces: [{ entryKey: "fixture-piece-1" }],
+        asks: [FIXTURE_ASK],
+      },
+    },
+  },
+  "place-filled": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "about",
+    alsoSteps: ["work"],
+    answers: PLACE_ANSWERS_FILLED,
+  },
+  // Still searching: the title question keeps its label (the answer may be
+  // "nobody yet").
+  "place-searching": {
+    kind: "venture",
+    ventureType: "place",
+    surface: "about",
+    answers: {
+      about: {
+        ...PLACE_ABOUT,
+        propertyStatus: "searching",
+        propertyTitle: "[Fixture: nobody yet]",
+      },
+    },
+  },
+} satisfies Record<string, VentureFixture>;
+
+/** The filled place answers, for the document test (VEN-2 C8). */
+export const PLACE_FILLED_ANSWERS = PLACE_ANSWERS_FILLED;
 
 export const VEN_FIXTURES: Readonly<Record<VenStateKey, VentureFixture>> = {
   "kind-other": {
@@ -102,6 +219,7 @@ export const VEN_FIXTURES: Readonly<Record<VenStateKey, VentureFixture>> = {
     },
     picking: true,
   },
+  ...VEN_2_FIXTURES,
 };
 
 /** One fixture by key. */

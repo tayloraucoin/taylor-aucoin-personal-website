@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 import { ShowcaseStart } from "@/app/websites/coded/intake/_components/showcase-start";
 import { StepAbout } from "@/app/websites/coded/intake/_components/steps/step-about";
+import { StepAudience } from "@/app/websites/coded/intake/_components/steps/step-audience";
+import { StepSite } from "@/app/websites/coded/intake/_components/steps/step-site";
+import { StepWork } from "@/app/websites/coded/intake/_components/steps/step-work";
 import type { SaveState } from "@/app/websites/intake/_components/save-indicator";
 import { StepShell } from "@/app/websites/intake/_components/step-shell";
 import { flavourForKind, stepsFor } from "@/lib/intake/tracks";
-import type { AnyIntakeStepKey } from "@/lib/types/intake";
+import type { AnyIntakeStepKey, ShowcaseStepKey } from "@/lib/types/intake";
 import { SaveLineDriver } from "./save-line-driver";
 import { venFixture, type VenStateKey } from "./venture-fixtures";
 
@@ -32,30 +35,39 @@ export function VentureStateView({
     return <ShowcaseStart inProgress={null} seed={fixture.startSeed} />;
   }
 
-  const answers = fixture.answers[fixture.surface] ?? {};
-  const disciplines = Array.isArray(answers.disciplines)
-    ? (answers.disciplines as string[])
+  const about = fixture.answers.about ?? {};
+  const disciplines = Array.isArray(about.disciplines)
+    ? (about.disciplines as string[])
     : undefined;
   const flavour = flavourForKind(fixture.kind, disciplines);
-  const step = stepsFor("showcase", flavour).find(
-    (entry) => entry.key === fixture.surface,
-  )!;
+  const steps = stepsFor("showcase", flavour);
+  // One shell per step, top to bottom: a state whose questions span steps
+  // (VEN-2) is still drawn as the screens the client meets.
+  const drawn = [fixture.surface, ...(fixture.alsoSteps ?? [])];
 
   return (
-    <StepShell
-      track="showcase"
-      token={token}
-      step={step}
-      flavour={flavour}
-      navigate={navigate}
-      saveSlot={<SaveLineDriver initial={save} />}
-    >
-      {body()}
-    </StepShell>
+    <>
+      {drawn.map((stepKey) => (
+        <StepShell
+          key={stepKey}
+          track="showcase"
+          token={token}
+          step={steps.find((entry) => entry.key === stepKey)!}
+          flavour={flavour}
+          navigate={navigate}
+          saveSlot={<SaveLineDriver initial={save} />}
+        >
+          {body(stepKey, fixture.answers[stepKey] ?? {})}
+        </StepShell>
+      ))}
+    </>
   );
 
-  function body(): ReactNode {
-    switch (fixture.surface) {
+  function body(
+    stepKey: ShowcaseStepKey,
+    answers: Record<string, unknown>,
+  ): ReactNode {
+    switch (stepKey) {
       case "about":
         return (
           <StepAbout
@@ -71,10 +83,41 @@ export function VentureStateView({
             headshots={[]}
           />
         );
+      case "audience":
+        return (
+          <StepAudience
+            token={token}
+            initial={answers}
+            flavour={flavour}
+            ventureType={fixture.ventureType}
+          />
+        );
+      case "work":
+        return (
+          <StepWork
+            token={token}
+            initial={answers}
+            flavour={flavour}
+            kind={fixture.kind}
+            ventureType={fixture.ventureType}
+            projectFiles={[]}
+            pieceFiles={[]}
+          />
+        );
+      case "site":
+        return (
+          <StepSite
+            token={token}
+            initial={answers}
+            flavour={flavour}
+            kind={fixture.kind}
+            ventureType={fixture.ventureType}
+          />
+        );
       default:
         return (
           <p className="text-meta text-(--color-dim)">
-            No VEN fixture drawn for step &ldquo;{fixture.surface}&rdquo; yet.
+            No VEN fixture drawn for step &ldquo;{stepKey}&rdquo; yet.
           </p>
         );
     }

@@ -275,6 +275,10 @@ const CHOICE_BACKED: ReadonlySet<string> = new Set([
   // The venture sub-type (VEN). A radio, and the run must never choose it:
   // which questions a venture is asked is the founder's to say.
   "ventureType",
+  // The place venture's two radios (VEN-2). Where the property stands and how
+  // exactly the site names its location are the founder's to choose.
+  "propertyStatus",
+  "locationPrecision",
   "justYou",
   "showTeam",
   "leadPerson",
@@ -374,6 +378,26 @@ const KIND_GATED: Readonly<Record<string, KindGate>> = {
   // VEN: every venture is asked its sub-type. VEN-2 to VEN-4 add the `raise`
   // and `place` keys here, each through `groupsFor(kind, ventureType)`.
   ventureType: (kind, ventureType) => groupsFor(kind, ventureType).has("raise"),
+  // VEN-2: what the place is today. A venture whose sub-type is `place`, and
+  // nothing else; each through the registry, never a sub-type comparison.
+  ...Object.fromEntries(
+    [
+      "propertyStatus",
+      "propertyTitle",
+      "locationPrecision",
+      "locationWhy",
+      "visitsNow",
+      "placeSize",
+      "permits",
+      "applyWho",
+      "applyAfter",
+      "applyFee",
+      "applyQuestions",
+    ].map((key): [string, KindGate] => [
+      key,
+      (kind, ventureType) => groupsFor(kind, ventureType).has("place"),
+    ]),
+  ),
 };
 
 /**

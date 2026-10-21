@@ -31,7 +31,7 @@ import { useReportSaveState } from "../../../../intake/_lib/save-state";
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
 import { AskEntryCard } from "../ask-entry";
 import { ExtractionBlock } from "../extraction-block";
-import { fills, ForKinds, hasGroup } from "../for-kinds";
+import { fills, ForKinds, ForKindsStub, hasGroup } from "../for-kinds";
 import { OfferingEntryCard } from "../offer-entry";
 import { PieceEntryCard } from "../piece-entry";
 import { DEFAULT_RIGHTS, ProjectEntryCard } from "../project-entry";
@@ -230,6 +230,11 @@ export function StepWork({
                 entry={item}
                 token={token}
                 files={pieceFilesFor(item.entryKey)}
+                kind={kind}
+                ventureType={ventureType}
+                kindPlaceholder={pack.pieceKindPlaceholder}
+                funded={pack.placeVenture?.funded}
+                fundedTest={hasGroup("place")}
                 onChange={update}
                 onBlur={form.flush}
               />
@@ -238,6 +243,32 @@ export function StepWork({
           />
         </Field>
       </ForKinds>
+
+      {/* A place venture's size and permits, after the pieces (VEN-2). */}
+      {pack.placeVenture ? (
+        <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+          <>
+            <LongAnswer
+              form={form}
+              name="placeSize"
+              label={pack.placeVenture.placeSize.label}
+              help={pack.placeVenture.placeSize.help}
+            />
+            <LongAnswer
+              form={form}
+              name="permits"
+              label={pack.placeVenture.permits.label}
+              help={pack.placeVenture.permits.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked on each piece and after the pieces: whether the piece is funded, size and capacity, and permits. The words are the place overlay's; see kind=venture&subtype=place."
+        />
+      )}
 
       <ForKinds kind={kind} ventureType={ventureType} test={fills("services")}>
         <Field id="f-services" label={pack.workBlockLabel}>
@@ -296,6 +327,63 @@ export function StepWork({
           />
         </Field>
       </ForKinds>
+
+      {/* How people apply to a place, under the asks and before the event
+          section (VEN-2, D-VEN-12; cut first if the epic runs over). One
+          labelled group, its help read with it. No reveal: "Skip this if
+          nobody applies" is the whole condition. */}
+      {pack.placeVenture ? (
+        <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+          <div
+            role="group"
+            aria-labelledby="applying-heading"
+            aria-describedby="applying-help"
+            className="mb-7 border-t border-(--color-faint) pt-7"
+          >
+            <h3
+              id="applying-heading"
+              className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
+            >
+              {pack.placeVenture.apply.label}
+            </h3>
+            <p
+              id="applying-help"
+              className="mt-1.5 mb-6 text-meta leading-[1.55] text-(--color-dim)"
+            >
+              {pack.placeVenture.apply.help}
+            </p>
+            <LongAnswer
+              form={form}
+              name="applyWho"
+              label={pack.placeVenture.apply.who.label}
+            />
+            <LongAnswer
+              form={form}
+              name="applyAfter"
+              label={pack.placeVenture.apply.after.label}
+              help={pack.placeVenture.apply.after.help}
+            />
+            <LongAnswer
+              form={form}
+              name="applyFee"
+              label={pack.placeVenture.apply.fee.label}
+              help={pack.placeVenture.apply.fee.help}
+            />
+            <LongAnswer
+              form={form}
+              name="applyQuestions"
+              label={pack.placeVenture.apply.questions.label}
+              help={pack.placeVenture.apply.questions.help}
+            />
+          </div>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked under the asks: Applying, four questions on who can apply, what happens next, any fee, and the current application questions. The words are the place overlay's."
+        />
+      )}
 
       {/* The track's one ink treatment (D-PORT-10). Three questions, and "not
           sure" is a fine answer to all three. */}

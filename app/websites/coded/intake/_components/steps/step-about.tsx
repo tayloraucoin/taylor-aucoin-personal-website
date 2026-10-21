@@ -426,6 +426,41 @@ export function StepAbout({
         </>
       )}
 
+      {/* A place venture's property, right after where it stands (VEN-2).
+          The words exist only on the place overlay, so the overview names
+          who is asked instead, as `stage` does (D-ADM-11). */}
+      {pack.placeVenture ? (
+        <ForKinds
+          kind={kind}
+          ventureType={ventureType}
+          test={hasGroup("place")}
+        >
+          <>
+            <ChoiceAnswer
+              form={form}
+              name="propertyStatus"
+              label={pack.placeVenture.propertyStatus.label}
+              help={pack.placeVenture.propertyStatus.help}
+              options={pack.placeVenture.propertyStatus.options}
+            />
+            {/* Kept whatever the status, "Still searching" included: the
+                answer may be "nobody yet" (`place-searching`). */}
+            <TextAnswer
+              form={form}
+              name="propertyTitle"
+              label={pack.placeVenture.propertyTitle.label}
+              help={pack.placeVenture.propertyTitle.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked after where it stands: where things stand with the property, and who holds title. The words are the place overlay's; see kind=venture&subtype=place."
+        />
+      )}
+
       <TextAnswer
         form={form}
         name="basedIn"
@@ -436,6 +471,42 @@ export function StepAbout({
         }`}
       />
 
+      {pack.placeVenture ? (
+        <ForKinds
+          kind={kind}
+          ventureType={ventureType}
+          test={hasGroup("place")}
+        >
+          <>
+            <ChoiceAnswer
+              form={form}
+              name="locationPrecision"
+              label={pack.placeVenture.locationPrecision.label}
+              help={pack.placeVenture.locationPrecision.help}
+              options={pack.placeVenture.locationPrecision.options}
+            />
+            <TextAnswer
+              form={form}
+              name="locationWhy"
+              label={pack.placeVenture.locationWhy.label}
+              help={pack.placeVenture.locationWhy.help}
+            />
+            <LongAnswer
+              form={form}
+              name="visitsNow"
+              label={pack.placeVenture.visitsNow.label}
+              help={pack.placeVenture.visitsNow.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked after where they're based: how exactly the site says where the place is, why that level, and whether people can visit now. The words are the place overlay's."
+        />
+      )}
+
       <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("roster")}>
         <Roster
           form={form}
@@ -445,7 +516,9 @@ export function StepAbout({
           linePlaceholder={pack.rosterLinePlaceholder}
           rosterPaste={pack.rosterPaste}
           leadLabel={pack.rosterLead.label}
-          leadHelp={pack.rosterLead.help}
+          leadHelp={`${pack.rosterLead.help}${
+            pack.rosterLeadHelpSuffix ? ` ${pack.rosterLeadHelpSuffix}` : ""
+          }`}
           filesFor={filesFor}
         />
       </ForKinds>

@@ -18,7 +18,10 @@ import {
   STALE_CHECK_DAYS,
   TASTE_PICKS_ASKED,
 } from "@/lib/intake/taste-picks";
-import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
+import {
+  PIECE_FUNDED_LABELS,
+  RETIRED_TASTE_KEYS,
+} from "@/lib/intake/showcase-answer-labels";
 import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { askedOf } from "@/lib/intake/showcase-primer-fields";
@@ -648,6 +651,9 @@ function renderWorkEntries(
       ["kind", "Kind"],
       ["status", "Status"],
       ["when", "When"],
+      // A place venture's piece (VEN-2). Printed whatever the sub-type now
+      // is, like every answer the client gave (C-VEN-kind-4).
+      ["funded", "Funded"],
       ["story", "Story"],
       ["placement", "Where it belongs"],
     ],
@@ -655,6 +661,7 @@ function renderWorkEntries(
       // Blank means the client did not say, and that is the answer. Nothing
       // here may present a planned thing as though it exists.
       status: { planned: "PLANNED", underway: "Underway", done: "Done" },
+      funded: PIECE_FUNDED_LABELS,
       placement: PLACEMENT,
     },
     files,
@@ -682,6 +689,10 @@ function renderWorkEntries(
       book: "Book",
       buy: "Buy",
       subscribe: "Subscribe",
+      // A place venture's three (VEN-2), or they print as "unspecified".
+      reserve: "Reserve a stay",
+      hire: "Hire the venue",
+      register: "Register for an event",
       contact: "Get in touch",
       other: "Something else",
     };

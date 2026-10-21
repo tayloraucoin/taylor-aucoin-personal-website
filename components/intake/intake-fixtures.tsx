@@ -393,6 +393,7 @@ function body(
               token={SYNTHETIC_TOKEN}
               initial={{ whatShouldTheyDo: MARKED_VALUE }}
               flavour="generic"
+              ventureType={null}
             />
           </IngestionMarksProvider>
         </StepShell>

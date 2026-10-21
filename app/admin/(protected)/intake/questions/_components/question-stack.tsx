@@ -299,7 +299,9 @@ export function StepBody({
         />
       );
     case "audience":
-      return <StepAudience {...shared} flavour={flavour} />;
+      return (
+        <StepAudience {...shared} flavour={flavour} ventureType={ventureType} />
+      );
     case "experience":
       // No roster: a preview has no engagement and therefore no people, so the
       // step renders its one-subject shape. The per-person grouping is

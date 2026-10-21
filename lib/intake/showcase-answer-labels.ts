@@ -39,6 +39,12 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   siteKind: "What the site is for",
   /** The venture sub-type (VEN, D-VEN-3). */
   ventureType: "Kind of venture",
+  // A place venture's About rows (VEN-2).
+  propertyStatus: "Where things stand with the property",
+  propertyTitle: "Who holds title, and since when",
+  locationPrecision: "How exactly the site says where it is",
+  locationWhy: "Why that level of location",
+  visitsNow: "Whether people can visit now",
   /** @deprecated Kept so pre-2026-09-01 answers still read as words. */
   siteKinds: "Kind of site",
   /** @deprecated Kept so pre-2026-09-01 answers still read as words. */
@@ -132,6 +138,8 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   duration: "How long it takes",
   takesLonger: "What makes it take longer",
   status: "Status",
+  /** A place venture's piece: whether it is paid for (VEN-2). */
+  funded: "Funded",
   asks: "What they're asking people to do",
   ask: "The ask",
   getWhat: "What they get",
@@ -145,6 +153,13 @@ export const SHOWCASE_ANSWER_LABELS: Record<string, string> = {
   signOff: "Who signs off on the words",
   cantSay: "What they can't say",
   requiredWording: "Required wording",
+  // A place venture's Work rows (VEN-2).
+  placeSize: "Size and capacity",
+  permits: "Permits",
+  applyWho: "Who can apply, and for what",
+  applyAfter: "What happens after someone applies",
+  applyFee: "Fee or deposit to apply",
+  applyQuestions: "Their current application questions",
 
   // Step 6 — Taste
   picks: "Example sites they picked",
@@ -299,3 +314,17 @@ export const RETIRED_TASTE_KEYS: ReadonlySet<string> = new Set([
   "favourites",
   "notes",
 ]);
+
+/**
+ * A piece's funding status as the document prints it (VEN-2, D-VEN-9).
+ *
+ * Keyed by the stored value, which the place overlay's `placeVenture.funded`
+ * offers. Blank means the client did not say, and nothing here reads blank as
+ * any of these.
+ */
+export const PIECE_FUNDED_LABELS: Readonly<Record<string, string>> = {
+  funded: "Funded",
+  partly: "Partly funded",
+  notYet: "Not yet funded",
+  unsure: "Not sure yet",
+};

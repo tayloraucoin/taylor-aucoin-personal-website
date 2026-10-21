@@ -307,7 +307,12 @@ export default async function ShowcaseIntakeStepPage({
         );
       case "audience":
         return (
-          <StepAudience token={token} initial={initial} flavour={flavour} />
+          <StepAudience
+            token={token}
+            initial={initial}
+            flavour={flavour}
+            ventureType={ventureType}
+          />
         );
       case "experience":
         return (

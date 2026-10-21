@@ -115,6 +115,16 @@ export type ExtractionMode = (typeof EXTRACTION_MODES)[number];
 const NOT_ANSWERS = new Set(["entryKey", "personKey"]);
 
 /**
+ * Answers a document may never supply, though they are strings.
+ *
+ * `funded` on a piece (VEN-2, rabbit hole 2): a funding status is money, and
+ * the client's to state. A deck that says a phase is "fully funded" is a
+ * pitch, not the founder's answer, so the model is never asked for the key
+ * and a piece arrives with it blank.
+ */
+const CLIENT_STATES = new Set(["funded"]);
+
+/**
  * Whether a form field is one this extractor may ask the model to fill.
  *
  * The output shape derives from the form's own entry schemas, so a field added
@@ -130,7 +140,12 @@ function isStringField(field: z.ZodTypeAny): boolean {
 function resultFor(shape: z.ZodObject<Record<string, z.ZodTypeAny>>) {
   const fields = Object.fromEntries(
     Object.entries(shape.shape)
-      .filter(([key, field]) => !NOT_ANSWERS.has(key) && isStringField(field))
+      .filter(
+        ([key, field]) =>
+          !NOT_ANSWERS.has(key) &&
+          !CLIENT_STATES.has(key) &&
+          isStringField(field),
+      )
       .map(([key]) => [key, z.string()]),
   );
   return z.object({ entries: z.array(z.object(fields)) });
@@ -144,6 +159,11 @@ const RESULTS: Record<ExtractionMode, ReturnType<typeof resultFor>> = {
   pieces: resultFor(pieceEntrySchema),
   services: resultFor(serviceEntrySchema),
 };
+
+/** What a mode asks the model for, for the tests that hold a key out (VEN-2 C6). */
+export function extractionSchemaFor(mode: ExtractionMode) {
+  return RESULTS[mode];
+}
 
 export type ExtractedEntry = Record<string, string>;
 

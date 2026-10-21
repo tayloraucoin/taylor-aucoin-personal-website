@@ -1,5 +1,6 @@
 "use client";
 
+import type { VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
 import {
@@ -26,12 +27,18 @@ export function StepAudience({
   token,
   initial,
   flavour,
+  ventureType,
 }: {
   token: string;
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
+  /**
+   * The venture sub-type, or null. Read only to pick the pack: a place
+   * venture's audiences are the overlay's, with every plain value kept (VEN-2).
+   */
+  ventureType: VentureType | null;
 }) {
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
   const form = useStepAutosave({ token, stepKey: "audience", initial });
   useReportSaveState(form.state, form.retry);
 

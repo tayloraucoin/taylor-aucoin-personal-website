@@ -459,6 +459,45 @@ export type ShowcaseCopyPack = {
    * a floor slot: no other pack asks it.
    */
   ventureType?: CopyField & { labels: Readonly<Record<string, string>> };
+
+  /**
+   * The piece card's "What kind of thing it is" placeholder (VEN-2). A floor
+   * slot so the place overlay can name a building and the land.
+   */
+  pieceKindPlaceholder: string;
+
+  /**
+   * Appended to `rosterLead.help` (VEN-2, D-VEN-6): a place venture's lead is
+   * also its founder portrait, so the help line carries what a portrait
+   * question would have asked.
+   */
+  rosterLeadHelpSuffix?: string;
+
+  /**
+   * What a place venture is asked about the place itself (VEN-2,
+   * `venture-place.md`). The place overlay's alone: absent from every pack,
+   * plain venture included, so a step reads it only where `ForKinds` already
+   * says the place group is asked. Option `value`s are storage and never
+   * change; the schemas hold bounds only, so a value is added here.
+   */
+  placeVenture?: {
+    propertyStatus: CopyField & { options: readonly CopyChoice[] };
+    propertyTitle: CopyField;
+    locationPrecision: CopyField & { options: readonly CopyChoice[] };
+    locationWhy: CopyField;
+    visitsNow: CopyField;
+    /** The piece card's row, after "When". Label-only, like the ask. */
+    funded: { label: string; options: readonly CopyChoice[] };
+    placeSize: CopyField;
+    permits: CopyField;
+    /** The Applying group, after the asks; cut first if the epic runs over. */
+    apply: CopyField & {
+      who: { label: string };
+      after: CopyField;
+      fee: CopyField;
+      questions: CopyField;
+    };
+  };
 };
 
 /**
@@ -1022,6 +1061,8 @@ const GENERIC: ShowcaseCopyPack = {
   workPasteIntro:
     "Same trick as the last step — paste your filmography, credit list, IMDb page, or the projects off your old site, and hit the button.", // (v2)
   workBlockLabel: "Your projects", // (v2)
+  // Moved out of `piece-entry.tsx` at VEN-2 so the place overlay can reword it.
+  pieceKindPlaceholder: "The property, a phase, a programme, a product…",
   workAddLabel: "Add another project", // (v2)
   reelLabel: "Which piece leads?", // (v2)
   reelHelp: "The one thing a stranger should see first.", // (v2)
@@ -1560,8 +1601,9 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
     whatYouDoHelp:
       'The line that sits under the name. "A design studio in Halifax" counts. So does "A community-owned sanctuary in the hills of Umbria." We\'ll sharpen it together.',
     nameLabel: "What it's called, as it should appear on the site",
+    // [COPY — pending Taylor] Every venture, place or not (D-VEN-13).
     nameHelp:
-      "The name people will search for. If the legal name is different, we'll ask about that on the last step.",
+      "The name people will search for. If the legal name is different, step 5 asks for it.",
     howLongLabel: "How long it's been going",
     basedInHelpSuffix:
       "…and where the thing itself is, if that's somewhere else.",
@@ -1845,7 +1887,160 @@ const RESOLVED = Object.fromEntries(
  * nothing in it; VEN-2 to VEN-5 fill its slots. `[COPY — pending Taylor]` on
  * every string added here.
  */
-const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {};
+const VENTURE = RESOLVED.venture;
+
+/**
+ * An option list relabelled by value, with new options placed beside one that
+ * is already there. Values never change: `labels` only rewords, and a value
+ * named in it that the list lacks is ignored rather than added.
+ */
+function overlayOptions(
+  options: readonly CopyChoice[],
+  labels: Readonly<Record<string, string>>,
+  added: { options: readonly CopyChoice[]; after?: string; before?: string },
+): readonly CopyChoice[] {
+  const relabelled = options.map((option) =>
+    labels[option.value] ? { ...option, label: labels[option.value]! } : option,
+  );
+  const anchor = relabelled.findIndex(
+    (option) => option.value === (added.after ?? added.before),
+  );
+  const at = anchor < 0 ? relabelled.length : anchor + (added.after ? 1 : 0);
+  return [
+    ...relabelled.slice(0, at),
+    ...added.options,
+    ...relabelled.slice(at),
+  ];
+}
+
+/* Every string below: [COPY — pending Taylor] (Gloss, `venture-place.md`). */
+const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {
+  placeVenture: {
+    propertyStatus: {
+      label: "Where things stand with the property",
+      help: "Every page that mentions the place depends on this.",
+      options: [
+        { value: "owned", label: "Owned" },
+        { value: "underContract", label: "Under contract" },
+        { value: "option", label: "Under option" },
+        { value: "leased", label: "Leased" },
+        { value: "searching", label: "Still searching" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    propertyTitle: {
+      label: "Who holds title, and since when?",
+      help: "A person, a company or a co-op. A year is plenty.",
+    },
+    locationPrecision: {
+      label: "How exactly should the site say where it is?",
+      help: "Some places show a pin. Others name the region until a purchase closes.",
+      options: [
+        { value: "region", label: "The region" },
+        { value: "province", label: "The province" },
+        { value: "town", label: "The town" },
+        { value: "address", label: "The full address" },
+        { value: "pin", label: "A map pin" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    locationWhy: {
+      label: "Why that level?",
+      help: "A sale that hasn't closed, or privacy for people living there. Whatever the reason is.",
+    },
+    visitsNow: {
+      label: "Can people visit now?",
+      help: "If they can, say who arranges it. This becomes the visit button, if there is one.",
+    },
+    funded: {
+      label: "Is it funded?",
+      options: [
+        { value: "funded", label: "Funded" },
+        { value: "partly", label: "Partly" },
+        { value: "notYet", label: "Not yet" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    placeSize: {
+      label: "Size and capacity",
+      help: "Land, buildings, rooms and beds. Say what is there now and what each phase adds.",
+    },
+    permits: {
+      label: "Permits",
+      help: "Which you need, which are granted and which are pending, with dates where you have them. The site mentions them only as your counsel allows.",
+    },
+    apply: {
+      label: "Applying",
+      help: "Skip this if nobody applies.",
+      who: { label: "Who can apply, and for what?" },
+      after: {
+        label: "What happens after someone applies?",
+        help: "The steps, and how soon they hear back.",
+      },
+      fee: {
+        label: "Is there a fee or a deposit?",
+        help: "How much, and when it is refunded. If there isn't one, say so.",
+      },
+      questions: {
+        label: "Your current application questions",
+        help: "Paste them as they are.",
+      },
+    },
+  },
+  rosterLeadHelpSuffix: "Their headshot is the founder portrait on the site.",
+  pieceKindPlaceholder: "A building, a phase, the land, a programme",
+  representation: {
+    ...VENTURE.representation,
+    help: "Counsel, a local partner, a licensed professional (say which licence), an investor-relations contact. Who they are, and whether enquiries go through them.",
+  },
+  audiences: overlayOptions(
+    VENTURE.audiences,
+    {
+      residents: "Residents",
+      members: "Members of the community (not newsletter readers)",
+    },
+    {
+      after: "residents",
+      options: [
+        { value: "guests", label: "Guests" },
+        {
+          value: "coOwners",
+          label: "Co-owners, if they aren't the same as investors",
+        },
+        { value: "facilitators", label: "Retreat leaders or facilitators" },
+      ],
+    },
+  ),
+  ask: {
+    ...VENTURE.ask,
+    askField: {
+      ...VENTURE.ask.askField,
+      options: overlayOptions(
+        VENTURE.ask.askField.options,
+        {},
+        {
+          before: "contact",
+          options: [
+            { value: "reserve", label: "Reserve a stay" },
+            { value: "hire", label: "Hire the venue" },
+            { value: "register", label: "Register for an event" },
+          ],
+        },
+      ),
+    },
+  },
+  pages: overlayOptions(
+    VENTURE.pages,
+    { offering: "The model" },
+    {
+      after: "apply",
+      options: [
+        { value: "stays", label: "Stays, retreats or venue hire" },
+        { value: "events", label: "Events" },
+      ],
+    },
+  ),
+};
 
 /**
  * The sub-type overlays, by flavour and then by sub-type key.
