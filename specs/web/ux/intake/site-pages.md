@@ -26,11 +26,11 @@ In order, top to bottom. Every block is built from existing pieces (`ChoiceAnswe
 
 Option values never change and are never renamed.
 
-| Box                | Key                               | Shape                                         |
-| ------------------ | --------------------------------- | --------------------------------------------- |
-| Home               | `homeBrainDump`                   | text                                          |
-| A checklist page   | `<value>BrainDump`, e.g. `aboutBrainDump` | text, one key per value in any pack   |
-| A typed page       | `pagesCustomBrainDump[i]`         | list, by position in `pagesCustom`            |
+| Box              | Key                                       | Shape                               |
+| ---------------- | ----------------------------------------- | ----------------------------------- |
+| Home             | `homeBrainDump`                           | text                                |
+| A checklist page | `<value>BrainDump`, e.g. `aboutBrainDump` | text, one key per value in any pack |
+| A typed page     | `pagesCustomBrainDump[i]`                 | list, by position in `pagesCustom`  |
 
 - A rename keeps the row's position, so its note stays. Removing a row removes its note in the same save, so every row below keeps its own. `site-page-notes.ts` owns these edits.
 - A notes list shorter than the rows (saved before WEB-22) reads as blanks.
@@ -44,13 +44,13 @@ Venture's list, and the venture-place overlay built from it, has About (`about`)
 
 Reachable at `/test-harness/intake?state=<key>` (404 in production).
 
-| State      | Key               | What shows                                                                                 | What the person can do |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
-| home only  | `pages-home-only` | Home's box and the shortlist; no other page box                                            | tick, type, write      |
-| some       | `pages-some`      | ticked Contact, About, Team: boxes in the checklist's order (About, Team, Contact)       | write                  |
-| typed      | `pages-typed`     | place venture: "The model", then two typed pages with their notes                          | rename, remove, write  |
-| over       | `pages-over`      | 7/5: Home and four boxes; the last two typed pages get none; the extra pages box            | tick more, write       |
-| bought     | `pages-bought`    | the same seven with two bought: 7/7, every page has a box, no extra pages box              | write                  |
+| State     | Key               | What shows                                                                         | What the person can do |
+| --------- | ----------------- | ---------------------------------------------------------------------------------- | ---------------------- |
+| home only | `pages-home-only` | Home's box and the shortlist; no other page box                                    | tick, type, write      |
+| some      | `pages-some`      | ticked Contact, About, Team: boxes in the checklist's order (About, Team, Contact) | write                  |
+| typed     | `pages-typed`     | place venture: "The model", then two typed pages with their notes                  | rename, remove, write  |
+| over      | `pages-over`      | 7/5: Home and four boxes; the last two typed pages get none; the extra pages box   | tick more, write       |
+| bought    | `pages-bought`    | the same seven with two bought: 7/7, every page has a box, no extra pages box      | write                  |
 
 ## Words
 
@@ -76,8 +76,8 @@ Every box has a visible `<label>` bound by id, with its help linked through `Fie
 
 ## Criteria
 
-| ID            | When                                 | Then                                                              | Evidence |
-| ------------- | ------------------------------------ | ----------------------------------------------------------------- | -------- |
-| C-WEB-22-1    | a checklist page is ticked           | its box stores under `<value>BrainDump`                           | test     |
-| C-WEB-22-2    | the sitemap passes the allowance     | boxes stop at 5 plus pages bought; the extra pages box shows       | test     |
-| C-WEB-22-3    | a typed page is renamed or one above it is removed | its note stays with it                              | test     |
+| ID         | When                                               | Then                                                         | Evidence |
+| ---------- | -------------------------------------------------- | ------------------------------------------------------------ | -------- |
+| C-WEB-22-1 | a checklist page is ticked                         | its box stores under `<value>BrainDump`                      | test     |
+| C-WEB-22-2 | the sitemap passes the allowance                   | boxes stop at 5 plus pages bought; the extra pages box shows | test     |
+| C-WEB-22-3 | a typed page is renamed or one above it is removed | its note stays with it                                       | test     |

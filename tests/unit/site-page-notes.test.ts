@@ -184,21 +184,93 @@ test("WEB-22 typed page helpers keep each note with its page", () => {
 /* ── C6: About on venture ──────────────────────────────────────────────── */
 
 test("WEB-22 C6 venture and venture-place list About right after Home; other packs are unchanged", () => {
-  for (const pack of [resolvePack("venture"), resolvePack("venture", "place")]) {
+  for (const pack of [
+    resolvePack("venture"),
+    resolvePack("venture", "place"),
+  ]) {
     assert.deepEqual(pack.pages[0], { value: "home", label: "Home" });
     assert.deepEqual(pack.pages[1], { value: "about", label: "About" });
   }
   const values = (flavour: (typeof SHOWCASE_FLAVOURS)[number]) =>
     resolvePack(flavour).pages.map((option) => option.value);
-  assert.deepEqual(values("film"), ["home", "work", "reel", "about", "contact", "teaching", "press"]);
-  assert.deepEqual(values("generic"), ["home", "work", "reel", "about", "contact", "teaching", "press"]);
-  assert.deepEqual(values("practice"), ["home", "about", "services", "speaking", "writing", "testimonials", "contact", "booking"]);
-  assert.deepEqual(values("entity"), ["home", "work", "about", "team", "services", "press", "contact"]);
-  assert.deepEqual(values("service"), ["home", "services", "pricing", "about", "reviews", "serviceArea", "faq", "contact", "booking"]);
-  assert.deepEqual(values("venture"), ["home", "about", "vision", "place", "team", "offering", "apply", "faq", "press", "contact", "legal"]);
+  assert.deepEqual(values("film"), [
+    "home",
+    "work",
+    "reel",
+    "about",
+    "contact",
+    "teaching",
+    "press",
+  ]);
+  assert.deepEqual(values("generic"), [
+    "home",
+    "work",
+    "reel",
+    "about",
+    "contact",
+    "teaching",
+    "press",
+  ]);
+  assert.deepEqual(values("practice"), [
+    "home",
+    "about",
+    "services",
+    "speaking",
+    "writing",
+    "testimonials",
+    "contact",
+    "booking",
+  ]);
+  assert.deepEqual(values("entity"), [
+    "home",
+    "work",
+    "about",
+    "team",
+    "services",
+    "press",
+    "contact",
+  ]);
+  assert.deepEqual(values("service"), [
+    "home",
+    "services",
+    "pricing",
+    "about",
+    "reviews",
+    "serviceArea",
+    "faq",
+    "contact",
+    "booking",
+  ]);
+  assert.deepEqual(values("venture"), [
+    "home",
+    "about",
+    "vision",
+    "place",
+    "team",
+    "offering",
+    "apply",
+    "faq",
+    "press",
+    "contact",
+    "legal",
+  ]);
   assert.deepEqual(
     resolvePack("venture", "place").pages.map((option) => option.value),
-    ["home", "about", "vision", "place", "team", "offering", "apply", "stays", "events", "faq", "press", "contact", "legal"],
+    [
+      "home",
+      "about",
+      "vision",
+      "place",
+      "team",
+      "offering",
+      "apply",
+      "stays",
+      "events",
+      "faq",
+      "press",
+      "contact",
+      "legal",
+    ],
   );
 });
 
@@ -232,7 +304,10 @@ test("WEB-22 C7 each page key is quote-or-nothing, explicit-plan only, and gated
 
 /* ── C8: the document ──────────────────────────────────────────────────── */
 
-function engagement(site: Record<string, unknown>, ventureType?: string): Engagement {
+function engagement(
+  site: Record<string, unknown>,
+  ventureType?: string,
+): Engagement {
   const epoch = new Date(0);
   return {
     id: "eng_synthetic_web22",
@@ -298,8 +373,14 @@ test("WEB-22 C8 the document prints each brain dump under its page's name in sit
     "  - Contact — [Fixture: contact notes]",
     "  - Residency — [Fixture: residency notes]",
   ].map((line) => block.indexOf(line));
-  assert.ok(order.every((at) => at >= 0), String(order));
-  assert.deepEqual([...order].sort((a, b) => a - b), order);
+  assert.ok(
+    order.every((at) => at >= 0),
+    String(order),
+  );
+  assert.deepEqual(
+    [...order].sort((a, b) => a - b),
+    order,
+  );
 
   assert.match(
     doc,

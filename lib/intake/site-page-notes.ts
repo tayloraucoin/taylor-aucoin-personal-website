@@ -160,7 +160,9 @@ export function sitemapPages(input: {
     .filter((option) => ticked.has(option.value))
     .map((option) => ({ value: option.value, label: option.label }));
   const unlisted = input.ticked
-    .filter((value, index, all) => !listed.has(value) && all.indexOf(value) === index)
+    .filter(
+      (value, index, all) => !listed.has(value) && all.indexOf(value) === index,
+    )
     .map((value) => ({ value, label: value }));
 
   const typed: SitemapPage[] = input.typed.flatMap((name, index) =>
@@ -170,14 +172,12 @@ export function sitemapPages(input: {
   );
 
   return [
-    ...[...fromList, ...unlisted].map(
-      ({ value, label }): SitemapPage => ({
-        source: "listed",
-        value,
-        label,
-        key: value === HOME_PAGE ? HOME_BRAIN_DUMP : pageBrainDumpKey(value),
-      }),
-    ),
+    ...[...fromList, ...unlisted].map(({ value, label }): SitemapPage => ({
+      source: "listed",
+      value,
+      label,
+      key: value === HOME_PAGE ? HOME_BRAIN_DUMP : pageBrainDumpKey(value),
+    })),
     ...typed,
   ];
 }
