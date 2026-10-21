@@ -64,7 +64,10 @@ import {
 } from "@/content/intake-examples/taxonomy";
 import { hostOf, picksOf, spectrumsOf } from "@/lib/intake/taste-picks";
 import { SHOWCASE_FLAVOURS, resolvePack } from "@/lib/intake/showcase-copy";
-import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
+import {
+  PIECE_FUNDED_LABELS,
+  RETIRED_TASTE_KEYS,
+} from "@/lib/intake/showcase-answer-labels";
 import { stepTasteSchema } from "@/lib/validators/showcase-intake";
 import type { IntakeAnswers } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
@@ -628,6 +631,70 @@ function checkVentureTypes(): void {
       subtypeComparisons('<DocumentDrop fieldKey="place" />').length,
     ],
     [true, true, 0],
+  );
+}
+
+/* ── VEN-2 — the place questions and the place overlay ──────────────────── */
+
+type Option = { value: string };
+
+function checkPlaceQuestions(): void {
+  const venture = copyPackFor("venture");
+  const place = copyPackFor("venture", "place");
+  const words = place.placeVenture;
+
+  check("the place overlay carries the place questions", Boolean(words), true);
+  check(
+    "no pack but the place overlay carries the place questions",
+    SHOWCASE_FLAVOURS.filter((flavour) => copyPackFor(flavour).placeVenture),
+    [],
+  );
+  if (!words) return;
+
+  // Option values are storage: stable keys, and the overlay drops none of the
+  // plain venture pack's (C-VEN-place-5).
+  const lists: Array<[string, readonly Option[], readonly Option[]]> = [
+    ["audiences", venture.audiences, place.audiences],
+    ["asks", venture.ask.askField.options, place.ask.askField.options],
+    ["pages", venture.pages, place.pages],
+  ];
+  check(
+    "the place overlay keeps every plain venture option value",
+    lists.flatMap(([name, plain, overlaid]) =>
+      plain
+        .filter((o) => !overlaid.some((p) => p.value === o.value))
+        .map((o) => `${name}:${o.value}`),
+    ),
+    [],
+  );
+  const placeValues = [
+    ...lists.flatMap(([, , overlaid]) => overlaid),
+    ...words.propertyStatus.options,
+    ...words.locationPrecision.options,
+    ...words.funded.options,
+  ].map((option) => option.value);
+  check(
+    "every place option value is a non-empty stable key",
+    placeValues.filter((value) => !/^[a-zA-Z]+$/.test(value)),
+    [],
+  );
+
+  // A critical choice ends "Not sure yet" (D-VEN-10).
+  check(
+    "each place radio ends on unsure",
+    [words.propertyStatus, words.locationPrecision, words.funded].map(
+      (field) => field.options.at(-1)?.value,
+    ),
+    ["unsure", "unsure", "unsure"],
+  );
+
+  // A funded value with no document label prints as its raw key.
+  check(
+    "every funded value has a document label",
+    words.funded.options
+      .map((option) => option.value)
+      .filter((value) => !PIECE_FUNDED_LABELS[value]),
+    [],
   );
 }
 
@@ -1697,6 +1764,7 @@ function main(): void {
   checkFlavour();
   checkKinds();
   checkVentureTypes();
+  checkPlaceQuestions();
   checkLabels();
   checkGallery();
   checkTasteContract();

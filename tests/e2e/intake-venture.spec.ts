@@ -112,3 +112,192 @@ test.describe("C10 the sub-type changed on About", () => {
     });
   }
 });
+
+/* ── VEN-2: the place questions on About and Work (`venture-place.md`) ───── */
+
+const PLACE_KEYS = ["place-empty", "place-filled", "place-searching"] as const;
+
+/** Each selector's first match follows the one before it in the document. */
+async function inOrder(page: Page, selectors: readonly string[]) {
+  const follows = await page.evaluate((list) => {
+    const nodes = list.map((s) => document.querySelector(s));
+    const missing = list.filter((_, i) => !nodes[i]);
+    if (missing.length > 0) return `missing: ${missing.join(", ")}`;
+    for (let i = 1; i < nodes.length; i++) {
+      const order = nodes[i - 1]!.compareDocumentPosition(nodes[i]!);
+      if (!(order & Node.DOCUMENT_POSITION_FOLLOWING)) {
+        return `${list[i]} is not after ${list[i - 1]}`;
+      }
+    }
+    return "ok";
+  }, selectors);
+  expect(follows).toBe("ok");
+}
+
+/** A radio group's values in order, and how many are checked. */
+async function radios(page: Page, name: string) {
+  const inputs = page.locator(`input[type=radio][name="${name}"]`);
+  return {
+    values: await inputs.evaluateAll((els) =>
+      els.map((el) => (el as HTMLInputElement).value),
+    ),
+    checked: await inputs.evaluateAll(
+      (els) => els.filter((el) => (el as HTMLInputElement).checked).length,
+    ),
+  };
+}
+
+const PROPERTY_STATUS = [
+  "owned",
+  "underContract",
+  "option",
+  "leased",
+  "searching",
+  "unsure",
+];
+const LOCATION_PRECISION = [
+  "region",
+  "province",
+  "town",
+  "address",
+  "pin",
+  "unsure",
+];
+const FUNDED = ["funded", "partly", "notYet", "unsure"];
+const PLACE_FIELDS = [
+  "propertyTitle",
+  "locationWhy",
+  "visitsNow",
+  "placeSize",
+  "permits",
+  "applyWho",
+  "applyAfter",
+  "applyFee",
+  "applyQuestions",
+];
+
+test.describe("VEN-2 C1 the place rows, in place", () => {
+  test("place-filled: About and Work rows at their stated positions", async ({
+    page,
+  }) => {
+    await page.goto(at("place-filled"));
+    // The titled piece is collapsed to its summary; open it to read the card.
+    await page.getByRole("button", { name: /the main house/i }).click();
+
+    await inOrder(page, [
+      "#f-stageDetail",
+      "input[name=propertyStatus]",
+      "#f-propertyTitle",
+      "#f-basedIn",
+      "input[name=locationPrecision]",
+      "#f-locationWhy",
+      "#f-visitsNow",
+      "#f-piece-when-0",
+      "input[name=piece-funded-0]",
+      "#f-placeSize",
+      "#f-permits",
+      "label[for=f-asks]",
+      "#applying-heading",
+      "#f-applyWho",
+      "#f-applyAfter",
+      "#f-applyFee",
+      "#f-applyQuestions",
+    ]);
+
+    await expect(
+      page.locator("input[name=propertyStatus][value=underContract]"),
+    ).toBeChecked();
+    await expect(
+      page.locator("input[name=piece-funded-0][value=partly]"),
+    ).toBeChecked();
+
+    const applying = page.getByRole("group", { name: "Applying" });
+    await expect(applying).toHaveAccessibleDescription(
+      "Skip this if nobody applies.",
+    );
+    for (const key of [
+      "applyWho",
+      "applyAfter",
+      "applyFee",
+      "applyQuestions",
+    ]) {
+      await expect(applying.locator(`#f-${key}`)).toHaveCount(1);
+    }
+  });
+
+  test("place-empty: each radio in its order, ending Not sure yet, none checked; Applying's skip line", async ({
+    page,
+  }) => {
+    await page.goto(at("place-empty"));
+    for (const [name, values] of [
+      ["propertyStatus", PROPERTY_STATUS],
+      ["locationPrecision", LOCATION_PRECISION],
+      ["piece-funded-0", FUNDED],
+    ] as const) {
+      expect(await radios(page, name)).toEqual({ values, checked: 0 });
+      await expect(
+        page.locator(`input[name="${name}"][value=unsure]`),
+      ).toHaveAccessibleName("Not sure yet");
+    }
+    await expect(page.getByText("Skip this if nobody applies.")).toBeVisible();
+  });
+
+  test("place-searching: Still searching, and the title question keeps its label", async ({
+    page,
+  }) => {
+    await page.goto(at("place-searching"));
+    await expect(
+      page.locator("input[name=propertyStatus][value=searching]"),
+    ).toBeChecked();
+    await expect(
+      page.getByLabel("Who holds title, and since when?"),
+    ).toHaveValue("[Fixture: nobody yet]");
+  });
+});
+
+test.describe("VEN-2 C2 plain venture meets none of it", () => {
+  test("plain-venture: no place key, and today's venture labels", async ({
+    page,
+  }) => {
+    await page.goto(at("plain-venture"));
+    for (const name of [
+      "propertyStatus",
+      "locationPrecision",
+      "piece-funded-0",
+    ]) {
+      await expect(page.locator(`input[name="${name}"]`)).toHaveCount(0);
+    }
+    for (const key of PLACE_FIELDS) {
+      await expect(page.locator(`#f-${key}`)).toHaveCount(0);
+    }
+    await expect(page.getByRole("group", { name: "Applying" })).toHaveCount(0);
+
+    // Today's labels: the overlay's words and values are nowhere.
+    await expect(page.getByLabel("Residents or guests")).toHaveCount(1);
+    await expect(page.getByLabel("Members or applicants")).toHaveCount(1);
+    await expect(page.getByLabel("The offering")).toHaveCount(1);
+    for (const value of [
+      "guests",
+      "coOwners",
+      "facilitators",
+      "stays",
+      "events",
+    ]) {
+      await expect(page.locator(`input[value=${value}]`)).toHaveCount(0);
+    }
+    // The ask reads under today's label, and none of the place asks exists.
+    await expect(page.getByText("Apply or join").first()).toBeVisible();
+    for (const value of ["reserve", "hire", "register"]) {
+      await expect(page.locator(`input[value=${value}]`)).toHaveCount(0);
+    }
+  });
+
+  for (const key of ["plain-venture", ...PLACE_KEYS]) {
+    test(`axe: no serious or critical violation on ${key}`, async ({
+      page,
+    }) => {
+      await page.goto(at(key));
+      await expectNoSeriousA11y(page);
+    });
+  }
+});
