@@ -1,0 +1,17 @@
+command: yarn test:e2e tests/e2e/site-page-notes.spec.ts
+exit: 0
+at: 2026-10-21T02:16:34Z
+head: 72c75036bcc8f245c07945666f12130b735cbb58
+tests: 4
+---
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › tests/e2e/site-page-notes.spec.ts:27:7 › C4 the boxes stop at the allowance › pages-over: Home and four more, 7/5, and the extra pages box (605ms)
+  ✓  2 [chromium] › tests/e2e/site-page-notes.spec.ts:51:7 › C4 the boxes stop at the allowance › pages-bought: two bought, every page has a box (182ms)
+  ✓  3 [chromium] › tests/e2e/site-page-notes.spec.ts:66:7 › C4 the boxes stop at the allowance › pages-home-only and pages-some: boxes in checklist order (275ms)
+  ✓  4 [chromium] › tests/e2e/site-page-notes.spec.ts:87:7 › C5 a typed page keeps its brain dump › pages-typed: rename keeps it; removing an earlier row keeps the rest (302ms)
+
+  4 passed (2.0s)
+(node:20322) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
