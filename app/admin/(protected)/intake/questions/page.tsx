@@ -11,12 +11,18 @@ import {
   type KindScope,
   type RenderMode,
 } from "@/components/intake/preview-mode";
+import {
+  VEN_STATE_KEYS,
+  venFixture,
+} from "@/components/intake/venture-fixtures";
 import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
 import {
   flavourForKind,
   labelForKind,
   showcaseKinds,
+  ventureTypeFrom,
 } from "@/lib/intake/tracks";
+import { readPageState, type PageSearchParams } from "@/lib/page-state";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { getCheckoutCatalogue } from "@/server/services/deposit";
 import { loadExampleSet } from "@/server/services/example-sites";
@@ -58,12 +64,23 @@ export default async function IntakeQuestionsPage({
   searchParams: Promise<{
     track?: string;
     kind?: string;
+    subtype?: string;
+    state?: string;
     pack?: string;
     mode?: string;
     extras?: string;
   }>;
 }) {
   const params = await searchParams;
+
+  // A VEN `?state=` scene (D-VEN-2): `default` in production, where no
+  // fixture renders. Its kind and sub-type win over the URL's, so a state is
+  // a whole scene rather than half of one.
+  const state = await readPageState(
+    searchParams as PageSearchParams,
+    VEN_STATE_KEYS,
+  );
+  const fixture = state === "default" ? null : venFixture(state);
 
   // A typo in a query string sends a reviewer back to the default view, not to
   // an error page. There is nothing here worth 404ing over.
@@ -73,8 +90,15 @@ export default async function IntakeQuestionsPage({
   // pack *and* decides which field groups exist. Reviewing by pack alone
   // showed one questionnaire out of seven (PORT-11 onward).
   const kind: ShowcaseKind =
+    fixture?.kind ??
     (showcaseKinds().find((entry) => entry.key === params.kind)
-      ?.key as ShowcaseKind) ?? "portfolio";
+      ?.key as ShowcaseKind) ??
+    "portfolio";
+  // The venture sub-type under review (VEN, `&subtype=`), through the rule a
+  // client's answers take: none unless the kind is venture and it is listed.
+  const ventureType = fixture
+    ? fixture.ventureType
+    : ventureTypeFrom(kind, params.subtype);
 
   // Two orthogonal switches, both in the URL and both falling back the way
   // ADM-2 set: a typo lands on the ordinary view, never on an error page.
@@ -84,7 +108,7 @@ export default async function IntakeQuestionsPage({
   // The overview. It reads generic-pack words with every kind-driven branch
   // shown and tagged; the pack differences are listed in the appendix, because
   // one document cannot render six packs' strings at once (D-ADM-11).
-  const everyKind = params.kind === EVERY_KIND;
+  const everyKind = !fixture && params.kind === EVERY_KIND;
   const scope: KindScope = everyKind ? "all" : "one";
   const document = mode === "document";
 
@@ -120,7 +144,7 @@ export default async function IntakeQuestionsPage({
   const viewLabel = everyKind
     ? "Every kind — the overview"
     : track === "showcase"
-      ? `${labelForKind(kind)}${film ? " · film" : ""}`
+      ? `${labelForKind(kind)}${film ? " · film" : ""}${ventureType ? ` · ${ventureType}` : ""}`
       : "The one questionnaire";
 
   // What each Preview link carries, so the tab it opens shows the questionnaire
@@ -130,6 +154,7 @@ export default async function IntakeQuestionsPage({
     const search = new URLSearchParams({ track });
     if (track === "showcase") {
       search.set("kind", kind);
+      if (ventureType) search.set("subtype", ventureType);
       if (film) search.set("pack", "film");
     }
     if (allExtras) search.set("extras", "all");
@@ -157,6 +182,7 @@ export default async function IntakeQuestionsPage({
             mode={mode}
             everyKind={everyKind}
             allExtras={allExtras}
+            subtype={ventureType}
           />
         }
       />
@@ -168,7 +194,13 @@ export default async function IntakeQuestionsPage({
         <div className="mb-6">
           <DownloadMarkdown
             containerId={DOCUMENT_ID}
-            filename={markdownFilename({ track, kind, film, everyKind })}
+            filename={markdownFilename({
+              track,
+              kind,
+              film,
+              everyKind,
+              subtype: ventureType,
+            })}
             meta={{
               track: trackLabel,
               view: viewLabel,
@@ -265,6 +297,12 @@ export default async function IntakeQuestionsPage({
                 track={track}
                 flavour={flavour}
                 kind={kind}
+                ventureType={ventureType}
+                seed={
+                  fixture
+                    ? { answers: fixture.answers, picking: fixture.picking }
+                    : undefined
+                }
                 gallery={gallery}
                 previewQuery={previewQuery}
                 extras={extras}
@@ -274,7 +312,11 @@ export default async function IntakeQuestionsPage({
                 questions exist, but which are asked in different words. Derived
                 from the packs at render, so it cannot drift. */}
               {document && track === "showcase" ? (
-                <PackDiffSection flavour={flavour} everyPack={everyKind} />
+                <PackDiffSection
+                  flavour={flavour}
+                  ventureType={ventureType}
+                  everyPack={everyKind}
+                />
               ) : null}
             </FlowSection>
 

@@ -2,6 +2,11 @@
 
 import { useIsDocument } from "@/components/intake/preview-mode";
 import { GhostButton } from "@/components/ui/GradientButton";
+import {
+  addTypedPage,
+  removeTypedPage,
+  renameTypedPage,
+} from "@/lib/intake/site-page-notes";
 import { DocHint, DocTag } from "../../../intake/_components/document";
 import { TextField } from "../../../intake/_components/text-field";
 
@@ -23,6 +28,11 @@ import { TextField } from "../../../intake/_components/text-field";
  * Rows are addressed by index rather than by a minted key: the value is a plain
  * list of strings, and a page's identity is its position in a short list the
  * client can see all of.
+ *
+ * Each row's brain dump lives at the same position in `notes` (WEB-22), so
+ * every edit here goes through `site-page-notes.ts` and hands back both lists:
+ * a rename keeps the note, and a removal takes the row's note with it so the
+ * rows below keep their own.
  */
 
 /** [COPY — pending Taylor] */
@@ -35,11 +45,14 @@ const COPY = {
 
 export function CustomPages({
   pages,
+  notes,
   onChange,
   onBlur,
 }: Readonly<{
   pages: readonly string[];
-  onChange: (next: string[]) => void;
+  /** Each row's brain dump, by position. */
+  notes: readonly string[];
+  onChange: (next: { pages: string[]; notes: string[] }) => void;
   onBlur: () => void;
 }>) {
   const isDocument = useIsDocument();
@@ -71,18 +84,18 @@ export function CustomPages({
                 aria-label={`Page ${index + 1}`}
                 value={page}
                 placeholder={COPY.placeholder}
-                onChange={(event) => {
-                  const next = [...pages];
-                  next[index] = event.target.value;
-                  onChange(next);
-                }}
+                onChange={(event) =>
+                  onChange(
+                    renameTypedPage(pages, notes, index, event.target.value),
+                  )
+                }
                 onBlur={onBlur}
               />
 
               <button
                 type="button"
                 onClick={() => {
-                  onChange(pages.filter((_, i) => i !== index));
+                  onChange(removeTypedPage(pages, notes, index));
                   onBlur();
                 }}
                 aria-label={`${COPY.remove} page ${index + 1}`}
@@ -97,7 +110,7 @@ export function CustomPages({
         </ul>
       ) : null}
 
-      <GhostButton onClick={() => onChange([...pages, ""])}>
+      <GhostButton onClick={() => onChange(addTypedPage(pages, notes))}>
         {COPY.add}
       </GhostButton>
     </div>

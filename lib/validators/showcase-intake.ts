@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  PAGE_BRAIN_DUMP_VALUES,
+  pageBrainDumpKey,
+} from "@/lib/intake/site-page-notes";
 import { SHOWCASE_STEP_KEYS, type ShowcaseStepKey } from "@/lib/types/intake";
 
 /**
@@ -183,6 +187,27 @@ export const stepAboutSchema = z.object({
    * owns `kind`, and the answer-label map is flat across the whole track.
    */
   siteKind: text,
+
+  /**
+   * What kind of venture it is, asked only while `siteKind` is venture (VEN,
+   * D-VEN-3). Bounds only: `VENTURE_TYPES` in `showcase-kinds.ts` decides
+   * which values mean something, and a value outside it reads as absent.
+   * Kept when the kind changes (D-VEN-4), and ignored on any other kind.
+   */
+  ventureType: text,
+
+  /**
+   * What the place is today, asked only of a venture whose sub-type is
+   * `place` (VEN-2, `venture-place.md`). Bounds only: the two radios' option
+   * values live in the place overlay's `placeVenture` slot, never here as an
+   * enum. Every one is critical to the run, and the two radios are never
+   * written by it (`showcase-primer-fields.ts`).
+   */
+  propertyStatus: text,
+  propertyTitle: text,
+  locationPrecision: text,
+  locationWhy: text,
+  visitsNow: text,
 
   /**
    * Superseded by `kind` at PORT-11 (2026-09-01). The multi-select this held
@@ -401,6 +426,13 @@ export const pieceEntrySchema = z.object({
   when: text,
   story: text,
   placement: text,
+  /**
+   * Whether this phase is paid for, asked only of a place venture (VEN-2,
+   * D-VEN-9). Bounds only; the values `funded`, `partly`, `notYet`, `unsure`
+   * live in the place overlay. Money, and the client's to state: the piece
+   * extractor never asks a model for it (`server/services/extract.ts`).
+   */
+  funded: text,
 });
 
 /** One service a business sells. The durable track's shape, entry-keyed. */
@@ -436,6 +468,15 @@ export const askEntrySchema = z.object({
   mechanism: text,
   destination: text,
   visibility: text,
+  /**
+   * An Invest card's three rows, asked of every venture (VEN-3, D-VEN-7).
+   * Entry keys, outside the primer inventory; bounds only, and
+   * `sameMinimum`'s values (`yes`, `no`, `unsure`) live in the venture
+   * pack's `raise.invest`.
+   */
+  currency: text,
+  sameMinimum: text,
+  eligibility: text,
 });
 
 export type OfferingEntry = z.infer<typeof offeringEntrySchema>;
@@ -494,8 +535,38 @@ export const stepWorkSchema = z.object({
    * rule: anything touching money, legal status, or claims about results.
    */
   signOff: text,
+  /**
+   * The investor ask, inside the claims cluster (VEN-3, D-VEN-5,
+   * `investor-ask.md`). Counsel's words, collected and never drafted: every
+   * one is critical and quote-or-nothing to the run, and the radios and the
+   * reveals are never written by it (`showcase-primer-fields.ts`). Bounds
+   * only; the radios' values live in the packs. Schema order is the
+   * cluster's row order.
+   */
+  issuerEntity: text,
+  investorReceives: text,
+  /** `same`, `different`, `unsure`. */
+  coOwnerDiffers: text,
+  coOwnerLines: text,
+  jurisdictions: text,
   cantSay: text,
+  /** `none`, `approved`, `unsure`; unanswered is built as `none` (D-VEN-10). */
+  returnWording: text,
+  returnWordingQuote: text,
+  perks: text,
   requiredWording: text,
+
+  /**
+   * The place's size and permits, and how people apply (VEN-2,
+   * `venture-place.md`). Asked only of a place venture, after the pieces and
+   * after the asks; every one is quote-or-nothing to the run.
+   */
+  placeSize: text,
+  permits: text,
+  applyWho: text,
+  applyAfter: text,
+  applyFee: text,
+  applyQuestions: text,
 });
 
 export type ExperienceEntry = z.infer<typeof experienceEntrySchema>;
@@ -713,6 +784,11 @@ export const stepMediaSchema = z.object({
   logoDirections: text,
 });
 
+/** One optional text answer per checklist page (WEB-22). */
+const PAGE_BRAIN_DUMPS = Object.fromEntries(
+  PAGE_BRAIN_DUMP_VALUES.map((value) => [pageBrainDumpKey(value), text]),
+) as Record<`${(typeof PAGE_BRAIN_DUMP_VALUES)[number]}BrainDump`, typeof text>;
+
 /** Step 8 — The site itself. */
 export const stepSiteSchema = z.object({
   pages: choice,
@@ -749,6 +825,12 @@ export const stepSiteSchema = z.object({
   showAvailability: text,
   /** What it should say, and when it stops being true (PORT-19 note 12). */
   availabilityDetail: text,
+  /**
+   * Whether counsel approved showing how much is raised, asked of a place
+   * venture inside the availability reveal (VEN-3, D-VEN-8): `approved`,
+   * `no`, `unsure`. Critical, unlike `showAvailability`.
+   */
+  raiseProgress: text,
 
   /**
    * The home page: the braindump, and the shortlist it is read beside.
@@ -765,6 +847,16 @@ export const stepSiteSchema = z.object({
   homeBrainDump: text,
   homeMedia: choice,
   homeVideos: choice,
+
+  /**
+   * A brain dump per page past Home (WEB-22), one text key per checklist
+   * value, `<value>BrainDump`, so each joins the import and the document the
+   * way `homeBrainDump` does. A typed page's is its position in
+   * `pagesCustomBrainDump`, kept in step with `pagesCustom`. See
+   * `site-page-notes.ts` for why the value is the key and never the label.
+   */
+  ...PAGE_BRAIN_DUMPS,
+  pagesCustomBrainDump: choice,
 
   oldSiteSurvives: text,
   linksOutThere: text,
@@ -907,6 +999,12 @@ export const startShowcaseIntakeInput = z.object({
 
   /** The kind picker. Bounds only; `showcase-kinds.ts` decides what each means. */
   siteKind: z.string().trim().optional(),
+
+  /**
+   * The venture sub-type, revealed under `siteKind = venture` (VEN). Bounds
+   * only; the action seeds it only on a venture (C-VEN-kind-2).
+   */
+  ventureType: z.string().trim().optional(),
 
   /**
    * What the thing is called, asked of every kind but a portfolio.

@@ -1,0 +1,129 @@
+{
+  "id": "WEB-22",
+  "criteria_sha256": "6f265c20a130be5c94eb661d346438b3375d8e13e4e5df5b11cb1bcabd59d3e8",
+  "criteria": {
+    "C1": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C1.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C2": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C2.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C3": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C3.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C4": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test:e2e tests/e2e/site-page-notes.spec.ts",
+        "exit": 0,
+        "at": "2026-10-21T02:16:34Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C4.log",
+        "evidence_sha256": "f3e4259ef0a2307fd906644c63da13c040ac0c27b6bc2561d1ca7b9bfc75fa08",
+        "tests": 4
+      }
+    },
+    "C5": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test:e2e tests/e2e/site-page-notes.spec.ts",
+        "exit": 0,
+        "at": "2026-10-21T02:16:34Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C5.log",
+        "evidence_sha256": "f3e4259ef0a2307fd906644c63da13c040ac0c27b6bc2561d1ca7b9bfc75fa08",
+        "tests": 4
+      }
+    },
+    "C6": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C6.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C7": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C7.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C8": {
+      "status": "PASS",
+      "evidence": "test",
+      "run": {
+        "command": "yarn test",
+        "exit": 0,
+        "at": "2026-10-21T02:16:30Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/evidence/C8.log",
+        "evidence_sha256": "1ecdbd4ffc4b511612feffd60c6938943e46ce7358fde6dec7487e88b8a8317a",
+        "tests": 230
+      }
+    },
+    "C9": {
+      "status": "FAIL",
+      "evidence": "capture",
+      "run": null
+    },
+    "C10": {
+      "status": "PASS",
+      "evidence": "manual",
+      "run": {
+        "command": "yarn contract:record WEB-22 C10 --evidence specs/web/one-offs/WEB-022-site-page-notes/contract.md --verdict deferred",
+        "exit": 0,
+        "at": "2026-10-21T02:16:52Z",
+        "head": "72c75036bcc8f245c07945666f12130b735cbb58",
+        "evidence_path": "specs/web/one-offs/WEB-022-site-page-notes/contract.md",
+        "evidence_sha256": "9bcc87925091858c500257e8d2b6e15958ab8468ee16cb3e7b0bf1a3a5288bc6",
+        "deferred": true
+      }
+    }
+  },
+  "updated_at": "2026-10-21T02:16:52Z"
+}

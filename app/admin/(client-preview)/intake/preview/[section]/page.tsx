@@ -16,8 +16,13 @@ import {
   isIntakeStateKey,
 } from "@/components/intake/intake-fixtures";
 import { PreviewModeProvider } from "@/components/intake/preview-mode";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
-import { flavourForKind, showcaseKinds, stepsFor } from "@/lib/intake/tracks";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
+import {
+  flavourForKind,
+  showcaseKinds,
+  stepsFor,
+  ventureTypeFrom,
+} from "@/lib/intake/tracks";
 import { adminRoutes } from "@/lib/routes";
 import type { IntakeTrackKey } from "@/lib/types/intake";
 import { getCheckoutCatalogue } from "@/server/services/deposit";
@@ -54,6 +59,7 @@ export default async function IntakeSectionPreviewPage({
   searchParams: Promise<{
     track?: string;
     kind?: string;
+    subtype?: string;
     pack?: string;
     extras?: string;
   }>;
@@ -68,6 +74,9 @@ export default async function IntakeSectionPreviewPage({
   const kind: ShowcaseKind =
     (showcaseKinds().find((entry) => entry.key === query.kind)
       ?.key as ShowcaseKind) ?? "portfolio";
+  // The venture sub-type (VEN), through the same rule a client's answers
+  // take: none unless the kind is venture and the value is listed.
+  const ventureType = ventureTypeFrom(kind, query.subtype);
   const film = query.pack === "film";
   /**
    * The add-ons switch, forwarded from the review page's Preview link so the
@@ -85,7 +94,7 @@ export default async function IntakeSectionPreviewPage({
 
   // The same three values this URL already carries, rebuilt for the links this
   // page renders: a step walked to from here stays on the view it was opened in.
-  const previewQuery = searchFor(track, kind, film, allExtras);
+  const previewQuery = searchFor(track, kind, film, allExtras, ventureType);
 
   return (
     <>
@@ -93,7 +102,7 @@ export default async function IntakeSectionPreviewPage({
         track={track}
         kind={kind}
         film={film}
-        backHref={backToReview(track, kind, film, allExtras)}
+        backHref={backToReview(track, kind, film, allExtras, ventureType)}
       />
 
       <main id="main">
@@ -102,6 +111,7 @@ export default async function IntakeSectionPreviewPage({
             section,
             track,
             kind,
+            ventureType,
             flavour,
             engagement,
             query: previewQuery,
@@ -119,10 +129,12 @@ function searchFor(
   kind: ShowcaseKind,
   film: boolean,
   allExtras: boolean,
+  ventureType: VentureType | null,
 ): string {
   const search = new URLSearchParams({ track });
   if (track === "showcase") {
     search.set("kind", kind);
+    if (ventureType) search.set("subtype", ventureType);
     if (film) search.set("pack", "film");
   }
   if (allExtras) search.set("extras", "all");
@@ -135,14 +147,16 @@ function backToReview(
   kind: ShowcaseKind,
   film: boolean,
   allExtras: boolean,
+  ventureType: VentureType | null,
 ): string {
-  return `${adminRoutes.intakeQuestions}?${searchFor(track, kind, film, allExtras)}`;
+  return `${adminRoutes.intakeQuestions}?${searchFor(track, kind, film, allExtras, ventureType)}`;
 }
 
 async function sectionBody({
   section,
   track,
   kind,
+  ventureType,
   flavour,
   engagement,
   query,
@@ -151,6 +165,7 @@ async function sectionBody({
   section: string;
   track: IntakeTrackKey;
   kind: ShowcaseKind;
+  ventureType: VentureType | null;
   flavour: ReturnType<typeof flavourForKind>;
   engagement: ReturnType<typeof previewEngagement>;
   /** The view this preview is showing, for its own step links. */
@@ -280,6 +295,7 @@ async function sectionBody({
         stepKey={step.key}
         flavour={flavour}
         kind={kind}
+        ventureType={ventureType}
         gallery={gallery}
         extras={extras}
       />

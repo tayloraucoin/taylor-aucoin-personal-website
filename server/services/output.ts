@@ -18,10 +18,33 @@ import {
   STALE_CHECK_DAYS,
   TASTE_PICKS_ASKED,
 } from "@/lib/intake/taste-picks";
-import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
+import {
+  PIECE_FUNDED_LABELS,
+  RAISE_CHOICE_LABELS,
+  RETIRED_TASTE_KEYS,
+} from "@/lib/intake/showcase-answer-labels";
 import type { TasteSpectrum } from "@/lib/intake/showcase-copy";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
-import { copyPackFor, fieldKeysFor, labelFor, stepsFor } from "@/lib/intake/tracks";
+import { askedOf } from "@/lib/intake/showcase-primer-fields";
+import {
+  copyPackFor,
+  fieldKeysFor,
+  flavourFor,
+  kindOf,
+  labelFor,
+  stepsFor,
+  ventureTypeOf,
+} from "@/lib/intake/tracks";
+import {
+  CUSTOM_BRAIN_DUMPS,
+  HOME_BRAIN_DUMP,
+  PAGE_BOX_KEYS,
+  PAGE_BRAIN_DUMP_KEYS,
+  PAGE_BRAIN_DUMP_VALUES,
+  PAGE_NAMES,
+  pageBrainDumpKey,
+  sitemapPages,
+} from "@/lib/intake/site-page-notes";
 import type { ExampleSet } from "@/content/intake-examples";
 import { BUILD_LEVELS, EXAMPLE_GROUPS } from "@/content/intake-examples/taxonomy";
 import type { AnyIntakeStepKey, IntakeTrackKey } from "@/lib/types/intake";
@@ -640,6 +663,9 @@ function renderWorkEntries(
       ["kind", "Kind"],
       ["status", "Status"],
       ["when", "When"],
+      // A place venture's piece (VEN-2). Printed whatever the sub-type now
+      // is, like every answer the client gave (C-VEN-kind-4).
+      ["funded", "Funded"],
       ["story", "Story"],
       ["placement", "Where it belongs"],
     ],
@@ -647,6 +673,7 @@ function renderWorkEntries(
       // Blank means the client did not say, and that is the answer. Nothing
       // here may present a planned thing as though it exists.
       status: { planned: "PLANNED", underway: "Underway", done: "Done" },
+      funded: PIECE_FUNDED_LABELS,
       placement: PLACEMENT,
     },
     files,
@@ -674,6 +701,10 @@ function renderWorkEntries(
       book: "Book",
       buy: "Buy",
       subscribe: "Subscribe",
+      // A place venture's three (VEN-2), or they print as "unspecified".
+      reserve: "Reserve a stay",
+      hire: "Hire the venue",
+      register: "Register for an event",
       contact: "Get in touch",
       other: "Something else",
     };
@@ -687,11 +718,16 @@ function renderWorkEntries(
         ["forWhom", "Who it's for"],
         ["getWhat", "What they get"],
         ["number", "The number"],
+        // An Invest card's rows (VEN-3, D-VEN-7). Printed whenever stored.
+        ["currency", "Currency"],
+        ["sameMinimum", "Same minimum in every country"],
         ["mechanism", "How it happens"],
         ["destination", "Where it lands"],
         ["visibility", "Shown on the site"],
+        ["eligibility", "Who may see the numbers"],
       ],
       enums: {
+        sameMinimum: RAISE_CHOICE_LABELS.sameMinimum!,
         mechanism: {
           form: "A form on the site",
           request: "Request a document",
@@ -746,10 +782,48 @@ export function collectUnconfirmed(
   return [...byStep].map(([step, labels]) => ({ step, labels }));
 }
 
+/**
+ * Whether this engagement was ever asked a key (VEN C10).
+ *
+ * A question a kind never meets is not an unanswered one: without this a
+ * portfolio's done screen listed a venture's `stage`, the claims keys, and the
+ * tools keys as "we'll cover these on the call". Reads `askedOf`, the one
+ * predicate the ingestion run reads too. The durable track has no kinds, so
+ * every key there is asked.
+ */
+function askedBy(engagement: Engagement): (key: string) => boolean {
+  if (engagement.track !== "showcase") return () => true;
+  const kind = kindOf(engagement.answers);
+  const ventureType = ventureTypeOf(engagement.answers);
+  return (key) => askedOf(key, kind, ventureType);
+}
+
+/**
+ * A page's box past Home, which neither list counts (WEB-22).
+ *
+ * Whether one is asked depends on what was ticked and what was bought, and
+ * both lists are client-facing: Not answered becomes "we'll cover these on the
+ * call", where twenty pages' empty boxes would bury the questions that matter,
+ * and the review tally would swing with every tick. Home's box stays counted,
+ * as it was. The document prints what was written, in sitemap order.
+ */
+function isPageBoxKey(
+  engagement: Engagement,
+  stepKey: string,
+  key: string,
+): boolean {
+  return (
+    engagement.track === "showcase" &&
+    stepKey === "site" &&
+    PAGE_BOX_KEYS.has(key)
+  );
+}
+
 /** Every known field with no answer, grouped by the step that asked it. */
 export function collectUnanswered(
   engagement: Engagement,
 ): Array<{ step: string; labels: string[] }> {
+  const asked = askedBy(engagement);
   return stepsFor(engagement.track)
     .map((step) => {
       const stored = readStepAnswers(
@@ -780,6 +854,8 @@ export function collectUnanswered(
               RETIRED_TASTE_KEYS.has(key)
             ),
         )
+        .filter(asked)
+        .filter((key) => !isPageBoxKey(engagement, step.key, key))
         .map((key) => labelFor(engagement.track, key));
 
       return { step: step.title, labels };
@@ -795,9 +871,10 @@ export function collectUnanswered(
  * page that reprinted all of them would be a worse version of each step —
  * longer, not editable, and a second place for the same words to drift.
  *
- * Shares `collectUnanswered`'s two rules so the two screens can never disagree
- * about what counts as a question: a retired key is not an unanswered one, and
- * a step's fields are its schema's keys.
+ * Shares `collectUnanswered`'s three rules so the two screens can never
+ * disagree about what counts as a question: a retired key is not an unanswered
+ * one, a key the kind is never asked is not one either, and a step's fields
+ * are its schema's keys.
  */
 export function answerTally(
   engagement: Engagement,
@@ -809,6 +886,7 @@ export function answerTally(
   answered: number;
   total: number;
 }> {
+  const asked = askedBy(engagement);
   return stepsFor(engagement.track, flavour).map((step) => {
     const stored = readStepAnswers(
       engagement.track,
@@ -816,14 +894,17 @@ export function answerTally(
       step.key,
     );
 
-    const keys = fieldKeysFor(engagement.track, step.key).filter(
-      (key) =>
-        !(
-          engagement.track === "showcase" &&
-          step.key === "taste" &&
-          RETIRED_TASTE_KEYS.has(key)
-        ),
-    );
+    const keys = fieldKeysFor(engagement.track, step.key)
+      .filter(
+        (key) =>
+          !(
+            engagement.track === "showcase" &&
+            step.key === "taste" &&
+            RETIRED_TASTE_KEYS.has(key)
+          ),
+      )
+      .filter(asked)
+      .filter((key) => !isPageBoxKey(engagement, step.key, key));
 
     return {
       key: step.key,
@@ -1162,7 +1243,12 @@ function resolveShowcaseKeys(
      */
     const spectrumAnswers = spectrumsOf(stored);
     if (Object.keys(spectrumAnswers).length > 0) {
-      const pack = copyPackFor(galleryFlavourOf(engagement.answers));
+      // With the sub-type, so a place venture's forks print with the labels
+      // it answered them under (VEN rabbit hole 3).
+      const pack = copyPackFor(
+        galleryFlavourOf(engagement.answers),
+        ventureTypeOf(engagement.answers),
+      );
       const lines = tasteSpectrumLines(
         pack.tasteSpectrums ?? [],
         spectrumAnswers,
@@ -1245,7 +1331,7 @@ function resolveShowcaseKeys(
     });
   }
 
-  return next;
+  return withPageBrainDumps(engagement, stored, next);
 }
 
 function termsLine(engagement: Engagement): string | null {
@@ -1256,6 +1342,100 @@ function termsLine(engagement: Engagement): string | null {
   const how = engagement.paidAt ? "by deposit payment" : "at the pay screen";
 
   return `Terms: version ${engagement.termsVersion} accepted ${day(engagement.termsAcceptedAt)} ${how}`;
+}
+
+/**
+ * Every page's brain dump, under its page's name, in sitemap order (WEB-22).
+ *
+ * One block rather than a loose line per key: a page's notes read beside the
+ * page before and after it, the order Taylor designs in. The name is the one
+ * the client saw, from the pack they answered in, so a place venture's
+ * `offering` prints as "The model". Home leads, because the sitemap does.
+ *
+ * A note for a page no longer in the sitemap is never dropped: they wrote it,
+ * or a source planned it before they ticked anything. It prints in its own
+ * block after, named, so it reads as something to ask about rather than a
+ * page to build. The stored answers are untouched; this is a read.
+ *
+ * Placed where Home's line was, so the shortlist still follows it.
+ */
+function withPageBrainDumps(
+  engagement: Engagement,
+  stored: Record<string, unknown>,
+  resolved: Record<string, unknown>,
+): Record<string, unknown> {
+  const strings = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? value.map((v) => (typeof v === "string" ? v : ""))
+      : [];
+  const text = (value: unknown): string =>
+    typeof value === "string" ? value.trim() : "";
+
+  const pack = copyPackFor(
+    flavourFor(engagement.track, engagement.answers),
+    ventureTypeOf(engagement.answers),
+  );
+  const typed = strings(stored.pagesCustom);
+  const typedNotes = strings(stored[CUSTOM_BRAIN_DUMPS]);
+  const sitemap = sitemapPages({
+    ticked: strings(stored.pages).filter(Boolean),
+    checklist: pack.pages,
+    typed,
+  });
+
+  const inSitemap = new Set<string>();
+  const lines: string[] = [];
+  for (const page of sitemap) {
+    const note =
+      page.source === "listed"
+        ? text(stored[page.key])
+        : text(typedNotes[page.index]);
+    if (page.source === "listed") inSitemap.add(page.key);
+    else inSitemap.add(`${CUSTOM_BRAIN_DUMPS}.${page.index}`);
+    if (note) lines.push(`${page.label} — ${note}`);
+  }
+
+  const nameOf = (key: string): string => {
+    if (key === HOME_BRAIN_DUMP) return "Home";
+    const value = PAGE_BRAIN_DUMP_VALUES.find(
+      (v) => pageBrainDumpKey(v) === key,
+    );
+    const listed = pack.pages.find((option) => option.value === value);
+    return listed?.label ?? (value ? PAGE_NAMES[value] : key);
+  };
+
+  const dropped: string[] = [
+    ...PAGE_BRAIN_DUMP_KEYS.filter(
+      (key) => !inSitemap.has(key) && text(stored[key]),
+    ).map((key) => `${nameOf(key)} — ${text(stored[key])}`),
+    ...typedNotes.flatMap((note, index) =>
+      text(note) && !inSitemap.has(`${CUSTOM_BRAIN_DUMPS}.${index}`)
+        ? [
+            `${text(typed[index]) || "A page they added and left unnamed"} — ${text(note)}`,
+          ]
+        : [],
+    ),
+  ];
+
+  const pageKeys = new Set([...PAGE_BRAIN_DUMP_KEYS, CUSTOM_BRAIN_DUMPS]);
+  const block = {
+    ...(lines.length > 0 ? { pageBrainDumps: lines } : {}),
+    ...(dropped.length > 0 ? { droppedPageBrainDumps: dropped } : {}),
+  };
+
+  const next: Record<string, unknown> = {};
+  let placed = false;
+  for (const [key, value] of Object.entries(resolved)) {
+    if (key === HOME_BRAIN_DUMP) {
+      Object.assign(next, block);
+      placed = true;
+    }
+    if (pageKeys.has(key)) continue;
+    next[key] = value;
+  }
+  if (!placed) Object.assign(next, block);
+
+  return next;
 }
 
 export function renderIntakeMarkdown(input: {
@@ -1337,7 +1517,13 @@ export function renderIntakeMarkdown(input: {
 
     lines.push("", `## ${step.title}`);
     for (const [key, value] of answered) {
-      const rendered = renderValue(engagement.track, value);
+      // The investor ask's radios print as words (VEN-3); a value with no
+      // label prints as stored.
+      const word =
+        typeof value === "string"
+          ? RAISE_CHOICE_LABELS[key]?.[value]
+          : undefined;
+      const rendered = word ?? renderValue(engagement.track, value);
       const label = labelFor(engagement.track, key);
       lines.push(
         rendered.startsWith("\n")

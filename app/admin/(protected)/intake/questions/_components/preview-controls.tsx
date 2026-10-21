@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { adminRoutes } from "@/lib/routes";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import { showcaseKinds } from "@/lib/intake/tracks";
 import { KindSelect } from "./kind-select";
 import type { IntakeTrackKey } from "@/lib/types/intake";
@@ -113,9 +113,16 @@ export function PreviewControls({
   mode,
   everyKind,
   allExtras,
+  subtype = null,
 }: Readonly<{
   track: IntakeTrackKey;
   kind: ShowcaseKind;
+  /**
+   * The venture sub-type under review (VEN, D-VEN-2). URL only: the rail has
+   * no control for it (rabbit hole 13), so it is kept while the view stays and
+   * dropped when the view changes.
+   */
+  subtype?: VentureType | null;
   film: boolean;
   mode: RenderMode;
   everyKind: boolean;
@@ -138,6 +145,7 @@ export function PreviewControls({
       const [viewKind, pack] = view.split(":");
       params.set("kind", viewKind!);
       if (pack === "film") params.set("pack", "film");
+      if (subtype && next.view === undefined) params.set("subtype", subtype);
     }
 
     const chosenMode = next.mode ?? mode;

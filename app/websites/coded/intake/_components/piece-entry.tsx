@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import type { CopyChoice } from "@/lib/intake/showcase-copy";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { PieceEntry } from "@/lib/validators/showcase-intake";
 import { ChoiceGroup } from "../../../intake/_components/choice-group";
 import {
@@ -9,6 +11,7 @@ import {
 } from "../../../intake/_components/file-drop";
 import { TextArea, TextField } from "../../../intake/_components/text-field";
 import { CollapseLink, EntryRow, EntrySummary } from "./entry-collapse";
+import { ForKinds, type KindTest } from "./for-kinds";
 
 /**
  * What a venture is building, one piece at a time: the property, a phase, a
@@ -47,6 +50,11 @@ export function PieceEntryCard({
   entry,
   token,
   files,
+  kind,
+  ventureType,
+  kindPlaceholder,
+  funded,
+  fundedTest,
   onChange,
   onBlur,
 }: {
@@ -54,6 +62,17 @@ export function PieceEntryCard({
   entry: PieceEntry;
   token: string;
   files: readonly ExistingFile[];
+  kind: ShowcaseKind;
+  ventureType: VentureType | null;
+  /** The pack's `pieceKindPlaceholder`. */
+  kindPlaceholder: string;
+  /**
+   * "Is it funded?", from the pack's `placeVenture` (VEN-2, D-VEN-9). Absent
+   * on every pack but the place overlay, and then the row is not drawn.
+   */
+  funded?: { label: string; options: readonly CopyChoice[] };
+  /** Who is asked the funded row; the step passes `hasGroup("place")`. */
+  fundedTest: KindTest;
   onChange: (next: PieceEntry) => void;
   onBlur: () => void;
 }) {
@@ -67,7 +86,15 @@ export function PieceEntryCard({
       <EntrySummary
         index={index}
         title={entry.title!}
-        detail={entry.status ? STATUS_LABEL[entry.status] : undefined}
+        detail={
+          [
+            entry.status ? STATUS_LABEL[entry.status] : "",
+            funded?.options.find((option) => option.value === entry.funded)
+              ?.label ?? "",
+          ]
+            .filter(Boolean)
+            .join(" · ") || undefined
+        }
         badge={
           files.length > 0
             ? `${files.length} image${files.length === 1 ? "" : "s"}`
@@ -97,7 +124,7 @@ export function PieceEntryCard({
           value={entry.kind ?? ""}
           onChange={(e) => set({ kind: e.target.value })}
           onBlur={onBlur}
-          placeholder="The property, a phase, a programme, a product…"
+          placeholder={kindPlaceholder}
         />
       </EntryRow>
 
@@ -125,6 +152,23 @@ export function PieceEntryCard({
           placeholder="2026, or spring, or once the raise closes"
         />
       </EntryRow>
+
+      {/* Blank unless the client says: no option is preselected, and the
+          extractor never fills it (VEN-2, rabbit hole 2). */}
+      {funded ? (
+        <ForKinds kind={kind} ventureType={ventureType} test={fundedTest}>
+          <EntryRow id={`f-piece-funded-${index}`} label={funded.label}>
+            <ChoiceGroup
+              legend={funded.label}
+              name={`piece-funded-${index}`}
+              options={funded.options}
+              value={entry.funded ? [entry.funded] : []}
+              onChange={(next) => set({ funded: next[0] ?? "" })}
+              onBlur={onBlur}
+            />
+          </EntryRow>
+        </ForKinds>
+      ) : null}
 
       <EntryRow
         id={`f-piece-images-${index}`}

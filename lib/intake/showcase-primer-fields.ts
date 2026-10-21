@@ -1,8 +1,16 @@
-import type { ShowcaseKind } from "./showcase-kinds";
+import type { ShowcaseKind, VentureType } from "./showcase-kinds";
 import {
+  PAGE_BRAIN_DUMP_VALUES,
+  PAGE_NAMES,
+  pageBrainDumpKey,
+} from "./site-page-notes";
+import {
+  copyPackFor,
+  flavourForKind,
   groupsFor,
   kindAsks,
   labelFor,
+  showcaseDisciplines,
   stepsFor,
   textFieldKeysFor,
 } from "./tracks";
@@ -71,7 +79,6 @@ const EXCLUDED_FIELDS = new Map<string, string>([
   ["audiencesOther", "Conditional on the audiences checkbox group."],
   ["disciplinesOther", "Conditional on the disciplines checkbox group."],
   ["organizationOther", "Conditional on the organisation checkbox group."],
-  ["pagesOther", "Conditional on the pages checkbox group."],
   // Retired at PORT-19 and still in their schemas so stored answers survive.
   // A proposal into one would land in a field no screen renders.
   ["reel", "Retired at PORT-19; nothing renders it."],
@@ -83,6 +90,15 @@ const EXCLUDED_FIELDS = new Map<string, string>([
   [
     "availabilityDetail",
     "Conditional on the availability question, and a claim about when they are free — theirs to write.",
+  ],
+  // The investor ask (VEN-3, C9). Both are counsel's words.
+  [
+    "investorReceives",
+    "Counsel's words, and a sentence from a deck is not counsel's approval.",
+  ],
+  [
+    "perks",
+    "Counsel's words, and a sentence from a deck is not counsel's approval.",
   ],
 ]);
 
@@ -142,6 +158,16 @@ const DESCRIPTIONS: Record<string, string> = {
    */
   homeBrainDump:
     "Only if the text explicitly plans the website's home page — what it says should lead, or be featured first. Leave empty unless the source is talking about the home page itself.",
+  /**
+   * Every other page's box, on Home's rule (WEB-22): a stated plan for that
+   * page, quoted, or nothing. A bio is not a plan for an About page.
+   */
+  ...Object.fromEntries(
+    PAGE_BRAIN_DUMP_VALUES.map((value) => [
+      pageBrainDumpKey(value),
+      `Only if the text explicitly plans the website's ${PAGE_NAMES[value]} page — what it says should go on that page. Leave empty unless the source is talking about that page itself.`,
+    ]),
+  ),
   currentBio: "An existing bio or About text written in their own voice.",
   personVoice: "Whether the site speaks as I or as they.",
   writtenNotes: "Notes on how they want the writing to sound.",
@@ -271,8 +297,21 @@ export function staleInventoryKeys(): string[] {
  * components, not in the schemas, and typing them here would be the second
  * home this file exists to prevent.
  */
-const CHOICE_BACKED = new Set([
+const CHOICE_BACKED: ReadonlySet<string> = new Set([
   "siteKind",
+  // The venture sub-type (VEN). A radio, and the run must never choose it:
+  // which questions a venture is asked is the founder's to say.
+  "ventureType",
+  // The place venture's two radios (VEN-2). Where the property stands and how
+  // exactly the site names its location are the founder's to choose.
+  "propertyStatus",
+  "locationPrecision",
+  // The investor ask's three radios (VEN-3). Whether a co-owner differs,
+  // whether returns may be named and whether progress may be shown are
+  // counsel's to say, never a run's.
+  "coOwnerDiffers",
+  "returnWording",
+  "raiseProgress",
   "justYou",
   "showTeam",
   "leadPerson",
@@ -298,8 +337,12 @@ const CHOICE_BACKED = new Set([
  * A value written behind a closed reveal is the PORT-14 failure: stored,
  * printed in the document, invisible on the screen the client is looking at.
  */
-const REVEAL_GATED = new Set([
+const REVEAL_GATED: ReadonlySet<string> = new Set([
   "availabilityDetail",
+  // VEN-3: each opens on one answer above it (`investor-ask.md`).
+  "coOwnerLines",
+  "returnWordingQuote",
+  "raiseProgress",
   "registrar",
   "domainAccess",
   "embedFormLink",
@@ -349,8 +392,39 @@ const INPUT_FIELDS = new Set(["peoplePaste"]);
  * Read through the same registry accessors the step components use, so the
  * inventory and the screen cannot disagree about who is asked what. A key
  * absent from this map is asked of every kind.
+ *
+ * Each test takes the sub-type too (VEN, C3). It is null for every kind but a
+ * venture, and `groupsFor` ignores it off venture, so a test written against
+ * groups never needs to know which kinds have sub-types.
  */
-const KIND_GATED: Readonly<Record<string, (kind: ShowcaseKind) => boolean>> = {
+type KindGate = (
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+) => boolean;
+
+/**
+ * Whether any pack this kind can be read in lists a page (WEB-22).
+ *
+ * A portfolio's pack follows its discipline, which the gate is not told, so
+ * every pack a discipline can earn is asked, and the no-discipline floor.
+ */
+function packsListPage(
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+  value: string,
+): boolean {
+  const flavours = new Set([
+    flavourForKind(kind, undefined),
+    ...showcaseDisciplines().map((d) => flavourForKind(kind, [d.key])),
+  ]);
+  return [...flavours].some((flavour) =>
+    copyPackFor(flavour, ventureType).pages.some(
+      (option) => option.value === value,
+    ),
+  );
+}
+
+const KIND_GATED: Readonly<Record<string, KindGate>> = {
   stage: (kind) => groupsFor(kind).has("stage"),
   stageDetail: (kind) => groupsFor(kind).has("stage"),
   // Asked instead of `stage`, so it is the venture kind's one absence.
@@ -360,7 +434,76 @@ const KIND_GATED: Readonly<Record<string, (kind: ShowcaseKind) => boolean>> = {
   requiredWording: (kind) => groupsFor(kind).has("claims"),
   toolsDetail: (kind) => !kindAsks(kind, "video"),
   toolsOther: (kind) => !kindAsks(kind, "video"),
+  // VEN: every venture is asked its sub-type. VEN-2 to VEN-4 add the `raise`
+  // and `place` keys here, each through `groupsFor(kind, ventureType)`.
+  ventureType: (kind, ventureType) => groupsFor(kind, ventureType).has("raise"),
+  // VEN-2: what the place is today. A venture whose sub-type is `place`, and
+  // nothing else; each through the registry, never a sub-type comparison.
+  ...Object.fromEntries(
+    [
+      "propertyStatus",
+      "propertyTitle",
+      "locationPrecision",
+      "locationWhy",
+      "visitsNow",
+      "placeSize",
+      "permits",
+      "applyWho",
+      "applyAfter",
+      "applyFee",
+      "applyQuestions",
+    ].map((key): [string, KindGate] => [
+      key,
+      (kind, ventureType) => groupsFor(kind, ventureType).has("place"),
+    ]),
+  ),
+  // WEB-22: a page's box, only for a kind whose packs list that page, so a
+  // portfolio's run is never offered a venture's Apply page.
+  ...Object.fromEntries(
+    PAGE_BRAIN_DUMP_VALUES.map((value): [string, KindGate] => [
+      pageBrainDumpKey(value),
+      (kind, ventureType) => packsListPage(kind, ventureType, value),
+    ]),
+  ),
+  // VEN-3: the investor ask. `raise` is every venture; `place` adds the
+  // place rows and raise progress. Through the registry, never a comparison.
+  ...Object.fromEntries(
+    [
+      ["issuerEntity", "raise"],
+      ["jurisdictions", "raise"],
+      ["returnWording", "raise"],
+      ["returnWordingQuote", "raise"],
+      ["investorReceives", "place"],
+      ["coOwnerDiffers", "place"],
+      ["coOwnerLines", "place"],
+      ["perks", "place"],
+      ["raiseProgress", "place"],
+    ].map(([key, group]): [string, KindGate] => [
+      key!,
+      (kind, ventureType) =>
+        groupsFor(kind, ventureType).has(group as "raise" | "place"),
+    ]),
+  ),
 };
+
+/**
+ * Whether a kind, with its sub-type, is asked a key at all.
+ *
+ * The one predicate the ingestion run and the document's Not-answered list
+ * share (VEN C10), so the two cannot disagree about who was asked what. A key
+ * with no gate is asked of every kind.
+ */
+export function askedOf(
+  key: string,
+  kind: ShowcaseKind,
+  ventureType: VentureType | null = null,
+): boolean {
+  return KIND_GATED[key]?.(kind, ventureType) ?? true;
+}
+
+/** The keys behind a radio, and behind a reveal, for the generated tests. */
+export const choiceBackedKeys: ReadonlySet<string> = CHOICE_BACKED;
+export const revealGatedKeys: ReadonlySet<string> = REVEAL_GATED;
 
 /**
  * Every hand-written key in this file's second half, for the drift guard.
@@ -381,14 +524,19 @@ const INGESTION_HAND_WRITTEN: readonly string[] = [
  * the run can fill, and one removed cannot linger. Order is step order, then
  * schema order — the order the client meets the questions in.
  */
-export function ingestionFieldsFor(kind: ShowcaseKind): readonly PrimerField[] {
+export function ingestionFieldsFor(
+  kind: ShowcaseKind,
+  // Null by default, which reads as plain venture: a caller that forgets the
+  // sub-type gets no place key, never an extra one (VEN C3, fails closed).
+  ventureType: VentureType | null = null,
+): readonly PrimerField[] {
   return PRIMER_FIELDS.filter(
     (field) =>
       !CHOICE_BACKED.has(field.key) &&
       !REVEAL_GATED.has(field.key) &&
       !EXTRA_GATED.has(field.key) &&
       !INPUT_FIELDS.has(field.key) &&
-      (KIND_GATED[field.key]?.(kind) ?? true),
+      askedOf(field.key, kind, ventureType),
   );
 }
 

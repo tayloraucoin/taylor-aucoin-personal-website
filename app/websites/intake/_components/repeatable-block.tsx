@@ -266,14 +266,14 @@ export function RepeatableBlock<T>({
             {reorderable ? (
               <>
                 <RankButton
-                  label={`Move item ${index + 1} up`}
+                  label={`Move up, item ${index + 1}`}
                   disabled={index === 0}
                   onClick={() => move(index, index - 1)}
                 >
                   Move up
                 </RankButton>
                 <RankButton
-                  label={`Move item ${index + 1} down`}
+                  label={`Move down, item ${index + 1}`}
                   disabled={index === blocks.length - 1}
                   onClick={() => move(index, index + 1)}
                 >

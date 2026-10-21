@@ -291,6 +291,8 @@ export function markdownFilename(parts: {
   kind: string;
   film: boolean;
   everyKind: boolean;
+  /** The view's venture sub-type (VEN): `intake-questions-coded-venture-place.md`. */
+  subtype?: string | null;
 }): string {
   const track = parts.track === "showcase" ? "coded" : "platform";
 
@@ -300,7 +302,9 @@ export function markdownFilename(parts: {
     ? "every-kind"
     : parts.film
       ? `${parts.kind}-film`
-      : parts.kind;
+      : parts.subtype
+        ? `${parts.kind}-${parts.subtype}`
+        : parts.kind;
 
   return `intake-questions-${track}-${view}.md`;
 }

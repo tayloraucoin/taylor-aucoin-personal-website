@@ -30,6 +30,10 @@ import {
   personVoiceOptionsFor,
   showcaseDisciplines,
   showcaseKinds,
+  showcaseSubtypeOverlayKeys,
+  showcaseVentureTypes,
+  ventureTypeChoices,
+  ventureTypeOf,
   workShapeFor,
   labelFor,
   nextStep,
@@ -60,12 +64,18 @@ import {
 } from "@/content/intake-examples/taxonomy";
 import { hostOf, picksOf, spectrumsOf } from "@/lib/intake/taste-picks";
 import { SHOWCASE_FLAVOURS, resolvePack } from "@/lib/intake/showcase-copy";
-import { RETIRED_TASTE_KEYS } from "@/lib/intake/showcase-answer-labels";
+import {
+  PIECE_FUNDED_LABELS,
+  RETIRED_TASTE_KEYS,
+} from "@/lib/intake/showcase-answer-labels";
 import { stepTasteSchema } from "@/lib/validators/showcase-intake";
 import type { IntakeAnswers } from "@/lib/types/intake";
 import type { Engagement } from "@/server/services/engagement";
 import { renderIntakeMarkdown } from "@/server/services/output";
 import { readStepAnswers } from "@/server/services/submission";
+
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 
 let failures = 0;
 
@@ -494,12 +504,307 @@ function checkKinds(): void {
   check(
     "a venture carries every group",
     groups("venture"),
-    ["ask", "claims", "documents", "roster", "stage"],
+    ["ask", "claims", "documents", "raise", "roster", "stage"],
   );
   check("a practice carries the ask and the claims", groups("practice"), [
     "ask",
     "claims",
   ]);
+}
+
+/* ── VEN-1 — the venture sub-type and its overlay ────────────────────────── */
+
+/** The tree where no component may decide who is asked (C-VEN-kind-5). */
+const COMPONENTS_DIR = "app/websites/coded/intake/_components";
+
+/**
+ * Every sub-type comparison in a source text, as the matched snippets.
+ *
+ * A component reads who is asked through `ForKinds` and the registry; one that
+ * compares `ventureType`, or compares anything to a sub-type value, is holding
+ * a private opinion the overview cannot report (M-ADM-7). A field key such as
+ * `fieldKey="place"` is an assignment, not a comparison, and does not match.
+ */
+function subtypeComparisons(source: string): string[] {
+  const values = showcaseVentureTypes.join("|");
+  const quoted = `["'\`](?:${values})["'\`]`;
+  const pattern = new RegExp(
+    [
+      String.raw`\bventureType\s*[!=]==`,
+      String.raw`[!=]==\s*ventureType\b`,
+      String.raw`[!=]==\s*` + quoted,
+      quoted + String.raw`\s*[!=]==`,
+    ].join("|"),
+    "g",
+  );
+  return source.match(pattern) ?? [];
+}
+
+function sourceFiles(dir: string): string[] {
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
+    .map((entry) => path.join(entry.parentPath, entry.name))
+    .sort();
+}
+
+function checkVentureTypes(): void {
+  const venture = copyPackFor("venture");
+
+  // Plain venture, and every sub-type without an overlay, is the venture pack
+  // itself: "exactly as today" as an identity, not a comparison (C-VEN-kind-3).
+  const notPlace = showcaseVentureTypes.filter((t) => t !== "place");
+  check(
+    "venture with no sub-type, or a sub-type with no overlay, is the venture pack by reference",
+    [null, ...notPlace].filter((t) => copyPackFor("venture", t) !== venture),
+    [],
+  );
+  check(
+    "a place venture reads its own overlaid pack",
+    copyPackFor("venture", "place") !== venture,
+    true,
+  );
+  check(
+    "every other pack ignores a sub-type",
+    SHOWCASE_FLAVOURS.filter((flavour) => flavour !== "venture").flatMap(
+      (flavour) =>
+        showcaseVentureTypes
+          .filter((t) => copyPackFor(flavour, t) !== copyPackFor(flavour))
+          .map((t) => `${flavour}:${t}`),
+    ),
+    [],
+  );
+
+  // Overlay keys are plain strings in the copy file, so this is where they are
+  // held to the registry.
+  const listed: readonly string[] = showcaseVentureTypes;
+  check(
+    "every overlay key is a listed sub-type",
+    Object.entries(showcaseSubtypeOverlayKeys).flatMap(([flavour, keys]) =>
+      (keys ?? [])
+        .filter((key) => !listed.includes(key))
+        .map((key) => `${flavour}:${key}`),
+    ),
+    [],
+  );
+
+  // Values have one home and labels another; the join must lose nothing.
+  check(
+    "the venture pack labels every sub-type",
+    showcaseVentureTypes.filter((t) => !venture.ventureType?.labels[t]),
+    [],
+  );
+  check(
+    "the sub-type options are the registry's, in its order",
+    ventureTypeChoices(venture).map((choice) => choice.value),
+    [...showcaseVentureTypes],
+  );
+  check(
+    "a pack that does not ask the sub-type offers no options",
+    ventureTypeChoices(copyPackFor("entity")),
+    [],
+  );
+
+  // The sub-type reaches only a venture, so a stale one adds nothing.
+  check(
+    "a stale place on a studio is no sub-type",
+    ventureTypeOf({ about: { siteKind: "studio", ventureType: "place" } }),
+    null,
+  );
+  check(
+    "a place venture carries the place group",
+    [...groupsFor("venture", "place")].includes("place"),
+    true,
+  );
+
+  // No component decides who is asked by comparing a sub-type.
+  const offending = sourceFiles(COMPONENTS_DIR).flatMap((file) =>
+    subtypeComparisons(readFileSync(file, "utf8")).map(
+      (match) => `${file}: ${match}`,
+    ),
+  );
+  check("no component under _components/ compares a sub-type", offending, []);
+  check(
+    "the scan catches a sub-type comparison",
+    [
+      subtypeComparisons('if (ventureType === "place") return null;').length > 0,
+      subtypeComparisons("const open = 'place' === picked;").length > 0,
+      subtypeComparisons('<DocumentDrop fieldKey="place" />').length,
+    ],
+    [true, true, 0],
+  );
+}
+
+/* ── VEN-2 — the place questions and the place overlay ──────────────────── */
+
+type Option = { value: string };
+
+function checkPlaceQuestions(): void {
+  const venture = copyPackFor("venture");
+  const place = copyPackFor("venture", "place");
+  const words = place.placeVenture;
+
+  check("the place overlay carries the place questions", Boolean(words), true);
+  check(
+    "no pack but the place overlay carries the place questions",
+    SHOWCASE_FLAVOURS.filter((flavour) => copyPackFor(flavour).placeVenture),
+    [],
+  );
+  if (!words) return;
+
+  // Option values are storage: stable keys, and the overlay drops none of the
+  // plain venture pack's (C-VEN-place-5).
+  const lists: Array<[string, readonly Option[], readonly Option[]]> = [
+    ["audiences", venture.audiences, place.audiences],
+    ["asks", venture.ask.askField.options, place.ask.askField.options],
+    ["pages", venture.pages, place.pages],
+  ];
+  check(
+    "the place overlay keeps every plain venture option value",
+    lists.flatMap(([name, plain, overlaid]) =>
+      plain
+        .filter((o) => !overlaid.some((p) => p.value === o.value))
+        .map((o) => `${name}:${o.value}`),
+    ),
+    [],
+  );
+  const placeValues = [
+    ...lists.flatMap(([, , overlaid]) => overlaid),
+    ...words.propertyStatus.options,
+    ...words.locationPrecision.options,
+    ...words.funded.options,
+  ].map((option) => option.value);
+  check(
+    "every place option value is a non-empty stable key",
+    placeValues.filter((value) => !/^[a-zA-Z]+$/.test(value)),
+    [],
+  );
+
+  // A critical choice ends "Not sure yet" (D-VEN-10).
+  check(
+    "each place radio ends on unsure",
+    [words.propertyStatus, words.locationPrecision, words.funded].map(
+      (field) => field.options.at(-1)?.value,
+    ),
+    ["unsure", "unsure", "unsure"],
+  );
+
+  // A funded value with no document label prints as its raw key.
+  check(
+    "every funded value has a document label",
+    words.funded.options
+      .map((option) => option.value)
+      .filter((value) => !PIECE_FUNDED_LABELS[value]),
+    [],
+  );
+}
+
+/* ── VEN-3 — the claims boundary (C-VEN-ask-7) ──────────────────────────── */
+
+/**
+ * Words that model share wording or press a visitor: returns, yield, income,
+ * appreciation, a percentage, "only … left" and scarcity. The form collects
+ * counsel's words and suggests none of its own.
+ */
+const CLAIMS_BOUNDARY =
+  /\b(returns?|yields?|income|apprecia\w*|dividends?|roi)\b|\d\s*%|\bonly\b[^.]*?\bleft\b|\b(limited|scarce|scarcity|last chance|selling fast|spots? (left|remaining)|exclusive|hurry)\b/i;
+
+/** The two strings that ask about exactly those words, and so may hold them. */
+const ASKS_ABOUT_RETURNS = new Set(["returnWording", "returnWordingQuote"]);
+
+/** Every string in a value, with its path; option `value`s are storage. */
+function stringsIn(value: unknown, at: string): Array<[string, string]> {
+  if (typeof value === "string") return [[at, value]];
+  if (Array.isArray(value))
+    return value.flatMap((item, i) => stringsIn(item, `${at}[${i}]`));
+  if (value && typeof value === "object")
+    return Object.entries(value).flatMap(([key, item]) =>
+      key === "value" ? [] : stringsIn(item, `${at}.${key}`),
+    );
+  return [];
+}
+
+/** The paths whose words cross the boundary, outside the two that ask. */
+function crossesClaimsBoundary(
+  strings: ReadonlyArray<[string, string]>,
+): string[] {
+  return strings
+    .filter(
+      ([at]) => !at.split(/[.[]/).some((part) => ASKS_ABOUT_RETURNS.has(part)),
+    )
+    .filter(([, text]) => CLAIMS_BOUNDARY.test(text))
+    .map(([at]) => at);
+}
+
+/**
+ * Every client's name, read from the work rows' source: the rows import
+ * images, which this script cannot load (D-PORT-14).
+ */
+const CLIENT_NAMES = [
+  ...readFileSync("content/work/rows.ts", "utf8").matchAll(
+    /type: "client",\s*title: "([^"]+)"/g,
+  ),
+].map((match) => match[1]!.toLowerCase());
+
+/** The paths whose words hold a client's name. */
+function namesAClient(strings: ReadonlyArray<[string, string]>): string[] {
+  return strings
+    .filter(([, text]) =>
+      CLIENT_NAMES.some((name) => text.toLowerCase().includes(name)),
+    )
+    .map(([at]) => at);
+}
+
+function checkClaimsBoundary(): void {
+  const floor = copyPackFor("generic").claims;
+  const venture = copyPackFor("venture");
+  const place = copyPackFor("venture", "place");
+  // The place claims overlay: only the strings it changes; the rest are the
+  // floor's, which ask about returns as things a client can't say.
+  const placeClaims = Object.fromEntries(
+    Object.entries(place.claims).filter(
+      ([key, value]) =>
+        JSON.stringify(value) !==
+        JSON.stringify(floor[key as keyof typeof floor]),
+    ),
+  );
+  const strings = [
+    ...stringsIn(venture.raise, "raise"),
+    ...stringsIn(venture.claims.intro, "claims.intro"),
+    ...stringsIn(place.placeVenture, "placeVenture"),
+    ...stringsIn(placeClaims, "placeClaims"),
+  ];
+
+  check("the investor ask carries its strings", strings.length > 20, true);
+  check(
+    "no investor ask string models returns or scarcity",
+    crossesClaimsBoundary(strings),
+    [],
+  );
+  check(
+    "the two return questions are the ones that name returns",
+    stringsIn(venture.raise?.returnWording, "returnWording").some(([, text]) =>
+      CLAIMS_BOUNDARY.test(text),
+    ),
+    true,
+  );
+  check("no investor ask string names a client", namesAClient(strings), []);
+
+  // The scan's own proof: a yield figure, and scarcity, in a fixture string.
+  check(
+    "the scan catches a yield figure and a scarcity line",
+    crossesClaimsBoundary([
+      ["fixture.yield", "Investors earn an 8% yield from year two."],
+      ["fixture.scarce", "Only three founding shares left."],
+      ["returnWordingQuote", "An 8% yield, approved by counsel."],
+    ]),
+    ["fixture.yield", "fixture.scarce"],
+  );
+  check("the client-name guard reads the clients", CLIENT_NAMES.length > 0, true);
+  check(
+    "the client-name guard catches a client's name",
+    namesAClient([["fixture", `Built like ${CLIENT_NAMES[0]}`]]),
+    ["fixture"],
+  );
 }
 
 /* ── PORT-13 — changing the kind changes questions, never answers ────────── */
@@ -1567,6 +1872,9 @@ function main(): void {
   checkResolution();
   checkFlavour();
   checkKinds();
+  checkVentureTypes();
+  checkPlaceQuestions();
+  checkClaimsBoundary();
   checkLabels();
   checkGallery();
   checkTasteContract();

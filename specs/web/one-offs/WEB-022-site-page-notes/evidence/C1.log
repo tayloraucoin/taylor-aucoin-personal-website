@@ -1,0 +1,1398 @@
+command: yarn test
+exit: 0
+at: 2026-10-21T02:16:30Z
+head: 72c75036bcc8f245c07945666f12130b735cbb58
+tests: 230
+---
+TAP version 13
+# Subtest: the root package is readable and named
+ok 1 - the root package is readable and named
+  ---
+  duration_ms: 0.649334
+  type: 'test'
+  ...
+# Subtest: C1 every tool shown names an item flagged core, in five groups
+ok 2 - C1 every tool shown names an item flagged core, in five groups
+  ---
+  duration_ms: 0.809333
+  type: 'test'
+  ...
+# Subtest: C3 the pending fixture is synthetic and no real entry's words are in it
+ok 3 - C3 the pending fixture is synthetic and no real entry's words are in it
+  ---
+  duration_ms: 0.20775
+  type: 'test'
+  ...
+# Subtest: C3 pending-testimonial is a listed state outside production and default in production
+ok 4 - C3 pending-testimonial is a listed state outside production and default in production
+  ---
+  duration_ms: 0.157167
+  type: 'test'
+  ...
+# Subtest: C3 every experience entry has a group, name, role and years, with an en dash for a range
+ok 5 - C3 every experience entry has a group, name, role and years, with an en dash for a range
+  ---
+  duration_ms: 0.677458
+  type: 'test'
+  ...
+# Subtest: C3 every slug names a study, and the only anchor is teaching
+ok 6 - C3 every slug names a study, and the only anchor is teaching
+  ---
+  duration_ms: 0.196917
+  type: 'test'
+  ...
+# Subtest: C1 How I think holds three rows and none is Mentorship
+ok 7 - C1 How I think holds three rows and none is Mentorship
+  ---
+  duration_ms: 0.102625
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery removes q and keeps tab, the rest, the path and the hash
+ok 8 - C1 stripQuery removes q and keeps tab, the rest, the path and the hash
+  ---
+  duration_ms: 0.87025
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery removes a repeated q
+ok 9 - C1 stripQuery removes a repeated q
+  ---
+  duration_ms: 0.135167
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery removes an empty and a bare q
+ok 10 - C1 stripQuery removes an empty and a bare q
+  ---
+  duration_ms: 0.273916
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery removes a percent-encoded q key
+ok 11 - C1 stripQuery removes a percent-encoded q key
+  ---
+  duration_ms: 0.478584
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery drops the ? when q was the only parameter, keeping the hash
+ok 12 - C1 stripQuery drops the ? when q was the only parameter, keeping the hash
+  ---
+  duration_ms: 0.178458
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery keeps other parameters byte for byte
+ok 13 - C1 stripQuery keeps other parameters byte for byte
+  ---
+  duration_ms: 0.092042
+  type: 'test'
+  ...
+# Subtest: C1 stripQuery leaves a URL with no query alone
+ok 14 - C1 stripQuery leaves a URL with no query alone
+  ---
+  duration_ms: 0.155083
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops an unknown parameter
+ok 15 - C2 allowedParams drops an unknown parameter
+  ---
+  duration_ms: 0.489792
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops the event when a required value is outside its set
+ok 16 - C2 allowedParams drops the event when a required value is outside its set
+  ---
+  duration_ms: 0.155125
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops a slug that is not a published study
+ok 17 - C2 allowedParams drops a slug that is not a published study
+  ---
+  duration_ms: 0.254666
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams keeps a published slug on case-study only
+ok 18 - C2 allowedParams keeps a published slug on case-study only
+  ---
+  duration_ms: 0.181834
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops the event when a required parameter is missing
+ok 19 - C2 allowedParams drops the event when a required parameter is missing
+  ---
+  duration_ms: 0.095542
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops an unknown event name, coded_intake_start included
+ok 20 - C2 allowedParams drops an unknown event name, coded_intake_start included
+  ---
+  duration_ms: 0.077625
+  type: 'test'
+  ...
+# Subtest: C2 allowedParams drops a non-string value
+ok 21 - C2 allowedParams drops a non-string value
+  ---
+  duration_ms: 0.081541
+  type: 'test'
+  ...
+# Subtest: C2 track sends nothing before the tag has loaded
+ok 22 - C2 track sends nothing before the tag has loaded
+  ---
+  duration_ms: 0.142209
+  type: 'test'
+  ...
+# Subtest: C2 track sets the stripped page fields, then sends the filtered event
+ok 23 - C2 track sets the stripped page fields, then sends the filtered event
+  ---
+  duration_ms: 0.248583
+  type: 'test'
+  ...
+# Subtest: C2 track sends nothing for a dropped event
+ok 24 - C2 track sends nothing for a dropped event
+  ---
+  duration_ms: 0.861375
+  type: 'test'
+  ...
+# Subtest: C8 the harness calls notFound() on a production deployment
+ok 25 - C8 the harness calls notFound() on a production deployment
+  ---
+  duration_ms: 0.439166
+  type: 'test'
+  ...
+# Subtest: C8 PUBLISHED_SLUGS equals content/work's published studies
+ok 26 - C8 PUBLISHED_SLUGS equals content/work's published studies
+  ---
+  duration_ms: 0.129708
+  type: 'test'
+  ...
+# Subtest: C3 a valid fit answer set returns fit with the name's first word
+ok 27 - C3 a valid fit answer set returns fit with the name's first word
+  ---
+  duration_ms: 18.319875
+  type: 'test'
+  ...
+# Subtest: C3 the outcome follows the rule: not_a_fit and website
+ok 28 - C3 the outcome follows the rule: not_a_fit and website
+  ---
+  duration_ms: 0.474417
+  type: 'test'
+  ...
+# Subtest: C3 with Name blank there is no first name
+ok 29 - C3 with Name blank there is no first name
+  ---
+  duration_ms: 0.187708
+  type: 'test'
+  ...
+# Subtest: C3 invalid input returns field errors and no outcome
+ok 30 - C3 invalid input returns field errors and no outcome
+  ---
+  duration_ms: 0.799958
+  type: 'test'
+  ...
+# Subtest: C3 a filled honeypot answers not_a_fit and carries nothing
+ok 31 - C3 a filled honeypot answers not_a_fit and carries nothing
+  ---
+  duration_ms: 0.157167
+  type: 'test'
+  ...
+# Subtest: C3 a render time of "1999" answers not_a_fit and carries nothing
+ok 32 - C3 a render time of "1999" answers not_a_fit and carries nothing
+  ---
+  duration_ms: 0.064375
+  type: 'test'
+  ...
+# Subtest: C3 a render time of "" answers not_a_fit and carries nothing
+ok 33 - C3 a render time of "" answers not_a_fit and carries nothing
+  ---
+  duration_ms: 0.0475
+  type: 'test'
+  ...
+# Subtest: C3 a render time of "nope" answers not_a_fit and carries nothing
+ok 34 - C3 a render time of "nope" answers not_a_fit and carries nothing
+  ---
+  duration_ms: 0.10325
+  type: 'test'
+  ...
+# Subtest: C2 accepts a full answer set with name blank
+ok 35 - C2 accepts a full answer set with name blank
+  ---
+  duration_ms: 5.157584
+  type: 'test'
+  ...
+# Subtest: C2 accepts the caps exactly
+ok 36 - C2 accepts the caps exactly
+  ---
+  duration_ms: 0.200209
+  type: 'test'
+  ...
+# Subtest: C2 rejects a missing budget
+ok 37 - C2 rejects a missing budget
+  ---
+  duration_ms: 0.411125
+  type: 'test'
+  ...
+# Subtest: C2 rejects an unknown budget
+ok 38 - C2 rejects an unknown budget
+  ---
+  duration_ms: 0.094375
+  type: 'test'
+  ...
+# Subtest: C2 rejects a missing start
+ok 39 - C2 rejects a missing start
+  ---
+  duration_ms: 0.16225
+  type: 'test'
+  ...
+# Subtest: C2 rejects an unknown start
+ok 40 - C2 rejects an unknown start
+  ---
+  duration_ms: 0.065666
+  type: 'test'
+  ...
+# Subtest: C2 rejects a missing role
+ok 41 - C2 rejects a missing role
+  ---
+  duration_ms: 0.193167
+  type: 'test'
+  ...
+# Subtest: C2 rejects an unknown role
+ok 42 - C2 rejects an unknown role
+  ---
+  duration_ms: 0.117
+  type: 'test'
+  ...
+# Subtest: C2 rejects an empty building answer
+ok 43 - C2 rejects an empty building answer
+  ---
+  duration_ms: 0.42525
+  type: 'test'
+  ...
+# Subtest: C2 rejects a 2001-character building answer
+ok 44 - C2 rejects a 2001-character building answer
+  ---
+  duration_ms: 0.432042
+  type: 'test'
+  ...
+# Subtest: C2 rejects a name over 100
+ok 45 - C2 rejects a name over 100
+  ---
+  duration_ms: 0.170209
+  type: 'test'
+  ...
+# Subtest: C2 rejects a malformed email
+ok 46 - C2 rejects a malformed email
+  ---
+  duration_ms: 0.097542
+  type: 'test'
+  ...
+# Subtest: C2 rejects an email over 254
+ok 47 - C2 rejects an email over 254
+  ---
+  duration_ms: 0.064416
+  type: 'test'
+  ...
+# Subtest: C2 the greeting takes the first word of Name, or nothing
+ok 48 - C2 the greeting takes the first word of Name, or nothing
+  ---
+  duration_ms: 0.1
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a fixture sentinel: <p>sam@fixture.invalid</p>
+ok 49 - C5 the check fails a prerendered page holding a fixture sentinel: <p>sam@fixture.invalid</p>
+  ---
+  duration_ms: 180.63725
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a draft mark: <p>A study [draft]</p>
+ok 50 - C5 the check fails a prerendered page holding a draft mark: <p>A study [draft]</p>
+  ---
+  duration_ms: 185.85275
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a draft mark: <p>A study [Draft]</p>
+ok 51 - C5 the check fails a prerendered page holding a draft mark: <p>A study [Draft]</p>
+  ---
+  duration_ms: 184.9125
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a bracketed placeholder: <p>[ASSUMPTION: the price]</p>
+ok 52 - C5 the check fails a prerendered page holding a bracketed placeholder: <p>[ASSUMPTION: the price]</p>
+  ---
+  duration_ms: 197.272709
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a bracketed placeholder: <p>[PROPOSED]</p>
+ok 53 - C5 the check fails a prerendered page holding a bracketed placeholder: <p>[PROPOSED]</p>
+  ---
+  duration_ms: 182.91025
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a prerendered page holding a bracketed placeholder: <p>[FILL client quote]</p>
+ok 54 - C5 the check fails a prerendered page holding a bracketed placeholder: <p>[FILL client quote]</p>
+  ---
+  duration_ms: 221.065459
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a directory with no HTML file at all
+ok 55 - C5 the check fails a directory with no HTML file at all
+  ---
+  duration_ms: 154.593875
+  type: 'test'
+  ...
+# Subtest: C5 the check fails a directory that does not exist
+ok 56 - C5 the check fails a directory that does not exist
+  ---
+  duration_ms: 142.942792
+  type: 'test'
+  ...
+# Subtest: C5 the check passes a clean directory
+ok 57 - C5 the check passes a clean directory
+  ---
+  duration_ms: 118.753708
+  type: 'test'
+  ...
+# Subtest: C1 realtime matches exactly three, reading past chip names
+ok 58 - C1 realtime matches exactly three, reading past chip names
+  ---
+  duration_ms: 1.002209
+  type: 'test'
+  ...
+# Subtest: C1 a blank query keeps every chip; kubernetes matches none
+ok 59 - C1 a blank query keeps every chip; kubernetes matches none
+  ---
+  duration_ms: 0.143209
+  type: 'test'
+  ...
+# Subtest: C2 the filter works within a tab
+ok 60 - C2 the filter works within a tab
+  ---
+  duration_ms: 0.114458
+  type: 'test'
+  ...
+# Subtest: C1 each field is read: title, tech, approach, offer, keywords
+ok 61 - C1 each field is read: title, tech, approach, offer, keywords
+  ---
+  duration_ms: 0.105875
+  type: 'test'
+  ...
+# Subtest: C5 every capability's tabs are its tags mapped, from the five
+ok 62 - C5 every capability's tabs are its tags mapped, from the five
+  ---
+  duration_ms: 1.221959
+  type: 'test'
+  ...
+# Subtest: C5 the shown chips split 4, 6, 10 and 7 across the tabs
+ok 63 - C5 the shown chips split 4, 6, 10 and 7 across the tabs
+  ---
+  duration_ms: 0.144084
+  type: 'test'
+  ...
+# Subtest: C2 parseTab falls back to All for missing, blank or unknown
+ok 64 - C2 parseTab falls back to All for missing, blank or unknown
+  ---
+  duration_ms: 0.09375
+  type: 'test'
+  ...
+# Subtest: C3 searchWithState writes tab and q, dropping All and a blank q
+ok 65 - C3 searchWithState writes tab and q, dropping All and a blank q
+  ---
+  duration_ms: 0.1925
+  type: 'test'
+  ...
+# Subtest: Work is current on /capabilities (D-SITE-140)
+ok 66 - Work is current on /capabilities (D-SITE-140)
+  ---
+  duration_ms: 0.075584
+  type: 'test'
+  ...
+# Subtest: C5 no font size outside kit §3's tokens under capabilities
+ok 67 - C5 no font size outside kit §3's tokens under capabilities
+  ---
+  duration_ms: 0.864417
+  type: 'test'
+  ...
+# Subtest: C1 every study carries type, listRole, sortDate, builtFormat and four facts
+ok 68 - C1 every study carries type, listRole, sortDate, builtFormat and four facts
+  ---
+  duration_ms: 0.737875
+  type: 'test'
+  ...
+# Subtest: C2 builtFormat per study, and only the Unified data layer card carries a screen
+ok 69 - C2 builtFormat per study, and only the Unified data layer card carries a screen
+  ---
+  duration_ms: 0.475625
+  type: 'test'
+  ...
+# Subtest: C3 aiSat is on Conscious Connections only, copied from atAGlance
+ok 70 - C3 aiSat is on Conscious Connections only, copied from atAGlance
+  ---
+  duration_ms: 0.165584
+  type: 'test'
+  ...
+# Subtest: C4 Conscious Connections' facts
+ok 71 - C4 Conscious Connections' facts
+  ---
+  duration_ms: 0.131291
+  type: 'test'
+  ...
+# Subtest: C5 rows.ts holds six rows and every caseStudySlug names a study
+ok 72 - C5 rows.ts holds six rows and every caseStudySlug names a study
+  ---
+  duration_ms: 0.240708
+  type: 'test'
+  ...
+# Subtest: C6 within each type, newest first gives work-index.md's order
+ok 73 - C6 within each type, newest first gives work-index.md's order
+  ---
+  duration_ms: 8.236666
+  type: 'test'
+  ...
+# Subtest: C6 content/work loads through @/ with its image imports stubbed
+ok 74 - C6 content/work loads through @/ with its image imports stubbed
+  ---
+  duration_ms: 0.783834
+  type: 'test'
+  ...
+# Subtest: C6 a module that imports server-only loads
+ok 75 - C6 a module that imports server-only loads
+  ---
+  duration_ms: 74.164042
+  type: 'test'
+  ...
+# Subtest: C7 definitions.md holds SITE-M1 v1
+ok 76 - C7 definitions.md holds SITE-M1 v1
+  ---
+  duration_ms: 0.51225
+  type: 'test'
+  ...
+# Subtest: C7 SITE-M1 counts Cal.com bookings carrying source=site-screening
+ok 77 - C7 SITE-M1 counts Cal.com bookings carrying source=site-screening
+  ---
+  duration_ms: 0.074667
+  type: 'test'
+  ...
+# Subtest: C7 SITE-M1's denominator is book_call_click at screening_fit
+ok 78 - C7 SITE-M1's denominator is book_call_click at screening_fit
+  ---
+  duration_ms: 0.106542
+  type: 'test'
+  ...
+# Subtest: C3 @playwright/test and @axe-core/playwright are exact-pinned dev dependencies
+ok 79 - C3 @playwright/test and @axe-core/playwright are exact-pinned dev dependencies
+  ---
+  duration_ms: 0.525375
+  type: 'test'
+  ...
+# Subtest: C3 @playwright/test equals the playwright pin, so one browser serves both
+ok 80 - C3 @playwright/test equals the playwright pin, so one browser serves both
+  ---
+  duration_ms: 0.083708
+  type: 'test'
+  ...
+# Subtest: C1 fit() matches D-SITE-166 for all 140 combinations
+ok 81 - C1 fit() matches D-SITE-166 for all 140 combinations
+  ---
+  duration_ms: 0.6205
+  type: 'test'
+  ...
+# Subtest: C1 a website or brand is website even with a fitting budget and start
+ok 82 - C1 a website or brand is website even with a fitting budget and start
+  ---
+  duration_ms: 0.069667
+  type: 'test'
+  ...
+# Subtest: C1 Not sure yet can be a fit
+ok 83 - C1 Not sure yet can be a fit
+  ---
+  duration_ms: 0.055042
+  type: 'test'
+  ...
+# Subtest: C4 only app/layout.tsx imports a footer, and it is SiteFooter
+ok 84 - C4 only app/layout.tsx imports a footer, and it is SiteFooter
+  ---
+  duration_ms: 49.964625
+  type: 'test'
+  ...
+# Subtest: C4 components/sections/Footer.tsx does not exist
+ok 85 - C4 components/sections/Footer.tsx does not exist
+  ---
+  duration_ms: 0.110958
+  type: 'test'
+  ...
+# Subtest: C1 the builder keeps BOOKING_URL's origin and path and only the prefill
+ok 86 - C1 the builder keeps BOOKING_URL's origin and path and only the prefill
+  ---
+  duration_ms: 1.004
+  type: 'test'
+  ...
+# Subtest: C1 every value is URL-encoded
+ok 87 - C1 every value is URL-encoded
+  ---
+  duration_ms: 0.190083
+  type: 'test'
+  ...
+# Subtest: C1 with name blank there is no name parameter
+ok 88 - C1 with name blank there is no name parameter
+  ---
+  duration_ms: 0.063625
+  type: 'test'
+  ...
+# Subtest: C2 a fit set answers 303 to the builder's URL
+ok 89 - C2 a fit set answers 303 to the builder's URL
+  ---
+  duration_ms: 4.431334
+  type: 'test'
+  ...
+# Subtest: C2 not a fit on re-run answers 303 to /book with no query
+ok 90 - C2 not a fit on re-run answers 303 to /book with no query
+  ---
+  duration_ms: 0.828541
+  type: 'test'
+  ...
+# Subtest: C2 a website on re-run answers 303 to /book with no query
+ok 91 - C2 a website on re-run answers 303 to /book with no query
+  ---
+  duration_ms: 0.583125
+  type: 'test'
+  ...
+# Subtest: C2 a missing budget answers 303 to /book with no query
+ok 92 - C2 a missing budget answers 303 to /book with no query
+  ---
+  duration_ms: 1.156875
+  type: 'test'
+  ...
+# Subtest: C2 an unknown start answers 303 to /book with no query
+ok 93 - C2 an unknown start answers 303 to /book with no query
+  ---
+  duration_ms: 0.76175
+  type: 'test'
+  ...
+# Subtest: C2 an unknown role answers 303 to /book with no query
+ok 94 - C2 an unknown role answers 303 to /book with no query
+  ---
+  duration_ms: 0.696417
+  type: 'test'
+  ...
+# Subtest: C2 a malformed email answers 303 to /book with no query
+ok 95 - C2 a malformed email answers 303 to /book with no query
+  ---
+  duration_ms: 0.717833
+  type: 'test'
+  ...
+# Subtest: C2 an empty body answers 303 to /book with no query
+ok 96 - C2 an empty body answers 303 to /book with no query
+  ---
+  duration_ms: 0.342
+  type: 'test'
+  ...
+# Subtest: C2 an empty form answers 303 to /book with no query
+ok 97 - C2 an empty form answers 303 to /book with no query
+  ---
+  duration_ms: 1.242209
+  type: 'test'
+  ...
+# Subtest: C2 a forged redirect field never moves the target
+ok 98 - C2 a forged redirect field never moves the target
+  ---
+  duration_ms: 5.136125
+  type: 'test'
+  ...
+# Subtest: C2 no Location host is other than Cal.com's or this origin's
+ok 99 - C2 no Location host is other than Cal.com's or this origin's
+  ---
+  duration_ms: 2.38575
+  type: 'test'
+  ...
+# Subtest: SITE-28 C2 no SITE-28 commit touches server/, _actions/, lib/intake/ or lib/extras/
+ok 100 - SITE-28 C2 no SITE-28 commit touches server/, _actions/, lib/intake/ or lib/extras/
+  ---
+  duration_ms: 225.898125
+  type: 'test'
+  ...
+# Subtest: SITE-29 C2 no SITE-29 commit touches server/, _actions/, lib/intake/ or lib/extras/
+ok 101 - SITE-29 C2 no SITE-29 commit touches server/, _actions/, lib/intake/ or lib/extras/
+  ---
+  duration_ms: 165.726042
+  type: 'test'
+  ...
+# Subtest: SITE-30 C2 no SITE-30 commit touches server/, _actions/, lib/intake/ or lib/extras/
+ok 102 - SITE-30 C2 no SITE-30 commit touches server/, _actions/, lib/intake/ or lib/extras/
+  ---
+  duration_ms: 162.252125
+  type: 'test'
+  ...
+# Subtest: SITE-28 C2 the matcher flags each protected path and passes a component
+ok 103 - SITE-28 C2 the matcher flags each protected path and passes a component
+  ---
+  duration_ms: 0.11575
+  type: 'test'
+  ...
+# Subtest: SITE-30 C2 at least one commit since main has a subject starting SITE-30:
+ok 104 - SITE-30 C2 at least one commit since main has a subject starting SITE-30:
+  ---
+  duration_ms: 137.066792
+  type: 'test'
+  ...
+# Subtest: SITE-31 C2 at least one commit since main has a subject starting SITE-31:
+ok 105 - SITE-31 C2 at least one commit since main has a subject starting SITE-31:
+  ---
+  duration_ms: 134.96425
+  type: 'test'
+  ...
+# Subtest: SITE-31 C2 no SITE-31 commit touches the legal text or the consent control
+ok 106 - SITE-31 C2 no SITE-31 commit touches the legal text or the consent control
+  ---
+  duration_ms: 140.557625
+  type: 'test'
+  ...
+# Subtest: SITE-31 C2 the legal matcher flags each protected path and passes a page
+ok 107 - SITE-31 C2 the legal matcher flags each protected path and passes a page
+  ---
+  duration_ms: 0.083333
+  type: 'test'
+  ...
+# <claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+# Subtest: SITE-28 C5 the intake harness 404s on a production deployment
+ok 108 - SITE-28 C5 the intake harness 404s on a production deployment
+  ---
+  duration_ms: 1381.317708
+  type: 'test'
+  ...
+# Subtest: SITE-28 C5 an unknown state key 404s off production too
+ok 109 - SITE-28 C5 an unknown state key 404s off production too
+  ---
+  duration_ms: 4.320959
+  type: 'test'
+  ...
+# Subtest: SITE-28 isIntakePath covers the harness and nothing beside it
+ok 110 - SITE-28 isIntakePath covers the harness and nothing beside it
+  ---
+  duration_ms: 0.229042
+  type: 'test'
+  ...
+# Subtest: SITE-28 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+ok 111 - SITE-28 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+  ---
+  duration_ms: 3.528209
+  type: 'test'
+  ...
+# Subtest: SITE-30 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+ok 112 - SITE-30 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+  ---
+  duration_ms: 7.136542
+  type: 'test'
+  ...
+# Subtest: SITE-29 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+ok 113 - SITE-29 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+  ---
+  duration_ms: 3.805458
+  type: 'test'
+  ...
+# Subtest: SITE-31 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+ok 114 - SITE-31 C1 no mono caps, Eyebrow, GradientRing, font-light or gold text
+  ---
+  duration_ms: 0.857041
+  type: 'test'
+  ...
+# Subtest: SITE-28 C1 the scanner finds each idiom in a fixture
+ok 115 - SITE-28 C1 the scanner finds each idiom in a fixture
+  ---
+  duration_ms: 0.239042
+  type: 'test'
+  ...
+# Subtest: SITE-28 C1 the scanner passes the new roles
+ok 116 - SITE-28 C1 the scanner passes the new roles
+  ---
+  duration_ms: 0.3275
+  type: 'test'
+  ...
+# Subtest: SITE-29 C1 eyebrow.tsx is gone and nothing imports an Eyebrow
+ok 117 - SITE-29 C1 eyebrow.tsx is gone and nothing imports an Eyebrow
+  ---
+  duration_ms: 23.583458
+  type: 'test'
+  ...
+# Subtest: SITE-30 C1 no file in either intake tree names GradientRing
+ok 118 - SITE-30 C1 no file in either intake tree names GradientRing
+  ---
+  duration_ms: 5.059625
+  type: 'test'
+  ...
+# Subtest: VEN-3 C3 raise and place are false for every other kind, with any sub-type
+ok 119 - VEN-3 C3 raise and place are false for every other kind, with any sub-type
+  ---
+  duration_ms: 1.122458
+  type: 'test'
+  ...
+# Subtest: VEN-3 C3 no other pack holds a raise slot, and each keeps today's claims strings
+ok 120 - VEN-3 C3 no other pack holds a raise slot, and each keeps today's claims strings
+  ---
+  duration_ms: 0.9765
+  type: 'test'
+  ...
+# Subtest: VEN-3 C3 every venture carries raise; the place overlay adds the place rows and its intro
+ok 121 - VEN-3 C3 every venture carries raise; the place overlay adds the place rows and its intro
+  ---
+  duration_ms: 0.236292
+  type: 'test'
+  ...
+# Subtest: VEN-3 C3 every critical radio ends Not sure yet, and nothing is preselected by the pack
+ok 122 - VEN-3 C3 every critical radio ends Not sure yet, and nothing is preselected by the pack
+  ---
+  duration_ms: 0.078291
+  type: 'test'
+  ...
+# Subtest: VEN-3 C6 the invest rows show on a venture's Invest card only
+ok 123 - VEN-3 C6 the invest rows show on a venture's Invest card only
+  ---
+  duration_ms: 0.347
+  type: 'test'
+  ...
+# Subtest: VEN-3 C7 no run, on any kind or sub-type, writes a reveal, radio, counsel or entry key
+ok 124 - VEN-3 C7 no run, on any kind or sub-type, writes a reveal, radio, counsel or entry key
+  ---
+  duration_ms: 33.272333
+  type: 'test'
+  ...
+# Subtest: VEN-3 C7 the radios and reveals are registered, and every key is critical
+ok 125 - VEN-3 C7 the radios and reveals are registered, and every key is critical
+  ---
+  duration_ms: 0.358709
+  type: 'test'
+  ...
+# Subtest: VEN-3 C6 the document prints an Invest card's three rows as words
+ok 126 - VEN-3 C6 the document prints an Invest card's three rows as words
+  ---
+  duration_ms: 21.879167
+  type: 'test'
+  ...
+# Subtest: VEN-3 C6 an unanswered returnWording prints as not answered, on a venture only
+ok 127 - VEN-3 C6 an unanswered returnWording prints as not answered, on a venture only
+  ---
+  duration_ms: 4.2845
+  type: 'test'
+  ...
+# Subtest: VEN-3 C6 every key and radio value has a document label
+ok 128 - VEN-3 C6 every key and radio value has a document label
+  ---
+  duration_ms: 0.443417
+  type: 'test'
+  ...
+# Subtest: VEN-1 C6 no run, on any kind or sub-type, holds the sub-type or a radio or reveal key
+ok 129 - VEN-1 C6 no run, on any kind or sub-type, holds the sub-type or a radio or reveal key
+  ---
+  duration_ms: 6.257708
+  type: 'test'
+  ...
+# Subtest: VEN-1 C6 leaving the sub-type out is the same as null, so it fails closed
+ok 130 - VEN-1 C6 leaving the sub-type out is the same as null, so it fails closed
+  ---
+  duration_ms: 0.810125
+  type: 'test'
+  ...
+# Subtest: VEN-1 C6 every key a run may write is one the kind and sub-type are asked
+ok 131 - VEN-1 C6 every key a run may write is one the kind and sub-type are asked
+  ---
+  duration_ms: 6.262208
+  type: 'test'
+  ...
+# Subtest: VEN-1 C6 askedOf asks every venture its sub-type, and no other kind
+ok 132 - VEN-1 C6 askedOf asks every venture its sub-type, and no other kind
+  ---
+  duration_ms: 0.389167
+  type: 'test'
+  ...
+# Subtest: VEN-1 C6 the sub-type is critical
+ok 133 - VEN-1 C6 the sub-type is critical
+  ---
+  duration_ms: 0.074958
+  type: 'test'
+  ...
+# Subtest: VEN-1 C7 a portfolio's Not-answered list holds no question it was never asked
+ok 134 - VEN-1 C7 a portfolio's Not-answered list holds no question it was never asked
+  ---
+  duration_ms: 5.039
+  type: 'test'
+  ...
+# Subtest: VEN-1 C7 a portfolio's review tally counts only what it was asked
+ok 135 - VEN-1 C7 a portfolio's review tally counts only what it was asked
+  ---
+  duration_ms: 0.559208
+  type: 'test'
+  ...
+# Subtest: VEN-1 C7 a venture's lists name the sub-type it has not answered
+ok 136 - VEN-1 C7 a venture's lists name the sub-type it has not answered
+  ---
+  duration_ms: 0.537041
+  type: 'test'
+  ...
+# Subtest: VEN-1 C9 yarn verify runs both drift guards
+ok 137 - VEN-1 C9 yarn verify runs both drift guards
+  ---
+  duration_ms: 0.550583
+  type: 'test'
+  ...
+# Subtest: VEN-2 C3 each place key is asked of a place venture and nothing else
+ok 138 - VEN-2 C3 each place key is asked of a place venture and nothing else
+  ---
+  duration_ms: 1.102166
+  type: 'test'
+  ...
+# Subtest: VEN-2 C3 the two radios are choice-backed, and all 11 keys are critical
+ok 139 - VEN-2 C3 the two radios are choice-backed, and all 11 keys are critical
+  ---
+  duration_ms: 0.106959
+  type: 'test'
+  ...
+# Subtest: VEN-2 C5 no place key reaches a run off a place venture; a place run holds the nine text keys
+ok 140 - VEN-2 C5 no place key reaches a run off a place venture; a place run holds the nine text keys
+  ---
+  duration_ms: 5.67675
+  type: 'test'
+  ...
+# Subtest: VEN-2 C6 the piece extraction schema asks for no funded key
+ok 141 - VEN-2 C6 the piece extraction schema asks for no funded key
+  ---
+  duration_ms: 0.130333
+  type: 'test'
+  ...
+# Subtest: VEN-2 C6 a reply that calls a phase fully funded yields a piece with no funded value
+ok 142 - VEN-2 C6 a reply that calls a phase fully funded yields a piece with no funded value
+  ---
+  duration_ms: 0.915209
+  type: 'test'
+  ...
+# Subtest: VEN-2 C7 the place overlay keeps every plain value, adds its own in place, and relabels only
+ok 143 - VEN-2 C7 the place overlay keeps every plain value, adds its own in place, and relabels only
+  ---
+  duration_ms: 0.232125
+  type: 'test'
+  ...
+# Subtest: VEN-2 C8 the document prints every place answer under its label (sub-type place)
+ok 144 - VEN-2 C8 the document prints every place answer under its label (sub-type place)
+  ---
+  duration_ms: 22.723459
+  type: 'test'
+  ...
+# Subtest: VEN-2 C8 the document prints every place answer under its label (sub-type company)
+ok 145 - VEN-2 C8 the document prints every place answer under its label (sub-type company)
+  ---
+  duration_ms: 1.469541
+  type: 'test'
+  ...
+# Subtest: VEN-1 C2 the start form seeds place on a venture that chose it
+ok 146 - VEN-1 C2 the start form seeds place on a venture that chose it
+  ---
+  duration_ms: 0.680333
+  type: 'test'
+  ...
+# Subtest: VEN-1 C2 a venture that chose nothing stores no sub-type key
+ok 147 - VEN-1 C2 a venture that chose nothing stores no sub-type key
+  ---
+  duration_ms: 0.072417
+  type: 'test'
+  ...
+# Subtest: VEN-1 C2 no other kind stores the sub-type it was sent
+ok 148 - VEN-1 C2 no other kind stores the sub-type it was sent
+  ---
+  duration_ms: 0.127458
+  type: 'test'
+  ...
+# Subtest: VEN-1 C3 ventureTypeFor is null when absent, unknown, or under another kind
+ok 149 - VEN-1 C3 ventureTypeFor is null when absent, unknown, or under another kind
+  ---
+  duration_ms: 0.067834
+  type: 'test'
+  ...
+# Subtest: VEN-1 C3 ventureTypeFor returns each listed value on a venture
+ok 150 - VEN-1 C3 ventureTypeFor returns each listed value on a venture
+  ---
+  duration_ms: 0.056916
+  type: 'test'
+  ...
+# Subtest: VEN-1 C3 a stale sub-type changes no other kind's groups
+ok 151 - VEN-1 C3 a stale sub-type changes no other kind's groups
+  ---
+  duration_ms: 0.597958
+  type: 'test'
+  ...
+# Subtest: VEN-1 C3 venture gains raise, and place adds place only on venture
+ok 152 - VEN-1 C3 venture gains raise, and place adds place only on venture
+  ---
+  duration_ms: 0.095333
+  type: 'test'
+  ...
+# Subtest: VEN-1 C4 plain venture and the five non-place sub-types are the venture pack itself
+ok 153 - VEN-1 C4 plain venture and the five non-place sub-types are the venture pack itself
+  ---
+  duration_ms: 0.090625
+  type: 'test'
+  ...
+# Subtest: VEN-1 C4 every other flavour returns its own pack for any overlay key
+ok 154 - VEN-1 C4 every other flavour returns its own pack for any overlay key
+  ---
+  duration_ms: 0.272875
+  type: 'test'
+  ...
+# Subtest: VEN-1 C11 the overview tags a place block venture (place) and a raise block venture
+ok 155 - VEN-1 C11 the overview tags a place block venture (place) and a raise block venture
+  ---
+  duration_ms: 0.489542
+  type: 'test'
+  ...
+# Subtest: VEN-1 C11 a kind-only test gives today's tags
+ok 156 - VEN-1 C11 a kind-only test gives today's tags
+  ---
+  duration_ms: 0.095541
+  type: 'test'
+  ...
+# Subtest: C1 currentNavItem marks the right item
+ok 157 - C1 currentNavItem marks the right item
+  ---
+  duration_ms: 0.4985
+  type: 'test'
+  ...
+# Subtest: C2 headerCallSurface names each page's surface
+ok 158 - C2 headerCallSurface names each page's surface
+  ---
+  duration_ms: 0.559709
+  type: 'test'
+  ...
+# Subtest: C3 a valid submit calls the sender once and returns sent with the email
+ok 159 - C3 a valid submit calls the sender once and returns sent with the email
+  ---
+  duration_ms: 15.734209
+  type: 'test'
+  ...
+# Subtest: C3 a filled honeypot returns sent and never calls the sender
+ok 160 - C3 a filled honeypot returns sent and never calls the sender
+  ---
+  duration_ms: 0.359208
+  type: 'test'
+  ...
+# Subtest: C3 a fill time of "1999" returns sent and never calls the sender
+ok 161 - C3 a fill time of "1999" returns sent and never calls the sender
+  ---
+  duration_ms: 0.095291
+  type: 'test'
+  ...
+# Subtest: C3 a fill time of "0" returns sent and never calls the sender
+ok 162 - C3 a fill time of "0" returns sent and never calls the sender
+  ---
+  duration_ms: 0.050208
+  type: 'test'
+  ...
+# Subtest: C3 a fill time of "" returns sent and never calls the sender
+ok 163 - C3 a fill time of "" returns sent and never calls the sender
+  ---
+  duration_ms: 0.131167
+  type: 'test'
+  ...
+# Subtest: C3 a fill time of "abc" returns sent and never calls the sender
+ok 164 - C3 a fill time of "abc" returns sent and never calls the sender
+  ---
+  duration_ms: 0.045583
+  type: 'test'
+  ...
+# Subtest: C3 a missing fill time is treated as a bot
+ok 165 - C3 a missing fill time is treated as a bot
+  ---
+  duration_ms: 0.160875
+  type: 'test'
+  ...
+# Subtest: C3 invalid input returns field errors without calling the sender
+ok 166 - C3 invalid input returns field errors without calling the sender
+  ---
+  duration_ms: 0.584917
+  type: 'test'
+  ...
+# Subtest: C3 a from outside the set is refused without a send
+ok 167 - C3 a from outside the set is refused without a send
+  ---
+  duration_ms: 0.432167
+  type: 'test'
+  ...
+# Subtest: C3 a failed send returns error
+ok 168 - C3 a failed send returns error
+  ---
+  duration_ms: 0.396666
+  type: 'test'
+  ...
+# Subtest: C1 accepts from not_a_fit with every book key in budget, start and role
+ok 169 - C1 accepts from not_a_fit with every book key in budget, start and role
+  ---
+  duration_ms: 3.156667
+  type: 'test'
+  ...
+# Subtest: C1 rejects an unknown budget key "under-15K"
+ok 170 - C1 rejects an unknown budget key "under-15K"
+  ---
+  duration_ms: 0.426416
+  type: 'test'
+  ...
+# Subtest: C1 rejects an unknown budget key "lots"
+ok 171 - C1 rejects an unknown budget key "lots"
+  ---
+  duration_ms: 0.1555
+  type: 'test'
+  ...
+# Subtest: C1 rejects an unknown start key "tomorrow"
+ok 172 - C1 rejects an unknown start key "tomorrow"
+  ---
+  duration_ms: 0.088458
+  type: 'test'
+  ...
+# Subtest: C1 rejects an unknown role key "ceo"
+ok 173 - C1 rejects an unknown role key "ceo"
+  ---
+  duration_ms: 0.082917
+  type: 'test'
+  ...
+# Subtest: C1 rejects an unknown role key ""
+ok 174 - C1 rejects an unknown role key ""
+  ---
+  duration_ms: 0.062833
+  type: 'test'
+  ...
+# Subtest: C2 a valid not_a_fit note calls the sender once with the three answers
+ok 175 - C2 a valid not_a_fit note calls the sender once with the three answers
+  ---
+  duration_ms: 10.692666
+  type: 'test'
+  ...
+# Subtest: C2 counted from the screening form's render, a send one second into the note still goes
+ok 176 - C2 counted from the screening form's render, a send one second into the note still goes
+  ---
+  duration_ms: 0.132208
+  type: 'test'
+  ...
+# Subtest: C2 a forged screening key is refused and nothing is sent
+ok 177 - C2 a forged screening key is refused and nothing is sent
+  ---
+  duration_ms: 0.3515
+  type: 'test'
+  ...
+# Subtest: C2 sends one message to the ops address, reply-to the sender
+ok 178 - C2 sends one message to the ops address, reply-to the sender
+  ---
+  duration_ms: 2.352042
+  type: 'test'
+  ...
+# Subtest: C2 the submitted address is never a to, cc or bcc
+ok 179 - C2 the submitted address is never a to, cc or bcc
+  ---
+  duration_ms: 0.226083
+  type: 'test'
+  ...
+# Subtest: C2 the body carries from and screening when given
+ok 180 - C2 the body carries from and screening when given
+  ---
+  duration_ms: 0.160333
+  type: 'test'
+  ...
+# Subtest: C2 a transport that throws returns a failure and logs no address or message
+ok 181 - C2 a transport that throws returns a failure and logs no address or message
+  ---
+  duration_ms: 0.1495
+  type: 'test'
+  ...
+# note signup: the store failed
+# Subtest: C1 the validator accepts, trims and lower-cases; rejects empty, no ending, too long
+ok 182 - C1 the validator accepts, trims and lower-cases; rejects empty, no ending, too long
+  ---
+  duration_ms: 1.624833
+  type: 'test'
+  ...
+# Subtest: C2 a valid submit stores once, lower-cased, source home, the consent version
+ok 183 - C2 a valid submit stores once, lower-cased, source home, the consent version
+  ---
+  duration_ms: 12.906
+  type: 'test'
+  ...
+# Subtest: C2 a filled honeypot or a fast submit answers done and stores nothing
+ok 184 - C2 a filled honeypot or a fast submit answers done and stores nothing
+  ---
+  duration_ms: 0.271667
+  type: 'test'
+  ...
+# Subtest: C2 an invalid address answers invalid without the store
+ok 185 - C2 an invalid address answers invalid without the store
+  ---
+  duration_ms: 0.206583
+  type: 'test'
+  ...
+# Subtest: C2 a store that throws answers error
+ok 186 - C2 a store that throws answers error
+  ---
+  duration_ms: 0.412417
+  type: 'test'
+  ...
+# Subtest: C4 the migration creates note_signups with a unique index on email and nothing else
+ok 187 - C4 the migration creates note_signups with a unique index on email and nothing else
+  ---
+  duration_ms: 3.705791
+  type: 'test'
+  ...
+# Subtest: C1 accepts a message and email with name blank, and trims
+ok 188 - C1 accepts a message and email with name blank, and trims
+  ---
+  duration_ms: 1.477875
+  type: 'test'
+  ...
+# Subtest: C1 keeps a given name, trimmed
+ok 189 - C1 keeps a given name, trimmed
+  ---
+  duration_ms: 0.144625
+  type: 'test'
+  ...
+# Subtest: C1 rejects an empty message
+ok 190 - C1 rejects an empty message
+  ---
+  duration_ms: 0.839959
+  type: 'test'
+  ...
+# Subtest: C1 rejects a malformed email
+ok 191 - C1 rejects a malformed email
+  ---
+  duration_ms: 0.20475
+  type: 'test'
+  ...
+# Subtest: C1 rejects a missing email
+ok 192 - C1 rejects a missing email
+  ---
+  duration_ms: 0.171958
+  type: 'test'
+  ...
+# Subtest: C1 rejects a message over 5000
+ok 193 - C1 rejects a message over 5000
+  ---
+  duration_ms: 0.090792
+  type: 'test'
+  ...
+# Subtest: C1 rejects a name over 100
+ok 194 - C1 rejects a name over 100
+  ---
+  duration_ms: 0.162542
+  type: 'test'
+  ...
+# Subtest: C1 rejects an email over 254
+ok 195 - C1 rejects an email over 254
+  ---
+  duration_ms: 0.064375
+  type: 'test'
+  ...
+# Subtest: C1 rejects a from outside contact and not_a_fit
+ok 196 - C1 rejects a from outside contact and not_a_fit
+  ---
+  duration_ms: 0.36875
+  type: 'test'
+  ...
+# Subtest: C1 rejects no from
+ok 197 - C1 rejects no from
+  ---
+  duration_ms: 0.389666
+  type: 'test'
+  ...
+# Subtest: C1 accepts the caps exactly, and from not_a_fit with screening
+ok 198 - C1 accepts the caps exactly, and from not_a_fit with screening
+  ---
+  duration_ms: 0.275
+  type: 'test'
+  ...
+# Subtest: C5 the close test route calls notFound() on a production deployment
+ok 199 - C5 the close test route calls notFound() on a production deployment
+  ---
+  duration_ms: 97.007375
+  type: 'test'
+  ...
+# Subtest: C5 the injected helper decides: production 404s, otherwise renders
+ok 200 - C5 the injected helper decides: production 404s, otherwise renders
+  ---
+  duration_ms: 0.201
+  type: 'test'
+  ...
+# Subtest: C1 readPageState returns a key the page lists
+ok 201 - C1 readPageState returns a key the page lists
+  ---
+  duration_ms: 0.669167
+  type: 'test'
+  ...
+# Subtest: C1 readPageState returns default for a key the page does not list
+ok 202 - C1 readPageState returns default for a key the page does not list
+  ---
+  duration_ms: 0.124708
+  type: 'test'
+  ...
+# Subtest: C1 on a production deployment readPageState returns default without reading searchParams
+ok 203 - C1 on a production deployment readPageState returns default without reading searchParams
+  ---
+  duration_ms: 0.105208
+  type: 'test'
+  ...
+# Subtest: C1 a preview deployment still honours ?state=
+ok 204 - C1 a preview deployment still honours ?state=
+  ---
+  duration_ms: 0.162791
+  type: 'test'
+  ...
+# Subtest: C4 resolveStudy returns null for a slug not in the studies
+ok 205 - C4 resolveStudy returns null for a slug not in the studies
+  ---
+  duration_ms: 0.478375
+  type: 'test'
+  ...
+# Subtest: C4 resolveStudy returns null for a study isPublished rejects
+ok 206 - C4 resolveStudy returns null for a study isPublished rejects
+  ---
+  duration_ms: 0.074167
+  type: 'test'
+  ...
+# Subtest: C4 resolveStudy returns the study otherwise
+ok 207 - C4 resolveStudy returns the study otherwise
+  ---
+  duration_ms: 0.053791
+  type: 'test'
+  ...
+# Subtest: C6 siteRoutes returns each public path
+ok 208 - C6 siteRoutes returns each public path
+  ---
+  duration_ms: 0.822042
+  type: 'test'
+  ...
+# Subtest: C6 hidesCallButton is true for /book and everything under /websites
+ok 209 - C6 hidesCallButton is true for /book and everything under /websites
+  ---
+  duration_ms: 0.105375
+  type: 'test'
+  ...
+# Subtest: C6 hidesCallButton is false for /, /work, /about and /work-with-me
+ok 210 - C6 hidesCallButton is false for /, /work, /about and /work-with-me
+  ---
+  duration_ms: 0.068584
+  type: 'test'
+  ...
+# Subtest: WEB-22 C1 every non-home page value in every pack has its own BrainDump key in the site schema
+ok 211 - WEB-22 C1 every non-home page value in every pack has its own BrainDump key in the site schema
+  ---
+  duration_ms: 3.448916
+  type: 'test'
+  ...
+# Subtest: WEB-22 C1 Home keeps homeBrainDump, typed pages are a list, and no site key is gone
+ok 212 - WEB-22 C1 Home keeps homeBrainDump, typed pages are a list, and no site key is gone
+  ---
+  duration_ms: 0.194792
+  type: 'test'
+  ...
+# Subtest: WEB-22 C2 boxes follow the checklist's order, Home first, then named typed pages in row order
+ok 213 - WEB-22 C2 boxes follow the checklist's order, Home first, then named typed pages in row order
+  ---
+  duration_ms: 0.15525
+  type: 'test'
+  ...
+# Subtest: WEB-22 C2 a ticked value the pack does not list still counts, after the listed pages
+ok 214 - WEB-22 C2 a ticked value the pack does not list still counts, after the listed pages
+  ---
+  duration_ms: 0.066542
+  type: 'test'
+  ...
+# Subtest: WEB-22 C3 boxes stop at the included pages plus pages bought, typed pages counting
+ok 215 - WEB-22 C3 boxes stop at the included pages plus pages bought, typed pages counting
+  ---
+  duration_ms: 0.2975
+  type: 'test'
+  ...
+# Subtest: WEB-22 typed page helpers keep each note with its page
+ok 216 - WEB-22 typed page helpers keep each note with its page
+  ---
+  duration_ms: 0.252875
+  type: 'test'
+  ...
+# Subtest: WEB-22 C6 venture and venture-place list About right after Home; other packs are unchanged
+ok 217 - WEB-22 C6 venture and venture-place list About right after Home; other packs are unchanged
+  ---
+  duration_ms: 0.150458
+  type: 'test'
+  ...
+# Subtest: WEB-22 C7 each page key is quote-or-nothing, explicit-plan only, and gated to kinds that list it
+ok 218 - WEB-22 C7 each page key is quote-or-nothing, explicit-plan only, and gated to kinds that list it
+  ---
+  duration_ms: 3.925042
+  type: 'test'
+  ...
+# Subtest: WEB-22 C8 the document prints each brain dump under its page's name in sitemap order, then the dropped ones
+ok 219 - WEB-22 C8 the document prints each brain dump under its page's name in sitemap order, then the dropped ones
+  ---
+  duration_ms: 20.394584
+  type: 'test'
+  ...
+# Subtest: WEB-22 C8 page boxes past Home stay out of Not answered and the review tally
+ok 220 - WEB-22 C8 page boxes past Home stay out of Not answered and the review tally
+  ---
+  duration_ms: 1.403667
+  type: 'test'
+  ...
+# Subtest: C3 websiteRoutes.coded is /websites
+ok 221 - C3 websiteRoutes.coded is /websites
+  ---
+  duration_ms: 0.447667
+  type: 'test'
+  ...
+# Subtest: C3 showcaseIntakeRoutes build the strings they build on main
+ok 222 - C3 showcaseIntakeRoutes build the strings they build on main
+  ---
+  duration_ms: 0.410333
+  type: 'test'
+  ...
+# Subtest: C4 the chooser and the old coded page are gone
+ok 223 - C4 the chooser and the old coded page are gone
+  ---
+  duration_ms: 0.093042
+  type: 'test'
+  ...
+# Subtest: C4 no string outside the intake trees holds /websites/coded but as its intake
+ok 224 - C4 no string outside the intake trees holds /websites/coded but as its intake
+  ---
+  duration_ms: 14.112667
+  type: 'test'
+  ...
+# Subtest: C1 parseTab falls back to product and parseType to all
+ok 225 - C1 parseTab falls back to product and parseType to all
+  ---
+  duration_ms: 0.818917
+  type: 'test'
+  ...
+# Subtest: C2 chips on the real content
+ok 226 - C2 chips on the real content
+  ---
+  duration_ms: 0.917458
+  type: 'test'
+  ...
+# Subtest: C3 groups follow D-SITE-100's order and sort newest first
+ok 227 - C3 groups follow D-SITE-100's order and sort newest first
+  ---
+  duration_ms: 7.931458
+  type: 'test'
+  ...
+# Subtest: C4 unpublished entries, empty chips and empty tabs drop out
+ok 228 - C4 unpublished entries, empty chips and empty tabs drop out
+  ---
+  duration_ms: 0.191625
+  type: 'test'
+  ...
+# Subtest: C5 workHref carries the tab and type and drops the defaults
+ok 229 - C5 workHref carries the tab and type and drops the defaults
+  ---
+  duration_ms: 0.184333
+  type: 'test'
+  ...
+# Subtest: C6 formatPeriod spaces an en dash between years
+ok 230 - C6 formatPeriod spaces an en dash between years
+  ---
+  duration_ms: 0.196
+  type: 'test'
+  ...
+1..230
+# tests 230
+# suites 0
+# pass 230
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2150.660417

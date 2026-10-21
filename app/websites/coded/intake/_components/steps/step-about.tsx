@@ -13,6 +13,8 @@ import {
   flavourForKind,
   labelForKind,
   showcaseKinds,
+  ventureTypeChoices,
+  ventureTypeFrom,
 } from "@/lib/intake/tracks";
 import type { PersonEntry } from "@/lib/validators/showcase-intake";
 import {
@@ -142,11 +144,14 @@ export function StepAbout({
   initialKind,
   prefill,
   headshots,
+  initialPicking = false,
 }: {
   token: string;
   initial: Record<string, unknown>;
   /** What the engagement resolved to on load, including the legacy derivation. */
   initialKind: ShowcaseKind;
+  /** Fixture-only: the kind picker drawn open (`subtype-changed`, VEN). */
+  initialPicking?: boolean;
   prefill: {
     contactName: string;
     contactEmail: string;
@@ -157,7 +162,7 @@ export function StepAbout({
   const form = useStepAutosave({ token, stepKey: "about", initial });
   useReportSaveState(form.state, form.retry);
 
-  const [pickingKind, setPickingKind] = useState(false);
+  const [pickingKind, setPickingKind] = useState(initialPicking);
 
   const kinds = showcaseKinds();
   const stored = asText(form.values.siteKind);
@@ -165,9 +170,17 @@ export function StepAbout({
     kinds.some((entry) => entry.key === stored) ? stored : initialKind
   ) as ShowcaseKind;
 
+  // Derived live from this form, as the kind is (VEN rabbit hole 9), and
+  // through the same rule every later step reads, so a sub-type left stored
+  // under another kind reads as none here too.
+  const ventureType = ventureTypeFrom(kind, form.values.ventureType);
+  const packFor = (next: ShowcaseKind) =>
+    copyPackFor(flavourForKind(next, asList(form.values.disciplines)));
   const pack = copyPackFor(
     flavourForKind(kind, asList(form.values.disciplines)),
+    ventureType,
   );
+  const subtypeChoices = ventureTypeChoices(pack);
 
   const roles = namedRoles(asRoles(form.values.roles));
   const leadRole = asText(form.values.leadRole);
@@ -232,11 +245,45 @@ export function StepAbout({
               options={kinds.map((k) => ({ value: k.key, label: k.label }))}
               value={[kind]}
               onChange={(next) => {
-                form.setValue("siteKind", next[0] ?? "");
+                const picked = next[0] ?? "";
+                form.setValue("siteKind", picked);
                 form.flush();
-                setPickingKind(false);
+                // A kind whose pack asks the sub-type keeps the picker open,
+                // so the question it reveals is there to answer (D-VEN-3).
+                const entry = kinds.find((k) => k.key === picked);
+                if (
+                  !entry ||
+                  ventureTypeChoices(packFor(entry.key)).length === 0
+                ) {
+                  setPickingKind(false);
+                }
               }}
             />
+            {/* The sub-type, revealed in place under the kind group and above
+                the reassurance line (`kind-picker.md`). Values from the
+                registry, words from the pack; this file holds neither. The
+                overview's pack is generic, so there it names who is asked. */}
+            {subtypeChoices.length > 0 ? (
+              <ForKinds
+                kind={kind}
+                ventureType={ventureType}
+                test={hasGroup("raise")}
+              >
+                <ChoiceAnswer
+                  form={form}
+                  name="ventureType"
+                  label={pack.ventureType!.label}
+                  help={pack.ventureType!.help}
+                  options={subtypeChoices}
+                />
+              </ForKinds>
+            ) : (
+              <ForKindsStub
+                ventureType={ventureType}
+                test={hasGroup("raise")}
+                note="Asked under the kind picker: what kind of venture it is. The words are the venture pack's — see the pack differences at the end."
+              />
+            )}
             <p className="text-meta leading-[1.55] text-(--color-dim)">
               {pack.kindChangeLine}
             </p>
@@ -274,7 +321,7 @@ export function StepAbout({
         help={pack.whatYouDoHelp}
       />
 
-      <ForKinds kind={kind} test={asks("roles")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={asks("roles")}>
         <>
           <Field id="f-roles" label="Your roles">
             <RepeatableBlock<Role>
@@ -332,6 +379,7 @@ export function StepAbout({
       {pack.stage ? (
         <ForKinds
           kind={kind}
+          ventureType={ventureType}
           test={hasGroup("stage")}
           otherwise={
             <TextAnswer
@@ -365,6 +413,7 @@ export function StepAbout({
       ) : (
         <>
           <ForKindsStub
+            ventureType={ventureType}
             test={hasGroup("stage")}
             note="Asked instead of how long they have been doing this. The words are the venture pack's — see the pack differences at the end."
           />
@@ -377,6 +426,41 @@ export function StepAbout({
         </>
       )}
 
+      {/* A place venture's property, right after where it stands (VEN-2).
+          The words exist only on the place overlay, so the overview names
+          who is asked instead, as `stage` does (D-ADM-11). */}
+      {pack.placeVenture ? (
+        <ForKinds
+          kind={kind}
+          ventureType={ventureType}
+          test={hasGroup("place")}
+        >
+          <>
+            <ChoiceAnswer
+              form={form}
+              name="propertyStatus"
+              label={pack.placeVenture.propertyStatus.label}
+              help={pack.placeVenture.propertyStatus.help}
+              options={pack.placeVenture.propertyStatus.options}
+            />
+            {/* Kept whatever the status, "Still searching" included: the
+                answer may be "nobody yet" (`place-searching`). */}
+            <TextAnswer
+              form={form}
+              name="propertyTitle"
+              label={pack.placeVenture.propertyTitle.label}
+              help={pack.placeVenture.propertyTitle.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked after where it stands: where things stand with the property, and who holds title. The words are the place overlay's; see kind=venture&subtype=place."
+        />
+      )}
+
       <TextAnswer
         form={form}
         name="basedIn"
@@ -387,7 +471,43 @@ export function StepAbout({
         }`}
       />
 
-      <ForKinds kind={kind} test={hasGroup("roster")}>
+      {pack.placeVenture ? (
+        <ForKinds
+          kind={kind}
+          ventureType={ventureType}
+          test={hasGroup("place")}
+        >
+          <>
+            <ChoiceAnswer
+              form={form}
+              name="locationPrecision"
+              label={pack.placeVenture.locationPrecision.label}
+              help={pack.placeVenture.locationPrecision.help}
+              options={pack.placeVenture.locationPrecision.options}
+            />
+            <TextAnswer
+              form={form}
+              name="locationWhy"
+              label={pack.placeVenture.locationWhy.label}
+              help={pack.placeVenture.locationWhy.help}
+            />
+            <LongAnswer
+              form={form}
+              name="visitsNow"
+              label={pack.placeVenture.visitsNow.label}
+              help={pack.placeVenture.visitsNow.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked after where they're based: how exactly the site says where the place is, why that level, and whether people can visit now. The words are the place overlay's."
+        />
+      )}
+
+      <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("roster")}>
         <Roster
           form={form}
           token={token}
@@ -396,7 +516,9 @@ export function StepAbout({
           linePlaceholder={pack.rosterLinePlaceholder}
           rosterPaste={pack.rosterPaste}
           leadLabel={pack.rosterLead.label}
-          leadHelp={pack.rosterLead.help}
+          leadHelp={`${pack.rosterLead.help}${
+            pack.rosterLeadHelpSuffix ? ` ${pack.rosterLeadHelpSuffix}` : ""
+          }`}
           filesFor={filesFor}
         />
       </ForKinds>

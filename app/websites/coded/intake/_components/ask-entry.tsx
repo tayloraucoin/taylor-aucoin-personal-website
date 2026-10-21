@@ -2,11 +2,27 @@
 
 import { useState } from "react";
 import type { ShowcaseCopyPack } from "@/lib/intake/showcase-copy";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { AskEntry } from "@/lib/validators/showcase-intake";
 import { ChoiceGroup } from "../../../intake/_components/choice-group";
 import { Reveal } from "../../../intake/_components/reveal";
 import { TextArea, TextField } from "../../../intake/_components/text-field";
 import { CollapseLink, EntryRow, EntrySummary } from "./entry-collapse";
+import { ForKinds, type KindTest } from "./for-kinds";
+
+/**
+ * Whether a card shows the three Invest rows (VEN-3, C-VEN-ask-4): the
+ * registry's test says who is asked, and the card's own answer says it is an
+ * Invest card. A check on an answer, never on a kind.
+ */
+export function showsInvestRows(
+  test: KindTest,
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+  entry: Pick<AskEntry, "ask">,
+): boolean {
+  return test(kind, ventureType) && entry.ask === "invest";
+}
 
 /**
  * One thing a visitor is being asked to do: invest, apply, book, get in touch.
@@ -32,19 +48,38 @@ export function AskEntryCard({
   index,
   entry,
   pack,
+  kind,
+  ventureType,
+  investTest,
+  initialOpen = false,
   onChange,
   onBlur,
 }: {
   index: number;
   entry: AskEntry;
   pack: ShowcaseCopyPack;
+  kind: ShowcaseKind;
+  ventureType: VentureType | null;
+  /** Who an Invest card asks its three rows; the step passes `hasGroup("raise")`. */
+  investTest: KindTest;
+  /** Open on first draw even when chosen; the harness's, for captures. */
+  initialOpen?: boolean;
   onChange: (next: AskEntry) => void;
   onBlur: () => void;
 }) {
   const chosen = Boolean(entry.ask?.trim());
-  const [open, setOpen] = useState(!chosen);
+  const [open, setOpen] = useState(initialOpen || !chosen);
 
   const set = (patch: Partial<AskEntry>) => onChange({ ...entry, ...patch });
+
+  const invest = pack.raise?.invest;
+  // `ForKinds` keeps the overview's tag; the answer check is the card's own.
+  const investRows = (row: React.ReactNode) =>
+    invest && entry.ask === "invest" ? (
+      <ForKinds kind={kind} ventureType={ventureType} test={investTest}>
+        {row}
+      </ForKinds>
+    ) : null;
 
   const labelOf = (
     options: readonly { value: string; label: string }[],
@@ -115,6 +150,37 @@ export function AskEntryCard({
         />
       </EntryRow>
 
+      {investRows(
+        invest ? (
+          <>
+            <EntryRow
+              id={`f-ask-currency-${index}`}
+              label={invest.currency.label}
+            >
+              <TextField
+                id={`f-ask-currency-${index}`}
+                value={entry.currency ?? ""}
+                onChange={(e) => set({ currency: e.target.value })}
+                onBlur={onBlur}
+              />
+            </EntryRow>
+            <EntryRow
+              id={`f-ask-sameMinimum-${index}`}
+              label={invest.sameMinimum.label}
+            >
+              <ChoiceGroup
+                legend={invest.sameMinimum.label}
+                name={`ask-sameMinimum-${index}`}
+                options={invest.sameMinimum.options}
+                value={entry.sameMinimum ? [entry.sameMinimum] : []}
+                onChange={(next) => set({ sameMinimum: next[0] ?? "" })}
+                onBlur={onBlur}
+              />
+            </EntryRow>
+          </>
+        ) : null,
+      )}
+
       <EntryRow
         id={`f-ask-mechanism-${index}`}
         label={pack.ask.mechanism.label}
@@ -166,6 +232,23 @@ export function AskEntryCard({
           onBlur={onBlur}
         />
       </EntryRow>
+
+      {investRows(
+        invest ? (
+          <EntryRow
+            id={`f-ask-eligibility-${index}`}
+            label={invest.eligibility.label}
+            help={invest.eligibility.help}
+          >
+            <TextField
+              id={`f-ask-eligibility-${index}`}
+              value={entry.eligibility ?? ""}
+              onChange={(e) => set({ eligibility: e.target.value })}
+              onBlur={onBlur}
+            />
+          </EntryRow>
+        ) : null,
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import {
   mergeIncomingEntries,
   standardListActions,
 } from "@/lib/intake/entry-merge";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor, workShapeFor } from "@/lib/intake/tracks";
 import type {
@@ -31,7 +31,7 @@ import { useReportSaveState } from "../../../../intake/_lib/save-state";
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
 import { AskEntryCard } from "../ask-entry";
 import { ExtractionBlock } from "../extraction-block";
-import { fills, ForKinds, hasGroup } from "../for-kinds";
+import { fills, ForKinds, ForKindsStub, hasGroup } from "../for-kinds";
 import { OfferingEntryCard } from "../offer-entry";
 import { PieceEntryCard } from "../piece-entry";
 import { DEFAULT_RIGHTS, ProjectEntryCard } from "../project-entry";
@@ -68,22 +68,31 @@ export function StepWork({
   initial,
   flavour,
   kind,
+  ventureType,
   projectFiles,
   pieceFiles,
+  openEntries = false,
 }: {
   token: string;
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /** Every delivered project image, to be grouped by the entry it belongs to. */
   projectFiles: readonly (ExistingFile & { entryKey: string | null })[];
   /** The same, for a venture's pieces. */
   pieceFiles: readonly (ExistingFile & { entryKey: string | null })[];
+  /**
+   * Harness only: draw each ask card open, so a capture, which cannot
+   * click, shows a chosen card's rows (VEN-3 `ask-invest-card`).
+   */
+  openEntries?: boolean;
 }) {
   const form = useStepAutosave({ token, stepKey: "work", initial });
   useReportSaveState(form.state, form.retry);
 
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
   // Which array this kind fills — four keys, never one polymorphic array
   // (M-PORT-23). The map lived here until ADM-4; it is a fact about the kind,
   // so it lives on the kind (M-ADM-7).
@@ -146,7 +155,7 @@ export function StepWork({
         }}
       />
 
-      <ForKinds kind={kind} test={fills("projects")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("projects")}>
         <Field id="f-projects" label={pack.workBlockLabel}>
           <RepeatableBlock<ProjectEntry>
             items={projects}
@@ -180,7 +189,7 @@ export function StepWork({
 
       {/* The three kind-shaped shapes. Each is its own array key, so a kind
           change never re-reads one shape as another (M-PORT-23). */}
-      <ForKinds kind={kind} test={fills("offerings")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("offerings")}>
         <Field id="f-offerings" label={pack.workBlockLabel}>
           <RepeatableBlock<OfferingEntry>
             items={asEntries<OfferingEntry>(form.values.offerings)}
@@ -207,7 +216,7 @@ export function StepWork({
         </Field>
       </ForKinds>
 
-      <ForKinds kind={kind} test={fills("pieces")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("pieces")}>
         <Field id="f-pieces" label={pack.workBlockLabel}>
           <RepeatableBlock<PieceEntry>
             items={asEntries<PieceEntry>(form.values.pieces)}
@@ -227,6 +236,11 @@ export function StepWork({
                 entry={item}
                 token={token}
                 files={pieceFilesFor(item.entryKey)}
+                kind={kind}
+                ventureType={ventureType}
+                kindPlaceholder={pack.pieceKindPlaceholder}
+                funded={pack.placeVenture?.funded}
+                fundedTest={hasGroup("place")}
                 onChange={update}
                 onBlur={form.flush}
               />
@@ -236,7 +250,33 @@ export function StepWork({
         </Field>
       </ForKinds>
 
-      <ForKinds kind={kind} test={fills("services")}>
+      {/* A place venture's size and permits, after the pieces (VEN-2). */}
+      {pack.placeVenture ? (
+        <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+          <>
+            <LongAnswer
+              form={form}
+              name="placeSize"
+              label={pack.placeVenture.placeSize.label}
+              help={pack.placeVenture.placeSize.help}
+            />
+            <LongAnswer
+              form={form}
+              name="permits"
+              label={pack.placeVenture.permits.label}
+              help={pack.placeVenture.permits.help}
+            />
+          </>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked on each piece and after the pieces: whether the piece is funded, size and capacity, and permits. The words are the place overlay's; see kind=venture&subtype=place."
+        />
+      )}
+
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("services")}>
         <Field id="f-services" label={pack.workBlockLabel}>
           <RepeatableBlock<ServiceEntry>
             items={asEntries<ServiceEntry>(form.values.services)}
@@ -265,7 +305,7 @@ export function StepWork({
 
       {/* What the site is asking people to do — the gap the audit named (B4).
           Never for a portfolio: its ask is "hire me" and step 8 carries it. */}
-      <ForKinds kind={kind} test={hasGroup("ask")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("ask")}>
         <Field
           id="f-asks"
           label={pack.ask.blockLabel}
@@ -286,6 +326,10 @@ export function StepWork({
                 index={index}
                 entry={item}
                 pack={pack}
+                kind={kind}
+                ventureType={ventureType}
+                investTest={hasGroup("raise")}
+                initialOpen={openEntries}
                 onChange={update}
                 onBlur={form.flush}
               />
@@ -294,9 +338,68 @@ export function StepWork({
         </Field>
       </ForKinds>
 
-      {/* The track's one ink treatment (D-PORT-10). Three questions, and "not
-          sure" is a fine answer to all three. */}
-      <ForKinds kind={kind} test={hasGroup("claims")}>
+      {/* How people apply to a place, under the asks and before the event
+          section (VEN-2, D-VEN-12; cut first if the epic runs over). One
+          labelled group, its help read with it. No reveal: "Skip this if
+          nobody applies" is the whole condition. */}
+      {pack.placeVenture ? (
+        <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+          <div
+            role="group"
+            aria-labelledby="applying-heading"
+            aria-describedby="applying-help"
+            className="mb-7 border-t border-(--color-faint) pt-7"
+          >
+            <h3
+              id="applying-heading"
+              className="font-display text-h4 leading-[1.3] font-semibold tracking-(--tracking-h4) text-(--color-ink)"
+            >
+              {pack.placeVenture.apply.label}
+            </h3>
+            <p
+              id="applying-help"
+              className="mt-1.5 mb-6 text-meta leading-[1.55] text-(--color-dim)"
+            >
+              {pack.placeVenture.apply.help}
+            </p>
+            <LongAnswer
+              form={form}
+              name="applyWho"
+              label={pack.placeVenture.apply.who.label}
+            />
+            <LongAnswer
+              form={form}
+              name="applyAfter"
+              label={pack.placeVenture.apply.after.label}
+              help={pack.placeVenture.apply.after.help}
+            />
+            <LongAnswer
+              form={form}
+              name="applyFee"
+              label={pack.placeVenture.apply.fee.label}
+              help={pack.placeVenture.apply.fee.help}
+            />
+            <LongAnswer
+              form={form}
+              name="applyQuestions"
+              label={pack.placeVenture.apply.questions.label}
+              help={pack.placeVenture.apply.questions.help}
+            />
+          </div>
+        </ForKinds>
+      ) : (
+        <ForKindsStub
+          ventureType={ventureType}
+          test={hasGroup("place")}
+          note="Asked under the asks: Applying, four questions on who can apply, what happens next, any fee, and the current application questions. The words are the place overlay's."
+        />
+      )}
+
+      {/* The track's one ink treatment (D-PORT-10). The three claims
+          questions, and for a venture the investor ask between them (VEN-3,
+          D-VEN-5, `investor-ask.md`): counsel's words, collected, never
+          drafted. Rows in the surface's order, each asked by the registry. */}
+      <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("claims")}>
         <InkCluster mono={pack.claims.mono} intro={pack.claims.intro}>
           <TextAnswer
             form={form}
@@ -304,12 +407,114 @@ export function StepWork({
             label={pack.claims.signOff.label}
             help={pack.claims.signOff.help}
           />
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <LongAnswer
+                form={form}
+                name="issuerEntity"
+                label={pack.raise.issuerEntity.label}
+                help={pack.raise.issuerEntity.help}
+              />
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("raise")}
+              note="Asked here: the legal entity investors pay into. The words are the venture pack's."
+            />
+          )}
+          {pack.placeVenture ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+              <>
+                <LongAnswer
+                  form={form}
+                  name="investorReceives"
+                  label={pack.placeVenture.investorReceives.label}
+                  help={pack.placeVenture.investorReceives.help}
+                />
+                <ChoiceAnswer
+                  form={form}
+                  name="coOwnerDiffers"
+                  label={pack.placeVenture.coOwnerDiffers.label}
+                  options={pack.placeVenture.coOwnerDiffers.options}
+                />
+                <Reveal
+                  values={form.values}
+                  dependsOn={{ field: "coOwnerDiffers", equals: "different" }}
+                >
+                  <LongAnswer
+                    form={form}
+                    name="coOwnerLines"
+                    label={pack.placeVenture.coOwnerLines.label}
+                  />
+                </Reveal>
+              </>
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("place")}
+              note="Asked here: what an investor receives, whether a co-owner differs, and if so the two lines. The words are the place overlay's."
+            />
+          )}
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <LongAnswer
+                form={form}
+                name="jurisdictions"
+                label={pack.raise.jurisdictions.label}
+                help={pack.raise.jurisdictions.help}
+              />
+            </ForKinds>
+          ) : null}
           <LongAnswer
             form={form}
             name="cantSay"
             label={pack.claims.cantSay.label}
             help={pack.claims.cantSay.help}
           />
+          {pack.raise ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("raise")}>
+              <>
+                {/* Nothing preselected; unanswered is built as "No"
+                    (D-VEN-10). */}
+                <ChoiceAnswer
+                  form={form}
+                  name="returnWording"
+                  label={pack.raise.returnWording.label}
+                  help={pack.raise.returnWording.help}
+                  options={pack.raise.returnWording.options}
+                />
+                <Reveal
+                  values={form.values}
+                  dependsOn={{ field: "returnWording", equals: "approved" }}
+                >
+                  <LongAnswer
+                    form={form}
+                    name="returnWordingQuote"
+                    label={pack.raise.returnWordingQuote.label}
+                    help={pack.raise.returnWordingQuote.help}
+                  />
+                </Reveal>
+              </>
+            </ForKinds>
+          ) : (
+            <ForKindsStub
+              ventureType={ventureType}
+              test={hasGroup("raise")}
+              note="Asked here: where people may invest from, whether the site may mention returns, and if so the approved wording."
+            />
+          )}
+          {pack.placeVenture ? (
+            <ForKinds kind={kind} ventureType={ventureType} test={hasGroup("place")}>
+              <LongAnswer
+                form={form}
+                name="perks"
+                label={pack.placeVenture.perks.label}
+                help={pack.placeVenture.perks.help}
+              />
+            </ForKinds>
+          ) : null}
           <LongAnswer
             form={form}
             name="requiredWording"
@@ -327,7 +532,7 @@ export function StepWork({
 
           The five stopped being a paragraph at the same time — the rows are
           right there, so they are what gets ticked. [COPY — pending Taylor] */}
-      <ForKinds kind={kind} test={fills("projects")}>
+      <ForKinds kind={kind} ventureType={ventureType} test={fills("projects")}>
         <Field
           id="f-topFivePicks"
           label="If you could only show five"

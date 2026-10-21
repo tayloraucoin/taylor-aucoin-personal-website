@@ -8,6 +8,7 @@ import {
   flavourForKind,
   showcaseDisciplines,
   showcaseKinds,
+  ventureTypeChoices,
 } from "@/lib/intake/tracks";
 import { startShowcaseIntake, type StartResult } from "../_actions/start";
 import {
@@ -75,13 +76,25 @@ const DISCIPLINES: readonly Choice[] = showcaseDisciplines().map((d) => ({
 const EMAIL_ERROR =
   "That doesn't look like an email address — check for a typo.";
 
+/**
+ * A fixture's choices on arrival (VEN, C4). Fixture-only: the public page
+ * never passes one, and every field it seeds is one the client sets by hand.
+ */
+export type StartFormSeed = {
+  siteKind?: string;
+  ventureType?: string;
+  currentWebsite?: string;
+};
+
 export function ShowcaseStartForm({
   promo,
   invalidEmail,
+  seed,
 }: {
   promo?: string;
   /** The `invalid` fixture: an address that fails the check, already blurred. */
   invalidEmail?: string;
+  seed?: StartFormSeed;
 }) {
   const [result, formAction, pending] = useActionState(action, null);
   // Submitting would mint a real engagement and a real token.
@@ -89,7 +102,11 @@ export function ShowcaseStartForm({
   const [emailError, setEmailError] = useState<string | null>(
     invalidEmail ? EMAIL_ERROR : null,
   );
-  const [siteKind, setSiteKind] = useState<string>("");
+  const [siteKind, setSiteKind] = useState<string>(seed?.siteKind ?? "");
+  // Held here until submit; the action seeds it only on a venture.
+  const [ventureType, setVentureType] = useState<string>(
+    seed?.ventureType ?? "",
+  );
   const [disciplines, setDisciplines] = useState<string[]>([]);
 
   // Everything below the kind question is shaped by it: whether we ask about
@@ -100,6 +117,8 @@ export function ShowcaseStartForm({
   const pack = copyPackFor(
     kind ? flavourForKind(kind.key, disciplines) : "generic",
   );
+  // Non-empty only for a pack that asks what kind of venture it is (D-VEN-3).
+  const subtypeChoices = ventureTypeChoices(pack);
 
   return (
     <form action={formAction}>
@@ -111,6 +130,9 @@ export function ShowcaseStartForm({
           the action as hidden fields rather than as native checkbox entries. */}
       {siteKind ? (
         <input type="hidden" name="siteKind" value={siteKind} />
+      ) : null}
+      {subtypeChoices.length > 0 && ventureType ? (
+        <input type="hidden" name="ventureType" value={ventureType} />
       ) : null}
       {disciplines.map((value) => (
         <input key={value} type="hidden" name="disciplines" value={value} />
@@ -170,6 +192,26 @@ export function ShowcaseStartForm({
         />
       </Field>
 
+      {/* Revealed in place under the kind group, after it in DOM order, so Tab
+          reaches it next and focus stays on the kind radio (C-VEN-kind-7).
+          Optional: skipped, the questions stay plain venture. Values from the
+          registry and words from the pack, never from here (C-VEN-kind-5). */}
+      {subtypeChoices.length > 0 && pack.ventureType ? (
+        <Field
+          id="ventureType"
+          label={pack.ventureType.label}
+          help={pack.ventureType.help}
+        >
+          <ChoiceGroup
+            legend={pack.ventureType.label}
+            name="ventureTypeChoice"
+            options={subtypeChoices}
+            value={ventureType ? [ventureType] : []}
+            onChange={(next) => setVentureType(next[0] ?? "")}
+          />
+        </Field>
+      ) : null}
+
       {/* Asked of everything but a portfolio, where the practice is the person
           and the engagement's name is already their own (M-PORT-3). */}
       {kind?.asksName ? (
@@ -227,6 +269,7 @@ export function ShowcaseStartForm({
           name="currentWebsite"
           mode="url"
           helpId="currentWebsite-help"
+          defaultValue={seed?.currentWebsite}
         />
       </Field>
 

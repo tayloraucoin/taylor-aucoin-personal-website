@@ -13,6 +13,8 @@ import {
   resolvePack,
   SHOWCASE_COPY_SLOTS,
   SHOWCASE_FLAVOURS,
+  SUBTYPE_OVERLAY_KEYS,
+  type CopyChoice,
   type ShowcaseCopyPack,
   type ShowcaseFlavour,
 } from "./showcase-copy";
@@ -23,11 +25,15 @@ import {
   kindFor,
   packForKind,
   SHOWCASE_KINDS,
+  VENTURE_TYPES,
+  ventureTypeFor,
+  ventureTypeFrom as ventureTypeFromRaw,
   workShapeFor as workShapeForKind,
   type ShowcaseGroup,
   type ShowcaseKind,
   type ShowcaseKindQuestion,
   type ShowcaseWorkShape,
+  type VentureType,
 } from "./showcase-kinds";
 import {
   flavourFromDisciplines,
@@ -237,9 +243,65 @@ export function kindOf(answers: IntakeAnswers): ShowcaseKind {
   return kindFor(answers);
 }
 
-/** Which field groups a kind's questionnaire carries (PORT-13/14/15 read this). */
-export function groupsFor(kind: ShowcaseKind): ReadonlySet<ShowcaseGroup> {
-  return groupsForKind(kind);
+/**
+ * Which field groups a kind's questionnaire carries (PORT-13/14/15 read this).
+ *
+ * The sub-type reaches only a venture; on any other kind it is ignored, so a
+ * stale `place` on a studio adds nothing (VEN rabbit hole 8).
+ */
+export function groupsFor(
+  kind: ShowcaseKind,
+  ventureType: VentureType | null = null,
+): ReadonlySet<ShowcaseGroup> {
+  return groupsForKind(kind, ventureType);
+}
+
+/**
+ * What kind of venture an engagement is, or null (VEN, D-VEN-3).
+ *
+ * Null unless the kind is venture and `about.ventureType` is a listed key.
+ * Derived on every read and never stored a second time.
+ */
+export function ventureTypeOf(answers: IntakeAnswers): VentureType | null {
+  return ventureTypeFor(answers);
+}
+
+/**
+ * The sub-type from a live form value, under a live kind.
+ *
+ * Step 1 derives its kind from its own form rather than the page prop (rabbit
+ * hole 9), so it derives the sub-type the same way, through the same rule.
+ */
+export function ventureTypeFrom(
+  kind: ShowcaseKind,
+  raw: unknown,
+): VentureType | null {
+  return ventureTypeFromRaw(kind, raw);
+}
+
+/** The sub-types, in the order the picker shows them, for the verifier. */
+export const showcaseVentureTypes: readonly VentureType[] = VENTURE_TYPES.map(
+  (entry) => entry.key,
+);
+
+/** The overlay keys each pack carries, for the verifier. */
+export const showcaseSubtypeOverlayKeys = SUBTYPE_OVERLAY_KEYS;
+
+/**
+ * The sub-type's options: values from the registry, labels from the pack.
+ *
+ * Empty for a pack that does not ask the question, so a caller renders the
+ * group only when there is something to render. A value whose label is missing
+ * is left out rather than shown raw; `yarn verify:tracks` fails on it first.
+ */
+export function ventureTypeChoices(
+  pack: ShowcaseCopyPack,
+): readonly CopyChoice[] {
+  const labels = pack.ventureType?.labels;
+  if (!labels) return [];
+  return showcaseVentureTypes
+    .filter((key) => labels[key])
+    .map((key) => ({ value: key, label: labels[key]! }));
 }
 
 /**
@@ -362,9 +424,17 @@ export function eyebrowFor(track: IntakeTrackKey): string {
     : "Agora · Website build";
 }
 
-/** The flexing strings themselves, for the step slices that render them. */
-export function copyPackFor(flavour: ShowcaseFlavour): ShowcaseCopyPack {
-  return resolvePack(flavour);
+/**
+ * The flexing strings themselves, for the step slices that render them.
+ *
+ * With a sub-type, the pack its overlay earns; plain venture and every
+ * sub-type without an overlay get the venture pack itself, by reference.
+ */
+export function copyPackFor(
+  flavour: ShowcaseFlavour,
+  ventureType: VentureType | null = null,
+): ShowcaseCopyPack {
+  return resolvePack(flavour, ventureType);
 }
 
 /**

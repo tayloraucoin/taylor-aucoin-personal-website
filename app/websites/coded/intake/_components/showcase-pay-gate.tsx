@@ -90,11 +90,16 @@ export function ShowcasePayGate({
         initialPromoCode={promoCode}
         // Under the button, and only while there is a payment for them to be
         // true of — the checkout drops them when the free code is active.
+        // Keyed because this element crosses from the server to a client
+        // component as a prop, and React's dev check reads its static
+        // children as a list there.
         trust={
           <div className="mt-5 space-y-1.5 text-meta leading-[1.55] text-(--color-dim)">
-            <p>Payment handled by Stripe · Apple Pay / Google Pay / card</p>
-            <p>Shows as TAYLORAUCOIN.COM on your statement</p>
-            <p>Receipt emailed automatically</p>
+            <p key="stripe">
+              Payment handled by Stripe · Apple Pay / Google Pay / card
+            </p>
+            <p key="statement">Shows as TAYLORAUCOIN.COM on your statement</p>
+            <p key="receipt">Receipt emailed automatically</p>
           </div>
         }
       />

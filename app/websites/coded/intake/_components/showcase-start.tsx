@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { legalRoutes, showcaseIntakeRoutes } from "@/lib/routes";
-import { ShowcaseStartForm } from "./showcase-start-form";
+import { ShowcaseStartForm, type StartFormSeed } from "./showcase-start-form";
 
 /**
  * The coded intake's start screen: h1, lede, the resume offer when the cookie
@@ -12,11 +12,14 @@ export function ShowcaseStart({
   promo,
   inProgress,
   invalidEmail,
+  seed,
 }: {
   promo?: string;
   inProgress: { token: string; name: string } | null;
   /** A fixture's address that fails the check, shown on arrival. */
   invalidEmail?: string;
+  /** A fixture's choices, drawn already made (VEN). */
+  seed?: StartFormSeed;
 }) {
   return (
     <div>
@@ -47,7 +50,11 @@ export function ShowcaseStart({
       ) : null}
 
       <div className="mt-10">
-        <ShowcaseStartForm promo={promo} invalidEmail={invalidEmail} />
+        <ShowcaseStartForm
+          promo={promo}
+          invalidEmail={invalidEmail}
+          seed={seed}
+        />
       </div>
 
       {/* Notice at the point of collection: this is the first screen that takes

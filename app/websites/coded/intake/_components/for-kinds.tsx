@@ -7,11 +7,13 @@ import type {
   ShowcaseKind,
   ShowcaseKindQuestion,
   ShowcaseWorkShape,
+  VentureType,
 } from "@/lib/intake/showcase-kinds";
 import {
   groupsFor,
   kindAsks,
   showcaseKinds,
+  showcaseVentureTypes,
   workShapeFor,
 } from "@/lib/intake/tracks";
 
@@ -40,12 +42,22 @@ import {
  * sanctioned seam — never by importing `showcase-kinds.ts` directly.
  */
 
-/** A predicate over kinds. The three helpers below cover every real use. */
-export type KindTest = (kind: ShowcaseKind) => boolean;
+/**
+ * A predicate over a kind and its venture sub-type. The helpers below cover
+ * every real use.
+ *
+ * The sub-type is null on every kind but a venture, and a test never compares
+ * it: `hasGroup` reads it through `groupsFor`, which ignores it off venture,
+ * so who meets a block is the registry's to say (C-VEN-kind-5).
+ */
+export type KindTest = (
+  kind: ShowcaseKind,
+  ventureType: VentureType | null,
+) => boolean;
 
 /** Kinds whose questionnaire carries a field group — the ask, the claims. */
 export function hasGroup(group: ShowcaseGroup): KindTest {
-  return (kind) => groupsFor(kind).has(group);
+  return (kind, ventureType) => groupsFor(kind, ventureType).has(group);
 }
 
 /** Kinds asked one of the five optional questions. */
@@ -64,7 +76,7 @@ export function asks(question: ShowcaseKindQuestion): KindTest {
  * side as if something were there.
  */
 export function not(test: KindTest): KindTest {
-  return (kind) => !test(kind);
+  return (kind, ventureType) => !test(kind, ventureType);
 }
 
 /** Kinds whose step 4 fills a particular array. */
@@ -72,10 +84,26 @@ export function fills(shape: ShowcaseWorkShape): KindTest {
   return (kind) => workShapeFor(kind) === shape;
 }
 
-/** The kinds a test is true of, as their keys, in registry order. */
-function matching(test: KindTest): string[] {
+/**
+ * Who a test is true of, as the overview tag names them, in registry order.
+ *
+ * A kind that passes bare is named bare. A kind that fails bare is named with
+ * each sub-type that passes, `venture (place)`, so a place-only block reads as
+ * exactly that rather than as every venture (Turner, VEN C2). Pure, so the tag
+ * is tested without rendering.
+ */
+export function kindsMeeting(test: KindTest): string[] {
+  return showcaseKinds().flatMap((entry) => {
+    if (test(entry.key, null)) return [entry.key];
+    const passing = showcaseVentureTypes.filter((t) => test(entry.key, t));
+    return passing.length > 0 ? [`${entry.key} (${passing.join(", ")})`] : [];
+  });
+}
+
+/** Who a test is false of: the kinds it fails bare, in registry order. */
+function kindsMissing(test: KindTest): string[] {
   return showcaseKinds()
-    .filter((entry) => test(entry.key))
+    .filter((entry) => !test(entry.key, null))
     .map((entry) => entry.key);
 }
 
@@ -97,11 +125,17 @@ function KindTag({ kinds }: Readonly<{ kinds: readonly string[] }>) {
 
 export function ForKinds({
   kind,
+  ventureType,
   test,
   otherwise,
   children,
 }: Readonly<{
   kind: ShowcaseKind;
+  /**
+   * Required, never defaulted: a call site that forgets it fails the type
+   * check instead of silently reading as plain venture (VEN C2).
+   */
+  ventureType: VentureType | null;
   test: KindTest;
   /**
    * What the kinds failing the test are asked instead, where there is such a
@@ -115,13 +149,11 @@ export function ForKinds({
   const scope = useKindScope();
 
   if (scope === "one") {
-    return <>{test(kind) ? children : (otherwise ?? null)}</>;
+    return <>{test(kind, ventureType) ? children : (otherwise ?? null)}</>;
   }
 
-  const yes = matching(test);
-  const no = showcaseKinds()
-    .map((entry) => entry.key)
-    .filter((key) => !yes.includes(key));
+  const yes = kindsMeeting(test);
+  const no = kindsMissing(test);
 
   return (
     <>
@@ -151,14 +183,19 @@ export function ForKinds({
 export function ForKindsStub({
   test,
   note,
-}: Readonly<{ test: KindTest; note: string }>) {
+}: Readonly<{
+  test: KindTest;
+  note: string;
+  /** Required for the reason `ForKinds` requires it; the overview tags by test. */
+  ventureType: VentureType | null;
+}>) {
   // Nothing to say on a single-kind view: either that kind is asked the
   // question and its own pack supplies the words, or it is not asked at all.
   if (useKindScope() === "one") return null;
 
   return (
     <div className="mb-8">
-      <KindTag kinds={matching(test)} />
+      <KindTag kinds={kindsMeeting(test)} />
       <p data-md="help" className="text-meta leading-[1.55] text-(--color-dim)">
         {note}
       </p>

@@ -448,6 +448,89 @@ export type ShowcaseCopyPack = {
     options: readonly CopyChoice[];
     detail: CopyField;
   };
+
+  /**
+   * "What kind of venture is it?", the venture pack's alone (VEN, D-VEN-3).
+   *
+   * Labels are keyed by the sub-type's stored value and hold no order: the
+   * values and their order live in `VENTURE_TYPES`, and `ventureTypeChoices`
+   * in `tracks.ts` joins the two, so this file never imports the registry and
+   * the registry never holds a word (C-VEN-kind-5). A venture-pack extra, not
+   * a floor slot: no other pack asks it.
+   */
+  ventureType?: CopyField & { labels: Readonly<Record<string, string>> };
+
+  /**
+   * What every venture is asked about the raise (VEN-3, `investor-ask.md`):
+   * claims cluster rows 2, 6, 8 and 9, and the three rows an Invest card
+   * gains. The venture pack's alone, so the place overlay inherits it and no
+   * other pack holds it (C-VEN-ask-2). Nothing here models share wording or
+   * suggests investment wording; only `returnWording` and `returnWordingQuote`
+   * name returns, because that is what they ask (C-VEN-ask-7). Option
+   * `value`s are storage and never change.
+   */
+  raise?: {
+    issuerEntity: CopyField;
+    jurisdictions: CopyField;
+    returnWording: CopyField & { options: readonly CopyChoice[] };
+    returnWordingQuote: CopyField;
+    /** Rows on an ask card whose ask is `invest`; entry keys, not fields. */
+    invest: {
+      currency: { label: string };
+      sameMinimum: { label: string; options: readonly CopyChoice[] };
+      eligibility: CopyField;
+    };
+  };
+
+  /**
+   * The piece card's "What kind of thing it is" placeholder (VEN-2). A floor
+   * slot so the place overlay can name a building and the land.
+   */
+  pieceKindPlaceholder: string;
+
+  /**
+   * Appended to `rosterLead.help` (VEN-2, D-VEN-6): a place venture's lead is
+   * also its founder portrait, so the help line carries what a portrait
+   * question would have asked.
+   */
+  rosterLeadHelpSuffix?: string;
+
+  /**
+   * What a place venture is asked about the place itself (VEN-2,
+   * `venture-place.md`). The place overlay's alone: absent from every pack,
+   * plain venture included, so a step reads it only where `ForKinds` already
+   * says the place group is asked. Option `value`s are storage and never
+   * change; the schemas hold bounds only, so a value is added here.
+   */
+  placeVenture?: {
+    propertyStatus: CopyField & { options: readonly CopyChoice[] };
+    propertyTitle: CopyField;
+    locationPrecision: CopyField & { options: readonly CopyChoice[] };
+    locationWhy: CopyField;
+    visitsNow: CopyField;
+    /** The piece card's row, after "When". Label-only, like the ask. */
+    funded: { label: string; options: readonly CopyChoice[] };
+    placeSize: CopyField;
+    permits: CopyField;
+    /**
+     * The claims cluster's place rows (VEN-3, `investor-ask.md`): rows 3, 4,
+     * 5 and 10. Counsel's words, collected and never drafted.
+     */
+    investorReceives: CopyField;
+    coOwnerDiffers: { label: string; options: readonly CopyChoice[] };
+    /** Opens on `coOwnerDiffers = different`; label-only. */
+    coOwnerLines: { label: string };
+    perks: CopyField;
+    /** Site's availability reveal, after the detail (D-VEN-8). */
+    raiseProgress: CopyField & { options: readonly CopyChoice[] };
+    /** The Applying group, after the asks; cut first if the epic runs over. */
+    apply: CopyField & {
+      who: { label: string };
+      after: CopyField;
+      fee: CopyField;
+      questions: CopyField;
+    };
+  };
 };
 
 /**
@@ -1011,6 +1094,8 @@ const GENERIC: ShowcaseCopyPack = {
   workPasteIntro:
     "Same trick as the last step — paste your filmography, credit list, IMDb page, or the projects off your old site, and hit the button.", // (v2)
   workBlockLabel: "Your projects", // (v2)
+  // Moved out of `piece-entry.tsx` at VEN-2 so the place overlay can reword it.
+  pieceKindPlaceholder: "The property, a phase, a programme, a product…",
   workAddLabel: "Add another project", // (v2)
   reelLabel: "Which piece leads?", // (v2)
   reelHelp: "The one thing a stranger should see first.", // (v2)
@@ -1531,12 +1616,73 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
   /* Every string below: [COPY — pending Taylor] */
 
   venture: {
+    // [COPY — pending Taylor] (Gloss, `kind-picker.md`)
+    ventureType: {
+      label: "What kind of venture is it?",
+      help: "Pick the closest one. If nothing fits, the questions stay general.",
+      labels: {
+        place:
+          "A place or community: a property, a retreat centre, an ecovillage",
+        company: "A company or startup",
+        fund: "A fund",
+        cause: "A cause or nonprofit",
+        launch: "A product launch",
+        other: "Something else",
+      },
+    },
+    // [COPY — pending Taylor] (Gloss, `investor-ask.md`). Every venture.
+    raise: {
+      issuerEntity: {
+        label: "The legal entity investors pay into",
+        help: "Its exact legal name, the country it is registered in, and its registration number. It goes in the footer and the disclaimer.",
+      },
+      jurisdictions: {
+        label: "Where people may invest from",
+        help: "The countries, provinces or states that are open, and any that are excluded.",
+      },
+      returnWording: {
+        label: "May the site mention returns?",
+        help: 'Income, appreciation, or lines like "only a few left". Unless counsel approved the exact words, the answer is no.',
+        options: [
+          { value: "none", label: "No" },
+          { value: "approved", label: "Yes, counsel approved the wording" },
+          { value: "unsure", label: "Not sure yet" },
+        ],
+      },
+      returnWordingQuote: {
+        label: "Paste the approved wording",
+        help: "Exactly as approved, and who approved it.",
+      },
+      invest: {
+        currency: { label: "Currency" },
+        sameMinimum: {
+          label: "Is the minimum the same in every country?",
+          options: [
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
+            { value: "unsure", label: "Not sure yet" },
+          ],
+        },
+        eligibility: {
+          label: "Who may see the numbers?",
+          help: "Anyone who asks, people after a call, or only some investors. Say who checks.",
+        },
+      },
+    },
+    // [COPY — pending Taylor] One of plain venture's two changed strings
+    // (D-VEN-13): the cluster now holds more than three questions.
+    claims: {
+      ...GENERIC.claims,
+      intro:
+        'These questions stop us putting something on your site that isn\'t true. "Not sure" is a fine answer to any of them.',
+    },
     whatYouDoLabel: "What it is, in one line",
     whatYouDoHelp:
       'The line that sits under the name. "A design studio in Halifax" counts. So does "A community-owned sanctuary in the hills of Umbria." We\'ll sharpen it together.',
     nameLabel: "What it's called, as it should appear on the site",
+    // [COPY — pending Taylor] Every venture, place or not (D-VEN-13).
     nameHelp:
-      "The name people will search for. If the legal name is different, we'll ask about that on the last step.",
+      "The name people will search for. If the legal name is different, step 5 asks for it.",
     howLongLabel: "How long it's been going",
     basedInHelpSuffix:
       "…and where the thing itself is, if that's somewhere else.",
@@ -1652,6 +1798,10 @@ const OVERRIDES: Record<ShowcaseFlavour, Partial<ShowcaseCopyPack>> = {
       "Most organisations have one. If it's fine, send the original. If it isn't, there's an add-on for that; say so and we'll talk about it.",
     pages: [
       { value: "home", label: "Home" },
+      // WEB-22: every venture has a page about who is behind it, and the
+      // list had nowhere to tick it. Inherited by the place overlay.
+      // [COPY — pending Taylor]
+      { value: "about", label: "About" },
       { value: "vision", label: "The vision" },
       { value: "place", label: "The place" },
       { value: "team", label: "Team" },
@@ -1812,10 +1962,260 @@ const RESOLVED = Object.fromEntries(
   ]),
 ) as Record<ShowcaseFlavour, ShowcaseCopyPack>;
 
-/** One pack, whole. Never a partial, never a missing slot. */
-export function resolvePack(flavour: ShowcaseFlavour): ShowcaseCopyPack {
-  return RESOLVED[flavour];
+/**
+ * What a venture whose sub-type is `place` reads differently (VEN, D-VEN-24).
+ *
+ * Laid over the resolved venture pack, never over the floor, so a slot absent
+ * here reads exactly as plain venture does. The mechanism lands at VEN-1 with
+ * nothing in it; VEN-2 to VEN-5 fill its slots. `[COPY — pending Taylor]` on
+ * every string added here.
+ */
+const VENTURE = RESOLVED.venture;
+
+/**
+ * An option list relabelled by value, with new options placed beside one that
+ * is already there. Values never change: `labels` only rewords, and a value
+ * named in it that the list lacks is ignored rather than added.
+ */
+function overlayOptions(
+  options: readonly CopyChoice[],
+  labels: Readonly<Record<string, string>>,
+  added: { options: readonly CopyChoice[]; after?: string; before?: string },
+): readonly CopyChoice[] {
+  const relabelled = options.map((option) =>
+    labels[option.value] ? { ...option, label: labels[option.value]! } : option,
+  );
+  const anchor = relabelled.findIndex(
+    (option) => option.value === (added.after ?? added.before),
+  );
+  const at = anchor < 0 ? relabelled.length : anchor + (added.after ? 1 : 0);
+  return [
+    ...relabelled.slice(0, at),
+    ...added.options,
+    ...relabelled.slice(at),
+  ];
 }
+
+/* Every string below: [COPY — pending Taylor] (Gloss, `venture-place.md`). */
+const VENTURE_PLACE: Partial<ShowcaseCopyPack> = {
+  placeVenture: {
+    propertyStatus: {
+      label: "Where things stand with the property",
+      help: "Every page that mentions the place depends on this.",
+      options: [
+        { value: "owned", label: "Owned" },
+        { value: "underContract", label: "Under contract" },
+        { value: "option", label: "Under option" },
+        { value: "leased", label: "Leased" },
+        { value: "searching", label: "Still searching" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    propertyTitle: {
+      label: "Who holds title, and since when?",
+      help: "A person, a company or a co-op. A year is plenty.",
+    },
+    locationPrecision: {
+      label: "How exactly should the site say where it is?",
+      help: "Some places show a pin. Others name the region until a purchase closes.",
+      options: [
+        { value: "region", label: "The region" },
+        { value: "province", label: "The province" },
+        { value: "town", label: "The town" },
+        { value: "address", label: "The full address" },
+        { value: "pin", label: "A map pin" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    locationWhy: {
+      label: "Why that level?",
+      help: "A sale that hasn't closed, or privacy for people living there. Whatever the reason is.",
+    },
+    visitsNow: {
+      label: "Can people visit now?",
+      help: "If they can, say who arranges it. This becomes the visit button, if there is one.",
+    },
+    funded: {
+      label: "Is it funded?",
+      options: [
+        { value: "funded", label: "Funded" },
+        { value: "partly", label: "Partly" },
+        { value: "notYet", label: "Not yet" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    placeSize: {
+      label: "Size and capacity",
+      help: "Land, buildings, rooms and beds. Say what is there now and what each phase adds.",
+    },
+    permits: {
+      label: "Permits",
+      help: "Which you need, which are granted and which are pending, with dates where you have them. The site mentions them only as your counsel allows.",
+    },
+    investorReceives: {
+      label: "What an investor receives",
+      help: "Paste your counsel's description. The model page uses their words as written.",
+    },
+    coOwnerDiffers: {
+      label: "Is a co-owner the same as an investor here?",
+      options: [
+        { value: "same", label: "The same" },
+        { value: "different", label: "Different" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    coOwnerLines: { label: "One line for each, as counsel approved them" },
+    perks: {
+      label: "Perks or stays tied to the amount invested",
+      help: "Exactly as counsel approved them. Leave it empty if there are none.",
+    },
+    raiseProgress: {
+      label: "Has your counsel approved showing how much has been raised?",
+      help: "Until they have, the site won't show it.",
+      options: [
+        { value: "approved", label: "Yes, approved" },
+        { value: "no", label: "No" },
+        { value: "unsure", label: "Not sure yet" },
+      ],
+    },
+    apply: {
+      label: "Applying",
+      help: "Skip this if nobody applies.",
+      who: { label: "Who can apply, and for what?" },
+      after: {
+        label: "What happens after someone applies?",
+        help: "The steps, and how soon they hear back.",
+      },
+      fee: {
+        label: "Is there a fee or a deposit?",
+        help: "How much, and when it is refunded. If there isn't one, say so.",
+      },
+      questions: {
+        label: "Your current application questions",
+        help: "Paste them as they are.",
+      },
+    },
+  },
+  rosterLeadHelpSuffix: "Their headshot is the founder portrait on the site.",
+  // The investor ask, worded for a place (VEN-3, `investor-ask.md`).
+  claims: {
+    ...VENTURE.claims,
+    intro:
+      'Your counsel decides what the site may say about the raise. We only collect what they have said, so "not sure" or "counsel pending" is a fine answer to anything here.',
+    signOff: {
+      ...VENTURE.claims.signOff,
+      help: "Who approves the investor wording in each country, and have they seen the exact page text?",
+    },
+    requiredWording: {
+      ...VENTURE.claims.requiredWording,
+      help: "Each country's disclaimer, pasted exactly, and who approved it.",
+    },
+  },
+  pieceKindPlaceholder: "A building, a phase, the land, a programme",
+  representation: {
+    ...VENTURE.representation,
+    help: "Counsel, a local partner, a licensed professional (say which licence), an investor-relations contact. Who they are, and whether enquiries go through them.",
+  },
+  audiences: overlayOptions(
+    VENTURE.audiences,
+    {
+      residents: "Residents",
+      members: "Members of the community (not newsletter readers)",
+    },
+    {
+      after: "residents",
+      options: [
+        { value: "guests", label: "Guests" },
+        {
+          value: "coOwners",
+          label: "Co-owners, if they aren't the same as investors",
+        },
+        { value: "facilitators", label: "Retreat leaders or facilitators" },
+      ],
+    },
+  ),
+  ask: {
+    ...VENTURE.ask,
+    askField: {
+      ...VENTURE.ask.askField,
+      options: overlayOptions(
+        VENTURE.ask.askField.options,
+        {},
+        {
+          before: "contact",
+          options: [
+            { value: "reserve", label: "Reserve a stay" },
+            { value: "hire", label: "Hire the venue" },
+            { value: "register", label: "Register for an event" },
+          ],
+        },
+      ),
+    },
+  },
+  pages: overlayOptions(
+    VENTURE.pages,
+    { offering: "The model" },
+    {
+      after: "apply",
+      options: [
+        { value: "stays", label: "Stays, retreats or venue hire" },
+        { value: "events", label: "Events" },
+      ],
+    },
+  ),
+};
+
+/**
+ * The sub-type overlays, by flavour and then by sub-type key.
+ *
+ * Keyed by plain strings, so this file never imports the kind registry: the
+ * cartridge verifier asserts every key here is a listed sub-type. A key with
+ * no entry, or no key at all, is no overlay.
+ */
+const SUBTYPE_OVERLAYS: Partial<
+  Record<ShowcaseFlavour, Readonly<Record<string, Partial<ShowcaseCopyPack>>>>
+> = {
+  venture: { place: VENTURE_PLACE },
+};
+
+/**
+ * Every overlaid pack, precomputed at module load, for the reason `RESOLVED`
+ * is: a pack is a stable reference.
+ */
+const OVERLAID = new Map<string, ShowcaseCopyPack>(
+  Object.entries(SUBTYPE_OVERLAYS).flatMap(([flavour, byKey]) =>
+    Object.entries(byKey ?? {}).map(([key, overlay]) => [
+      `${flavour}:${key}`,
+      { ...RESOLVED[flavour as ShowcaseFlavour], ...overlay },
+    ]),
+  ),
+);
+
+/**
+ * One pack, whole. Never a partial, never a missing slot.
+ *
+ * With an overlay key that has an overlay, the overlaid pack; with any other
+ * key, or none, `RESOLVED[flavour]` itself, the same reference. That identity
+ * is what "plain venture reads exactly as today" means, checked rather than
+ * compared (C-VEN-kind-3).
+ */
+export function resolvePack(
+  flavour: ShowcaseFlavour,
+  overlay?: string | null,
+): ShowcaseCopyPack {
+  if (!overlay) return RESOLVED[flavour];
+  return OVERLAID.get(`${flavour}:${overlay}`) ?? RESOLVED[flavour];
+}
+
+/** Every overlay key, by flavour, for the cartridge verifier. */
+export const SUBTYPE_OVERLAY_KEYS: Readonly<
+  Partial<Record<ShowcaseFlavour, readonly string[]>>
+> = Object.fromEntries(
+  Object.entries(SUBTYPE_OVERLAYS).map(([flavour, byKey]) => [
+    flavour,
+    Object.keys(byKey ?? {}),
+  ]),
+);
 
 /**
  * Every required slot name, for the cartridge verifier's fall-through check.

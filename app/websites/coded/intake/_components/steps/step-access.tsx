@@ -1,6 +1,6 @@
 "use client";
 
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
 import {
@@ -89,12 +89,15 @@ export function StepAccess({
   initial,
   flavour,
   kind,
+  ventureType,
   purchasedExtras = [],
 }: {
   token: string;
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /**
    * What this engagement paid for on the pay screen, in the extras vocabulary.
    *
@@ -104,7 +107,7 @@ export function StepAccess({
    */
   purchasedExtras?: readonly string[];
 }) {
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
 
   const form = useStepAutosave({ token, stepKey: "access", initial });
   useReportSaveState(form.state, form.retry);
@@ -196,7 +199,7 @@ export function StepAccess({
           the accounts block and the current-platform question directly below
           are asked of everyone, and for one person they collect the same
           facts without the whose-account half that does not apply. */}
-      <ForKinds kind={kind} test={not(asks("video"))}>
+      <ForKinds kind={kind} ventureType={ventureType} test={not(asks("video"))}>
         <>
           <ChoiceAnswer
             form={form}

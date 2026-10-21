@@ -2,9 +2,16 @@
 
 import { useEffect } from "react";
 import { useIsDocument } from "@/components/intake/preview-mode";
-import type { ShowcaseKind } from "@/lib/intake/showcase-kinds";
+import type { ShowcaseKind, VentureType } from "@/lib/intake/showcase-kinds";
 import type { ShowcaseFlavour } from "@/lib/intake/showcase-steps";
 import { copyPackFor } from "@/lib/intake/tracks";
+import {
+  boxedPages,
+  CUSTOM_BRAIN_DUMPS,
+  HOME_BRAIN_DUMP,
+  sitemapPages,
+  type SitemapPage,
+} from "@/lib/intake/site-page-notes";
 import { INCLUDED_PAGES } from "@/lib/validators/showcase-intake";
 import {
   ChoiceAnswer,
@@ -13,6 +20,7 @@ import {
 } from "../../../../intake/_components/answer-inputs";
 import { DocTag } from "../../../../intake/_components/document";
 import { Field } from "../../../../intake/_components/field";
+import { TextArea } from "../../../../intake/_components/text-field";
 import { Reveal } from "../../../../intake/_components/reveal";
 import { useReportSaveState } from "../../../../intake/_lib/save-state";
 import { useStepAutosave } from "../../../../intake/_lib/use-step-autosave";
@@ -68,6 +76,17 @@ function asList(value: unknown): string[] {
   return Array.isArray(value) ? (value as string[]) : [];
 }
 
+/**
+ * A page's box, past Home (WEB-22). The label is the page's own name as the
+ * client chose or typed it. [COPY — pending Taylor] — every string here.
+ */
+const PAGE_BOX = {
+  label: (page: string) => `${page}: what goes on it`,
+  help: "However it comes out. What this page is for, what someone should find there, and anything that must not be on it.",
+  docTag:
+    "One per page chosen after Home, in sitemap order, up to the pages included plus any bought",
+};
+
 const AVAILABILITY = [
   { value: "yes", label: "Yes — show availability" },
   { value: "no", label: "No" },
@@ -101,6 +120,7 @@ export function StepSite({
   initial,
   flavour,
   kind,
+  ventureType,
   paidExtraPages = 0,
   purchasedExtras = [],
   homeVideos = [],
@@ -110,6 +130,8 @@ export function StepSite({
   initial: Record<string, unknown>;
   flavour: ShowcaseFlavour;
   kind: ShowcaseKind;
+  /** The venture sub-type, or null; see `ventureTypeOf` (VEN). */
+  ventureType: VentureType | null;
   /**
    * Everything the client has already given us, offered back for the home
    * page (PORT-19).
@@ -136,7 +158,7 @@ export function StepSite({
    */
   purchasedExtras?: readonly string[];
 }) {
-  const pack = copyPackFor(flavour);
+  const pack = copyPackFor(flavour, ventureType);
 
   const form = useStepAutosave({ token, stepKey: "site", initial });
   useReportSaveState(form.state, form.retry);
@@ -183,6 +205,23 @@ export function StepSite({
   const named = customPages.filter((page) => page.trim().length > 0).length;
   const total = pages.length + named;
   const over = total > allowance;
+
+  /**
+   * One box per page, in sitemap order, until the allowance runs out (WEB-22).
+   *
+   * Home is always box one and keeps its own block below. A page past the
+   * allowance gets no box: "What the extra pages are for" is where those are
+   * described, before anyone has agreed to build them.
+   */
+  const customNotes = asList(form.values[CUSTOM_BRAIN_DUMPS]);
+  const sitemap = sitemapPages({
+    ticked: pages,
+    checklist: pack.pages,
+    typed: customPages,
+  });
+  const pageBoxes = boxedPages(sitemap, allowance).filter(
+    (page) => !(page.source === "listed" && page.key === HOME_BRAIN_DUMP),
+  );
 
   const isDocument = useIsDocument();
 
@@ -236,40 +275,17 @@ export function StepSite({
       >
         <CustomPages
           pages={customPages}
-          onChange={(next) => form.setValue("pagesCustom", next)}
-          onBlur={form.flush}
+          notes={customNotes}
+          onChange={(next) => {
+            form.setValue("pagesCustom", next.pages);
+            form.setValue(CUSTOM_BRAIN_DUMPS, next.notes);
+          }}
+          // A tick later, so both writes above have landed before the save
+          // reads them: a removal changes two lists, and a save of one would
+          // pair the next row with the removed row's note.
+          onBlur={() => window.setTimeout(() => void form.flush(), 0)}
         />
       </Field>
-
-      {/* Asked once the sitemap they have described runs past what is
-          included.
-
-          It was gated on `paidExtraPages` until 2026-09-07, which meant it
-          never rendered during an intake at all: extra pages are charged after
-          the questionnaire and never at checkout (RUNBOOK-post-intake-charges
-          §1), so that count is always zero while someone is filling this in.
-          The one question that makes an extra page buildable sat behind a
-          purchase that cannot have happened yet, and what arrived instead was
-          a page's name with no idea what goes on it.
-
-          Not a `Reveal`: its condition vocabulary reads one stored answer, and
-          "past the allowance" is computed from two answers and a purchase. The
-          document gets the same treatment by hand, which is the grammar
-          `MotionNotice` already uses for a branch a preview cannot reach
-          (ADM-4). [COPY — pending Taylor] */}
-      {isDocument ? (
-        <DocTag>
-          Shown when the pages chosen run past the included allowance
-        </DocTag>
-      ) : null}
-      {isDocument || over ? (
-        <LongAnswer
-          form={form}
-          name="extraPagesPlan"
-          label="What the extra pages are for"
-          help="You've named more than the five that come with the build. Tell us what each extra one does, and we'll confirm the count and the cost with you before anything is charged."
-        />
-      ) : null}
 
       {/* The home page, asked here rather than as a reel question on step 5.
 
@@ -306,6 +322,50 @@ export function StepSite({
         />
       </Field>
 
+      {/* Every other page's box, after Home's (WEB-22). A checklist page's
+          answer is stored under its option value, a typed page's at its row's
+          position; see `site-page-notes.ts`. */}
+      {isDocument ? <DocTag>{PAGE_BOX.docTag}</DocTag> : null}
+      {pageBoxes.map((page) => (
+        <PageBox
+          key={page.source === "listed" ? page.key : `typed-${page.index}`}
+          page={page}
+          form={form}
+          customNotes={customNotes}
+          customCount={customPages.length}
+        />
+      ))}
+
+      {/* Asked once the sitemap they have described runs past what is
+          included.
+
+          It was gated on `paidExtraPages` until 2026-09-07, which meant it
+          never rendered during an intake at all: extra pages are charged after
+          the questionnaire and never at checkout (RUNBOOK-post-intake-charges
+          §1), so that count is always zero while someone is filling this in.
+          The one question that makes an extra page buildable sat behind a
+          purchase that cannot have happened yet, and what arrived instead was
+          a page's name with no idea what goes on it.
+
+          Not a `Reveal`: its condition vocabulary reads one stored answer, and
+          "past the allowance" is computed from two answers and a purchase. The
+          document gets the same treatment by hand, which is the grammar
+          `MotionNotice` already uses for a branch a preview cannot reach
+          (ADM-4). [COPY — pending Taylor] */}
+      {isDocument ? (
+        <DocTag>
+          Shown when the pages chosen run past the included allowance
+        </DocTag>
+      ) : null}
+      {isDocument || over ? (
+        <LongAnswer
+          form={form}
+          name="extraPagesPlan"
+          label="What the extra pages are for"
+          help="You've named more than the five that come with the build. Tell us what each extra one does, and we'll confirm the count and the cost with you before anything is charged."
+        />
+      ) : null}
+
       <LongAnswer
         form={form}
         name="howSeparate"
@@ -318,6 +378,7 @@ export function StepSite({
           kind-specific rather than missing. */}
       <ForKinds
         kind={kind}
+        ventureType={ventureType}
         test={hasGroup("ask")}
         otherwise={
           <HowToReach form={form} pack={pack} options={HOW_TO_REACH} />
@@ -377,12 +438,32 @@ export function StepSite({
         values={form.values}
         dependsOn={{ field: "showAvailability", in: ["yes", "unsure"] }}
       >
-        <TextAnswer
-          form={form}
-          name="availabilityDetail"
-          label="What should it say?"
-          help={`"Booking for fall 2026", "Taking two projects this quarter", "Currently on a feature until March" — and tell us when it stops being true.`}
-        />
+        <>
+          <TextAnswer
+            form={form}
+            name="availabilityDetail"
+            label="What should it say?"
+            help={`"Booking for fall 2026", "Taking two projects this quarter", "Currently on a feature until March" — and tell us when it stops being true.`}
+          />
+          {/* A place venture's raise progress, after the line it would sit
+              in (VEN-3, D-VEN-8). Critical, though the question above it is
+              not: a total raised is counsel's to approve. */}
+          {pack.placeVenture ? (
+            <ForKinds
+              kind={kind}
+              ventureType={ventureType}
+              test={hasGroup("place")}
+            >
+              <ChoiceAnswer
+                form={form}
+                name="raiseProgress"
+                label={pack.placeVenture.raiseProgress.label}
+                help={pack.placeVenture.raiseProgress.help}
+                options={pack.placeVenture.raiseProgress.options}
+              />
+            </ForKinds>
+          ) : null}
+        </>
       </Reveal>
 
       {/* Both of these change the *shape* of the site rather than its look,
@@ -445,5 +526,62 @@ function HowToReach({
       }`}
       options={options}
     />
+  );
+}
+
+/**
+ * One page's brain dump.
+ *
+ * A checklist page is an ordinary `LongAnswer` on its stored key. A typed page
+ * writes one position in `pagesCustomBrainDump`, padded to the rows so a list
+ * from before WEB-22 reads as blanks rather than shifting.
+ */
+function PageBox({
+  page,
+  form,
+  customNotes,
+  customCount,
+}: {
+  page: SitemapPage;
+  form: ReturnType<typeof useStepAutosave>;
+  /** For reading; writes go through the stored list, never this copy. */
+  customNotes: readonly string[];
+  customCount: number;
+}) {
+  if (page.source === "listed") {
+    return (
+      <LongAnswer
+        form={form}
+        name={page.key}
+        label={PAGE_BOX.label(page.label)}
+        help={PAGE_BOX.help}
+      />
+    );
+  }
+
+  const id = `f-${CUSTOM_BRAIN_DUMPS}-${page.index}`;
+  const value = customNotes[page.index] ?? "";
+
+  return (
+    <Field id={id} label={PAGE_BOX.label(page.label)} help={PAGE_BOX.help}>
+      <TextArea
+        id={id}
+        helpId={`${id}-help`}
+        value={value}
+        onChange={(event) => {
+          const text = event.target.value;
+          form.setValue(CUSTOM_BRAIN_DUMPS, (previous: unknown) => {
+            const stored = Array.isArray(previous) ? previous : [];
+            const next = Array.from(
+              { length: customCount },
+              (_, index) => (stored[index] as string | undefined) ?? "",
+            );
+            next[page.index] = text;
+            return next;
+          });
+        }}
+        onBlur={form.flush}
+      />
+    </Field>
   );
 }
